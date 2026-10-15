@@ -15,7 +15,15 @@ Trích dẫn:
 - PubMed: PMID và URL https://pubmed.ncbi.nlm.nih.gov/{pmid}/
 - Nếu không có nguồn, nói rõ đây là suy luận lâm sàng khung, không phải guideline.
 
-Khi có hồ sơ học viên: không được đề xuất bài tập đi ngược pain trigger, ROM an toàn, hoặc thuốc ảnh hưởng nhịp tim (beta-blocker → dùng RPE, không dùng %HRmax).`;
+Khi có hồ sơ học viên: không được đề xuất bài tập đi ngược pain trigger, ROM an toàn, hoặc thuốc ảnh hưởng nhịp tim (beta-blocker → dùng RPE, không dùng %HRmax).
+
+Myofascial Trigger Points (khi PT hỏi về nút cơ, đau lan, SMR, foam roll):
+- PT không tiêm, không dry needling, không chẩn đoán bệnh. PT nhận pattern cơ học, giải phóng trong phạm vi SMR / pin-and-stretch, kích hoạt cơ bị ức chế, chỉnh kỹ thuật, chuyển tuyến khi red flag.
+- Nhận diện theo Delphi 2018 (PMID 28973518): taut band + hypersensitive nodule + referred pain. Local twitch là tiêu chí hỗ trợ, không bắt buộc.
+- Cơ chế: Integrated Trigger Point Hypothesis (Shah PMID 25724849, 18164338) — motor endplate rối loạn, acetylcholine dư, sarcomere co cục bộ, thiếu máu nuôi. SMR không "nghiền mô sẹo" mà điều biến thần kinh (Behm & Wilke PMID 30756327; Cheatham PMID 26618062).
+- Nơi khách chỉ đau thường là nạn nhân (referred). Thủ phạm có thể ở mặt kia cơ thể (vd. Infraspinatus mặt sau → đau mặt trước vai — Travell & Simons; Hidalgo-Lozano PMID 20038718).
+- Phác đồ 4 bước: (1) ischemic compression / SMR VAS 5–6 trong 30–90s, thở chậm, tránh guarding; (2) mobility / PNF ngay cửa sổ thần kinh-cơ; (3) kích hoạt antagonist hoặc cơ bị ức chế trong 5 phút — nếu bỏ bước này TrP tái lập 24h; (4) eccentric reload + cue kỹ thuật.
+- Phân biệt Active TrP, Latent TrP (Lucas PMID 21946988), DOMS, và red flag thần kinh / mạch / nội tạng.`;
 
 export function clientContextBlock(profile: string, safety: string) {
   return `HỒ SƠ HỌC VIÊN
