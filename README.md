@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FLOOR — PT Medical & Exercise Science Agent
 
-## Getting Started
+Clinical co-pilot cho Personal Trainer: hồ sơ bệnh lý học viên, sàng lọc Red Flags, RAG sách chuyên ngành, PubMed, đọc phiếu xét nghiệm/InBody.
 
-First, run the development server:
+## Chạy local
 
 ```bash
+cp .env.example .env.local
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Biến môi trường
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Key | Việc |
+| --- | --- |
+| `OPENROUTER_API_KEY` | Bắt buộc. Chat, Vision, embedding đều đi qua OpenRouter. |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Hồ sơ học viên, vector sách PDF. |
+| `NCBI_EMAIL` / `NCBI_API_KEY` | Tuỳ chọn, lịch sự với PubMed. |
 
-## Learn More
+Model mặc định (đổi được trong `.env.local`):
 
-To learn more about Next.js, take a look at the following resources:
+- Lập luận lâm sàng: `anthropic/claude-sonnet-4`
+- Đọc ảnh xét nghiệm/InBody: `google/gemini-2.5-pro`
+- Tra cứu nhanh: `google/gemini-2.5-flash`
+- Embedding: `openai/text-embedding-3-small`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Supabase
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Tạo project, bật extension `vector`.
+2. SQL Editor → chạy `supabase/migrations/001_initial_schema.sql`.
+3. Dán URL + service role key vào `.env.local`.
 
-## Deploy on Vercel
+Không expose service role ra trình duyệt. Mọi truy vấn đi qua API routes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Việc nên làm trên app
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Thư viện** — nạp PDF ACSM / NSCA / NASM.
+2. **Học viên** — bệnh nền, thuốc, pain trigger, PAR-Q+.
+3. **Xét nghiệm / InBody** — chụp phiếu, Gemini đọc chỉ số.
+4. **Tư vấn** — hỏi bài tập; agent trích sách + PMID và kiểm tra chống chỉ định.
+
+PT không chẩn đoán, không kê thuốc. Red Flags → chuyển bác sĩ.

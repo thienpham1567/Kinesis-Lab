@@ -1,0 +1,654 @@
+"use client";
+
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState, type ReactNode } from "react";
+import { BodyMapExplorer } from "@/components/BodyMapExplorer";
+import { ChatPanel } from "@/components/ChatPanel";
+import { matchClientIssuesToRegions } from "@/lib/clinical/anatomy-atlas";
+import { PARQ_ITEMS, safetyNotes } from "@/lib/clinical/safety";
+import type { BiomarkerRecord, Client } from "@/lib/types";
+
+type Tab = "ban-do" | "ho-so" | "co-do" | "xet-nghiem" | "chat";
+
+const FIELD_LABELS: Record<string, string> = {
+  name: "Tên bệnh lý / Thuốc",
+  since: "Thời điểm phát hiện",
+  dose: "Liều dùng & Thời gian uống",
+  region: "Vùng khớp / Cột sống",
+  painTriggers: "Cử động gây đau (Pain Triggers)",
+  safeRom: "Biên độ & Bài tập thay thế an toàn (Safe ROM)",
+  notes: "Ghi chú lâm sàng",
+};
+
+export default function ClientDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const [tab, setTab] = useState<Tab>("ban-do");
+  const [client, setClient] = useState<Client | null>(null);
+  const [biomarkers, setBiomarkers] = useState<BiomarkerRecord[]>([]);
+  const [chatPrompt, setChatPrompt] = useState<string>("");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [savedToast, setSavedToast] = useState("");
+
+  function applyPayload(
+    ok: boolean,
+    data: { error?: string; client?: Client; biomarkers?: BiomarkerRecord[] },
+  ) {
+    if (!ok) setError(data.error ?? "Không tải được hồ sơ");
+    else {
+      setClient(data.client ?? null);
+      setBiomarkers(data.biomarkers ?? []);
+    }
+  }
+
+  function load() {
+    return fetch(`/api/clients/${id}`)
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => applyPayload(ok, data));
+  }
+
+  useEffect(() => {
+    let ignore = false;
+    fetch(`/api/clients/${id}`)
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ignore) applyPayload(ok, data);
+      })
+      .catch(() => {
+        if (!ignore) setError("Không tải được hồ sơ");
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [id]);
+
+  async function save(patch: Partial<Client>) {
+    if (!client) return;
+    setSaving(true);
+    setError("");
+    setSavedToast("");
+    try {
+      const res = await fetch(`/api/clients/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      const data = await res.json();
+      if (!res.ok) setError(data.error ?? "Không lưu được");
+      else {
+        setClient(data.client);
+        setSavedToast("Đã lưu cập nhật hồ sơ");
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (!client) {
+    return (
+      <div className="rounded-lg border border-rule bg-sheet p-8 text-center text-sm text-slate">
+        {error || "Đang mở bệnh án vận động..."}
+      </div>
+    );
+  }
+
+  const autoWarnings = safetyNotes(client).split("\n");
+  const regionAlertsCount = Object.keys(matchClientIssuesToRegions(client)).length;
+
+  const tabs: { id: Tab; label: string; badge?: number }[] = [
+    {
+      id: "ban-do",
+      label: "Bản đồ Giải phẫu & Điểm đau",
+      badge: regionAlertsCount,
+    },
+    { id: "ho-so", label: "Hồ sơ Bệnh lý & Cơ xương khớp" },
+    {
+      id: "co-do",
+      label: "Sàng lọc PAR-Q+ & Cờ Đỏ",
+      badge: Object.values(client.red_flags?.parq ?? {}).filter((v) => v === true).length,
+    },
+    { id: "xet-nghiem", label: "Xét nghiệm Máu & InBody", badge: biomarkers.length },
+    { id: "chat", label: "Hội chẩn & Giáo án Rehab" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-lg border border-rule bg-sheet p-5 shadow-xs">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <Link href="/clients" className="text-xs font-medium text-cobalt hover:underline">
+              Danh sách học viên
+            </Link>
+            <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-ink">
+              {client.name}
+            </h1>
+            <p className="mt-1 text-sm text-slate">
+              {client.sex ?? "Chưa rõ giới"} • {client.age != null ? `${client.age} tuổi` : "Chưa rõ tuổi"} •{" "}
+              {client.training_level ?? "Chưa phân cấp độ"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            {saving && <span className="font-medium text-cobalt">Đang lưu...</span>}
+            {savedToast && (
+              <span className="rounded bg-cleared-soft px-2.5 py-1 font-medium text-cleared">
+                {savedToast}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-md border border-caution/30 bg-caution-soft/60 p-3.5">
+          <p className="font-display text-xs font-bold text-caution">
+            Cảnh báo An toàn & Điều chỉnh Tải trọng Tự động (Clinical Safety Guard)
+          </p>
+          <ul className="mt-1.5 space-y-1 text-xs leading-5 text-ink">
+            {autoWarnings.map((w) => (
+              <li key={w}>• {w}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {error ? (
+        <p className="rounded-md border border-crimson/30 bg-crimson-soft px-4 py-2.5 text-sm text-crimson">
+          {error}
+        </p>
+      ) : null}
+
+      <div className="flex flex-wrap gap-1.5 border-b border-rule pb-2">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id)}
+            className={`inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+              tab === t.id
+                ? "bg-cobalt text-white"
+                : "bg-sheet text-slate hover:bg-surface hover:text-ink"
+            }`}
+          >
+            <span>{t.label}</span>
+            {t.badge != null && t.badge > 0 && (
+              <span
+                className={`rounded-full px-1.5 py-0.2 font-mono text-[11px] ${
+                  tab === t.id ? "bg-white/20 text-white" : "bg-surface text-ink"
+                }`}
+              >
+                {t.badge}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {tab === "ban-do" && (
+        <BodyMapExplorer
+          key={client.updated_at + "-map"}
+          mode="client"
+          client={client}
+          onAskRegion={(prompt) => {
+            setChatPrompt(prompt);
+            setTab("chat");
+          }}
+        />
+      )}
+      {tab === "ho-so" && (
+        <ProfileForm key={client.updated_at} client={client} onSave={save} />
+      )}
+      {tab === "co-do" && (
+        <RedFlagForm key={client.updated_at + "-rf"} client={client} onSave={save} />
+      )}
+      {tab === "xet-nghiem" && (
+        <Labs clientId={client.id} records={biomarkers} onChange={load} />
+      )}
+      {tab === "chat" && (
+        <ChatPanel
+          key={chatPrompt}
+          clientId={client.id}
+          initialPrompt={chatPrompt}
+          placeholder={`Hỏi bài tập, kiểm tra chống chỉ định hoặc lên giáo án Rehab cho ${client.name}...`}
+        />
+      )}
+    </div>
+  );
+}
+
+function ProfileForm({
+  client,
+  onSave,
+}: {
+  client: Client;
+  onSave: (p: Partial<Client>) => Promise<void>;
+}) {
+  const [form, setForm] = useState(client);
+
+  return (
+    <form
+      className="space-y-6 rounded-lg border border-rule bg-sheet p-5 shadow-xs"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void onSave({
+          name: form.name,
+          age: form.age,
+          sex: form.sex,
+          goals: form.goals,
+          training_level: form.training_level,
+          notes: form.notes,
+          medical_conditions: form.medical_conditions,
+          medications: form.medications,
+          orthopedic_issues: form.orthopedic_issues,
+        });
+      }}
+    >
+      <div className="grid gap-4 md:grid-cols-4">
+        <Field label="Họ và tên học viên" className="md:col-span-2">
+          <input
+            className="w-full px-3 py-2 text-sm"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+        </Field>
+        <Field label="Tuổi">
+          <input
+            type="number"
+            className="w-full px-3 py-2 text-sm"
+            value={form.age ?? ""}
+            onChange={(e) =>
+              setForm({ ...form, age: e.target.value ? Number(e.target.value) : null })
+            }
+          />
+        </Field>
+        <Field label="Giới tính sinh học">
+          <input
+            className="w-full px-3 py-2 text-sm"
+            value={form.sex ?? ""}
+            onChange={(e) => setForm({ ...form, sex: e.target.value })}
+          />
+        </Field>
+        <Field label="Kinh nghiệm vận động" className="md:col-span-2">
+          <input
+            className="w-full px-3 py-2 text-sm"
+            value={form.training_level ?? ""}
+            onChange={(e) => setForm({ ...form, training_level: e.target.value })}
+            placeholder="Mới bắt đầu / Trung cấp / Vận động viên"
+          />
+        </Field>
+        <Field label="Mục tiêu trọng tâm" className="md:col-span-2">
+          <input
+            className="w-full px-3 py-2 text-sm"
+            value={form.goals ?? ""}
+            onChange={(e) => setForm({ ...form, goals: e.target.value })}
+          />
+        </Field>
+      </div>
+
+      <JsonList
+        label="1. Bệnh lý nền đã được chẩn đoán"
+        hint="Ví dụ: Thoát vị đĩa đệm L4-L5, Tăng huyết áp độ 1, Đái tháo đường type 2"
+        items={form.medical_conditions}
+        fields={["name", "since", "notes"]}
+        onChange={(medical_conditions) => setForm({ ...form, medical_conditions })}
+      />
+
+      <JsonList
+        label="2. Thuốc đang sử dụng & Tác động sinh lý khi gắng sức"
+        hint="Ví dụ: Bisoprolol 5mg (chẹn beta — dùng RPE), Metformin 500mg, Rosuvastatin 10mg"
+        items={form.medications}
+        fields={["name", "dose", "notes"]}
+        onChange={(medications) => setForm({ ...form, medications })}
+      />
+
+      <JsonList
+        label="3. Vấn đề Cơ xương khớp, Cử động gây đau & Biên độ an toàn"
+        hint="Ghi rõ góc độ gây đau (Pain Triggers) và biến thể bài tập không đau (Safe ROM)"
+        items={form.orthopedic_issues}
+        fields={["region", "painTriggers", "safeRom", "notes"]}
+        onChange={(orthopedic_issues) => setForm({ ...form, orthopedic_issues })}
+      />
+
+      <Field label="Ghi chú lâm sàng & Lịch sử sinh hoạt của PT">
+        <textarea
+          rows={3}
+          className="w-full px-3 py-2 text-sm"
+          value={form.notes ?? ""}
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
+        />
+      </Field>
+
+      <div>
+        <button
+          type="submit"
+          className="rounded-md bg-cobalt px-5 py-2.5 font-display text-sm font-semibold text-white hover:opacity-95"
+        >
+          Lưu cập nhật hồ sơ
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function RedFlagForm({
+  client,
+  onSave,
+}: {
+  client: Client;
+  onSave: (p: Partial<Client>) => Promise<void>;
+}) {
+  const parq = { ...(client.red_flags?.parq ?? {}) };
+  const [notes, setNotes] = useState(client.red_flags?.notes ?? "");
+  const [answers, setAnswers] = useState<Record<string, boolean | null>>(parq);
+
+  const positiveCount = Object.values(answers).filter((v) => v === true).length;
+
+  return (
+    <form
+      className="space-y-5 rounded-lg border border-rule bg-sheet p-5 shadow-xs"
+      onSubmit={(e) => {
+        e.preventDefault();
+        void onSave({ red_flags: { parq: answers, notes } });
+      }}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-4">
+        <div>
+          <h2 className="font-display text-lg font-bold text-ink">
+            Bảng kiểm Sàng lọc PAR-Q+ & Cờ Đỏ Nội – Thần kinh
+          </h2>
+          <p className="text-xs text-slate">
+            Bất kỳ mục nào trả lời &ldquo;Có&rdquo; đều yêu cầu khai thác sâu hoặc giấy đồng ý tập luyện từ bác sĩ chuyên khoa.
+          </p>
+        </div>
+        <span
+          className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+            positiveCount > 0
+              ? "border-caution/30 bg-caution-soft text-caution"
+              : "border-cleared/30 bg-cleared-soft text-cleared"
+          }`}
+        >
+          {positiveCount > 0
+            ? `${positiveCount} mục trả lời CÓ — Cần lưu ý lâm sàng`
+            : "0 mục dương tính — Đạt sàng lọc cơ bản"}
+        </span>
+      </div>
+
+      <ul className="divide-y divide-rule rounded-md border border-rule">
+        {PARQ_ITEMS.map((q) => (
+          <li
+            key={q.id}
+            className="flex flex-wrap items-center justify-between gap-3 px-4 py-3.5"
+          >
+            <span className="max-w-xl text-sm text-ink">{q.label}</span>
+            <span className="flex gap-1.5">
+              {([true, false, null] as const).map((v) => (
+                <button
+                  key={String(v)}
+                  type="button"
+                  onClick={() => setAnswers({ ...answers, [q.id]: v })}
+                  className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                    answers[q.id] === v
+                      ? v === true
+                        ? "bg-crimson text-white"
+                        : v === false
+                          ? "bg-cleared text-white"
+                          : "bg-ink text-white"
+                      : "bg-surface text-slate hover:text-ink"
+                  }`}
+                >
+                  {v === true ? "Có" : v === false ? "Không" : "Chưa hỏi"}
+                </button>
+              ))}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <Field label="Ghi chú phân loại nguy cơ & Hướng dẫn từ Bác sĩ điều trị">
+        <textarea
+          rows={3}
+          className="w-full px-3 py-2 text-sm"
+          placeholder="Ghi rõ kết luận của bác sĩ chuyên khoa, ngưỡng nhịp tim hoặc huyết áp giới hạn..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+      </Field>
+
+      <button
+        type="submit"
+        className="rounded-md bg-cobalt px-5 py-2.5 font-display text-sm font-semibold text-white hover:opacity-95"
+      >
+        Lưu bảng sàng lọc Cờ Đỏ
+      </button>
+    </form>
+  );
+}
+
+function Labs({
+  clientId,
+  records,
+  onChange,
+}: {
+  clientId: string;
+  records: BiomarkerRecord[];
+  onChange: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  async function upload(file: File) {
+    setBusy(true);
+    setMsg("");
+    try {
+      const fd = new FormData();
+      fd.set("file", file);
+      const extracted = await fetch("/api/extract-lab", { method: "POST", body: fd });
+      const data = await extracted.json();
+      if (!extracted.ok) {
+        setMsg(data.error ?? "Không đọc được phiếu");
+        return;
+      }
+      const saved = await fetch("/api/biomarkers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: clientId,
+          kind: data.kind === "inbody" ? "inbody" : "blood_lab",
+          recorded_at: data.recorded_at,
+          metrics: data.metrics ?? {},
+          ai_summary: data.ai_summary,
+        }),
+      });
+      if (!saved.ok) {
+        const err = await saved.json();
+        setMsg(err.error ?? "Không lưu được");
+        return;
+      }
+      onChange();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-lg border border-dashed border-rule-strong bg-sheet p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="font-display text-base font-bold text-ink">
+              Bóc tách Phiếu Xét nghiệm Máu & Giấy InBody bằng AI Vision
+            </h2>
+            <p className="mt-0.5 text-xs text-slate">
+              Hỗ trợ ảnh chụp phiếu xét nghiệm (Glucose, HbA1c, Lipid, AST/ALT, CK, Vitamin D, Ferritin)
+              hoặc phiếu InBody (SMM, PBF, VFA, ECW Ratio).
+            </p>
+          </div>
+          <label className="cursor-pointer rounded-md bg-cobalt px-4 py-2.5 font-display text-xs font-semibold text-white hover:opacity-95">
+            {busy ? "Đang phân tích phiếu..." : "Tải ảnh / PDF phiếu xét nghiệm"}
+            <input
+              type="file"
+              accept="image/*,application/pdf"
+              className="hidden"
+              disabled={busy}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void upload(f);
+              }}
+            />
+          </label>
+        </div>
+        {msg ? <p className="mt-3 text-xs font-medium text-crimson">{msg}</p> : null}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {records.map((r) => (
+          <article key={r.id} className="rounded-lg border border-rule bg-sheet p-5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-rule pb-3">
+              <div>
+                <span
+                  className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
+                    r.kind === "inbody"
+                      ? "bg-cobalt-soft text-cobalt"
+                      : "bg-cleared-soft text-cleared"
+                  }`}
+                >
+                  {r.kind === "inbody" ? "Phân tích Thành phần Cơ thể (InBody)" : "Sinh hóa & Huyết học"}
+                </span>
+                <p className="mt-1 font-mono text-xs text-slate">Ngày đo: {r.recorded_at}</p>
+              </div>
+              <button
+                type="button"
+                className="text-xs font-medium text-crimson hover:underline"
+                onClick={async () => {
+                  await fetch(`/api/biomarkers?id=${r.id}`, { method: "DELETE" });
+                  onChange();
+                }}
+              >
+                Xóa bản ghi
+              </button>
+            </div>
+
+            <dl className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              {Object.entries(r.metrics ?? {}).map(([k, v]) => {
+                const metric =
+                  v && typeof v === "object" && "value" in v
+                    ? (v as { value: unknown; unit?: string; flag?: string })
+                    : { value: v, unit: "", flag: "normal" };
+                const isHigh = metric.flag === "high";
+                const isLow = metric.flag === "low";
+                const badgeCls = isHigh
+                  ? "border-crimson/30 bg-crimson-soft/60 text-crimson"
+                  : isLow
+                    ? "border-caution/30 bg-caution-soft/60 text-caution"
+                    : "border-rule bg-canvas/70 text-ink";
+                return (
+                  <div key={k} className={`rounded-md border p-2.5 ${badgeCls}`}>
+                    <dt className="text-[11px] font-medium text-slate">{k}</dt>
+                    <dd className="mt-0.5 font-mono text-sm font-semibold">
+                      {String(metric.value)} {metric.unit ?? ""}
+                    </dd>
+                    {(isHigh || isLow) && (
+                      <span className="mt-0.5 inline-block text-[10px] font-semibold">
+                        {isHigh ? "Cao hơn ngưỡng" : "Thấp hơn ngưỡng"}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </dl>
+
+            {r.ai_summary ? (
+              <div className="mt-4 rounded-md bg-surface/70 p-3.5 text-xs leading-6 text-ink">
+                <p className="font-display font-semibold text-ink">
+                  Nhận định Sinh lý Vận động & Phục hồi:
+                </p>
+                <p className="mt-1 whitespace-pre-wrap">{r.ai_summary}</p>
+              </div>
+            ) : null}
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+  className = "",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <label className={`block space-y-1 text-xs font-medium text-slate ${className}`}>
+      <span>{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function JsonList<T extends object>({
+  label,
+  hint,
+  items,
+  fields,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  items: T[];
+  fields: string[];
+  onChange: (items: T[]) => void;
+}) {
+  const list = items ?? [];
+  return (
+    <div className="space-y-3 rounded-md border border-rule bg-canvas/50 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="font-display text-sm font-bold text-ink">{label}</p>
+          <p className="text-xs text-slate">{hint}</p>
+        </div>
+        <button
+          type="button"
+          className="rounded border border-cobalt bg-cobalt-soft px-3 py-1 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-white"
+          onClick={() =>
+            onChange([...list, Object.fromEntries(fields.map((f) => [f, ""])) as T])
+          }
+        >
+          + Thêm mục
+        </button>
+      </div>
+
+      {list.map((item, i) => (
+        <div
+          key={`${label}-${i}`}
+          className="grid gap-3 rounded-md border border-rule bg-sheet p-3 md:grid-cols-3"
+        >
+          {fields.map((f) => (
+            <label key={f} className="block space-y-1 text-xs text-slate">
+              <span>{FIELD_LABELS[f] ?? f}</span>
+              <input
+                className="w-full px-2.5 py-1.5 text-sm"
+                value={String((item as Record<string, unknown>)[f] ?? "")}
+                onChange={(e) => {
+                  const next = [...list];
+                  next[i] = { ...item, [f]: e.target.value };
+                  onChange(next);
+                }}
+              />
+            </label>
+          ))}
+          <div className="md:col-span-3">
+            <button
+              type="button"
+              className="text-xs font-medium text-crimson hover:underline"
+              onClick={() => onChange(list.filter((_, j) => j !== i))}
+            >
+              Xóa mục này
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
