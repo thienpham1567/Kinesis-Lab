@@ -274,12 +274,16 @@ const MUSCLE_SHORT_NAME: Record<MuscleGroupId, string> = {
   calves: "Bắp chân",
 };
 
-export function MuscleHypertrophyExplorer() {
+export function MuscleHypertrophyExplorer({
+  initialMuscleId,
+}: { initialMuscleId?: string | null } = {}) {
   const [lookupMode, setLookupMode] = useState<"muscle_to_ex" | "ex_to_muscle">(
     "muscle_to_ex",
   );
   const [selectedMuscleId, setSelectedMuscleId] =
-    useState<MuscleGroupId>("chest");
+    useState<MuscleGroupId>(() =>
+      MUSCLE_GROUP_ATLAS.find((muscle) => muscle.id === initialMuscleId)?.id ?? "chest",
+    );
   const [selectedExerciseId, setSelectedExerciseId] = useState<string>(
     HYPERTROPHY_EXERCISES[0].id,
   );

@@ -511,3 +511,8 @@ select:focus {
     scroll-behavior: auto !important;
   }
 }
+
+.atlas-workspace canvas:focus-visible {
+  outline: 3px solid var(--cobalt);
+  outline-offset: -3px;
+}

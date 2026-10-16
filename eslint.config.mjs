@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Unmodified third-party Draco runtime; notices are shipped beside it.
+    "public/anatomy/3d/draco/*.js",
   ]),
 ]);
 

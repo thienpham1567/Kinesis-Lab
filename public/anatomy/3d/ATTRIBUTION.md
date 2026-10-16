@@ -1,0 +1,53 @@
+# Kinesis Lab anatomy assets
+
+## Source and attribution
+
+- **Z-Anatomy — The libre 3D atlas of anatomy — CC BY-SA 4.0**.
+  Source: https://github.com/Z-Anatomy/Models-of-human-anatomy
+  Revision: `0dd2329622c42b4fdcaabbf5ff6ad234df49b659`.
+  Original files: `Z-Anatomy.zip` (`Startup.blend`) and `TA2.csv`.
+- **BodyParts3D — The Database Center for Life Science — CC BY-SA 2.1 Japan**.
+  Original model database: https://dbarchive.biosciencedbc.jp/en/bodyparts3d/
+- The upstream credits and license notice are preserved in [SOURCE-LICENSE.txt](./SOURCE-LICENSE.txt).
+- These adapted model bundles and anatomy metadata are distributed under **Creative Commons Attribution-ShareAlike 4.0 International**:
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+## Changes by Kinesis Lab
+
+Exported the source musculoskeletal meshes into glTF 2.0 GLB bundles, compressed with Draco; separated regional bundles; added stable structure IDs, selected Vietnamese display labels, search metadata, and mappings to the existing Kinesis Lab PT library. Source English and available Latin names are retained. Full physical mesh geometry is retained within each selected structure; regional bundles do not create artificial cut surfaces.
+
+Asset version 2 retains the source polygon assignments to seven simplified tissue families: bone, muscle, joint, cartilage, tendon, ligament and fat. Functional muscle colors and numbered bone materials are consolidated within their tissue family. Original material names and face counts are retained in manifest metadata. All 380 structures with multiple tissue families preserve their boundaries. These are source material regions, not independently segmented or validated tissue layers.
+
+The subset excludes the Head collection, viscera, insertion overlays and source label meshes. The upstream notice includes separate credits for organs and head structures that are outside this subset. The selection rule is documented in `scripts/export_z_anatomy.py`; this is a provenance description, not independent anatomical or licensing certification of every upstream mesh.
+
+## Web presentation refinement
+
+Kinesis Lab renders the source meshes with tissue-specific PBR colors/roughness, studio environment lighting, soft shadows, and optional ambient occlusion. A subtle procedural surface grain is cosmetic; it is not a scan, measurement, or anatomical fiber map. Source shape is unchanged. Selected structures receive a subtle blue tint while retaining tissue differences. No additional anatomical accuracy or photorealistic tissue validation is claimed.
+
+## Derived geometric thickness
+
+Ten audited closed meshes (left/right acetabular labrum, femur, hip bone, gluteus maximus and gluteus medius) include custom scalar vertex attributes `_THICKNESS` and `_THICKNESS_VALID`. The method `inward-normal-cone-median-v1` casts five rays around each inward vertex normal, takes the median projected exit distance, and accepts at least three exits. Values use source world coordinates in metres (source scene scale length 1). Open/non-manifold meshes and coverage below 95% are rejected. Invalid vertices carry zero value plus zero validity; they are not filled. Metadata statistics exclude invalid samples. Coverage is 99.94–100% for these ten meshes.
+
+The optional heatmap uses a fixed qualitative 0–100+ mm scale, with invalid/interpolated invalid areas shown gray. This estimates distance across the whole mesh, not cortical bone thickness or individual cartilage/tendon layer thickness. It is neither measured tissue data nor optical/clinical calibration, and is not currently used as an optical subsurface scattering input. The method is sensitive to mesh shape, normals and concavity. No photographic tissue maps are added. Implementation and synthetic checks are in `scripts/z_anatomy_surfaces.py` and `scripts/check_thickness_bake.py`.
+
+## Scope and limitations
+
+This is an educational musculoskeletal subset, not a complete body atlas or a diagnostic tool. Vietnamese names cover selected common structures; other structures retain their source English names. Regional and muscle-group mappings are navigation aids. The source model and translations have not been clinically validated by Kinesis Lab. Existing PT notes are regional context, not newly authored claims about each mesh.
+
+No Z-Anatomy Blender add-on code is executed or included in the web app. Mesh and metadata licensing is described above; it is separate from the application's source code.
+
+## Runtime dependencies
+
+- Three.js: MIT, notice in [draco/THREE-LICENSE.txt](./draco/THREE-LICENSE.txt).
+- Draco decoder: Apache License 2.0, notice in [draco/DRACO-LICENSE.txt](./draco/DRACO-LICENSE.txt).
+  Decoder files are copied from the installed Three.js package, not loaded from a CDN.
+
+## Reproduction
+
+Use Blender 4.5.9 with the source revision above. Put `Startup.blend`, `TA2.csv`, and `source.json` containing repository and commit fields in ignored `.data/z-anatomy/`, then run from the project root:
+
+```sh
+blender --background --factory-startup --disable-autoexec .data/z-anatomy/Startup.blend --python-exit-code 1 --python scripts/export_z_anatomy.py
+```
+
+Copy the upstream license to `SOURCE-LICENSE.txt` and the decoder files from `node_modules/three/examples/jsm/libs/draco/gltf/` to `draco/`, preserving the notices. The source `.blend` is not needed by the browser.

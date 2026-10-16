@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
@@ -8,14 +9,35 @@ import { TriggerPointExplorer } from "@/components/TriggerPointExplorer";
 import type { Client } from "@/lib/types";
 import { Icon, PageHeading, type IconName } from "@/components/WorkspaceUI";
 
-type AtlasTab = "hypertrophy" | "trigger_points" | "clinical_rehab";
+const Atlas3DExplorer = dynamic(
+  () => import("@/components/atlas3d/Atlas3DExplorer"),
+  {
+    loading: () => (
+      <div className="panel p-8 text-sm text-slate" role="status">
+        Đang mở Atlas 3D…
+      </div>
+    ),
+  },
+);
+
+type AtlasTab = "3d" | "hypertrophy" | "trigger_points" | "clinical_rehab";
 
 function parseAtlasTab(value: string | null): AtlasTab {
-  if (value === "trigger_points" || value === "clinical_rehab") return value;
-  return "hypertrophy";
+  if (
+    value === "hypertrophy" ||
+    value === "trigger_points" ||
+    value === "clinical_rehab"
+  )
+    return value;
+  return "3d";
 }
 
 const TAB_COPY: Record<AtlasTab, { title: string; subtitle: string }> = {
+  "3d": {
+    title: "Atlas 3D",
+    subtitle:
+      "Khám phá từng cấu trúc cơ–xương–khớp, quan sát theo lớp và kết nối với bài tập.",
+  },
   hypertrophy: {
     title: "Atlas Cơ – Khớp",
     subtitle:
@@ -57,7 +79,7 @@ function AtlasPageInner() {
 
   function selectTab(id: AtlasTab) {
     const next = new URLSearchParams(searchParams.toString());
-    if (id === "hypertrophy") next.delete("tab");
+    if (id === "3d") next.delete("tab");
     else next.set("tab", id);
     const query = next.toString();
     router.replace(query ? `/atlas?${query}` : "/atlas", { scroll: false });
@@ -90,9 +112,13 @@ function AtlasPageInner() {
           Tra cứu tương tác
         </span>
       </PageHeading>
-      <div className="tab-bar grid grid-cols-3" aria-label="Nội dung Atlas">
+      <div
+        className="tab-bar grid grid-cols-2 sm:grid-cols-4"
+        aria-label="Nội dung Atlas"
+      >
         {(
           [
+            { id: "3d", label: "Giải phẫu 3D", icon: "atlas" },
             { id: "hypertrophy", label: "Cơ bắp & bài tập", icon: "activity" },
             { id: "trigger_points", label: "Trigger Point", icon: "target" },
             { id: "clinical_rehab", label: "Phục hồi khớp", icon: "shield" },
@@ -112,8 +138,16 @@ function AtlasPageInner() {
       </div>
 
       <h2 className="sr-only">{TAB_COPY[atlasTab].title}</h2>
-      {atlasTab === "hypertrophy" ? (
-        <MuscleHypertrophyExplorer />
+      {atlasTab === "3d" ? (
+        <Atlas3DExplorer
+          initialArea={searchParams.get("area")}
+          initialStructure={searchParams.get("structure")}
+        />
+      ) : atlasTab === "hypertrophy" ? (
+        <MuscleHypertrophyExplorer
+          key={searchParams.get("muscle") ?? "default"}
+          initialMuscleId={searchParams.get("muscle")}
+        />
       ) : atlasTab === "trigger_points" ? (
         <TriggerPointExplorer
           initialMode={
