@@ -1,5 +1,53 @@
 import * as THREE from "three";
 import type { AtlasLayer, TissueKind } from "@/lib/clinical/atlas-3d";
+import type { StudyUniforms } from "./tissue-study-resources";
+
+const BASE_ROUGHNESS = {
+  bone: 0.66,
+  muscle: 0.48,
+  joint: 0.4,
+  cartilage: 0.4,
+  tendon: 0.4,
+  ligament: 0.4,
+  fat: 0.4,
+};
+const STUDY_ROUGHNESS = {
+  bone: 0.57,
+  muscle: 0.37,
+  joint: 0.36,
+  cartilage: 0.24,
+  tendon: 0.42,
+  ligament: 0.39,
+  fat: 0.38,
+};
+
+export function setTissueStudy(
+  material: THREE.MeshPhysicalMaterial,
+  kind: TissueKind,
+  enabled: boolean,
+) {
+  material.roughness = enabled ? STUDY_ROUGHNESS[kind] : BASE_ROUGHNESS[kind];
+  material.clearcoat = enabled
+    ? kind === "cartilage"
+      ? 0.22
+      : kind === "muscle"
+        ? 0.12
+        : 0.04
+    : 0;
+  material.clearcoatRoughness = 0.3;
+  material.envMapIntensity = enabled ? 0.65 : 0.55;
+}
+
+/** Artistic attenuation length (9 mm); not a measured optical property. */
+export function scatteringWeight(
+  thickness: number,
+  validity: number,
+  opacity: number,
+) {
+  return thickness > 0 && validity >= 0.999 && opacity >= 0.999
+    ? Math.exp(-thickness / 0.009)
+    : 0;
+}
 
 export const TISSUE_COLORS = {
   bone: 0xe3d9c3,
@@ -13,15 +61,22 @@ export const TISSUE_COLORS = {
 
 export function surfaceKind(name: string, fallback: AtlasLayer): TissueKind {
   const kind = name.replace(/^Kinesis_/, "");
-  return Object.hasOwn(TISSUE_COLORS, kind) ? kind as TissueKind : fallback;
+  return Object.hasOwn(TISSUE_COLORS, kind) ? (kind as TissueKind) : fallback;
 }
 
-export function setThicknessView(material: THREE.MeshPhysicalMaterial, enabled: boolean) {
+export function setThicknessView(
+  material: THREE.MeshPhysicalMaterial,
+  enabled: boolean,
+) {
   material.userData.thicknessUniform.value = enabled ? 1 : 0;
 }
 
 /** Cosmetic micro-roughness only. Does not add anatomical fibers or alter geometry. */
-export function createTissueMaterial(layer: TissueKind, hasThickness = false) {
+export function createTissueMaterial(
+  layer: TissueKind,
+  hasThickness = false,
+  study?: StudyUniforms,
+) {
   const material = new THREE.MeshPhysicalMaterial({
     color: TISSUE_COLORS[layer],
     metalness: 0,
@@ -46,6 +101,73 @@ export function createTissueMaterial(layer: TissueKind, hasThickness = false) {
         `#include <begin_vertex>\nvTissuePosition = position;
         ${hasThickness ? "vThickness = _thickness; vThicknessValid = _thickness_valid;" : ""}`,
       );
+    if (study) {
+      Object.assign(shader.uniforms, study);
+      shader.vertexShader = shader.vertexShader
+        .replace(
+          "#include <common>",
+          "#include <common>\nvarying vec3 vStudyPosition; varying vec3 vStudyNormal;",
+        )
+        .replace(
+          "#include <worldpos_vertex>",
+          `#include <worldpos_vertex>
+          vStudyPosition = (modelMatrix * vec4(transformed, 1.0)).xyz;
+          vStudyNormal = inverseTransformDirection(transformedNormal, viewMatrix);`,
+        );
+      shader.fragmentShader = shader.fragmentShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+          uniform float studyEnabled; uniform sampler2D studyAlbedo;
+          varying vec3 vStudyPosition; varying vec3 vStudyNormal;
+          vec3 studySurface(vec3 p, vec3 n) {
+            vec3 w = pow(abs(normalize(n)), vec3(6.0)); w /= max(w.x+w.y+w.z, 0.0001);
+            vec3 q = p / 0.03;
+            return texture2D(studyAlbedo, q.zy).rgb*w.x + texture2D(studyAlbedo, q.xy).rgb*w.z + texture2D(studyAlbedo, q.xz).rgb*w.y;
+          }
+        `,
+        )
+        .replace(
+          "#include <normal_fragment_maps>",
+          `#include <normal_fragment_maps>
+          if (studyEnabled > 0.5) {
+            vec3 surface = studySurface(vStudyPosition, vStudyNormal);
+            float h = dot(surface, vec3(.2126,.7152,.0722));
+            ${layer === "muscle" ? "diffuseColor.rgb = mix(diffuseColor.rgb, surface * 0.85, 0.7);" : ""}
+            roughnessFactor = clamp(roughnessFactor + (h-.15)*.16, .22, .8);
+            vec3 sx = dFdx(-vViewPosition), sy = dFdy(-vViewPosition);
+            vec3 r1 = cross(sy, normal), r2 = cross(normal, sx);
+            float det = dot(sx, r1);
+            vec3 grad = sign(det)*(dFdx(h)*r1+dFdy(h)*r2);
+            normal = normalize(abs(det)*normal - grad*0.00012);
+          }
+        `,
+        );
+      if (layer === "muscle" && hasThickness) {
+        shader.fragmentShader = shader.fragmentShader.replace(
+          "void main() {",
+          `
+          void studyScattering(const in IncidentLight light, const in vec3 n, const in vec3 viewDir, inout ReflectedLight reflected) {
+            if (studyEnabled > 0.5 && vThickness > 0.0 && vThicknessValid >= 0.999 && opacity >= 0.999) {
+              vec3 bentLight = normalize(light.direction + n * .25);
+              float backlight = pow(saturate(dot(viewDir, -bentLight)), 2.0);
+              float attenuation = exp(-vThickness / .009);
+              reflected.directDiffuse += vec3(.5,.055,.025) * light.color * attenuation * backlight * .55;
+            }
+          }
+          void main() {`,
+        );
+        const direct =
+          "RE_Direct( directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );";
+        shader.fragmentShader = shader.fragmentShader.replace(
+          "#include <lights_fragment_begin>",
+          THREE.ShaderChunk.lights_fragment_begin.replaceAll(
+            direct,
+            `${direct}\nstudyScattering(directLight, geometryNormal, geometryViewDir, reflectedLight);`,
+          ),
+        );
+      }
+    }
     shader.fragmentShader = shader.fragmentShader
       .replace(
         "#include <common>",
@@ -73,9 +195,10 @@ export function createTissueMaterial(layer: TissueKind, hasThickness = false) {
         diffuseColor.rgb *= 1.0 + grain * 0.035;
       `,
       );
-    if (hasThickness) shader.fragmentShader = shader.fragmentShader.replace(
-      "#include <opaque_fragment>",
-      `if (thicknessView > 0.5) {
+    if (hasThickness)
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <opaque_fragment>",
+        `if (thicknessView > 0.5) {
         float t = clamp(vThickness / 0.1, 0.0, 1.0);
         vec3 heat = t < 0.33 ? mix(vec3(0.035,0.15,0.65), vec3(0.02,0.75,0.85), t/0.33)
           : t < 0.66 ? mix(vec3(0.02,0.75,0.85), vec3(1.0,0.55,0.035), (t-0.33)/0.33)
@@ -83,9 +206,10 @@ export function createTissueMaterial(layer: TissueKind, hasThickness = false) {
         outgoingLight = vThicknessValid < 0.999 ? vec3(0.38) : heat;
       }
       #include <opaque_fragment>`,
-    );
+      );
   };
-  material.customProgramCacheKey = () => `kinesis-tissue-grain-v2-${hasThickness}`;
+  material.customProgramCacheKey = () =>
+    `kinesis-tissue-grain-v3-${hasThickness}-${study ? layer : "base"}`;
   return material;
 }
 

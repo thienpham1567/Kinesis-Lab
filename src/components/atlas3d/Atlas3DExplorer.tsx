@@ -19,6 +19,9 @@ import {
 import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import type { RenderQuality } from "./render-policy";
 import type { CameraCommand } from "./types";
+import HipMaterialStudyControls from "./HipMaterialStudyControls";
+import { HIP_STUDY_SAMPLES, type HipStudySample } from "./hip-material-policy";
+import type { StudyStatus } from "./tissue-study-resources";
 
 const Atlas3DCanvas = dynamic(() => import("./Atlas3DCanvas"), {
   ssr: false,
@@ -78,6 +81,9 @@ export default function Atlas3DExplorer({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [thicknessId, setThicknessId] = useState<string | null>(null);
   const [quality, setQuality] = useState<RenderQuality>("auto");
+  const [materialStudy, setMaterialStudy] = useState(false);
+  const [studyStatus, setStudyStatus] = useState<StudyStatus>("idle");
+  const [studyRetry, setStudyRetry] = useState(0);
   const [muscleOpacity, setMuscleOpacity] = useState(1);
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState(80);
@@ -107,6 +113,8 @@ export default function Atlas3DExplorer({
         setArea(nextArea);
         setSelectedId(initial?.id ?? null);
         setThicknessId(null);
+        setMaterialStudy(false);
+        setStudyStatus("idle");
         setHiddenIds(new Set());
         setIsolatedId(null);
         setLayers({
@@ -156,7 +164,7 @@ export default function Atlas3DExplorer({
     const structure = manifest?.structures.find((entry) => entry.id === id);
     if (!structure) return;
     setSelectedId(id);
-    setThicknessId((current) => current === id ? current : null);
+    setThicknessId((current) => (current === id ? current : null));
     setLayers((current) => ({ ...current, [structure.layer]: true }));
     setHiddenIds((current) => {
       const next = new Set(current);
@@ -172,6 +180,8 @@ export default function Atlas3DExplorer({
     setArea(nextArea);
     setSelectedId(null);
     setThicknessId(null);
+    setMaterialStudy(false);
+    setStudyStatus("idle");
     setHiddenIds(new Set());
     setIsolatedId(null);
     setQuery("");
@@ -185,6 +195,28 @@ export default function Atlas3DExplorer({
     setLayers(DEFAULT_LAYERS);
     setHiddenIds(new Set());
     setIsolatedId(null);
+  }
+
+  function openStudySample(sample: HipStudySample) {
+    const preset = HIP_STUDY_SAMPLES[sample];
+    const ids: ReadonlySet<string> = new Set(preset.ids);
+    setMaterialStudy(true);
+    setThicknessId(null);
+    setSelectedId(preset.selectedId);
+    setLayers({ bone: true, muscle: true, joint: true });
+    setHiddenIds(
+      new Set(
+        (manifest?.structures ?? [])
+          .filter((s) => !ids.has(s.id))
+          .map((s) => s.id),
+      ),
+    );
+    setIsolatedId(sample === "muscle" ? preset.selectedId : null);
+    setMuscleOpacity(1);
+    setQuery(sample === "muscle" ? "Cơ mông nhỡ" : "");
+    setShareStatus("");
+    setManualShareUrl("");
+    sendCommand(sample === "muscle" ? "muscle" : "hip");
   }
 
   async function shareSelection() {
@@ -369,6 +401,16 @@ export default function Atlas3DExplorer({
         </div>
       </div>
 
+      {area === "hip" && (
+        <HipMaterialStudyControls
+          enabled={materialStudy}
+          status={studyStatus}
+          onEnabled={setMaterialStudy}
+          onSample={openStudySample}
+          onRetry={() => setStudyRetry((value) => value + 1)}
+        />
+      )}
+
       <div className="grid min-w-0 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="panel min-w-0 overflow-hidden">
           <div className="relative min-h-[480px] bg-surface sm:min-h-[620px]">
@@ -380,6 +422,9 @@ export default function Atlas3DExplorer({
               isolatedId={isolatedId}
               selectedId={selectedId}
               thicknessId={thicknessId}
+              materialStudy={area === "hip" && materialStudy}
+              studyRetry={studyRetry}
+              onStudyStatus={setStudyStatus}
               muscleOpacity={muscleOpacity}
               quality={quality}
               command={command}
@@ -387,10 +432,21 @@ export default function Atlas3DExplorer({
             />
             {thicknessId && selectedVisible && (
               <div className="absolute inset-x-3 bottom-3 rounded-lg border border-rule bg-sheet/95 p-3 text-xs text-ink">
-                <p className="font-semibold">Độ dày ước lượng · cấu trúc đã chọn</p>
-                <div className="mt-2 h-2 rounded-full bg-[linear-gradient(to_right,#0946d2,#05dfe9,#ffbd34,#d12b27)]" aria-hidden="true" />
-                <div className="mt-1 flex justify-between font-mono text-[10px]"><span>0 mm</span><span>50 mm</span><span>100+ mm</span></div>
-                <p className="mt-1 text-[10px] text-slate">Thang màu định tính · Xám: chưa tính được</p>
+                <p className="font-semibold">
+                  Độ dày ước lượng · cấu trúc đã chọn
+                </p>
+                <div
+                  className="mt-2 h-2 rounded-full bg-[linear-gradient(to_right,#0946d2,#05dfe9,#ffbd34,#d12b27)]"
+                  aria-hidden="true"
+                />
+                <div className="mt-1 flex justify-between font-mono text-[10px]">
+                  <span>0 mm</span>
+                  <span>50 mm</span>
+                  <span>100+ mm</span>
+                </div>
+                <p className="mt-1 text-[10px] text-slate">
+                  Thang màu định tính · Xám: chưa tính được
+                </p>
               </div>
             )}
             {visibleCount === 0 && (
@@ -601,32 +657,67 @@ export default function Atlas3DExplorer({
                 </div>
                 {selected.surfaces && (
                   <div className="border-t border-rule pt-3">
-                    <p className="text-xs font-semibold text-ink">Vùng vật liệu từ mô hình gốc</p>
+                    <p className="text-xs font-semibold text-ink">
+                      Vùng vật liệu từ mô hình gốc
+                    </p>
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {selected.surfaces.map((surface) => (
-                        <span key={surface.kind} className="badge bg-surface text-slate">{TISSUE_LABELS[surface.kind]}</span>
+                        <span
+                          key={surface.kind}
+                          className="badge bg-surface text-slate"
+                        >
+                          {TISSUE_LABELS[surface.kind]}
+                        </span>
                       ))}
                     </div>
                   </div>
                 )}
                 <div className="border-t border-rule pt-3">
-                  <p className="text-xs font-semibold text-ink">Độ dày ước lượng từ hình học</p>
+                  <p className="text-xs font-semibold text-ink">
+                    Độ dày ước lượng từ hình học
+                  </p>
                   {selected.thickness ? (
                     <>
                       <p className="mt-2 text-xs leading-5 text-slate">
-                        Trung vị {thicknessMillimeters(selected.thickness.p50)} mm · Khoảng {thicknessMillimeters(selected.thickness.min)}–{thicknessMillimeters(selected.thickness.max)} mm.
-                        {" "}Tính được {(selected.thickness.validVertices / selected.thickness.vertices * 100).toFixed(1)}% đỉnh lưới.
+                        Trung vị {thicknessMillimeters(selected.thickness.p50)}{" "}
+                        mm · Khoảng{" "}
+                        {thicknessMillimeters(selected.thickness.min)}–
+                        {thicknessMillimeters(selected.thickness.max)} mm. Tính
+                        được{" "}
+                        {(
+                          (selected.thickness.validVertices /
+                            selected.thickness.vertices) *
+                          100
+                        ).toFixed(1)}
+                        % đỉnh lưới.
                       </p>
-                      <button type="button" className="button-secondary mt-3 w-full"
-                        disabled={!selectedVisible && thicknessId !== selected.id}
+                      <button
+                        type="button"
+                        className="button-secondary mt-3 w-full"
+                        disabled={
+                          !selectedVisible && thicknessId !== selected.id
+                        }
                         aria-pressed={thicknessId === selected.id}
-                        onClick={() => setThicknessId((current) => current === selected.id ? null : selected.id)}>
-                        {thicknessId === selected.id ? "Tắt bản đồ độ dày" : "Xem bản đồ độ dày"}
+                        onClick={() =>
+                          setThicknessId((current) =>
+                            current === selected.id ? null : selected.id,
+                          )
+                        }
+                      >
+                        {thicknessId === selected.id
+                          ? "Tắt bản đồ độ dày"
+                          : "Xem bản đồ độ dày"}
                       </button>
-                      <p className="mt-2 text-[11px] leading-5 text-slate">Ước lượng khoảng cách đến mặt đối diện của lưới 3D. Không phải số đo mô thật; không thể hiện bề dày lớp sụn hay gân riêng.</p>
+                      <p className="mt-2 text-[11px] leading-5 text-slate">
+                        Ước lượng khoảng cách đến mặt đối diện của lưới 3D.
+                        Không phải số đo mô thật; không thể hiện bề dày lớp sụn
+                        hay gân riêng.
+                      </p>
                     </>
                   ) : (
-                    <p className="mt-2 text-xs leading-5 text-slate">Chưa có bản đồ cho cấu trúc này. Hiện có 10 mẫu vùng hông.</p>
+                    <p className="mt-2 text-xs leading-5 text-slate">
+                      Chưa có bản đồ cho cấu trúc này. Hiện có 10 mẫu vùng hông.
+                    </p>
                   )}
                 </div>
                 {region && (

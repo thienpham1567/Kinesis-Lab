@@ -9,7 +9,10 @@ import {
   setTissueOpacity,
   surfaceKind,
   setThicknessView,
+  setTissueStudy,
 } from "./tissue-materials";
+import { isHipStudyStructure, HIP_STUDY_SAMPLES } from "./hip-material-policy";
+import { TissueStudyResources } from "./tissue-study-resources";
 import { resolveRenderQuality, shouldUseOcclusion } from "./render-policy";
 import { isStructureVisible } from "@/lib/clinical/atlas-3d";
 import type { AtlasCanvasProps, CameraCommand } from "./types";
@@ -48,6 +51,12 @@ export class AtlasStage {
   private url = "";
   private pointer: { x: number; y: number; id: number } | null = null;
   private dragged = false;
+  private studyRetry = 0;
+  private study = new TissueStudyResources((status) => {
+    if (this.disposed) return;
+    this.props.onStudyStatus(status);
+    this.update(this.props);
+  });
 
   constructor(
     private host: HTMLElement,
@@ -107,7 +116,15 @@ export class AtlasStage {
     this.render();
   };
   private render = () => {
-    if (!this.disposed) this.studio.render();
+    if (!this.disposed) {
+      this.studio.render();
+      this.renderer.domElement.dataset.view = [
+        ...this.camera.position.toArray(),
+        ...this.controls.target.toArray(),
+      ]
+        .map((value) => value.toFixed(6))
+        .join(",");
+    }
   };
   private pointerDown = (event: PointerEvent) => {
     if (!event.isPrimary || event.button !== 0) {
@@ -174,6 +191,27 @@ export class AtlasStage {
 
   update(props: AtlasCanvasProps) {
     this.props = props;
+    this.study.setEnabled(
+      props.materialStudy &&
+        props.structures.some(
+          (structure) =>
+            this.meshes.has(structure.id) &&
+            isHipStudyStructure(structure.id) &&
+            isStructureVisible(
+              structure,
+              props.layers,
+              props.hiddenIds,
+              props.isolatedId,
+            ),
+        ),
+    );
+    if (props.studyRetry !== this.studyRetry) {
+      this.studyRetry = props.studyRetry;
+      this.study.retry();
+    }
+    const studyActive = this.study.uniforms.studyEnabled.value === 1;
+    this.renderer.domElement.dataset.materialStudy = this.study.status;
+    this.renderer.domElement.dataset.studyApplied = String(studyActive);
     const metadata = new Map(
       props.structures.map((structure) => [structure.id, structure]),
     );
@@ -192,6 +230,11 @@ export class AtlasStage {
             props.isolatedId,
           );
         const opacity = structure?.layer === "muscle" ? props.muscleOpacity : 1;
+        setTissueStudy(
+          mesh.material,
+          mesh.userData.tissueKind,
+          studyActive && isHipStudyStructure(id),
+        );
         setTissueOpacity(mesh.material, opacity);
         mesh.castShadow = opacity === 1;
         mesh.receiveShadow = opacity === 1;
@@ -255,9 +298,12 @@ export class AtlasStage {
       const mesh = object as Mesh;
       sourceMaterials.add(mesh.material);
       const kind = surfaceKind(mesh.material.name, metadata.get(id)!.layer);
-      mesh.material = createTissueMaterial(kind,
+      mesh.material = createTissueMaterial(
+        kind,
         !!mesh.geometry.getAttribute("_thickness") &&
-        !!mesh.geometry.getAttribute("_thickness_valid"));
+          !!mesh.geometry.getAttribute("_thickness_valid"),
+        isHipStudyStructure(id) ? this.study.uniforms : undefined,
+      );
       mesh.userData.structureId = id;
       mesh.userData.tissueKind = kind;
       this.meshes.set(id, [...(this.meshes.get(id) ?? []), mesh]);
@@ -273,7 +319,16 @@ export class AtlasStage {
   command(command: CameraCommand) {
     if (!this.root) return;
     const box = new THREE.Box3();
-    if (command.type === "focus" && this.props.selectedId) {
+    if (command.type === "hip") {
+      for (const mesh of this.meshes.get(HIP_STUDY_SAMPLES.joint.selectedId) ??
+        [])
+        box.expandByObject(mesh);
+      // Contextual camera framing only: no source geometry is clipped or cut.
+      if (!box.isEmpty()) box.expandByScalar(0.09);
+    } else if (
+      (command.type === "focus" || command.type === "muscle") &&
+      this.props.selectedId
+    ) {
       for (const mesh of this.meshes.get(this.props.selectedId) ?? [])
         box.expandByObject(mesh);
     } else {
@@ -297,6 +352,7 @@ export class AtlasStage {
     if (command.type === "back") direction.set(0, 0, -1);
     if (command.type === "left") direction.set(1, 0, 0);
     if (command.type === "right") direction.set(-1, 0, 0);
+    if (command.type === "hip") direction.set(1, 0.15, -0.15).normalize();
     if (command.type === "focus")
       direction
         .copy(this.camera.position)
@@ -319,6 +375,7 @@ export class AtlasStage {
     this.coarsePointer.removeEventListener("change", this.resize);
     this.controls.dispose();
     this.decoder.dispose();
+    this.study.dispose();
     const canvas = this.renderer.domElement;
     canvas.removeEventListener("pointerdown", this.pointerDown);
     canvas.removeEventListener("pointermove", this.pointerMove);

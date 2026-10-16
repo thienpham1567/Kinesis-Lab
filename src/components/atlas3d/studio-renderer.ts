@@ -20,6 +20,7 @@ export class StudioRenderer {
   private width = 1;
   private height = 1;
   private allowAO = true;
+  private renderTimings: number[] = [];
 
   constructor(
     private renderer: THREE.WebGLRenderer,
@@ -32,6 +33,7 @@ export class StudioRenderer {
     renderer.toneMappingExposure = 1;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.shadowMap.autoUpdate = false;
+    renderer.info.autoReset = false;
     const room = new RoomEnvironment();
     const pmrem = new THREE.PMREMGenerator(renderer);
     this.environment = pmrem.fromScene(room, 0.04);
@@ -144,8 +146,20 @@ export class StudioRenderer {
   }
 
   render() {
+    const started = performance.now();
+    this.renderer.info.reset();
     if (this.quality === "detailed" && this.composer) this.composer.render();
     else this.renderer.render(this.scene, this.camera);
+    this.renderTimings.push(performance.now() - started);
+    this.renderTimings = this.renderTimings.slice(-32);
+    const stats = this.renderer.domElement.dataset;
+    // CPU submission timing and resource counts; not GPU time or a frame-rate claim.
+    const sorted = [...this.renderTimings].sort((a, b) => a - b);
+    stats.renderMs = sorted[Math.floor(sorted.length / 2)].toFixed(2);
+    stats.renderSamples = String(sorted.length);
+    stats.renderCalls = String(this.renderer.info.render.calls);
+    stats.renderTriangles = String(this.renderer.info.render.triangles);
+    stats.renderTextures = String(this.renderer.info.memory.textures);
     this.renderer.domElement.dataset.renderQuality = this.quality;
     this.renderer.domElement.dataset.occlusion = String(
       this.quality === "detailed" && this.allowAO,

@@ -28,7 +28,7 @@ Kinesis Lab renders the source meshes with tissue-specific PBR colors/roughness,
 
 Ten audited closed meshes (left/right acetabular labrum, femur, hip bone, gluteus maximus and gluteus medius) include custom scalar vertex attributes `_THICKNESS` and `_THICKNESS_VALID`. The method `inward-normal-cone-median-v1` casts five rays around each inward vertex normal, takes the median projected exit distance, and accepts at least three exits. Values use source world coordinates in metres (source scene scale length 1). Open/non-manifold meshes and coverage below 95% are rejected. Invalid vertices carry zero value plus zero validity; they are not filled. Metadata statistics exclude invalid samples. Coverage is 99.94–100% for these ten meshes.
 
-The optional heatmap uses a fixed qualitative 0–100+ mm scale, with invalid/interpolated invalid areas shown gray. This estimates distance across the whole mesh, not cortical bone thickness or individual cartilage/tendon layer thickness. It is neither measured tissue data nor optical/clinical calibration, and is not currently used as an optical subsurface scattering input. The method is sensitive to mesh shape, normals and concavity. No photographic tissue maps are added. Implementation and synthetic checks are in `scripts/z_anatomy_surfaces.py` and `scripts/check_thickness_bake.py`.
+The optional heatmap uses a fixed qualitative 0–100+ mm scale, with invalid/interpolated invalid areas shown gray. This estimates distance across the whole mesh, not cortical bone thickness or individual cartilage/tendon layer thickness. It is neither measured tissue data nor optical/clinical calibration, The optional simulated hip material study uses this estimate for an artistic backlighting approximation, not calibrated optical subsurface scattering. The method is sensitive to mesh shape, normals and concavity. No photographic tissue maps are added. Implementation and synthetic checks are in `scripts/z_anatomy_surfaces.py` and `scripts/check_thickness_bake.py`.
 
 ## Scope and limitations
 
@@ -51,3 +51,13 @@ blender --background --factory-startup --disable-autoexec .data/z-anatomy/Startu
 ```
 
 Copy the upstream license to `SOURCE-LICENSE.txt` and the decoder files from `node_modules/three/examples/jsm/libs/draco/gltf/` to `draco/`, preserving the notices. The source `.blend` is not needed by the browser.
+
+## Simulated hip material study (2026-10-16)
+
+Eight eligible bilateral structures (gluteus medius, femur, hip bone and acetabular labrum) have an optional Original/Simulated material comparison. Both use the same studio lights, background and camera. The study preserves geometry and source tissue assignments.
+
+`textures/muscle-simulated-v1.webp` is an AI-generated, unlit illustrative albedo tile, not a human tissue photograph. It was generated for Kinesis Lab and optimized to 1024×1024 WebP (217,952 bytes). Origin, prompt, hash and processing are recorded in [textures/PROVENANCE.json](./textures/PROVENANCE.json). Included illustrative asset distribution: CC BY-SA 4.0; this is not a claim of exclusive copyright in an AI-generated image. No third-party meat/food asset was incorporated. Triplanar sampling uses a nominal 30 mm art scale; mirrored repetition hides mismatched image edges. Apparent fine striations are cosmetic and do not represent validated muscle fiber directions. Bump and roughness variation are inferred from the illustration, not scanned material channels.
+
+Muscle-only backlighting follows the technique illustrated by the installed Three.js SubsurfaceScatteringShader (MIT), using the existing per-vertex thickness/validity. The 9 mm attenuation length, color, distortion and strength are art settings. Invalid/zero thickness and transparent muscle suppress this contribution. Heatmap output takes priority. This is a real-time translucency approximation; no measured optical coefficients or tissue-specific scattering validation is claimed. Tendon, cartilage and bone retain separate surface profiles without this muscle scattering term.
+
+Gross-shape reference comparison: OpenStax Anatomy and Physiology 2e [11.6](https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs) and [9.6](https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints). Reference links do not certify the source mesh or synthetic texture; no OpenStax image is redistributed by this study.

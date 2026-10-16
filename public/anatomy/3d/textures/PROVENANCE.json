@@ -1,0 +1,18 @@
+{
+  "asset": "muscle-simulated-v1.webp",
+  "origin": "AI-generated synthetic illustration via built-in imagegen, 2026-10-16",
+  "purpose": "Artistic muscle albedo for explicitly labeled simulated hip material study",
+  "photographic": false,
+  "measuredAnatomicalData": false,
+  "fiberOrientationValidated": false,
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "bytes": 217952,
+  "sha256": "d790dd1a71fe8b6e317a8a0bba73949bcd76e946438c31e48ada73cffd7e641a",
+  "generationSource": "exec-e6e499b8-ec03-4743-8600-fc4089b484c1.png",
+  "processing": "Resized to 1024 square and encoded WebP quality 88 with sharp; mirrored repeat prevents unmatched tile edges",
+  "prompt": "Seamless tileable unlit muscle albedo, deep muted oxblood/burgundy, subtle fine organic grain and vertical irregular striations, sparse pale connective flecks, complete tile about 30mm, restrained contrast, no directional light/shadows/gloss baked in, no macroscopic veins or anatomical structures. Explicitly a synthetic art texture, not a photograph or measured anatomical/fiber map.",
+  "distribution": "Included as Kinesis Lab illustrative asset under CC BY-SA 4.0 for this project; no claim that AI-generated material carries exclusive copyright."
+}
