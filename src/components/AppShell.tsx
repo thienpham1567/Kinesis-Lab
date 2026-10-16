@@ -34,6 +34,13 @@ const NAV: {
     description: "Theo dõi & sàng lọc",
   },
   {
+    href: "/movement",
+    label: "Sổ tay vận động",
+    short: "Sổ tay",
+    icon: "activity",
+    description: "4 nền tảng đánh giá",
+  },
+  {
     href: "/knowledge",
     label: "Thư viện y văn",
     short: "Y văn",
