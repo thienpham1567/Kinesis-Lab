@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     const record = {
       id: `b-${crypto.randomUUID().slice(0, 8)}`,
       client_id: body.client_id,
-      kind: body.kind as "blood_lab" | "inbody",
+      kind: body.kind as "blood_lab" | "inbody" | "rom",
       recorded_at: body.recorded_at ?? new Date().toISOString().slice(0, 10),
       metrics: body.metrics ?? {},
       ai_summary: body.ai_summary ?? null,
