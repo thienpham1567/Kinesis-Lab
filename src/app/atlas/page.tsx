@@ -43,14 +43,11 @@ export default function AtlasPage() {
 function AtlasPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [atlasTab, setAtlasTab] = useState<AtlasTab>(() =>
-    parseAtlasTab(searchParams.get("tab")),
-  );
+  const atlasTab = parseAtlasTab(searchParams.get("tab"));
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string>("");
 
   function selectTab(id: AtlasTab) {
-    setAtlasTab(id);
     const next = new URLSearchParams(searchParams.toString());
     if (id === "hypertrophy") next.delete("tab");
     else next.set("tab", id);

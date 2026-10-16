@@ -35,6 +35,15 @@ export interface CompensationFix {
   ptCorrection: string;
 }
 
+export interface MuscleAnatomyPlate {
+  src: string;
+  title: string;
+  credit: string;
+  label: string;
+  description: string;
+  sourceUrl: string;
+}
+
 export interface MuscleGroupAtlas {
   id: MuscleGroupId;
   name: string;
@@ -46,6 +55,10 @@ export interface MuscleGroupAtlas {
   plateSrc: string;
   plateTitle: string;
   plateCredit: string;
+  plateLabel?: string;
+  plateDescription?: string;
+  plateSourceUrl?: string;
+  additionalPlates?: MuscleAnatomyPlate[];
   references: ScientificReference[];
   subdivisions: MuscleSubdivision[];
   compensationFixes: CompensationFix[];
@@ -656,10 +669,33 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
       "Nhóm cơ sinh lực lớn nhất cơ thể. Cơ Mông lớn (Gluteus Maximus) tạo độ tròn đầy mặt sau và duỗi háng mạnh mẽ; Cơ Mông nhỡ & Mông bé (Gluteus Medius/Minimus) nằm ở mặt bên trên khung chậu (Upper Shelf), quyết định độ tròn phần mông trên và giữ khung chậu không bị sập khi đứng 1 chân.",
     hypertrophyScience:
       "Nghiên cứu của Plotkin et al. (2023) và Kubo et al. (2019) chỉ ra Cơ Mông lớn đạt cánh tay đòn duỗi háng lớn nhất ở Đỉnh co rút (0° Hip Extension — bài Hip Thrust), nhưng lại chịu sức căng cơ học kéo giãn (Stretch-mediated hypertrophy) cực lớn ở đáy các bài Squat sâu / Bulgarian Split Squat và RDL. Kết hợp cả 2 nhóm bài mang lại kết quả tối ưu nhất.",
-    plateSrc: "/anatomy/hip-gluteal.jpg",
-    plateTitle:
-      "OpenStax Fig 11.22 — Giải phẫu Bóc tách Cơ Mông Lớn (Maximus), Mông Nhỡ (Medius), Mông Bé & Cơ Hình Lê",
-    plateCredit: "OpenStax Anatomy & Physiology 2e (Rice University, CC BY 4.0)",
+    plateSrc: "/anatomy/glute-superficial-sobotta-1909.png",
+    plateTitle: "Sobotta 1909 — Cơ mông lớn nguyên vẹn và cân vùng mông",
+    plateCredit: "Johannes Sobotta, Atlas and Text-book of Human Anatomy (1909), hình 294 — Public domain",
+    plateLabel: "Lớp nông — Mông lớn",
+    plateDescription:
+      "Nhìn sau-bên: cơ mông lớn còn nguyên, thấy hướng thớ cơ và liên hệ với dải chậu–chày. Phần trên cơ mông nhỡ được ghi nhãn cùng cân mông; cơ mông bé nằm sâu nên không thấy ở hình này. Nhãn gốc dùng thuật ngữ Latin cổ Glutaeus.",
+    plateSourceUrl: "https://commons.wikimedia.org/wiki/File:Sobo_1909_294.png",
+    additionalPlates: [
+      {
+        src: "/anatomy/glute-medius-sobotta-1909.png",
+        title: "Sobotta 1909 — Cơ mông nhỡ và các cơ xoay ngoài sâu",
+        credit: "Johannes Sobotta, Atlas and Text-book of Human Anatomy (1909), hình 295 — Public domain",
+        label: "Lớp trung gian — Mông nhỡ",
+        description:
+          "Cơ mông lớn đã cắt và lật để lộ cơ mông nhỡ, cơ hình lê, cơ sinh đôi, gân cơ bịt trong và cơ vuông đùi. Cơ mông bé vẫn nằm sâu dưới cơ mông nhỡ.",
+        sourceUrl: "https://commons.wikimedia.org/wiki/File:Sobo_1909_295.png",
+      },
+      {
+        src: "/anatomy/glute-deep-openstax.jpg",
+        title: "OpenStax — Cơ mông bé và lớp sâu vùng hông–đùi",
+        credit: "OpenStax, Anatomy & Physiology, hình 1122 (bản gốc 2013) — CC BY 4.0",
+        label: "Lớp sâu — Mông bé",
+        description:
+          "Xem panel dưới bên phải: cơ mông lớn và mông nhỡ đã cắt (cut) để lộ cơ mông bé và cơ hình lê. Hai panel còn lại là mặt trước vùng chậu–đùi.",
+        sourceUrl: "https://commons.wikimedia.org/wiki/File:1122_Gluteal_Muscles_that_Move_the_Femur.jpg",
+      },
+    ],
     references: [
       {
         title: "Plotkin et al. (2023) — Hip Thrust vs. Back Squat Effects on Gluteus Maximus Hypertrophy",

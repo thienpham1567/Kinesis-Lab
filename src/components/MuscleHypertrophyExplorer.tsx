@@ -291,6 +291,7 @@ export function MuscleHypertrophyExplorer() {
   >("all");
   const [hoveredZone, setHoveredZone] = useState<MyologyZone | null>(null);
   const [zoomedPlate, setZoomedPlate] = useState(false);
+  const [selectedPlateIndex, setSelectedPlateIndex] = useState(0);
   const [bodySide, setBodySide] = useState<"both" | "anterior" | "posterior">("both");
 
   useEffect(() => {
@@ -305,6 +306,18 @@ export function MuscleHypertrophyExplorer() {
   const activeMuscle =
     MUSCLE_GROUP_ATLAS.find((m) => m.id === selectedMuscleId) ??
     MUSCLE_GROUP_ATLAS[0];
+  const musclePlates = [
+    {
+      src: activeMuscle.plateSrc,
+      title: activeMuscle.plateTitle,
+      credit: activeMuscle.plateCredit,
+      label: activeMuscle.plateLabel,
+      description: activeMuscle.plateDescription,
+      sourceUrl: activeMuscle.plateSourceUrl,
+    },
+    ...(activeMuscle.additionalPlates ?? []),
+  ];
+  const activePlate = musclePlates[selectedPlateIndex] ?? musclePlates[0];
   const activeExercise =
     HYPERTROPHY_EXERCISES.find((e) => e.id === selectedExerciseId) ??
     HYPERTROPHY_EXERCISES[0];
@@ -315,6 +328,46 @@ export function MuscleHypertrophyExplorer() {
   const filteredExercises = HYPERTROPHY_EXERCISES.filter(
     (e) => patternFilter === "all" || e.pattern === patternFilter,
   );
+
+  function selectMuscle(id: MuscleGroupId) {
+    const muscle = MUSCLE_GROUP_ATLAS.find((m) => m.id === id);
+    if (!muscle) return;
+    if (categoryFilter !== "all" && categoryFilter !== muscle.category) {
+      setCategoryFilter("all");
+    }
+    setSelectedMuscleId(id);
+    setSelectedPlateIndex(0);
+    setLookupMode("muscle_to_ex");
+  }
+
+  function selectExercise(id: string) {
+    const exercise = HYPERTROPHY_EXERCISES.find((e) => e.id === id);
+    if (!exercise) return;
+    if (patternFilter !== "all" && patternFilter !== exercise.pattern) {
+      setPatternFilter("all");
+    }
+    setSelectedExerciseId(id);
+    setLookupMode("ex_to_muscle");
+  }
+
+  function selectCategoryFilter(category: typeof categoryFilter) {
+    setCategoryFilter(category);
+    if (category !== "all" && activeMuscle.category !== category) {
+      const firstMuscle = MUSCLE_GROUP_ATLAS.find((m) => m.category === category);
+      if (firstMuscle) {
+        setSelectedMuscleId(firstMuscle.id);
+        setSelectedPlateIndex(0);
+      }
+    }
+  }
+
+  function selectPatternFilter(pattern: typeof patternFilter) {
+    setPatternFilter(pattern);
+    if (pattern !== "all" && activeExercise.pattern !== pattern) {
+      const firstExercise = HYPERTROPHY_EXERCISES.find((e) => e.pattern === pattern);
+      if (firstExercise) setSelectedExerciseId(firstExercise.id);
+    }
+  }
 
   const muscleExercises = HYPERTROPHY_EXERCISES.map((ex) => {
     const match = ex.targets.find((t) => t.muscleId === activeMuscle.id);
@@ -418,10 +471,7 @@ export function MuscleHypertrophyExplorer() {
                   className="cursor-pointer transition-all duration-150"
                   onMouseEnter={() => setHoveredZone(z)}
                   onMouseLeave={() => setHoveredZone(null)}
-                  onClick={() => {
-                    setSelectedMuscleId(z.muscleId);
-                    setLookupMode("muscle_to_ex");
-                  }}
+                  onClick={() => selectMuscle(z.muscleId)}
                 />
               );
             })}
@@ -450,10 +500,7 @@ export function MuscleHypertrophyExplorer() {
                   className="cursor-pointer"
                   onMouseEnter={() => setHoveredZone(z)}
                   onMouseLeave={() => setHoveredZone(null)}
-                  onClick={() => {
-                    setSelectedMuscleId(z.muscleId);
-                    setLookupMode("muscle_to_ex");
-                  }}
+                  onClick={() => selectMuscle(z.muscleId)}
                 >
                   {isActive && (
                     <circle
@@ -538,7 +585,7 @@ export function MuscleHypertrophyExplorer() {
               <button
                 key={cat}
                 type="button"
-                onClick={() => setCategoryFilter(cat)}
+                onClick={() => selectCategoryFilter(cat)}
                 className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                   categoryFilter === cat
                     ? "bg-cobalt-soft text-cobalt"
@@ -557,7 +604,7 @@ export function MuscleHypertrophyExplorer() {
               <button
                 key={pat}
                 type="button"
-                onClick={() => setPatternFilter(pat)}
+                onClick={() => selectPatternFilter(pat)}
                 className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                   patternFilter === pat
                     ? "bg-crimson-soft text-crimson"
@@ -579,7 +626,7 @@ export function MuscleHypertrophyExplorer() {
               <button
                 key={m.id}
                 type="button"
-                onClick={() => setSelectedMuscleId(m.id)}
+                onClick={() => selectMuscle(m.id)}
                 className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                   isSelected
                     ? "border-cobalt bg-cobalt text-white"
@@ -699,10 +746,7 @@ export function MuscleHypertrophyExplorer() {
                       <button
                         key={t.muscleId}
                         type="button"
-                        onClick={() => {
-                          setSelectedMuscleId(t.muscleId);
-                          setLookupMode("muscle_to_ex");
-                        }}
+                        onClick={() => selectMuscle(t.muscleId)}
                         className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-[11px] font-bold transition-opacity hover:opacity-90 ${chipCls}`}
                       >
                         <span className="font-mono">{t.activationPct}%</span>
@@ -750,7 +794,7 @@ export function MuscleHypertrophyExplorer() {
                       <button
                         key={ex.id}
                         type="button"
-                        onClick={() => setSelectedExerciseId(ex.id)}
+                        onClick={() => selectExercise(ex.id)}
                         className={`flex items-center justify-between rounded border px-2.5 py-1.5 text-left text-xs transition-colors ${
                           isSelected
                             ? "border-crimson bg-crimson-soft/70 font-semibold text-crimson"
@@ -835,15 +879,15 @@ export function MuscleHypertrophyExplorer() {
                 )}
               </div>
 
-              {/* OpenStax Medical Dissection Plate for this Muscle Group */}
+              {/* Textbook anatomy plates, with explicit dissection layers. */}
               <div className="rounded-lg border border-rule bg-surface/50 p-4">
                 <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-cobalt">
-                      BẢN VẼ BÓC TÁCH CƠ HỌC CHUẨN GIÁO TRÌNH
+                      HÌNH GIẢI PHẪU
                     </span>
                     <h3 className="font-display text-sm font-bold text-ink">
-                      {activeMuscle.plateTitle}
+                      {activePlate.title}
                     </h3>
                   </div>
                   <button
@@ -854,20 +898,54 @@ export function MuscleHypertrophyExplorer() {
                     Phóng to hình giải phẫu ⤢
                   </button>
                 </div>
+                {musclePlates.length > 1 && (
+                  <div className="mb-3 flex flex-wrap gap-2" aria-label="Lớp giải phẫu">
+                    {musclePlates.map((plate, index) => (
+                      <button
+                        key={plate.src}
+                        type="button"
+                        aria-pressed={selectedPlateIndex === index}
+                        onClick={() => setSelectedPlateIndex(index)}
+                        className={`rounded-md border px-3 py-1.5 text-xs font-semibold ${
+                          selectedPlateIndex === index
+                            ? "border-cobalt bg-cobalt-soft text-cobalt"
+                            : "border-rule bg-sheet text-slate hover:text-ink"
+                        }`}
+                      >
+                        {plate.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {activePlate.description && (
+                  <p className="mb-3 text-xs leading-relaxed text-slate">
+                    {activePlate.description}
+                  </p>
+                )}
                 <div
                   onClick={() => setZoomedPlate(true)}
                   className="flex cursor-zoom-in items-center justify-center rounded-md border border-rule bg-white p-3"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={activeMuscle.plateSrc}
-                    alt={activeMuscle.plateTitle}
+                    src={activePlate.src}
+                    alt={activePlate.title}
                     className="max-h-[340px] w-auto object-contain"
                   />
                 </div>
                 <p className="mt-1.5 text-[11px] text-slate">
                   Nguồn:{" "}
-                  <strong className="text-ink">{activeMuscle.plateCredit}</strong>
+                  <strong className="text-ink">{activePlate.credit}</strong>
+                  {activePlate.sourceUrl && (
+                    <a
+                      href={activePlate.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="ml-2 text-cobalt underline"
+                    >
+                      Xem nguồn ↗
+                    </a>
+                  )}
                 </p>
               </div>
 
@@ -960,10 +1038,7 @@ export function MuscleHypertrophyExplorer() {
                     <button
                       key={exercise.id}
                       type="button"
-                      onClick={() => {
-                        setSelectedExerciseId(exercise.id);
-                        setLookupMode("ex_to_muscle");
-                      }}
+                      onClick={() => selectExercise(exercise.id)}
                       className="flex flex-col justify-between rounded-md border border-rule bg-canvas/50 p-3.5 text-left text-xs transition-all hover:border-crimson hover:bg-sheet"
                     >
                       <div>
@@ -1138,10 +1213,7 @@ export function MuscleHypertrophyExplorer() {
 
                           <button
                             type="button"
-                            onClick={() => {
-                              setSelectedMuscleId(t.muscleId);
-                              setLookupMode("muscle_to_ex");
-                            }}
+                            onClick={() => selectMuscle(t.muscleId)}
                             className="rounded border border-cobalt/30 bg-cobalt-soft px-2.5 py-1 font-semibold text-cobalt hover:opacity-90"
                           >
                             Xem giải phẫu các bó cơ này →
@@ -1192,9 +1264,17 @@ export function MuscleHypertrophyExplorer() {
             <div className="mb-3 flex items-center justify-between border-b border-rule pb-3">
               <div>
                 <h4 className="font-display text-base font-bold text-ink">
-                  {activeMuscle.plateTitle}
+                  {activePlate.title}
                 </h4>
-                <p className="text-xs text-slate">{activeMuscle.plateCredit}</p>
+                <p className="text-xs text-slate">{activePlate.credit}</p>
+                <a
+                  href={activePlate.src}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs text-cobalt underline"
+                >
+                  Xem ảnh ở độ phân giải gốc ↗
+                </a>
               </div>
               <button
                 type="button"
@@ -1204,11 +1284,16 @@ export function MuscleHypertrophyExplorer() {
                 Đóng (ESC)
               </button>
             </div>
+            {activePlate.description && (
+              <p className="mb-3 text-xs leading-relaxed text-slate">
+                {activePlate.description}
+              </p>
+            )}
             <div className="flex justify-center bg-white p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={activeMuscle.plateSrc}
-                alt={activeMuscle.plateTitle}
+                src={activePlate.src}
+                alt={activePlate.title}
                 className="max-h-[75vh] w-auto object-contain"
               />
             </div>

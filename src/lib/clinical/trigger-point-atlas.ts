@@ -1461,13 +1461,6 @@ export const TRIGGER_POINT_MUSCLES: TriggerPointMuscle[] = [
       TEXTBOOK_TRAVELL,
       CORE_TRP_REFERENCES[3],
       CORE_TRP_REFERENCES[4],
-      {
-        title:
-          "Cheatham et al. (2015) — Self-Myofascial Release: ROM, Recovery, Performance (Systematic Review)",
-        source: "Int J Sports Phys Ther",
-        pmid: "26618062",
-        url: "https://pubmed.ncbi.nlm.nih.gov/26618062/",
-      },
     ],
     sampleAiPrompt:
       "Học viên đau thốn gót buổi sáng, bị gắn plantar fasciitis, Squat sập gối. Sờ Soleus TrP1 (Travell) tái hiện đau gót. Sàng lọc DVT / stress fracture. Phác đồ nhả soleus (gối gập), tách stretch gastroc vs soleus, kích hoạt tibialis anterior, cue Squat gót xuống. PMID 26618062.",
