@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:safety": "node --experimental-strip-types src/lib/clinical/safety.check.ts"
+    "check:safety": "node --experimental-strip-types src/lib/clinical/safety.check.ts",
+    "check:rom": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/lib/clinical/rom-norms.check.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

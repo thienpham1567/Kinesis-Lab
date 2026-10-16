@@ -5,12 +5,13 @@ import { useParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
 import { ChatPanel } from "@/components/ChatPanel";
+import { RomAssessment } from "@/components/RomAssessment";
 import { Icon } from "@/components/WorkspaceUI";
 import { matchClientIssuesToRegions } from "@/lib/clinical/anatomy-atlas";
 import { PARQ_ITEMS, safetyNotes } from "@/lib/clinical/safety";
 import type { BiomarkerRecord, Client } from "@/lib/types";
 
-type Tab = "ban-do" | "ho-so" | "co-do" | "xet-nghiem" | "chat";
+type Tab = "ban-do" | "ho-so" | "co-do" | "bien-do" | "xet-nghiem" | "chat";
 
 const FIELD_LABELS: Record<string, string> = {
   name: "Tên bệnh lý / Thuốc",
@@ -106,6 +107,8 @@ export default function ClientDetailPage() {
   }
 
   const autoWarnings = safetyNotes(client).split("\n");
+  const romRecords = biomarkers.filter((b) => b.kind === "rom");
+  const labRecords = biomarkers.filter((b) => b.kind !== "rom");
   const regionAlertsCount = Object.keys(
     matchClientIssuesToRegions(client),
   ).length;
@@ -124,10 +127,11 @@ export default function ClientDetailPage() {
         (v) => v === true,
       ).length,
     },
+    { id: "bien-do", label: "Biên độ khớp", badge: romRecords.length },
     {
       id: "xet-nghiem",
       label: "Xét nghiệm & InBody",
-      badge: biomarkers.length,
+      badge: labRecords.length,
     },
     { id: "chat", label: "Tư vấn & giáo án" },
   ];
@@ -241,8 +245,11 @@ export default function ClientDetailPage() {
           saving={saving}
         />
       )}
+      {tab === "bien-do" && (
+        <RomAssessment client={client} records={romRecords} onChange={load} />
+      )}
       {tab === "xet-nghiem" && (
-        <Labs clientId={client.id} records={biomarkers} onChange={load} />
+        <Labs clientId={client.id} records={labRecords} onChange={load} />
       )}
       {tab === "chat" && (
         <ChatPanel

@@ -42,7 +42,7 @@ export type BiomarkerRecord = {
   id: string;
   client_id: string;
   recorded_at: string;
-  kind: "blood_lab" | "inbody";
+  kind: "blood_lab" | "inbody" | "rom";
   metrics: Record<string, unknown>;
   ai_summary: string | null;
   created_at: string;
