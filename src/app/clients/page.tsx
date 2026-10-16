@@ -1,49 +1,88 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { PARQ_ITEMS } from "@/lib/clinical/safety";
+import { useEffect, useRef, useState } from "react";
+import {
+  EmptyState,
+  Icon,
+  PageHeading,
+  SectionHeading,
+} from "@/components/WorkspaceUI";
+import { ClientRecordCard, clientStatus } from "@/components/ClientRecordCard";
 import type { Client } from "@/lib/types";
+
+async function fetchClients(): Promise<Client[]> {
+  const res = await fetch("/api/clients");
+  const data = await res.json();
+  if (!res.ok)
+    throw new Error(data.error ?? "Không tải được danh sách học viên.");
+  return data.clients ?? [];
+}
+
+function feedbackError(error: unknown, fallback: string) {
+  if (error instanceof TypeError || error instanceof SyntaxError)
+    return fallback;
+  return error instanceof Error ? error.message : fallback;
+}
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [goals, setGoals] = useState("");
+  const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-
-  function load() {
-    return fetch("/api/clients")
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ok) setError(data.error ?? "Không tải được danh sách học viên");
-        else setClients(data.clients ?? []);
-      });
-  }
+  const [loading, setLoading] = useState(true);
+  const [listError, setListError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [message, setMessage] = useState("");
+  const nameInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let ignore = false;
-    fetch("/api/clients")
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (ignore) return;
-        if (!ok) setError(data.error ?? "Không tải được danh sách học viên");
-        else setClients(data.clients ?? []);
+    fetchClients()
+      .then((records) => {
+        if (!ignore) setClients(records);
       })
-      .catch(() => {
-        if (!ignore) setError("Không tải được danh sách học viên");
+      .catch((error) => {
+        if (!ignore)
+          setListError(
+            feedbackError(
+              error,
+              "Không tải được danh sách học viên. Kiểm tra kết nối và thử lại.",
+            ),
+          );
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
       });
     return () => {
       ignore = true;
     };
   }, []);
 
-  async function create(e: React.FormEvent) {
-    e.preventDefault();
+  async function reload() {
+    setLoading(true);
+    setListError("");
+    try {
+      setClients(await fetchClients());
+    } catch (error) {
+      setListError(
+        feedbackError(
+          error,
+          "Không tải được danh sách học viên. Kiểm tra kết nối và thử lại.",
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function create(event: React.FormEvent) {
+    event.preventDefault();
     if (busy || !name.trim()) return;
     setBusy(true);
-    setError("");
+    setFormError("");
+    setMessage("");
     try {
       const res = await fetch("/api/clients", {
         method: "POST",
@@ -55,177 +94,276 @@ export default function ClientsPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Không tạo được hồ sơ");
-        return;
-      }
+      if (!res.ok) throw new Error(data.error ?? "Không tạo được hồ sơ.");
       setName("");
       setAge("");
       setGoals("");
-      await load();
+      setMessage(
+        "Đã tạo hồ sơ. Mở hồ sơ để bổ sung sàng lọc và thông tin lâm sàng.",
+      );
+      await reload();
+      nameInput.current?.focus();
+    } catch (error) {
+      setFormError(
+        feedbackError(
+          error,
+          "Không tạo được hồ sơ. Kiểm tra kết nối và thử lại.",
+        ),
+      );
     } finally {
       setBusy(false);
     }
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-6 rounded-lg border border-rule bg-sheet p-5 shadow-xs lg:grid-cols-[1fr_440px]">
-        <div>
-          <span className="inline-block rounded bg-cobalt-soft px-2.5 py-0.5 text-xs font-semibold text-cobalt">
-            Quản lý Hồ sơ Lâm sàng
-          </span>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink">
-            Học viên & phân tầng nguy cơ
-          </h1>
-          <p className="mt-1.5 max-w-2xl text-sm text-slate">
-            Lưu trữ bệnh lý nền, thuốc ảnh hưởng nhịp tim/đường huyết, điểm kích phát đau cơ xương khớp
-            (Pain Triggers) và kết quả sàng lọc PAR-Q+ trước khi thiết kế chương trình tập.
-          </p>
-        </div>
+  const matchingClients = clients.filter((client) =>
+    [
+      client.name,
+      client.goals,
+      ...(client.medical_conditions ?? []).map((condition) => condition.name),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleLowerCase("vi")
+      .includes(query.trim().toLocaleLowerCase("vi")),
+  );
+  const referralCount = clients.filter(
+    (client) => clientStatus(client).level === "referral",
+  ).length;
+  const cautionCount = clients.filter(
+    (client) => clientStatus(client).level === "caution",
+  ).length;
 
-        <form onSubmit={create} className="space-y-3 rounded-md border border-rule bg-canvas/70 p-4">
-          <p className="font-display text-sm font-semibold text-ink">Tạo hồ sơ học viên mới</p>
-          <div className="grid gap-2.5 sm:grid-cols-[1fr_90px]">
-            <label className="block text-xs text-slate">
-              <span>Họ và tên</span>
+  return (
+    <div className="space-y-7">
+      <PageHeading
+        eyebrow="HỒ SƠ / CLIENT RECORDS"
+        title="Hiểu học viên. Tập luyện phù hợp."
+        description="Tập hợp mục tiêu, bệnh lý và kết quả sàng lọc để chuẩn bị cho từng buổi tập."
+      >
+        <button
+          type="button"
+          className="button-primary"
+          onClick={() => nameInput.current?.focus()}
+        >
+          <Icon name="plus" className="size-4" />
+          Thêm học viên
+        </button>
+      </PageHeading>
+
+      <dl className="grid grid-cols-3 gap-2 sm:gap-3">
+        {[
+          {
+            label: "Hồ sơ học viên",
+            value: clients.length,
+            icon: "users" as const,
+            color: "text-cobalt bg-cobalt-soft",
+          },
+          {
+            label: "Cần điều chỉnh tập luyện",
+            value: cautionCount,
+            icon: "activity" as const,
+            color: "text-caution bg-caution-soft",
+          },
+          {
+            label: "Cần chuyển khám bác sĩ",
+            value: referralCount,
+            icon: "shield" as const,
+            color: "text-crimson bg-crimson-soft",
+          },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="panel flex min-w-0 items-center gap-4 p-3 sm:p-5"
+          >
+            <span
+              className={`hidden size-11 shrink-0 items-center justify-center rounded-xl sm:flex ${item.color}`}
+            >
+              <Icon name={item.icon} />
+            </span>
+            <div className="min-w-0">
+              <dt className="min-h-10 text-[10px] leading-4 text-slate sm:min-h-0 sm:text-xs sm:leading-5">
+                {item.label}
+              </dt>
+              <dd className="mt-0.5 font-mono text-xl font-medium text-ink sm:text-2xl">
+                {loading || listError ? "—" : item.value}
+              </dd>
+            </div>
+          </div>
+        ))}
+      </dl>
+
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <section
+          aria-labelledby="client-list-heading"
+          className="min-w-0 space-y-4"
+        >
+          <SectionHeading number="01" title="Danh sách học viên">
+            <span className="font-mono text-xs text-slate">
+              {matchingClients.length} / {clients.length}
+            </span>
+          </SectionHeading>
+          <label className="block">
+            <span id="client-list-heading" className="sr-only">
+              Tìm hồ sơ học viên
+            </span>
+            <span className="input-with-icon block">
+              <Icon name="search" className="size-4 text-slate" />
               <input
+                className="min-h-11 w-full min-w-0 text-sm"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Tìm theo tên, bệnh lý hoặc mục tiêu…"
+                aria-label="Tìm theo tên, bệnh lý hoặc mục tiêu"
+              />
+            </span>
+          </label>
+          <div aria-live="polite">
+            {listError && (
+              <div className="alert-error mb-4">
+                <p>{listError}</p>
+                <button
+                  type="button"
+                  disabled={loading}
+                  className="button-secondary mt-3"
+                  onClick={() => void reload()}
+                >
+                  <Icon name="refresh" className="size-4" />
+                  Thử tải lại
+                </button>
+              </div>
+            )}
+            {loading ? (
+              <div className="panel flex items-center gap-3 p-6 text-sm text-slate">
+                <Icon name="spinner" className="size-5 animate-spin" />
+                Đang tải hồ sơ học viên…
+              </div>
+            ) : clients.length === 0 && !listError ? (
+              <div className="panel">
+                <EmptyState
+                  icon="users"
+                  title="Bắt đầu từ một hồ sơ"
+                  action={
+                    <button
+                      type="button"
+                      className="button-secondary"
+                      onClick={() => nameInput.current?.focus()}
+                    >
+                      <Icon name="plus" className="size-4" />
+                      Tạo học viên đầu tiên
+                    </button>
+                  }
+                >
+                  Lưu thông tin ban đầu, sau đó bổ sung bệnh lý, thuốc và sàng
+                  lọc PAR-Q+ trong hồ sơ học viên.
+                </EmptyState>
+              </div>
+            ) : !matchingClients.length && !listError ? (
+              <div className="panel">
+                <EmptyState
+                  icon="search"
+                  title="Chưa tìm thấy hồ sơ phù hợp"
+                  action={
+                    <button
+                      type="button"
+                      className="button-secondary"
+                      onClick={() => setQuery("")}
+                    >
+                      Xóa bộ lọc
+                    </button>
+                  }
+                >
+                  Thử một tên, bệnh lý hoặc mục tiêu khác.
+                </EmptyState>
+              </div>
+            ) : null}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+            {matchingClients.map((client) => (
+              <ClientRecordCard key={client.id} client={client} />
+            ))}
+          </div>
+        </section>
+
+        <section
+          className="panel min-w-0 p-5 sm:p-6"
+          aria-label="Tạo hồ sơ học viên"
+        >
+          <SectionHeading number="02" title="Học viên mới" />
+          <p className="mt-3 text-sm leading-6 text-slate">
+            Bắt đầu với thông tin cơ bản. Bổ sung chi tiết lâm sàng sau khi tạo
+            hồ sơ.
+          </p>
+          <form onSubmit={create} className="mt-6 space-y-4" aria-busy={busy}>
+            <label className="block">
+              <span className="field-label">
+                Họ và tên <span className="text-crimson">*</span>
+              </span>
+              <input
+                ref={nameInput}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(event) => setName(event.target.value)}
                 placeholder="VD: Lê Hoàng Nam"
-                className="mt-1 w-full px-3 py-2 text-sm"
+                className="min-h-11 w-full px-3 text-sm"
+                autoComplete="name"
                 required
+                maxLength={160}
               />
             </label>
-            <label className="block text-xs text-slate">
-              <span>Tuổi</span>
+            <label className="block">
+              <span className="field-label">
+                Tuổi{" "}
+                <span className="font-normal text-slate">(không bắt buộc)</span>
+              </span>
               <input
                 type="number"
+                min={1}
+                max={120}
+                step={1}
                 value={age}
-                onChange={(e) => setAge(e.target.value)}
-                placeholder="38"
-                className="mt-1 w-full px-3 py-2 text-sm"
+                onChange={(event) => setAge(event.target.value)}
+                placeholder="VD: 38"
+                className="min-h-11 w-full px-3 text-sm"
               />
             </label>
-          </div>
-          <label className="block text-xs text-slate">
-            <span>Mục tiêu / Ghi chú ban đầu</span>
-            <input
-              value={goals}
-              onChange={(e) => setGoals(e.target.value)}
-              placeholder="VD: Giảm mỡ nội tạng, đau gối trái khi xuống cầu thang"
-              className="mt-1 w-full px-3 py-2 text-sm"
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={busy}
-            className="w-full rounded-md bg-cobalt px-4 py-2 font-display text-sm font-semibold text-white hover:opacity-95 disabled:opacity-50"
-          >
-            {busy ? "Đang tạo..." : "Tạo hồ sơ lâm sàng"}
-          </button>
-        </form>
-      </div>
-
-      {error ? (
-        <p className="rounded-md border border-crimson/30 bg-crimson-soft px-4 py-2.5 text-sm text-crimson">
-          {error}
-        </p>
-      ) : null}
-
-      {clients.length === 0 && !error ? (
-        <div className="rounded-lg border border-dashed border-rule-strong bg-sheet px-6 py-12 text-center">
-          <p className="font-display text-base font-bold text-ink">
-            Chưa có hồ sơ học viên
-          </p>
-          <p className="mx-auto mt-1.5 max-w-md text-sm text-slate">
-            Tạo hồ sơ bên trên để gắn bệnh lý, thuốc, PAR-Q+ và điểm đau lên bản đồ giải phẫu trước khi thiết kế giáo án.
-          </p>
-        </div>
-      ) : null}
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {clients.map((c) => {
-          const parq = c.red_flags?.parq ?? {};
-          const redNight = parq.red_night === true || parq.chest === true || parq.dizzy === true;
-          const hasCaution =
-            (c.medical_conditions?.length ?? 0) > 0 ||
-            (c.medications?.length ?? 0) > 0 ||
-            (c.orthopedic_issues?.length ?? 0) > 0 ||
-            PARQ_ITEMS.some((q) => parq[q.id] === true);
-
-          const status = redNight
-            ? { label: "Cần chuyển khám BS", cls: "bg-crimson-soft text-crimson border-crimson/30" }
-            : hasCaution
-              ? { label: "Cần điều chỉnh tải / bài tập", cls: "bg-caution-soft text-caution border-caution/30" }
-              : { label: "Đủ điều kiện tập tiêu chuẩn", cls: "bg-cleared-soft text-cleared border-cleared/30" };
-
-          return (
-            <Link
-              key={c.id}
-              href={`/clients/${c.id}`}
-              className="group flex flex-col justify-between rounded-lg border border-rule bg-sheet p-5 shadow-xs transition-colors hover:border-cobalt"
+            <label className="block">
+              <span className="field-label">Mục tiêu / Ghi chú ban đầu</span>
+              <textarea
+                value={goals}
+                onChange={(event) => setGoals(event.target.value)}
+                placeholder="VD: Giảm mỡ nội tạng; đau gối trái khi xuống cầu thang"
+                className="min-h-28 w-full resize-y px-3 py-3 text-sm leading-6"
+                rows={4}
+              />
+            </label>
+            <div aria-live="polite">
+              {formError && (
+                <p className="alert-error" role="alert">
+                  {formError}
+                </p>
+              )}
+              {message && (
+                <p className="rounded-lg bg-cleared-soft p-3 text-sm leading-6 text-cleared">
+                  {message}
+                </p>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={busy || !name.trim()}
+              className="button-primary w-full"
             >
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <h2 className="font-display text-xl font-bold text-ink group-hover:text-cobalt">
-                      {c.name}
-                    </h2>
-                    <p className="text-xs text-slate">
-                      {c.sex ?? "Chưa rõ giới"} • {c.age != null ? `${c.age} tuổi` : "Chưa rõ tuổi"} •{" "}
-                      {c.training_level ?? "Chưa phân cấp độ"}
-                    </p>
-                  </div>
-                  <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${status.cls}`}>
-                    {status.label}
-                  </span>
-                </div>
-
-                {c.goals && (
-                  <p className="text-sm text-ink">
-                    <span className="font-medium text-slate">Mục tiêu:</span> {c.goals}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {(c.medical_conditions ?? []).map((mc) => (
-                    <span
-                      key={mc.name}
-                      className="rounded bg-crimson-soft px-2 py-0.5 text-xs font-medium text-crimson"
-                    >
-                      {mc.name}
-                    </span>
-                  ))}
-                  {(c.medications ?? []).map((med) => (
-                    <span
-                      key={med.name}
-                      className="rounded bg-caution-soft px-2 py-0.5 text-xs font-medium text-caution"
-                    >
-                      Thuốc: {med.name}
-                    </span>
-                  ))}
-                  {(c.orthopedic_issues ?? []).map((oi) => (
-                    <span
-                      key={oi.region}
-                      className="rounded bg-cobalt-soft px-2 py-0.5 text-xs font-medium text-cobalt"
-                    >
-                      Cơ xương khớp: {oi.region}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between border-t border-rule pt-3 text-xs text-slate">
-                <span>
-                  {(c.medical_conditions?.length ?? 0)} bệnh nền • {(c.medications?.length ?? 0)} thuốc •{" "}
-                  {(c.orthopedic_issues?.length ?? 0)} vùng cơ xương khớp
-                </span>
-                <span className="font-semibold text-cobalt">Mở bệnh án vận động</span>
-              </div>
-            </Link>
-          );
-        })}
+              <Icon
+                name={busy ? "spinner" : "plus"}
+                className={`size-4 ${busy ? "animate-spin" : ""}`}
+              />
+              {busy ? "Đang tạo hồ sơ…" : "Tạo hồ sơ học viên"}
+            </button>
+          </form>
+          <p className="mt-5 border-t border-rule pt-4 text-xs leading-5 text-slate">
+            Phân tầng nguy cơ dựa trên thông tin đã nhập. Luôn hoàn tất sàng lọc
+            trước khi thiết kế chương trình tập.
+          </p>
+        </section>
       </div>
     </div>
   );

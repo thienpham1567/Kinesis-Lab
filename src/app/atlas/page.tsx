@@ -6,6 +6,7 @@ import { BodyMapExplorer } from "@/components/BodyMapExplorer";
 import { MuscleHypertrophyExplorer } from "@/components/MuscleHypertrophyExplorer";
 import { TriggerPointExplorer } from "@/components/TriggerPointExplorer";
 import type { Client } from "@/lib/types";
+import { Icon, PageHeading, type IconName } from "@/components/WorkspaceUI";
 
 type AtlasTab = "hypertrophy" | "trigger_points" | "clinical_rehab";
 
@@ -34,7 +35,14 @@ const TAB_COPY: Record<AtlasTab, { title: string; subtitle: string }> = {
 
 export default function AtlasPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense
+      fallback={
+        <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
+          <Icon name="spinner" className="size-5 animate-spin" />
+          Đang mở Atlas…
+        </div>
+      }
+    >
       <AtlasPageInner />
     </Suspense>
   );
@@ -71,41 +79,39 @@ function AtlasPageInner() {
   const activeClient = clients.find((c) => c.id === selectedClientId) ?? null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-ink">
-            {TAB_COPY[atlasTab].title}
-          </h1>
-          <p className="mt-0.5 text-sm text-slate">
-            {TAB_COPY[atlasTab].subtitle}
-          </p>
-        </div>
-
-        <div className="inline-flex rounded-lg border border-rule bg-sheet p-1 shadow-xs">
-          {(
-            [
-              { id: "hypertrophy", label: "Cơ bắp & bài tập" },
-              { id: "trigger_points", label: "Trigger Point" },
-              { id: "clinical_rehab", label: "Phục hồi khớp" },
-            ] as const
-          ).map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => selectTab(tab.id)}
-              className={`rounded-md px-3.5 py-2 font-display text-xs font-bold transition-colors ${
-                atlasTab === tab.id
-                  ? "bg-cobalt text-white"
-                  : "text-slate hover:text-ink"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+    <div className="atlas-workspace space-y-5">
+      <PageHeading
+        eyebrow="Cấu trúc · Chuyển động · Ứng dụng"
+        title="Atlas giải phẫu"
+        description={TAB_COPY[atlasTab].subtitle}
+      >
+        <span className="badge hidden bg-sheet text-cleared sm:inline-flex">
+          <Icon name="target" className="size-3.5" />
+          Tra cứu tương tác
+        </span>
+      </PageHeading>
+      <div className="tab-bar grid grid-cols-3" aria-label="Nội dung Atlas">
+        {(
+          [
+            { id: "hypertrophy", label: "Cơ bắp & bài tập", icon: "activity" },
+            { id: "trigger_points", label: "Trigger Point", icon: "target" },
+            { id: "clinical_rehab", label: "Phục hồi khớp", icon: "shield" },
+          ] as const
+        ).map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            aria-pressed={atlasTab === tab.id}
+            onClick={() => selectTab(tab.id)}
+            className="tab-button flex-col gap-1.5 px-1.5 text-center sm:flex-row sm:gap-2 sm:px-3.5"
+          >
+            <Icon name={tab.icon as IconName} className="size-4" />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
+      <h2 className="sr-only">{TAB_COPY[atlasTab].title}</h2>
       {atlasTab === "hypertrophy" ? (
         <MuscleHypertrophyExplorer />
       ) : atlasTab === "trigger_points" ? (

@@ -543,13 +543,14 @@ export function BodyMapExplorer({
   return (
     <div className="space-y-4">
       {mode === "full" && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-rule bg-sheet px-3 py-2.5 shadow-xs">
+        <div className="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
           <div className="flex flex-wrap items-center gap-1.5">
             {(["all", "spine_core", "upper_limb", "lower_limb"] as const).map((g) => (
               <button
                 key={g}
                 type="button"
                 onClick={() => setGroupFilter(g)}
+                aria-pressed={groupFilter === g}
                 className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
                   groupFilter === g
                     ? "bg-cobalt text-white"
@@ -563,7 +564,7 @@ export function BodyMapExplorer({
 
           <div className="flex flex-wrap items-center gap-3">
             {clients.length > 0 && onSelectClient && (
-              <label className="flex items-center gap-2 text-xs text-slate">
+              <label className="flex min-w-0 flex-col gap-2 text-xs text-slate sm:flex-row sm:items-center">
                 <span>Áp bệnh án học viên:</span>
                 <select
                   aria-label="Áp bệnh án học viên lên bản đồ giải phẫu"
@@ -575,7 +576,7 @@ export function BodyMapExplorer({
                     const first = Object.keys(alerts)[0] as AnatomyRegionId | undefined;
                     if (first) setSelectedId(first);
                   }}
-                  className="px-2.5 py-1 text-xs font-medium text-ink"
+                  className="min-h-10 w-full max-w-full px-2.5 py-1 text-xs font-medium text-ink sm:w-auto"
                 >
                   <option value="">Chế độ Học chuẩn (Không gắn học viên)</option>
                   {clients.map((c) => (
@@ -587,7 +588,7 @@ export function BodyMapExplorer({
               </label>
             )}
 
-            <div className="inline-flex rounded-md border border-rule bg-canvas p-0.5 text-xs">
+            <div className="inline-flex flex-wrap rounded-md border border-rule bg-canvas p-0.5 text-xs">
               {(
                 [
                   { id: "both", label: "2 Mặt" },
@@ -600,6 +601,7 @@ export function BodyMapExplorer({
                   key={v.id}
                   type="button"
                   onClick={() => setBodySide(v.id)}
+                  aria-pressed={bodySide === v.id}
                   className={`rounded px-2.5 py-1 font-medium ${
                     bodySide === v.id ? "bg-sheet text-ink shadow-2xs" : "text-slate"
                   }`}
@@ -612,9 +614,9 @@ export function BodyMapExplorer({
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
+      <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
         {/* Left column: Authentic Anatomical Muscular System Explorer */}
-        <div className="rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100dvh-6.25rem)] lg:overflow-y-auto">
+        <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-6.25rem)] lg:overflow-y-auto">
           <div>
             <div className="flex items-center justify-between border-b border-rule pb-3">
               <div>
@@ -633,11 +635,11 @@ export function BodyMapExplorer({
             </div>
 
             {mode === "client" && (
-              <div className="mt-2.5 flex items-center justify-between gap-2">
+              <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
                 <span className="font-mono text-[10px] font-bold uppercase text-slate">
                   Chế độ xem hình:
                 </span>
-                <div className="inline-flex rounded-md border border-rule bg-canvas p-0.5 text-[11px]">
+                <div className="inline-flex flex-wrap rounded-md border border-rule bg-canvas p-0.5 text-[11px]">
                   {(
                     [
                       { id: "both", label: "2 Mặt" },
@@ -650,6 +652,7 @@ export function BodyMapExplorer({
                       key={v.id}
                       type="button"
                       onClick={() => setBodySide(v.id)}
+                      aria-pressed={bodySide === v.id}
                       className={`rounded px-2 py-0.5 font-medium ${
                         bodySide === v.id
                           ? "bg-sheet text-ink shadow-2xs"

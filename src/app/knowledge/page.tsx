@@ -1,242 +1,305 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { KnowledgeDocument, PubMedPaper } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
+import {
+  EmptyState,
+  Icon,
+  PageHeading,
+  SectionHeading,
+} from "@/components/WorkspaceUI";
+import type { KnowledgeDocument } from "@/lib/types";
+import { PubMedSearch } from "@/components/PubMedSearch";
 
-const PUBMED_PRESETS = [
-  "lumbar disc herniation deadlift rehabilitation",
-  "beta blocker resistance training perceived exertion",
-  "subacromial impingement serratus anterior exercise",
-  "visceral adipose tissue zone 2 vs resistance training",
-];
+async function fetchDocuments(): Promise<KnowledgeDocument[]> {
+  const res = await fetch("/api/knowledge");
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? "Không tải được thư viện.");
+  return data.documents ?? [];
+}
+
+function feedbackError(error: unknown, fallback: string) {
+  if (error instanceof TypeError || error instanceof SyntaxError)
+    return fallback;
+  return error instanceof Error ? error.message : fallback;
+}
 
 export default function KnowledgePage() {
   const [docs, setDocs] = useState<KnowledgeDocument[]>([]);
   const [title, setTitle] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
-  const [searching, setSearching] = useState(false);
-  const [error, setError] = useState("");
-  const [q, setQ] = useState("");
-  const [papers, setPapers] = useState<PubMedPaper[]>([]);
-
-  function load() {
-    return fetch("/api/knowledge")
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ok) setError(data.error ?? "Không tải được thư viện");
-        else setDocs(data.documents ?? []);
-      });
-  }
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [libraryError, setLibraryError] = useState("");
+  const [uploadError, setUploadError] = useState("");
+  const [libraryMessage, setLibraryMessage] = useState("");
+  const fileInput = useRef<HTMLInputElement>(null);
+  const libraryHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let ignore = false;
-    fetch("/api/knowledge")
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (ignore) return;
-        if (!ok) setError(data.error ?? "Không tải được thư viện");
-        else setDocs(data.documents ?? []);
+    fetchDocuments()
+      .then((documents) => {
+        if (!ignore) setDocs(documents);
       })
-      .catch(() => {
-        if (!ignore) setError("Không tải được thư viện");
+      .catch((error) => {
+        if (!ignore)
+          setLibraryError(
+            feedbackError(
+              error,
+              "Không tải được thư viện. Kiểm tra kết nối và thử lại.",
+            ),
+          );
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
       });
     return () => {
       ignore = true;
     };
   }, []);
 
-  async function ingest(file: File) {
+  async function reloadLibrary() {
+    if (loading || deleting) return;
+    setLoading(true);
+    setLibraryError("");
+    try {
+      setDocs(await fetchDocuments());
+    } catch (error) {
+      setLibraryError(
+        feedbackError(
+          error,
+          "Không tải được thư viện. Kiểm tra kết nối và thử lại.",
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function ingest(event: React.FormEvent) {
+    event.preventDefault();
+    if (!file || busy || loading || deleting) return;
     setBusy(true);
-    setError("");
+    setUploadError("");
+    setLibraryMessage("");
     try {
       const fd = new FormData();
       fd.set("file", file);
       fd.set("title", title);
       const res = await fetch("/api/ingest", { method: "POST", body: fd });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Nạp PDF thất bại");
-        return;
-      }
+      if (!res.ok) throw new Error(data.error ?? "Nạp PDF thất bại.");
       setTitle("");
-      await load();
+      setFile(null);
+      if (fileInput.current) fileInput.current.value = "";
+      setLibraryMessage(
+        "Đã nạp tài liệu. Kiểm tra thông tin trong danh sách bên dưới.",
+      );
+      await reloadLibrary();
+    } catch (error) {
+      setUploadError(
+        feedbackError(error, "Không thể nạp PDF. Kiểm tra kết nối và thử lại."),
+      );
     } finally {
       setBusy(false);
     }
   }
 
-  async function runSearch(queryText: string) {
-    const trimmed = queryText.trim();
-    if (!trimmed) return;
-    setSearching(true);
+  async function deleteDocument(document: KnowledgeDocument) {
+    if (
+      loading ||
+      deleting ||
+      busy ||
+      !window.confirm(
+        `Xóa “${document.title}” khỏi thư viện? Bạn sẽ cần tải lại PDF nếu muốn sử dụng tài liệu này.`,
+      )
+    )
+      return;
+    setDeleting(document.id);
+    setLibraryError("");
+    setLibraryMessage("");
     try {
-      const res = await fetch(`/api/pubmed?q=${encodeURIComponent(trimmed)}`);
-      if (!res.ok) throw new Error("PubMed error");
+      const res = await fetch(
+        `/api/knowledge?id=${encodeURIComponent(document.id)}`,
+        { method: "DELETE" },
+      );
       const data = await res.json();
-      setPapers(data.papers ?? []);
+      if (!res.ok) throw new Error(data.error ?? "Không xóa được tài liệu.");
+      setDocs((current) => current.filter((item) => item.id !== document.id));
+      setLibraryMessage(`Đã xóa “${document.title}” khỏi thư viện.`);
+      libraryHeading.current?.focus();
+    } catch (error) {
+      setLibraryError(
+        feedbackError(
+          error,
+          "Không xóa được tài liệu. Kiểm tra kết nối và thử lại.",
+        ),
+      );
     } finally {
-      setSearching(false);
+      setDeleting(null);
     }
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <section className="space-y-4 rounded-lg border border-rule bg-sheet p-5 shadow-xs">
-        <div>
-          <span className="inline-block rounded bg-cobalt-soft px-2.5 py-0.5 text-xs font-semibold text-cobalt">
-            Kho RAG Nội bộ (pgvector)
-          </span>
-          <h1 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink">
-            Sách & Giáo trình Chuyên ngành
-          </h1>
-          <p className="mt-1 text-xs leading-5 text-slate">
-            Nạp giáo trình PDF (ACSM Guidelines, NSCA CSCS, NASM CES, Giải phẫu cơ xương khớp).
-            Hệ thống tự cắt theo trang và vector hóa 1536 chiều để trích dẫn chính xác.
-          </p>
-        </div>
-
-        <form className="space-y-3 rounded-md border border-rule bg-canvas/70 p-4" onSubmit={(e) => e.preventDefault()}>
-          <label className="block space-y-1 text-xs font-medium text-slate">
-            <span>Tên sách / Giáo trình</span>
-            <input
-              className="w-full px-3 py-2 text-sm"
-              placeholder="VD: ACSM Guidelines 11th Edition"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </label>
-          <label className="flex cursor-pointer items-center justify-center rounded-md bg-cobalt px-4 py-2.5 font-display text-xs font-semibold text-white hover:opacity-95">
-            {busy ? "Đang cắt trang & tạo Vector..." : "Chọn file PDF để nạp vào kho RAG"}
-            <input
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-              disabled={busy}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void ingest(f);
-              }}
-            />
-          </label>
-        </form>
-
-        {error ? (
-          <p className="rounded border border-crimson/30 bg-crimson-soft px-3 py-2 text-xs text-crimson">
-            {error}
-          </p>
-        ) : null}
-
-        <div className="space-y-2">
-          <p className="text-xs font-semibold text-slate">
-            Giáo trình đã nạp ({docs.length})
-          </p>
-          <ul className="divide-y divide-rule rounded-md border border-rule">
-            {docs.length === 0 ? (
-              <li className="px-4 py-6 text-center text-xs text-slate">
-                Chưa có sách PDF nào trong kho. Khi kết nối Supabase + OpenRouter, sách bạn tải lên sẽ hiển thị tại đây.
-              </li>
-            ) : (
-              docs.map((d) => (
-                <li key={d.id} className="flex items-center justify-between px-3.5 py-2.5 text-sm">
-                  <div>
-                    <p className="font-medium text-ink">{d.title}</p>
-                    <p className="text-xs text-slate">{d.page_count ?? "?"} trang</p>
-                  </div>
+    <div className="space-y-7">
+      <PageHeading
+        eyebrow="THƯ VIỆN / EVIDENCE LIBRARY"
+        title="Kiến thức cho từng quyết định."
+        description="Lưu giáo trình chuyên ngành và tra cứu nghiên cứu để đối chiếu khi xây dựng chương trình tập luyện."
+      />
+      <div className="grid items-start gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <section
+          className="panel order-last min-w-0 overflow-hidden xl:order-none"
+          aria-label="Thư viện PDF"
+        >
+          <div className="border-b border-rule p-5 sm:p-6">
+            <SectionHeading number="01" title="Giáo trình của bạn">
+              <Icon name="book" className="size-5 text-slate" />
+            </SectionHeading>
+            <p className="mt-3 text-sm leading-6 text-slate">
+              Nạp PDF để trợ lý tham khảo nội dung và trích dẫn theo trang khi
+              trả lời.
+            </p>
+            <form className="mt-5 space-y-4" onSubmit={ingest} aria-busy={busy}>
+              <label className="block">
+                <span className="field-label">Tên sách / Giáo trình</span>
+                <input
+                  className="min-h-11 w-full px-3 text-sm"
+                  placeholder="VD: ACSM Guidelines 11th Edition"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  disabled={busy}
+                />
+              </label>
+              <label className="block">
+                <span className="field-label">Tài liệu PDF</span>
+                <input
+                  ref={fileInput}
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  className="min-h-11 w-full min-w-0 max-w-full p-2 text-xs text-slate file:mr-3 file:rounded-md file:border-0 file:bg-cobalt-soft file:px-3 file:py-2 file:font-medium file:text-cobalt"
+                  disabled={busy || loading || !!deleting}
+                  aria-describedby="pdf-help"
+                  onChange={(event) => {
+                    setFile(event.target.files?.[0] ?? null);
+                    setUploadError("");
+                    setLibraryMessage("");
+                  }}
+                  required
+                />
+              </label>
+              <p id="pdf-help" className="text-xs leading-5 text-slate">
+                Nếu để trống tên giáo trình, hệ thống sẽ dùng tên tệp. Quá trình
+                nạp có thể mất vài phút.
+              </p>
+              {uploadError && (
+                <p className="alert-error" role="alert">
+                  {uploadError}
+                </p>
+              )}
+              <button
+                type="submit"
+                className="button-primary w-full"
+                disabled={!file || busy || loading || !!deleting}
+              >
+                <Icon
+                  name={busy ? "spinner" : "upload"}
+                  className={`size-4 ${busy ? "animate-spin" : ""}`}
+                />
+                {busy ? "Đang xử lý tài liệu…" : "Nạp vào thư viện"}
+              </button>
+              <p className="sr-only" aria-live="polite">
+                {busy ? "Đang xử lý PDF. Vui lòng chờ." : ""}
+              </p>
+            </form>
+          </div>
+          <div className="p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <h3
+                ref={libraryHeading}
+                tabIndex={-1}
+                className="text-sm font-semibold text-ink"
+              >
+                Tài liệu đã nạp
+              </h3>
+              <span className="badge font-mono">
+                {loading ? "…" : docs.length}
+              </span>
+            </div>
+            <div aria-live="polite" className="mt-4 space-y-3">
+              {libraryMessage && (
+                <p className="rounded-lg bg-cleared-soft p-3 text-sm leading-6 text-cleared">
+                  {libraryMessage}
+                </p>
+              )}
+              {libraryError && (
+                <div className="alert-error">
+                  <p>{libraryError}</p>
                   <button
                     type="button"
-                    className="text-xs font-medium text-crimson hover:underline"
-                    onClick={async () => {
-                      await fetch(`/api/knowledge?id=${d.id}`, { method: "DELETE" });
-                      await load();
-                    }}
+                    className="button-secondary mt-3"
+                    onClick={() => void reloadLibrary()}
+                    disabled={loading || busy || !!deleting}
                   >
-                    Xóa
+                    <Icon name="refresh" className="size-4" />
+                    Tải lại thư viện
                   </button>
-                </li>
-              ))
-            )}
-          </ul>
-        </div>
-      </section>
-
-      <section className="space-y-4 rounded-lg border border-rule bg-sheet p-5 shadow-xs">
-        <div>
-          <span className="inline-block rounded bg-cleared-soft px-2.5 py-0.5 text-xs font-semibold text-cleared">
-            NCBI E-utilities Live
-          </span>
-          <h2 className="mt-2 font-display text-2xl font-bold tracking-tight text-ink">
-            Tra cứu Nghiên cứu Y học Thể thao (PubMed)
-          </h2>
-          <p className="mt-1 text-xs leading-5 text-slate">
-            Tìm trực tiếp các bài báo khoa học, Systematic Review và hướng dẫn phục hồi chức năng lâm sàng.
-            Có thể gõ tiếng Việt hoặc thuật ngữ tiếng Anh.
-          </p>
-        </div>
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void runSearch(q);
-          }}
-          className="flex gap-2"
-        >
-          <input
-            aria-label="Từ khóa tìm kiếm PubMed"
-            className="flex-1 px-3.5 py-2 text-sm"
-            placeholder="VD: thoát vị đĩa đệm deadlift, subacromial impingement..."
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
-          <button
-            type="submit"
-            disabled={searching}
-            className="rounded-md bg-cobalt px-5 py-2 font-display text-sm font-semibold text-white hover:opacity-95 disabled:opacity-50"
-          >
-            {searching ? "Đang tìm..." : "Tìm PubMed"}
-          </button>
-        </form>
-
-        <div className="flex flex-wrap gap-1.5">
-          {PUBMED_PRESETS.map((preset) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => {
-                setQ(preset);
-                void runSearch(preset);
-              }}
-              className="rounded-full border border-rule bg-canvas px-3 py-1 text-xs text-slate hover:border-cobalt hover:text-cobalt"
-            >
-              {preset}
-            </button>
-          ))}
-        </div>
-
-        <ul className="space-y-3 pt-1">
-          {papers.map((p) => (
-            <li key={p.pmid} className="rounded-md border border-rule bg-canvas/50 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="rounded bg-cobalt-soft px-2 py-0.5 font-mono text-xs font-semibold text-cobalt">
-                  PMID {p.pmid} • {p.year}
-                </span>
-                <span className="text-xs font-medium text-slate">{p.journal}</span>
-              </div>
-              <a
-                href={p.url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 block font-display text-base font-bold text-ink hover:text-cobalt"
-              >
-                {p.title}
-              </a>
-              {p.authors && <p className="mt-0.5 text-xs text-slate">{p.authors}</p>}
-              {p.abstract ? (
-                <p className="mt-2 text-xs leading-6 text-ink">{p.abstract}</p>
+                </div>
+              )}
+              {loading ? (
+                <p className="flex items-center gap-2 py-5 text-sm text-slate">
+                  <Icon name="spinner" className="size-4 animate-spin" />
+                  Đang tải thư viện…
+                </p>
+              ) : docs.length === 0 && !libraryError ? (
+                <EmptyState icon="file" title="Thêm nguồn tham khảo đầu tiên">
+                  Giáo trình, hướng dẫn chuyên ngành và tài liệu PDF của bạn sẽ
+                  xuất hiện tại đây.
+                </EmptyState>
               ) : null}
-            </li>
-          ))}
-        </ul>
-      </section>
+            </div>
+            {docs.length > 0 && (
+              <ul className="mt-2 divide-y divide-rule">
+                {docs.map((document) => (
+                  <li
+                    key={document.id}
+                    className="flex min-w-0 items-start gap-3 py-4"
+                  >
+                    <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-canvas text-cobalt">
+                      <Icon name="file" className="size-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="break-words text-sm font-medium leading-6 text-ink">
+                        {document.title}
+                      </p>
+                      <p className="mt-0.5 text-xs text-slate">
+                        {document.page_count != null
+                          ? `${document.page_count} trang`
+                          : "Chưa có số trang"}{" "}
+                        · PDF
+                      </p>
+                      <button
+                        type="button"
+                        className="mt-1 min-h-10 text-xs font-medium text-crimson hover:underline disabled:opacity-50"
+                        onClick={() => void deleteDocument(document)}
+                        disabled={loading || !!deleting || busy}
+                        aria-label={`Xóa tài liệu ${document.title}`}
+                      >
+                        {deleting === document.id
+                          ? "Đang xóa…"
+                          : "Xóa tài liệu"}
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+
+        <PubMedSearch />
+      </div>
     </div>
   );
 }

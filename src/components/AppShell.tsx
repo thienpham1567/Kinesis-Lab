@@ -2,137 +2,237 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { Icon, type IconName } from "./WorkspaceUI";
 
-const NAV = [
+const NAV: {
+  href: string;
+  label: string;
+  short: string;
+  icon: IconName;
+  description: string;
+}[] = [
   {
     href: "/",
     label: "Bàn tư vấn",
+    short: "Tư vấn",
+    icon: "message",
+    description: "Lâm sàng & vận động",
   },
   {
     href: "/atlas",
-    label: "Atlas",
+    label: "Atlas giải phẫu",
+    short: "Atlas",
+    icon: "atlas",
+    description: "Cơ, khớp & bài tập",
   },
   {
     href: "/clients",
-    label: "Học viên",
+    label: "Hồ sơ học viên",
+    short: "Học viên",
+    icon: "users",
+    description: "Theo dõi & sàng lọc",
   },
   {
     href: "/knowledge",
-    label: "Y văn",
+    label: "Thư viện y văn",
+    short: "Y văn",
+    icon: "book",
+    description: "Giáo trình & PubMed",
   },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const [health, setHealth] = useState<{ openrouter: boolean; supabase: boolean } | null>(null);
+  const isActive = (href: string) =>
+    href === "/" ? path === "/" : path === href || path.startsWith(href + "/");
+  const current = NAV.find((item) => isActive(item.href)) ?? NAV[0];
 
+  return (
+    <div className="min-h-dvh bg-canvas">
+      <a href="#main-content" className="skip-link">
+        Đến nội dung chính
+      </a>
+      <aside className="workspace-sidebar">
+        <Link
+          href="/"
+          className="flex items-center gap-3 px-6 py-7"
+          aria-label="Kinesis Lab — Trang tư vấn"
+        >
+          <KinesisLogo className="size-10" />
+          <div>
+            <span className="block text-base font-bold tracking-tight text-ink">
+              Kinesis Lab<span className="text-cobalt">.</span>
+            </span>
+            <span className="mt-0.5 block whitespace-nowrap font-mono text-[8px] tracking-[.08em] text-slate">
+              MOVEMENT · SCIENCE
+            </span>
+          </div>
+        </Link>
+        <div className="mx-6 border-t border-rule" />
+        <p className="px-6 pb-3 pt-7 font-mono text-[9px] font-medium tracking-[.14em] text-slate">
+          KHÔNG GIAN LÀM VIỆC
+        </p>
+        <nav aria-label="Điều hướng chính" className="space-y-2 px-3">
+          {NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
+              className={`group flex items-center gap-3 rounded-xl border px-3 py-3.5 transition-colors ${isActive(item.href) ? "border-cobalt/10 bg-cobalt-soft text-cobalt" : "border-transparent text-slate hover:bg-canvas hover:text-ink"}`}
+            >
+              <Icon name={item.icon} className="size-5" />
+              <div>
+                <span className="block text-[13px] font-semibold">
+                  {item.label}
+                </span>
+                <span className="mt-0.5 block text-[10px] opacity-80">
+                  {item.description}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </nav>
+        <div className="mx-4 mb-5 mt-auto rounded-xl border border-cleared/15 bg-cleared-soft/50 p-4">
+          <Icon name="shield" className="mb-3 size-5 text-cleared" />
+          <p className="text-xs font-semibold text-ink">Vận động có cơ sở.</p>
+          <p className="mt-2 text-[11px] leading-5 text-slate">
+            Đối chiếu hồ sơ, sàng lọc nguy cơ trước khi thiết kế bài tập.
+          </p>
+          <div className="mt-4 border-t border-cleared/15 pt-3 font-mono text-[9px] tracking-wider text-cleared">
+            PERSONAL TRAINER WORKSPACE
+          </div>
+        </div>
+      </aside>
+      <div className="workspace-content flex min-h-dvh flex-col">
+        <header className="sticky top-0 z-30 border-b border-rule bg-sheet/95 backdrop-blur-md">
+          <div className="mx-auto flex min-h-[72px] max-w-[1600px] items-center justify-between gap-3 px-5 sm:px-7 xl:px-8">
+            <Link
+              href="/"
+              className="flex shrink-0 items-center gap-2.5 xl:hidden"
+              aria-label="Kinesis Lab — Trang tư vấn"
+            >
+              <KinesisLogo className="size-9 shrink-0" />
+              <span className="whitespace-nowrap text-sm font-bold tracking-tight text-ink">
+                Kinesis Lab<span className="text-cobalt">.</span>
+              </span>
+            </Link>
+            <div className="hidden items-center gap-2 text-xs text-slate xl:flex">
+              <span>Không gian làm việc</span>
+              <span className="text-rule-strong">/</span>
+              <span className="font-medium text-ink">{current.label}</span>
+              {path.startsWith("/clients/") && (
+                <>
+                  <span className="text-rule-strong">/</span>
+                  <span>Chi tiết hồ sơ</span>
+                </>
+              )}
+            </div>
+            <ConnectionStatus />
+          </div>
+        </header>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="workspace-main flex-1 outline-none"
+        >
+          {children}
+        </main>
+        <footer className="workspace-footer mx-5 border-t border-rule pt-5 text-[11px] leading-5 text-slate sm:mx-7 xl:mx-8">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span>
+              Kinesis Lab <span className="mx-1.5 text-rule-strong">/</span>{" "}
+              Giải phẫu · Cơ sinh học · Lâm sàng
+            </span>
+            <span className="inline-flex items-center gap-1.5 font-medium text-crimson">
+              <Icon name="shield" className="size-3.5" /> Cờ đỏ → dừng tập,
+              chuyển khám
+            </span>
+          </div>
+          <p className="mt-1">
+            Phạm vi PT: sàng lọc vận động, điều chỉnh tải & bài tập — không chẩn
+            đoán, không kê đơn.
+          </p>
+        </footer>
+      </div>
+      <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">
+        {NAV.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            aria-current={isActive(item.href) ? "page" : undefined}
+            className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-lg text-[10px] font-semibold ${isActive(item.href) ? "bg-cobalt-soft text-cobalt" : "text-slate"}`}
+          >
+            <Icon name={item.icon} className="size-5" />
+            {item.short}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+function ConnectionStatus() {
+  const [health, setHealth] = useState<{
+    openrouter: boolean;
+    supabase: boolean;
+  } | null>(null);
+  const [healthError, setHealthError] = useState(false);
   useEffect(() => {
+    let ignore = false;
     fetch("/api/health")
       .then((r) => {
         if (!r.ok) throw new Error("health");
         return r.json();
       })
-      .then(setHealth)
-      .catch(() => setHealth({ openrouter: false, supabase: false }));
+      .then((data) => {
+        if (!ignore) setHealth(data);
+      })
+      .catch(() => {
+        if (!ignore) setHealthError(true);
+      });
+    return () => {
+      ignore = true;
+    };
   }, []);
-
   return (
-    <div className="flex min-h-dvh flex-col bg-canvas">
-      <header className="sticky top-0 z-30 border-b border-rule bg-sheet/97 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-[1520px] items-center gap-3 px-4 sm:px-6">
-          <Link href="/" className="group flex min-w-0 shrink-0 items-center gap-2.5">
-            <KinesisLogo className="size-9 shrink-0 shadow-2xs transition-transform duration-150 group-hover:scale-[1.03]" />
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="font-display text-[15px] font-bold leading-none tracking-tight text-ink">
-                  Kinesis Lab
-                </span>
-                <span className="hidden rounded bg-cobalt-soft px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-cobalt sm:inline-block">
-                  PT·MD
-                </span>
-              </div>
-              <span className="mt-1 hidden text-[11px] leading-none text-slate xl:block">
-                Giải phẫu · Cơ sinh học · Lâm sàng
-              </span>
-            </div>
-          </Link>
-
-          <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Điều hướng chính">
-            {NAV.map((item) => {
-              const active =
-                item.href === "/"
-                  ? path === "/"
-                  : path === item.href || path.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`rounded-md px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-                    active
-                      ? "bg-cobalt text-white"
-                      : "text-slate hover:bg-surface hover:text-ink"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="ml-auto flex shrink-0 items-center gap-1.5">
-            <StatusPill
-              ok={health?.openrouter}
-              label={health?.openrouter ? "OpenRouter" : "Chưa gắn key"}
-            />
-            <StatusPill
-              ok={health?.supabase ? true : null}
-              label={health?.supabase ? "Cloud" : "Local"}
-            />
-          </div>
-        </div>
-
-        <nav
-          className="grid grid-cols-4 border-t border-rule bg-sheet lg:hidden"
-          aria-label="Điều hướng di động"
-        >
-          {NAV.map((item) => {
-            const active =
-              item.href === "/"
-                ? path === "/"
-                : path === item.href || path.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`py-2 text-center text-[11px] font-semibold ${
-                  active
-                    ? "border-b-2 border-cobalt bg-cobalt-soft/70 text-cobalt"
-                    : "text-slate"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </header>
-
-      <main className="mx-auto w-full max-w-[1520px] flex-1 px-4 py-5 sm:px-6">{children}</main>
-
-      <footer className="border-t border-rule bg-sheet px-4 py-2 text-[11px] leading-snug text-slate">
-        <div className="mx-auto flex max-w-[1520px] flex-wrap items-center justify-between gap-x-4 gap-y-1">
-          <span>Phạm vi PT: sàng lọc vận động, điều chỉnh tải & bài tập — không chẩn đoán, không kê đơn.</span>
-          <span className="font-semibold text-crimson">
-            Cờ đỏ → dừng tập, chuyển khám chuyên khoa
-          </span>
-        </div>
-      </footer>
+    <div
+      className="flex flex-wrap items-center justify-end gap-2"
+      aria-live="polite"
+    >
+      <StatusPill
+        tone={
+          healthError
+            ? "warning"
+            : !health
+              ? "neutral"
+              : health.openrouter
+                ? "success"
+                : "warning"
+        }
+        label={
+          healthError
+            ? "Chưa rõ kết nối"
+            : !health
+              ? "Kiểm tra kết nối…"
+              : health.openrouter
+                ? "AI đã kết nối"
+                : "AI chưa kết nối"
+        }
+      />
+      {health && (
+        <StatusPill
+          tone="neutral"
+          label={health.supabase ? "Lưu trên Cloud" : "Lưu trên máy"}
+        />
+      )}
     </div>
   );
 }
 
 function KinesisLogo({ className = "size-9" }: { className?: string }) {
+  const backgroundId = useId();
+  const vectorId = useId();
   return (
     <svg
       viewBox="0 0 64 64"
@@ -142,7 +242,7 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
     >
       <defs>
         <linearGradient
-          id="kl-nav-bg"
+          id={backgroundId}
           x1="6"
           y1="4"
           x2="58"
@@ -153,7 +253,7 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
           <stop offset="1" stopColor="#0d4696" />
         </linearGradient>
         <linearGradient
-          id="kl-nav-vec"
+          id={vectorId}
           x1="20"
           y1="14"
           x2="50"
@@ -164,7 +264,14 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
           <stop offset="1" stopColor="#34d399" />
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#kl-nav-bg)" />
+      <rect
+        x="2"
+        y="2"
+        width="60"
+        height="60"
+        rx="14"
+        fill={`url(#${backgroundId})`}
+      />
       <rect
         x="3"
         y="3"
@@ -199,7 +306,7 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
       {/* Biomechanical force vectors (upper & lower arms of K) */}
       <path
         d="M 45 16 L 23 32 L 45 48"
-        stroke="url(#kl-nav-vec)"
+        stroke={`url(#${vectorId})`}
         strokeWidth="4.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -234,22 +341,24 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
   );
 }
 
-function StatusPill({ ok, label }: { ok?: boolean | null; label: string }) {
-  const tone =
-    ok === true
-      ? "bg-cleared-soft text-cleared border-cleared/20"
-      : ok === null
-        ? "bg-cobalt-soft text-cobalt border-cobalt/20"
-        : "bg-caution-soft text-caution border-caution/20";
-  const dot =
-    ok === true ? "bg-cleared" : ok === null ? "bg-cobalt" : "bg-caution";
+function StatusPill({
+  tone,
+  label,
+}: {
+  tone: "success" | "warning" | "neutral";
+  label: string;
+}) {
+  const colors = {
+    success: "text-cleared",
+    warning: "text-caution",
+    neutral: "text-slate",
+  };
   return (
     <span
-      title={label}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${tone}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border border-rule bg-sheet px-2 py-1 text-[10px] font-medium sm:text-[11px] ${colors[tone]}`}
     >
-      <span className={`size-1.5 rounded-full ${dot}`} />
-      <span className="hidden sm:inline">{label}</span>
+      <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
+      {label}
     </span>
   );
 }

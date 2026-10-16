@@ -1,20 +1,21 @@
 import Link from "next/link";
 import { ChatPanel } from "@/components/ChatPanel";
+import { Icon, PageHeading } from "@/components/WorkspaceUI";
 
 const CLINICAL_RULES = [
   {
-    tone: "border-l-crimson bg-crimson-soft/60 text-crimson",
-    title: "Tầng 1 — Cờ Đỏ Y khoa (Red Flags)",
+    tone: "bg-crimson-soft text-crimson",
+    title: "Sàng lọc cờ đỏ",
     body: "Đau ngực khi gắng sức, tê yếu lan xuống bàn chân, mất tự chủ đại tiểu tiện, đau ban đêm không giảm khi đổi tư thế → Dừng tập, chuyển khám bác sĩ.",
   },
   {
-    tone: "border-l-caution bg-caution-soft/60 text-caution",
-    title: "Tầng 2 — Thuốc & Sinh lý gắn liền",
+    tone: "bg-caution-soft text-caution",
+    title: "Đối chiếu thuốc & sinh lý",
     body: "Thuốc chẹn beta (Bisoprolol, Metoprolol) làm phẳng nhịp tim → tuyệt đối dùng thang đo RPE & Talk Test. Thuốc hạ đường huyết → kiểm tra bữa ăn trước tập.",
   },
   {
-    tone: "border-l-cleared bg-cleared-soft/60 text-cleared",
-    title: "Tầng 3 — Điều chỉnh Cơ sinh học",
+    tone: "bg-cleared-soft text-cleared",
+    title: "Điều chỉnh cơ sinh học",
     body: "Đau cơ học có quy luật (Mechanical Pain) → giảm cánh tay đòn, đổi góc khớp về biên độ không đau (Safe ROM) và tăng dần tải theo dung nạp mô.",
   },
 ];
@@ -26,50 +27,80 @@ export default async function HomePage({
 }) {
   const params = await searchParams;
   return (
-    <div className="grid gap-5 lg:grid-cols-[250px_minmax(0,1fr)]">
-      <aside className="space-y-3.5">
-        <div className="rounded-lg border border-rule bg-sheet p-4 shadow-xs">
-          <h1 className="font-display text-xl font-bold leading-snug tracking-tight text-ink">
-            Sàng lọc trước mỗi hiệp tập
-          </h1>
-          <p className="mt-1.5 text-xs leading-5 text-slate">
-            Đối chiếu hồ sơ học viên, atlas khớp và y văn ACSM / NSCA / PubMed trước khi giao bài.
-          </p>
-
-          <div className="mt-3 flex flex-col gap-1.5">
+    <div>
+      <PageHeading
+        eyebrow="Lâm sàng & khoa học vận động"
+        title="Bàn tư vấn chuyên môn"
+        description="Kết nối hồ sơ học viên, cơ sinh học và y văn để thiết kế bài tập có cơ sở."
+      />
+      <div className="consultation-grid">
+        <div className="consultation-chat">
+          <ChatPanel
+            key={`${params.clientId ?? ""}-${params.prompt ?? ""}`}
+            initialClientId={params.clientId}
+            initialPrompt={params.prompt}
+          />
+        </div>
+        <aside
+          className="consultation-reference space-y-5"
+          aria-label="Tham chiếu an toàn trước buổi tập"
+        >
+          <section className="panel overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-rule px-5 py-4">
+              <Icon name="shield" className="size-4 text-cleared" />
+              <h2 className="text-xs font-semibold text-ink">
+                Trước mỗi buổi tập
+              </h2>
+            </div>
+            <div className="divide-y divide-rule px-5">
+              {CLINICAL_RULES.map((rule, i) => (
+                <div key={rule.title} className="py-4">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`flex size-6 shrink-0 items-center justify-center rounded-md font-mono text-[10px] font-semibold ${rule.tone}`}
+                    >
+                      0{i + 1}
+                    </span>
+                    <h3 className="text-xs font-semibold text-ink">
+                      {rule.title}
+                    </h3>
+                  </div>
+                  <p className="mt-2.5 text-[11px] leading-[1.85] text-slate">
+                    {rule.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="rounded-2xl border border-cleared/15 bg-cleared-soft/60 p-5">
+            <Icon name="atlas" className="mb-3 size-6 text-cleared" />
+            <h2 className="text-sm font-semibold text-ink">
+              Hiểu cấu trúc.
+              <br />
+              Chọn đúng chuyển động.
+            </h2>
+            <p className="mt-2 text-xs leading-6 text-slate">
+              Tra cứu cơ, khớp và điểm đau ngay trong Atlas.
+            </p>
             <Link
               href="/atlas"
-              className="rounded-md bg-cobalt px-3 py-2 text-center text-xs font-semibold text-white hover:opacity-95"
+              className="mt-4 inline-flex min-h-10 items-center gap-2 text-xs font-semibold text-cleared"
             >
-              Mở Atlas cơ & bài tập
+              Khám phá Atlas <Icon name="arrow-right" className="size-4" />
             </Link>
-            <Link
-              href="/clients"
-              className="rounded-md border border-rule bg-sheet px-3 py-2 text-center text-xs font-semibold text-ink hover:border-cobalt hover:text-cobalt"
-            >
-              Hồ sơ học viên
-            </Link>
-          </div>
-        </div>
-
-        <div className="space-y-2.5">
-          {CLINICAL_RULES.map((rule) => (
-            <div
-              key={rule.title}
-              className={`rounded-md border border-rule border-l-4 p-3 ${rule.tone}`}
-            >
-              <p className="font-display text-xs font-bold">{rule.title}</p>
-              <p className="mt-1 text-xs leading-5 text-ink">{rule.body}</p>
-            </div>
-          ))}
-        </div>
-      </aside>
-
-      <ChatPanel
-        key={`${params.clientId ?? ""}-${params.prompt ?? ""}`}
-        initialClientId={params.clientId}
-        initialPrompt={params.prompt}
-      />
+          </section>
+          <Link
+            href="/clients"
+            className="flex min-h-12 items-center justify-between gap-2 rounded-xl border border-rule bg-sheet px-4 text-xs font-medium text-slate hover:border-cobalt hover:text-cobalt"
+          >
+            <span className="flex items-center gap-2">
+              <Icon name="users" className="size-4" />
+              Quản lý hồ sơ học viên
+            </span>
+            <Icon name="arrow-right" className="size-4" />
+          </Link>
+        </aside>
+      </div>
     </div>
   );
 }

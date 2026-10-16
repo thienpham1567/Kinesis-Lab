@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
 import { ChatPanel } from "@/components/ChatPanel";
+import { Icon } from "@/components/WorkspaceUI";
 import { matchClientIssuesToRegions } from "@/lib/clinical/anatomy-atlas";
 import { PARQ_ITEMS, safetyNotes } from "@/lib/clinical/safety";
 import type { BiomarkerRecord, Client } from "@/lib/types";
@@ -64,7 +65,7 @@ export default function ClientDetailPage() {
   }, [id]);
 
   async function save(patch: Partial<Client>) {
-    if (!client) return;
+    if (!client || saving) return;
     setSaving(true);
     setError("");
     setSavedToast("");
@@ -80,6 +81,8 @@ export default function ClientDetailPage() {
         setClient(data.client);
         setSavedToast("Đã lưu cập nhật hồ sơ");
       }
+    } catch {
+      setError("Không thể lưu hồ sơ. Kiểm tra kết nối và thử lại.");
     } finally {
       setSaving(false);
     }
@@ -87,49 +90,77 @@ export default function ClientDetailPage() {
 
   if (!client) {
     return (
-      <div className="rounded-lg border border-rule bg-sheet p-8 text-center text-sm text-slate">
-        {error || "Đang mở bệnh án vận động..."}
+      <div className="panel p-8 text-center text-sm text-slate" role="status">
+        <Icon
+          name={error ? "alert" : "spinner"}
+          className={`mx-auto mb-4 size-6 ${error ? "text-crimson" : "animate-spin text-cobalt"}`}
+        />
+        <p>{error || "Đang mở hồ sơ học viên…"}</p>
+        {error && (
+          <Link href="/clients" className="button-secondary mt-5">
+            Về danh sách học viên
+          </Link>
+        )}
       </div>
     );
   }
 
   const autoWarnings = safetyNotes(client).split("\n");
-  const regionAlertsCount = Object.keys(matchClientIssuesToRegions(client)).length;
+  const regionAlertsCount = Object.keys(
+    matchClientIssuesToRegions(client),
+  ).length;
 
   const tabs: { id: Tab; label: string; badge?: number }[] = [
     {
       id: "ban-do",
-      label: "Bản đồ Giải phẫu & Điểm đau",
+      label: "Bản đồ điểm đau",
       badge: regionAlertsCount,
     },
-    { id: "ho-so", label: "Hồ sơ Bệnh lý & Cơ xương khớp" },
+    { id: "ho-so", label: "Hồ sơ lâm sàng" },
     {
       id: "co-do",
-      label: "Sàng lọc PAR-Q+ & Cờ Đỏ",
-      badge: Object.values(client.red_flags?.parq ?? {}).filter((v) => v === true).length,
+      label: "Sàng lọc PAR-Q+",
+      badge: Object.values(client.red_flags?.parq ?? {}).filter(
+        (v) => v === true,
+      ).length,
     },
-    { id: "xet-nghiem", label: "Xét nghiệm Máu & InBody", badge: biomarkers.length },
-    { id: "chat", label: "Hội chẩn & Giáo án Rehab" },
+    {
+      id: "xet-nghiem",
+      label: "Xét nghiệm & InBody",
+      badge: biomarkers.length,
+    },
+    { id: "chat", label: "Tư vấn & giáo án" },
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-lg border border-rule bg-sheet p-5 shadow-xs">
+    <div className="client-detail-workspace min-w-0 space-y-6">
+      <Link
+        href="/clients"
+        className="inline-flex min-h-10 items-center gap-2 text-xs font-medium text-slate hover:text-cobalt"
+      >
+        <Icon name="arrow-left" className="size-4" />
+        Danh sách học viên
+      </Link>
+      <div className="panel p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <Link href="/clients" className="text-xs font-medium text-cobalt hover:underline">
-              Danh sách học viên
-            </Link>
-            <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-ink">
+            <p className="eyebrow">Hồ sơ học viên · Theo dõi vận động</p>
+            <h1 className="mt-2 break-words font-display text-3xl font-bold tracking-tight text-ink">
               {client.name}
             </h1>
             <p className="mt-1 text-sm text-slate">
-              {client.sex ?? "Chưa rõ giới"} • {client.age != null ? `${client.age} tuổi` : "Chưa rõ tuổi"} •{" "}
+              {client.sex ?? "Chưa rõ giới"} •{" "}
+              {client.age != null ? `${client.age} tuổi` : "Chưa rõ tuổi"} •{" "}
               {client.training_level ?? "Chưa phân cấp độ"}
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            {saving && <span className="font-medium text-cobalt">Đang lưu...</span>}
+          <div
+            className="flex flex-wrap items-center gap-2 text-xs"
+            aria-live="polite"
+          >
+            {saving && (
+              <span className="font-medium text-cobalt">Đang lưu...</span>
+            )}
             {savedToast && (
               <span className="rounded bg-cleared-soft px-2.5 py-1 font-medium text-cleared">
                 {savedToast}
@@ -138,10 +169,11 @@ export default function ClientDetailPage() {
           </div>
         </div>
 
-        <div className="mt-4 rounded-md border border-caution/30 bg-caution-soft/60 p-3.5">
-          <p className="font-display text-xs font-bold text-caution">
-            Cảnh báo An toàn & Điều chỉnh Tải trọng Tự động (Clinical Safety Guard)
-          </p>
+        <div className="mt-5 rounded-xl border border-caution/25 bg-caution-soft/60 p-4">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-caution">
+            <Icon name="shield" className="size-4" />
+            Lưu ý an toàn & điều chỉnh tải
+          </h2>
           <ul className="mt-1.5 space-y-1 text-xs leading-5 text-ink">
             {autoWarnings.map((w) => (
               <li key={w}>• {w}</li>
@@ -151,28 +183,28 @@ export default function ClientDetailPage() {
       </div>
 
       {error ? (
-        <p className="rounded-md border border-crimson/30 bg-crimson-soft px-4 py-2.5 text-sm text-crimson">
+        <p className="alert-error" role="alert">
           {error}
         </p>
       ) : null}
 
-      <div className="flex flex-wrap gap-1.5 border-b border-rule pb-2">
+      <div className="tab-bar" aria-label="Các phần hồ sơ học viên">
         {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
-              tab === t.id
-                ? "bg-cobalt text-white"
-                : "bg-sheet text-slate hover:bg-surface hover:text-ink"
-            }`}
+            aria-pressed={tab === t.id}
+            disabled={saving}
+            className="tab-button"
           >
             <span>{t.label}</span>
             {t.badge != null && t.badge > 0 && (
               <span
-                className={`rounded-full px-1.5 py-0.2 font-mono text-[11px] ${
-                  tab === t.id ? "bg-white/20 text-white" : "bg-surface text-ink"
+                className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ${
+                  tab === t.id
+                    ? "bg-cobalt-soft text-cobalt"
+                    : "bg-sheet text-slate"
                 }`}
               >
                 {t.badge}
@@ -194,10 +226,20 @@ export default function ClientDetailPage() {
         />
       )}
       {tab === "ho-so" && (
-        <ProfileForm key={client.updated_at} client={client} onSave={save} />
+        <ProfileForm
+          key={client.updated_at}
+          client={client}
+          onSave={save}
+          saving={saving}
+        />
       )}
       {tab === "co-do" && (
-        <RedFlagForm key={client.updated_at + "-rf"} client={client} onSave={save} />
+        <RedFlagForm
+          key={client.updated_at + "-rf"}
+          client={client}
+          onSave={save}
+          saving={saving}
+        />
       )}
       {tab === "xet-nghiem" && (
         <Labs clientId={client.id} records={biomarkers} onChange={load} />
@@ -217,8 +259,10 @@ export default function ClientDetailPage() {
 function ProfileForm({
   client,
   onSave,
+  saving,
 }: {
   client: Client;
+  saving: boolean;
   onSave: (p: Partial<Client>) => Promise<void>;
 }) {
   const [form, setForm] = useState(client);
@@ -255,7 +299,10 @@ function ProfileForm({
             className="w-full px-3 py-2 text-sm"
             value={form.age ?? ""}
             onChange={(e) =>
-              setForm({ ...form, age: e.target.value ? Number(e.target.value) : null })
+              setForm({
+                ...form,
+                age: e.target.value ? Number(e.target.value) : null,
+              })
             }
           />
         </Field>
@@ -270,7 +317,9 @@ function ProfileForm({
           <input
             className="w-full px-3 py-2 text-sm"
             value={form.training_level ?? ""}
-            onChange={(e) => setForm({ ...form, training_level: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, training_level: e.target.value })
+            }
             placeholder="Mới bắt đầu / Trung cấp / Vận động viên"
           />
         </Field>
@@ -288,7 +337,9 @@ function ProfileForm({
         hint="Ví dụ: Thoát vị đĩa đệm L4-L5, Tăng huyết áp độ 1, Đái tháo đường type 2"
         items={form.medical_conditions}
         fields={["name", "since", "notes"]}
-        onChange={(medical_conditions) => setForm({ ...form, medical_conditions })}
+        onChange={(medical_conditions) =>
+          setForm({ ...form, medical_conditions })
+        }
       />
 
       <JsonList
@@ -304,7 +355,9 @@ function ProfileForm({
         hint="Ghi rõ góc độ gây đau (Pain Triggers) và biến thể bài tập không đau (Safe ROM)"
         items={form.orthopedic_issues}
         fields={["region", "painTriggers", "safeRom", "notes"]}
-        onChange={(orthopedic_issues) => setForm({ ...form, orthopedic_issues })}
+        onChange={(orthopedic_issues) =>
+          setForm({ ...form, orthopedic_issues })
+        }
       />
 
       <Field label="Ghi chú lâm sàng & Lịch sử sinh hoạt của PT">
@@ -317,11 +370,8 @@ function ProfileForm({
       </Field>
 
       <div>
-        <button
-          type="submit"
-          className="rounded-md bg-cobalt px-5 py-2.5 font-display text-sm font-semibold text-white hover:opacity-95"
-        >
-          Lưu cập nhật hồ sơ
+        <button type="submit" disabled={saving} className="button-primary">
+          {saving ? "Đang lưu…" : "Lưu cập nhật hồ sơ"}
         </button>
       </div>
     </form>
@@ -331,8 +381,10 @@ function ProfileForm({
 function RedFlagForm({
   client,
   onSave,
+  saving,
 }: {
   client: Client;
+  saving: boolean;
   onSave: (p: Partial<Client>) => Promise<void>;
 }) {
   const parq = { ...(client.red_flags?.parq ?? {}) };
@@ -355,7 +407,8 @@ function RedFlagForm({
             Bảng kiểm Sàng lọc PAR-Q+ & Cờ Đỏ Nội – Thần kinh
           </h2>
           <p className="text-xs text-slate">
-            Bất kỳ mục nào trả lời &ldquo;Có&rdquo; đều yêu cầu khai thác sâu hoặc giấy đồng ý tập luyện từ bác sĩ chuyên khoa.
+            Bất kỳ mục nào trả lời &ldquo;Có&rdquo; đều yêu cầu khai thác sâu
+            hoặc giấy đồng ý tập luyện từ bác sĩ chuyên khoa.
           </p>
         </div>
         <span
@@ -384,6 +437,7 @@ function RedFlagForm({
                   key={String(v)}
                   type="button"
                   onClick={() => setAnswers({ ...answers, [q.id]: v })}
+                  aria-pressed={answers[q.id] === v}
                   className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
                     answers[q.id] === v
                       ? v === true
@@ -412,11 +466,8 @@ function RedFlagForm({
         />
       </Field>
 
-      <button
-        type="submit"
-        className="rounded-md bg-cobalt px-5 py-2.5 font-display text-sm font-semibold text-white hover:opacity-95"
-      >
-        Lưu bảng sàng lọc Cờ Đỏ
+      <button type="submit" disabled={saving} className="button-primary">
+        {saving ? "Đang lưu…" : "Lưu bảng sàng lọc"}
       </button>
     </form>
   );
@@ -440,7 +491,10 @@ function Labs({
     try {
       const fd = new FormData();
       fd.set("file", file);
-      const extracted = await fetch("/api/extract-lab", { method: "POST", body: fd });
+      const extracted = await fetch("/api/extract-lab", {
+        method: "POST",
+        body: fd,
+      });
       const data = await extracted.json();
       if (!extracted.ok) {
         setMsg(data.error ?? "Không đọc được phiếu");
@@ -477,12 +531,15 @@ function Labs({
               Bóc tách Phiếu Xét nghiệm Máu & Giấy InBody bằng AI Vision
             </h2>
             <p className="mt-0.5 text-xs text-slate">
-              Hỗ trợ ảnh chụp phiếu xét nghiệm (Glucose, HbA1c, Lipid, AST/ALT, CK, Vitamin D, Ferritin)
-              hoặc phiếu InBody (SMM, PBF, VFA, ECW Ratio).
+              Hỗ trợ ảnh chụp phiếu xét nghiệm (Glucose, HbA1c, Lipid, AST/ALT,
+              CK, Vitamin D, Ferritin) hoặc phiếu InBody (SMM, PBF, VFA, ECW
+              Ratio).
             </p>
           </div>
           <label className="cursor-pointer rounded-md bg-cobalt px-4 py-2.5 font-display text-xs font-semibold text-white hover:opacity-95">
-            {busy ? "Đang phân tích phiếu..." : "Tải ảnh / PDF phiếu xét nghiệm"}
+            {busy
+              ? "Đang phân tích phiếu..."
+              : "Tải ảnh / PDF phiếu xét nghiệm"}
             <input
               type="file"
               accept="image/*,application/pdf"
@@ -495,12 +552,17 @@ function Labs({
             />
           </label>
         </div>
-        {msg ? <p className="mt-3 text-xs font-medium text-crimson">{msg}</p> : null}
+        {msg ? (
+          <p className="mt-3 text-xs font-medium text-crimson">{msg}</p>
+        ) : null}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {records.map((r) => (
-          <article key={r.id} className="rounded-lg border border-rule bg-sheet p-5 shadow-xs">
+          <article
+            key={r.id}
+            className="rounded-lg border border-rule bg-sheet p-5 shadow-xs"
+          >
             <div className="flex items-center justify-between border-b border-rule pb-3">
               <div>
                 <span
@@ -510,15 +572,21 @@ function Labs({
                       : "bg-cleared-soft text-cleared"
                   }`}
                 >
-                  {r.kind === "inbody" ? "Phân tích Thành phần Cơ thể (InBody)" : "Sinh hóa & Huyết học"}
+                  {r.kind === "inbody"
+                    ? "Phân tích Thành phần Cơ thể (InBody)"
+                    : "Sinh hóa & Huyết học"}
                 </span>
-                <p className="mt-1 font-mono text-xs text-slate">Ngày đo: {r.recorded_at}</p>
+                <p className="mt-1 font-mono text-xs text-slate">
+                  Ngày đo: {r.recorded_at}
+                </p>
               </div>
               <button
                 type="button"
                 className="text-xs font-medium text-crimson hover:underline"
                 onClick={async () => {
-                  await fetch(`/api/biomarkers?id=${r.id}`, { method: "DELETE" });
+                  await fetch(`/api/biomarkers?id=${r.id}`, {
+                    method: "DELETE",
+                  });
                   onChange();
                 }}
               >
@@ -540,7 +608,10 @@ function Labs({
                     ? "border-caution/30 bg-caution-soft/60 text-caution"
                     : "border-rule bg-canvas/70 text-ink";
                 return (
-                  <div key={k} className={`rounded-md border p-2.5 ${badgeCls}`}>
+                  <div
+                    key={k}
+                    className={`rounded-md border p-2.5 ${badgeCls}`}
+                  >
                     <dt className="text-[11px] font-medium text-slate">{k}</dt>
                     <dd className="mt-0.5 font-mono text-sm font-semibold">
                       {String(metric.value)} {metric.unit ?? ""}
@@ -580,7 +651,9 @@ function Field({
   className?: string;
 }) {
   return (
-    <label className={`block space-y-1 text-xs font-medium text-slate ${className}`}>
+    <label
+      className={`block space-y-1 text-xs font-medium text-slate ${className}`}
+    >
       <span>{label}</span>
       {children}
     </label>
@@ -612,7 +685,10 @@ function JsonList<T extends object>({
           type="button"
           className="rounded border border-cobalt bg-cobalt-soft px-3 py-1 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-white"
           onClick={() =>
-            onChange([...list, Object.fromEntries(fields.map((f) => [f, ""])) as T])
+            onChange([
+              ...list,
+              Object.fromEntries(fields.map((f) => [f, ""])) as T,
+            ])
           }
         >
           + Thêm mục

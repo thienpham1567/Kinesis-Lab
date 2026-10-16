@@ -545,11 +545,12 @@ export function MuscleHypertrophyExplorer() {
   return (
     <div className="space-y-4">
       {/* Top Control Bar: Bidirectional Mode Switch */}
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-rule bg-sheet px-3 py-2.5 shadow-xs">
-        <div className="inline-flex flex-wrap gap-1 rounded-md border border-rule bg-canvas p-0.5">
+      <div className="panel flex flex-wrap items-center gap-3 px-4 py-3.5">
+        <div className="grid w-full grid-cols-2 gap-1 rounded-lg border border-rule bg-canvas p-1 sm:inline-flex sm:w-auto">
           <button
             type="button"
             onClick={() => setLookupMode("muscle_to_ex")}
+                aria-pressed={lookupMode === "muscle_to_ex"}
             className={`rounded px-3 py-1.5 text-xs font-bold transition-colors ${
               lookupMode === "muscle_to_ex"
                 ? "bg-cobalt text-white"
@@ -561,6 +562,7 @@ export function MuscleHypertrophyExplorer() {
           <button
             type="button"
             onClick={() => setLookupMode("ex_to_muscle")}
+                aria-pressed={lookupMode === "ex_to_muscle"}
             className={`rounded px-3 py-1.5 text-xs font-bold transition-colors ${
               lookupMode === "ex_to_muscle"
                 ? "bg-crimson text-white"
@@ -586,6 +588,7 @@ export function MuscleHypertrophyExplorer() {
                 key={cat}
                 type="button"
                 onClick={() => selectCategoryFilter(cat)}
+                aria-pressed={categoryFilter === cat}
                 className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                   categoryFilter === cat
                     ? "bg-cobalt-soft text-cobalt"
@@ -605,6 +608,7 @@ export function MuscleHypertrophyExplorer() {
                 key={pat}
                 type="button"
                 onClick={() => selectPatternFilter(pat)}
+                aria-pressed={patternFilter === pat}
                 className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
                   patternFilter === pat
                     ? "bg-crimson-soft text-crimson"
@@ -627,6 +631,7 @@ export function MuscleHypertrophyExplorer() {
                 key={m.id}
                 type="button"
                 onClick={() => selectMuscle(m.id)}
+                aria-pressed={selectedMuscleId === m.id}
                 className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                   isSelected
                     ? "border-cobalt bg-cobalt text-white"
@@ -640,9 +645,9 @@ export function MuscleHypertrophyExplorer() {
         </div>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
+      <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
         {/* Left Column: Interactive Anatomical Myology & Heatmap */}
-        <div className="rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[4.25rem] lg:max-h-[calc(100dvh-6.5rem)] lg:overflow-y-auto">
+        <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-6.5rem)] lg:overflow-y-auto">
           <div>
             <div className="flex items-start justify-between gap-2 border-b border-rule pb-2.5">
               <div className="min-w-0">
@@ -669,6 +674,7 @@ export function MuscleHypertrophyExplorer() {
                     key={v.id}
                     type="button"
                     onClick={() => setBodySide(v.id)}
+                aria-pressed={bodySide === v.id}
                     className={`rounded px-2 py-0.5 font-semibold ${
                       bodySide === v.id ? "bg-sheet text-ink shadow-2xs" : "text-slate"
                     }`}
@@ -714,7 +720,7 @@ export function MuscleHypertrophyExplorer() {
             {/* Dual Anterior & Posterior Figures */}
             <div className="my-2.5 rounded-md border border-rule bg-white p-2">
               <div
-                className={`grid gap-2 ${bodySide === "both" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
+                className={`grid gap-2 ${bodySide === "both" ? "grid-cols-2" : "grid-cols-1"}`}
               >
                 {(bodySide === "both" || bodySide === "anterior") &&
                   renderMyologyFigure(
@@ -862,14 +868,14 @@ export function MuscleHypertrophyExplorer() {
                         href={ref.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded border border-cobalt/30 bg-sheet px-2 py-0.5 text-[11px] font-medium text-ink transition-colors hover:border-cobalt hover:text-cobalt"
+                        className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded border border-cobalt/30 bg-sheet px-2 py-0.5 text-[11px] font-medium text-ink transition-colors hover:border-cobalt hover:text-cobalt"
                       >
                         {ref.pmid && (
                           <span className="font-mono font-bold text-cobalt">
                             PMID:{ref.pmid}
                           </span>
                         )}
-                        <span className="truncate max-w-[320px]">
+                        <span className="min-w-0 max-w-[320px] truncate">
                           {ref.title}
                         </span>
                         <span className="text-cobalt">↗</span>

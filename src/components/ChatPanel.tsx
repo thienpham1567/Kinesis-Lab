@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   ANATOMY_REGIONS,
   detectRegionsInText,
@@ -11,6 +11,8 @@ import {
 import { safetyNotes } from "@/lib/clinical/safety";
 import type { ChatMessage, Client, PubMedPaper, RagHit } from "@/lib/types";
 import { JointDiagramSvg } from "./JointDiagramSvg";
+import { Icon } from "./WorkspaceUI";
+import { ConsultationCases, ConsultationWelcome } from "./ConsultationWelcome";
 
 const REGION_CHIP: Record<AnatomyRegionId, string> = {
   cervical: "Cổ",
@@ -22,30 +24,6 @@ const REGION_CHIP: Record<AnatomyRegionId, string> = {
   knee: "Gối",
   ankle_foot: "Cổ chân",
 };
-
-const QUICK_CASES = [
-  {
-    tag: "Cột sống & Thuốc",
-    title: "Thoát vị L4-L5 kèm dùng Bisoprolol",
-    regionId: "lumbar" as AnatomyRegionId,
-    prompt:
-      "Học viên nam 42 tuổi bị thoát vị đĩa đệm L4-L5 (đã qua giai đoạn cấp) và tăng huyết áp đang dùng Bisoprolol 5mg. Tôi muốn lên bài tập thân dưới thay thế Barbell Back Squat và chọn ngưỡng cường độ tim mạch an toàn.",
-  },
-  {
-    tag: "Khớp vai",
-    title: "Đau mỏm cùng vai khi đẩy qua đầu",
-    regionId: "shoulder" as AnatomyRegionId,
-    prompt:
-      "Học viên đau mặt trước ngoài khớp vai phải ở cung 70–110 độ khi tập Overhead Press, không đau ban đêm. Cần sàng lọc những gì và chọn chuỗi bài tập regression / phục hồi cơ răng trước (serratus anterior) như thế nào?",
-  },
-  {
-    tag: "Khớp gối",
-    title: "Đau khớp chè – đùi khi xuống cầu thang",
-    regionId: "knee" as AnatomyRegionId,
-    prompt:
-      "Học viên đau mặt trước khớp gối trái khi đi xuống cầu thang và khi Squat sâu (hội chứng chè – đùi PFPS). Giải thích cơ chế lực nén PFJ và cách điều chỉnh tỷ lệ mô-men Khớp Gối vs Khớp Háng.",
-  },
-];
 
 export function ChatPanel({
   clientId: lockedClientId,
@@ -69,17 +47,30 @@ export function ChatPanel({
   const [pubmed, setPubmed] = useState<PubMedPaper[]>([]);
   const [model, setModel] = useState("");
   const [error, setError] = useState("");
-  const [visualRegionId, setVisualRegionId] = useState<AnatomyRegionId | null>(null);
+  const [visualRegionId, setVisualRegionId] = useState<AnatomyRegionId | null>(
+    null,
+  );
   const scroller = useRef<HTMLDivElement>(null);
+  const composer = useRef<HTMLTextAreaElement>(null);
+  const composerId = useId();
+  const [clientsLoading, setClientsLoading] = useState(true);
+  const [clientsError, setClientsError] = useState(false);
 
   useEffect(() => {
     let ignore = false;
     fetch("/api/clients")
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
-        if (!ignore && ok) setClients(data.clients ?? []);
+        if (ignore) return;
+        if (!ok) throw new Error("clients");
+        setClients(data.clients ?? []);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!ignore) setClientsError(true);
+      })
+      .finally(() => {
+        if (!ignore) setClientsLoading(false);
+      });
     return () => {
       ignore = true;
     };
@@ -87,37 +78,43 @@ export function ChatPanel({
 
   const activeClient =
     clients.find((c) => c.id === (lockedClientId ?? selectedId)) ?? null;
-  const activeSafety = activeClient ? safetyNotes(activeClient).split("\n") : [];
+  const activeSafety = activeClient
+    ? safetyNotes(activeClient).split("\n")
+    : [];
 
   // Determine the most relevant visual diagram for the current consultation context
-  const conversationText = [
-    input,
-    ...messages.map((m) => m.content),
-  ].join(" ");
+  const conversationText = [input, ...messages.map((m) => m.content)].join(" ");
   const detectedFromText = detectRegionsInText(conversationText);
   const clientAlerts = matchClientIssuesToRegions(activeClient);
   const firstClientRegionId = Object.keys(clientAlerts)[0] as
-    | AnatomyRegionId
-    | undefined;
+    AnatomyRegionId | undefined;
 
   const effectiveRegionId: AnatomyRegionId | null =
-    visualRegionId ??
-    detectedFromText[0]?.id ??
-    firstClientRegionId ??
-    null;
+    visualRegionId ?? detectedFromText[0]?.id ?? firstClientRegionId ?? null;
 
   const activeVisualRegion = effectiveRegionId
-    ? ANATOMY_REGIONS.find((r) => r.id === effectiveRegionId) ?? null
+    ? (ANATOMY_REGIONS.find((r) => r.id === effectiveRegionId) ?? null)
     : null;
 
   async function sendText(rawText: string) {
     const text = rawText.trim();
     if (!text || busy) return;
-    const next = [...messages, { role: "user" as const, content: text }];
+    const failedTurn = messages
+      .map((message) => message.role)
+      .lastIndexOf("user");
+    const history =
+      error && failedTurn >= 0 ? messages.slice(0, failedTurn) : messages;
+    const next = [
+      ...history.filter((message) => message.content.trim()),
+      { role: "user" as const, content: text },
+    ];
     setMessages([...next, { role: "assistant", content: "" }]);
     setInput("");
     setBusy(true);
     setError("");
+    setRag([]);
+    setPubmed([]);
+    setModel("");
 
     try {
       const res = await fetch("/api/chat", {
@@ -173,240 +170,262 @@ export function ChatPanel({
   }
 
   return (
-    <div className="flex min-h-[72dvh] flex-col overflow-hidden rounded-lg border border-rule bg-sheet shadow-xs">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule bg-surface/50 px-4 py-2.5">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="font-display text-sm font-semibold text-ink">
-            {lockedClientId
-              ? "Hội chẩn theo hồ sơ học viên"
-              : "Bàn Tư vấn Lâm sàng & Cơ sinh học"}
-          </span>
-          {!lockedClientId && (
-            <label className="flex items-center gap-2 text-xs text-slate">
-              <span>Ngữ cảnh học viên:</span>
-              <select
-                aria-label="Chọn hồ sơ học viên"
-                value={selectedId}
-                onChange={(e) => {
-                  setSelectedId(e.target.value);
-                  setVisualRegionId(null);
-                }}
-                className="px-2.5 py-1 text-xs font-medium text-ink"
-              >
-                <option value="">Tra cứu chuyên môn chung (không gắn hồ sơ)</option>
-                {clients.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} ({c.age ?? "?"}t)
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {model ? (
-            <span className="rounded bg-cobalt-soft px-2 py-0.5 font-mono text-[11px] text-cobalt">
-              {model}
+    <section
+      className="panel flex min-h-[660px] flex-col overflow-hidden"
+      aria-label="Phiên tư vấn chuyên môn"
+    >
+      <div className="border-b border-rule px-5 py-4 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-cobalt-soft text-cobalt">
+              <Icon name="message" className="size-4" />
             </span>
-          ) : (
-            <span className="text-xs text-slate">
-              Tự động định tuyến Claude / Gemini + PubMed
-            </span>
-          )}
+            <div>
+              <h2 className="text-sm font-semibold text-ink">
+                {lockedClientId ? "Tư vấn theo hồ sơ" : "Phiên tư vấn"}
+              </h2>
+              <p className="mt-0.5 text-[10px] text-slate">
+                Tham chiếu ACSM · NSCA · PubMed
+              </p>
+            </div>
+          </div>
           {messages.length > 0 && (
             <button
               type="button"
+              disabled={busy}
               onClick={() => {
                 setMessages([]);
                 setRag([]);
                 setPubmed([]);
+                setModel("");
                 setError("");
+                composer.current?.focus();
               }}
-              className="rounded border border-rule-strong bg-sheet px-2.5 py-1 text-xs text-slate hover:text-ink"
+              className="inline-flex min-h-10 items-center gap-1.5 text-xs font-medium text-slate hover:text-cobalt disabled:opacity-50"
             >
+              <Icon name="refresh" className="size-3.5" />
               Phiên mới
             </button>
           )}
         </div>
+        {!lockedClientId && (
+          <div className="mt-4 rounded-xl border border-rule bg-canvas px-3.5 py-3">
+            <label className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:gap-3">
+              <span className="flex shrink-0 items-center gap-2 font-medium text-slate">
+                <Icon name="users" className="size-4" />
+                Hồ sơ học viên
+              </span>
+              <select
+                aria-label="Chọn hồ sơ học viên"
+                value={selectedId}
+                disabled={clientsLoading || busy}
+                onChange={(e) => {
+                  setSelectedId(e.target.value);
+                  setVisualRegionId(null);
+                }}
+                className="min-h-10 w-full min-w-0 flex-1 px-2.5 py-2 text-xs font-medium text-ink"
+              >
+                <option value="">
+                  {clientsLoading
+                    ? "Đang tải hồ sơ…"
+                    : "Tra cứu chung · Không gắn hồ sơ"}
+                </option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.age ?? "?"} tuổi)
+                  </option>
+                ))}
+              </select>
+            </label>
+            {clientsError && (
+              <p className="mt-2 text-xs text-crimson" role="status">
+                Chưa tải được hồ sơ.{" "}
+                <Link href="/clients" className="underline underline-offset-2">
+                  Mở trang Học viên để thử lại
+                </Link>
+                .
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {activeClient && (
-        <div className="border-b border-caution/25 bg-caution-soft/70 px-4 py-2.5 text-xs">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="font-semibold text-caution">
-              Chống chỉ định & Lưu ý tự động cho {activeClient.name}:
-            </span>
+        <div className="border-b border-caution/20 bg-caution-soft/60 px-5 py-4 sm:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <h3 className="flex items-center gap-2 font-semibold text-caution">
+              <Icon name="shield" className="size-4" />
+              Lưu ý trước khi tập · {activeClient.name}
+            </h3>
             <Link
               href={`/clients/${activeClient.id}`}
-              className="font-semibold text-cobalt hover:underline"
+              className="inline-flex min-h-8 items-center gap-1 font-medium text-cobalt"
             >
-              Xem Bản đồ Điểm đau & Bệnh án đầy đủ
+              Xem hồ sơ
+              <Icon name="arrow-right" className="size-3.5" />
             </Link>
           </div>
-          <ul className="mt-1 space-y-0.5 text-ink">
+          <ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-6 text-ink">
             {activeSafety.map((line) => (
-              <li key={line} className="leading-5">
-                • {line}
-              </li>
+              <li key={line}>{line}</li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Visual Anatomy Strip inside Consultation */}
-      <div className="border-b border-rule bg-canvas/70 px-4 py-2.5">
-        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-display font-semibold text-ink">
-              Sơ đồ Giải phẫu trực quan:
-            </span>
-            {ANATOMY_REGIONS.map((r) => {
-              const isSelected = activeVisualRegion?.id === r.id;
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() =>
-                    setVisualRegionId(
-                      visualRegionId === r.id ? null : r.id,
-                    )
-                  }
-                  className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${
-                    isSelected
-                      ? "bg-cobalt text-white"
-                      : "border border-rule bg-sheet text-slate hover:text-ink"
-                  }`}
-                >
-                  {REGION_CHIP[r.id]}
-                </button>
-              );
-            })}
-          </div>
+      <div className="border-b border-rule px-5 py-3.5 sm:px-6">
+        <div className="mb-2.5 flex items-center justify-between gap-2">
+          <span className="text-[11px] font-medium text-slate">
+            Tham chiếu giải phẫu
+          </span>
           <Link
             href="/atlas"
-            className="text-[11px] font-semibold text-cobalt hover:underline"
+            className="inline-flex min-h-7 items-center gap-1 text-[11px] font-medium text-cobalt"
           >
-            Mở toàn bộ Atlas
+            Atlas
+            <Icon name="external" className="size-3" />
           </Link>
         </div>
-
+        <div className="flex flex-wrap gap-1.5">
+          {ANATOMY_REGIONS.map((r) => (
+            <button
+              key={r.id}
+              type="button"
+              aria-pressed={activeVisualRegion?.id === r.id}
+              onClick={() =>
+                setVisualRegionId(visualRegionId === r.id ? null : r.id)
+              }
+              className={`min-h-9 rounded-lg border px-2.5 text-[11px] font-medium transition-colors ${activeVisualRegion?.id === r.id ? "border-cobalt/20 bg-cobalt-soft text-cobalt" : "border-rule bg-sheet text-slate hover:border-cobalt/40 hover:text-cobalt"}`}
+            >
+              {REGION_CHIP[r.id]}
+            </button>
+          ))}
+        </div>
         {activeVisualRegion && (
-          <div className="mt-2.5 space-y-2">
-            <JointDiagramSvg regionId={activeVisualRegion.id} />
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded border border-rule bg-sheet px-3 py-2 text-xs">
-              <p className="text-ink">
-                <strong className="text-cobalt">{activeVisualRegion.name}:</strong>{" "}
+          <details
+            key={activeVisualRegion.id}
+            className="mt-3 rounded-xl border border-rule bg-canvas px-3.5"
+          >
+            <summary className="py-3 text-xs font-medium text-cobalt">
+              Xem sơ đồ · {activeVisualRegion.name}
+            </summary>
+            <div className="space-y-3 pb-3">
+              <JointDiagramSvg regionId={activeVisualRegion.id} />
+              <p className="text-xs leading-6 text-slate">
                 {activeVisualRegion.biomechanicsKey}
               </p>
               <button
                 type="button"
-                onClick={() => setInput(activeVisualRegion.sampleAiPrompt)}
-                className="shrink-0 rounded bg-cobalt-soft px-2.5 py-1 font-semibold text-cobalt hover:bg-cobalt hover:text-white"
+                onClick={() => {
+                  setInput(activeVisualRegion.sampleAiPrompt);
+                  composer.current?.focus();
+                }}
+                className="button-secondary w-full"
               >
-                Điền câu hỏi mẫu vùng này
+                Dùng câu hỏi mẫu vùng này
+                <Icon name="arrow-right" className="size-4" />
               </button>
             </div>
-          </div>
+          </details>
         )}
       </div>
 
-      <div ref={scroller} className="flex-1 space-y-5 overflow-y-auto px-4 py-5 sm:px-6">
+      <div
+        ref={scroller}
+        role="log"
+        aria-label="Nội dung phiên tư vấn"
+        aria-busy={busy}
+        className={`flex-1 space-y-5 overflow-y-auto px-5 py-2 sm:px-6 ${messages.length > 0 ? "max-h-[62dvh] min-h-[320px] py-6" : ""}`}
+      >
         {messages.length === 0 ? (
-          <div className="space-y-6 py-2">
-            <div className="max-w-2xl space-y-2">
-              <h2 className="font-display text-2xl font-bold tracking-tight text-ink">
-                Kiểm tra chống chỉ định trước khi giao bài tập.
-              </h2>
-              <p className="text-sm leading-relaxed text-slate">
-                Mỗi câu trả lời được tách thành 3 tầng: (1) Sàng lọc Cờ Đỏ & Chống chỉ định,
-                (2) Cơ chế Giải phẫu – Sinh lý – Cơ sinh học, (3) Giao thức Tập luyện
-                (Regression / Progression, Tempo, RPE) kèm sơ đồ cấu trúc khớp trực quan.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-slate">
-                Tình huống mẫu thường gặp tại phòng tập (nhấn để nạp câu hỏi & mở sơ đồ khớp):
-              </p>
-              <div className="grid gap-3 md:grid-cols-3">
-                {QUICK_CASES.map((item) => (
-                  <button
-                    key={item.title}
-                    type="button"
-                    onClick={() => {
-                      setInput(item.prompt);
-                      setVisualRegionId(item.regionId);
-                    }}
-                    className="flex flex-col justify-between rounded-md border border-rule bg-canvas/70 p-3.5 text-left transition-colors hover:border-cobalt hover:bg-cobalt-soft/30"
-                  >
-                    <div>
-                      <span className="inline-block rounded bg-cobalt-soft px-2 py-0.5 text-[11px] font-semibold text-cobalt">
-                        {item.tag}
-                      </span>
-                      <p className="mt-2 font-display text-sm font-semibold text-ink">
-                        {item.title}
-                      </p>
-                      <p className="mt-1 line-clamp-3 text-xs leading-5 text-slate">
-                        {item.prompt}
-                      </p>
-                    </div>
-                    <span className="mt-3 text-xs font-medium text-cobalt">
-                      Xem sơ đồ khớp & Nạp câu hỏi
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          <ConsultationWelcome />
         ) : (
-          messages.map((m, idx) => (
-            <article
-              key={`${m.role}-${idx}`}
-              className={
-                m.role === "user"
-                  ? "ml-auto max-w-2xl rounded-lg border border-cobalt/20 bg-cobalt-soft/60 px-4 py-3"
-                  : "rounded-lg border border-rule bg-canvas/50 px-4 py-4 sm:px-5"
-              }
-            >
-              <div className="mb-1.5 flex items-center justify-between text-xs">
-                <span
-                  className={
-                    m.role === "user"
-                      ? "font-semibold text-cobalt"
-                      : "font-display font-semibold text-cleared"
-                  }
-                >
-                  {m.role === "user" ? "Câu hỏi của PT" : "Phân tích Lâm sàng & Vận động"}
-                </span>
-              </div>
-              <div className="whitespace-pre-wrap text-[15px] leading-7 text-ink">
-                {m.content || (busy ? "Đang đối chiếu y văn PubMed và hồ sơ bệnh lý..." : "")}
-              </div>
-            </article>
-          ))
-        )}
-
-        {error && (
-          <div className="rounded-md border border-crimson/30 bg-crimson-soft px-4 py-3 text-sm text-crimson">
-            <p className="font-semibold">Không thể hoàn tất truy vấn</p>
-            <p className="mt-0.5 text-xs">{error}</p>
-          </div>
+          messages.map((m, idx) =>
+            m.role === "assistant" && !m.content && !busy ? null : (
+              <article
+                key={`${m.role}-${idx}`}
+                className={`[overflow-wrap:anywhere] ${m.role === "user" ? "ml-auto max-w-[92%] rounded-2xl rounded-tr-sm border border-cobalt/10 bg-cobalt-soft px-4 py-3.5" : "rounded-xl py-2"}`}
+              >
+                <div className="mb-2 flex items-center gap-2 text-xs">
+                  <span
+                    className={`flex size-6 items-center justify-center rounded-md text-[9px] font-semibold ${m.role === "user" ? "bg-cobalt/10 text-cobalt" : "bg-cleared-soft text-cleared"}`}
+                  >
+                    {m.role === "user" ? (
+                      "PT"
+                    ) : (
+                      <Icon name="activity" className="size-3.5" />
+                    )}
+                  </span>
+                  <span className="font-semibold text-ink">
+                    {m.role === "user"
+                      ? "Câu hỏi của bạn"
+                      : "Phân tích lâm sàng & vận động"}
+                  </span>
+                </div>
+                <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
+                  {m.content ||
+                    (busy ? (
+                      <span className="inline-flex items-center gap-2 text-xs text-slate">
+                        <Icon name="spinner" className="size-4 animate-spin" />
+                        Đang đối chiếu y văn và hồ sơ…
+                      </span>
+                    ) : (
+                      ""
+                    ))}
+                </div>
+              </article>
+            ),
+          )
         )}
       </div>
+      {error && (
+        <div role="alert" className="alert-error mx-5 my-3 sm:mx-6">
+          <p className="flex items-center gap-2 font-semibold">
+            <Icon name="alert" className="size-4" />
+            Chưa thể hoàn tất phân tích
+          </p>
+          <p className="mt-1 text-xs">{error}</p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              const lastIndex = messages.map((m) => m.role).lastIndexOf("user");
+              const last = messages[lastIndex];
+              if (last) {
+                setInput(last.content);
+                setMessages(messages.slice(0, lastIndex));
+                setRag([]);
+                setPubmed([]);
+                setModel("");
+                setError("");
+                composer.current?.focus();
+              }
+            }}
+            className="mt-2 min-h-9 text-xs font-semibold underline underline-offset-4"
+          >
+            Đưa câu hỏi về ô nhập để thử lại
+          </button>
+        </div>
+      )}
 
       {(rag.length > 0 || pubmed.length > 0) && (
-        <aside className="max-h-44 overflow-y-auto border-t border-rule bg-surface/70 px-4 py-3 text-xs">
-          <p className="mb-2 font-display font-semibold text-ink">
-            Nguồn y văn & giáo trình đã đối chiếu ({rag.length + pubmed.length})
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
+        <details className="mx-5 my-3 rounded-xl border border-rule bg-canvas px-4 text-xs sm:mx-6">
+          <summary className="py-3 font-semibold text-ink">
+            Nguồn tham chiếu · {rag.length + pubmed.length} tài liệu
+          </summary>
+          <div className="grid max-h-60 gap-2 overflow-y-auto pb-4 sm:grid-cols-2">
             {rag.map((h) => (
-              <div key={h.id} className="rounded border border-rule bg-sheet p-2">
+              <div
+                key={h.id}
+                className="rounded-lg border border-rule bg-sheet p-3"
+              >
                 <p className="font-medium text-ink">
-                  {h.title} {h.page != null ? `(Trang ${h.page})` : ""}
+                  {h.title}
+                  {h.page != null ? ` · Trang ${h.page}` : ""}
                 </p>
-                <p className="mt-0.5 line-clamp-2 text-slate">{h.content}</p>
+                <p className="mt-1 line-clamp-2 leading-5 text-slate">
+                  {h.content}
+                </p>
               </div>
             ))}
             {pubmed.map((p) => (
@@ -415,16 +434,19 @@ export function ChatPanel({
                 href={p.url}
                 target="_blank"
                 rel="noreferrer"
-                className="block rounded border border-rule bg-sheet p-2 transition-colors hover:border-cobalt"
+                className="block rounded-lg border border-rule bg-sheet p-3 hover:border-cobalt"
               >
-                <span className="font-mono text-[11px] font-semibold text-cobalt">
-                  PMID {p.pmid} ({p.year})
+                <span className="flex items-center justify-between gap-2 font-mono text-[10px] text-cobalt">
+                  PMID {p.pmid} · {p.year}
+                  <Icon name="external" className="size-3" />
                 </span>
-                <p className="mt-0.5 line-clamp-2 font-medium text-ink">{p.title}</p>
+                <p className="mt-1 line-clamp-2 font-medium leading-5 text-ink">
+                  {p.title}
+                </p>
               </a>
             ))}
           </div>
-        </aside>
+        </details>
       )}
 
       <form
@@ -432,32 +454,67 @@ export function ChatPanel({
           e.preventDefault();
           void sendText(input);
         }}
-        className="border-t border-rule bg-sheet p-3 sm:p-4"
+        className="mt-auto border-t border-rule bg-canvas/50 px-4 py-4 sm:px-5"
       >
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <label htmlFor={composerId} className="sr-only">
+          Nội dung câu hỏi chuyên môn
+        </label>
+        <div className="chat-composer overflow-hidden rounded-xl border border-rule-strong bg-sheet p-3 transition-shadow">
           <textarea
-            aria-label="Nội dung câu hỏi chuyên môn"
+            ref={composer}
+            id={composerId}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing
+              ) {
                 e.preventDefault();
                 void sendText(input);
               }
             }}
-            rows={2}
+            rows={3}
             placeholder={placeholder}
-            className="flex-1 resize-none px-3.5 py-2.5 text-sm"
+            className="block w-full resize-y px-1 py-1 text-[13px] leading-6"
           />
-          <button
-            type="submit"
-            disabled={busy || !input.trim()}
-            className="rounded-md bg-cobalt px-5 py-2.5 font-display text-sm font-semibold text-white hover:opacity-95 disabled:bg-surface disabled:text-slate disabled:opacity-100"
-          >
-            {busy ? "Đang phân tích..." : "Phân tích"}
-          </button>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-3">
+            <span className="text-[10px] leading-5 text-slate">
+              Enter để gửi <span className="mx-1">·</span> Shift + Enter xuống
+              dòng
+            </span>
+            <button
+              type="submit"
+              disabled={busy || !input.trim()}
+              className="button-primary ml-auto"
+            >
+              <Icon
+                name={busy ? "spinner" : "send"}
+                className={`size-4 ${busy ? "animate-spin" : ""}`}
+              />
+              {busy ? "Đang phân tích…" : "Phân tích"}
+            </button>
+          </div>
         </div>
+        <p className="mt-2.5 flex flex-wrap items-center justify-between gap-1 text-[10px] leading-5 text-slate">
+          <span>Luôn đối chiếu kết quả với đánh giá trực tiếp học viên.</span>
+          {model && (
+            <span className="max-w-full truncate font-mono" title={model}>
+              {model}
+            </span>
+          )}
+        </p>
       </form>
-    </div>
+      {messages.length === 0 && (
+        <ConsultationCases
+          onSelect={(item) => {
+            setInput(item.prompt);
+            setVisualRegionId(item.regionId);
+            composer.current?.focus();
+          }}
+        />
+      )}
+    </section>
   );
 }
