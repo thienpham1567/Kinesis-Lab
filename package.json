@@ -10,7 +10,8 @@
     "check:safety": "node --experimental-strip-types src/lib/clinical/safety.check.ts",
     "check:rom": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/lib/clinical/rom-norms.check.ts",
     "check:atlas-render": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-atlas-render-policy.mjs",
-    "check:atlas-study": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-hip-material-study.mjs"
+    "check:atlas-study": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-hip-material-study.mjs",
+    "check:atlas-detail": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-tissue-detail.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

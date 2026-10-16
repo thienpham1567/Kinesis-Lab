@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { AtlasLayer, TissueKind } from "@/lib/clinical/atlas-3d";
 import type { StudyUniforms } from "./tissue-study-resources";
+import { studySurfaceCode } from "./tissue-study-surface.mjs";
 
 const BASE_ROUGHNESS = {
   bone: 0.66,
@@ -103,6 +104,8 @@ export function createTissueMaterial(
       );
     if (study) {
       Object.assign(shader.uniforms, study);
+      const surface = studySurfaceCode(layer);
+      shader.uniforms.studyDetail = study[surface.uniform as keyof Omit<StudyUniforms, "studyEnabled">];
       shader.vertexShader = shader.vertexShader
         .replace(
           "#include <common>",
@@ -115,34 +118,8 @@ export function createTissueMaterial(
           vStudyNormal = inverseTransformDirection(transformedNormal, viewMatrix);`,
         );
       shader.fragmentShader = shader.fragmentShader
-        .replace(
-          "#include <common>",
-          `#include <common>
-          uniform float studyEnabled; uniform sampler2D studyAlbedo;
-          varying vec3 vStudyPosition; varying vec3 vStudyNormal;
-          vec3 studySurface(vec3 p, vec3 n) {
-            vec3 w = pow(abs(normalize(n)), vec3(6.0)); w /= max(w.x+w.y+w.z, 0.0001);
-            vec3 q = p / 0.03;
-            return texture2D(studyAlbedo, q.zy).rgb*w.x + texture2D(studyAlbedo, q.xy).rgb*w.z + texture2D(studyAlbedo, q.xz).rgb*w.y;
-          }
-        `,
-        )
-        .replace(
-          "#include <normal_fragment_maps>",
-          `#include <normal_fragment_maps>
-          if (studyEnabled > 0.5) {
-            vec3 surface = studySurface(vStudyPosition, vStudyNormal);
-            float h = dot(surface, vec3(.2126,.7152,.0722));
-            ${layer === "muscle" ? "diffuseColor.rgb = mix(diffuseColor.rgb, surface * 0.85, 0.7);" : ""}
-            roughnessFactor = clamp(roughnessFactor + (h-.15)*.16, .22, .8);
-            vec3 sx = dFdx(-vViewPosition), sy = dFdy(-vViewPosition);
-            vec3 r1 = cross(sy, normal), r2 = cross(normal, sx);
-            float det = dot(sx, r1);
-            vec3 grad = sign(det)*(dFdx(h)*r1+dFdy(h)*r2);
-            normal = normalize(abs(det)*normal - grad*0.00012);
-          }
-        `,
-        );
+        .replace("#include <common>", "#include <common>\n" + surface.pars)
+        .replace("#include <normal_fragment_maps>", "#include <normal_fragment_maps>\n" + surface.fragment);
       if (layer === "muscle" && hasThickness) {
         shader.fragmentShader = shader.fragmentShader.replace(
           "void main() {",
@@ -209,7 +186,7 @@ export function createTissueMaterial(
       );
   };
   material.customProgramCacheKey = () =>
-    `kinesis-tissue-grain-v3-${hasThickness}-${study ? layer : "base"}`;
+    `kinesis-tissue-grain-v4-${hasThickness}-${study ? layer : "base"}`;
   return material;
 }
 

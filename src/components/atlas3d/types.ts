@@ -4,7 +4,7 @@ import type { StudyStatus } from "./tissue-study-resources";
 
 export type CameraCommand = {
   type:
-    "front" | "back" | "left" | "right" | "focus" | "reset" | "hip" | "muscle";
+    "front" | "back" | "left" | "right" | "focus" | "reset" | "hip" | "muscle" | "detail";
   revision: number;
 };
 export type AtlasCanvasProps = {

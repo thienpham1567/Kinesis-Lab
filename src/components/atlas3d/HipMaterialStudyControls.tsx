@@ -97,8 +97,9 @@ export default function HipMaterialStudyControls({
           Nguồn & giới hạn của bản mẫu
         </summary>
         <p className="mt-2 max-w-3xl text-[11px] leading-6 text-slate">
-          Texture minh họa tạo bằng AI; không phải ảnh chụp mô người hay bản đồ
-          hướng sợi cơ đo thực tế. Hình dạng và ranh giới cơ–gân–sụn giữ theo
+          Màu mô minh họa tạo bằng AI; độ nhám và gồ ghề được mô phỏng riêng cho
+          từng loại mô. Đây không phải ảnh chụp mô người hay bản đồ hướng sợi cơ
+          đo thực tế. Hình dạng và ranh giới cơ–gân–sụn giữ theo
           Z-Anatomy. Hiệu ứng xuyên sáng dùng độ dày lưới ước lượng và thông số
           thị giác thử nghiệm.
         </p>

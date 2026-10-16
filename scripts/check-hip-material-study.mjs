@@ -35,8 +35,8 @@ resources.setEnabled(true);
 resources.setEnabled(true);
 assert.equal(
   requests.length,
-  1,
-  "one in-flight request shared by all study meshes",
+  5,
+  "one five-image batch shared by all study meshes",
 );
 assert.equal(
   resources.uniforms.studyEnabled.value,
@@ -48,6 +48,7 @@ const tex = new THREE.Texture();
 let disposed = 0;
 tex.addEventListener("dispose", () => disposed++);
 requests[0].load(tex);
+requests.slice(1,5).forEach(request=>request.load(new THREE.Texture()));
 assert.equal(
   resources.uniforms.studyEnabled.value,
   0,

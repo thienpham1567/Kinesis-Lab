@@ -466,7 +466,7 @@ export default function Atlas3DExplorer({
             )}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule px-4 py-3 text-[11px] leading-5 text-slate">
-            <p>Kéo để xoay · Cuộn / chụm để thu phóng · Chọn để tra cứu</p>
+            <p>Kéo để xoay · Cuộn / chụm để thu phóng · Nhấp đúp để xem sát bề mặt</p>
             <span className="font-mono">
               {visibleCount} / {areaStructures.length} cấu trúc ·{" "}
               {(bundle.bytes / 1024 / 1024).toFixed(1)} MB
@@ -485,6 +485,11 @@ export default function Atlas3DExplorer({
             >
               <Icon name="target" className="size-4" />
               Tập trung
+            </button>
+            <button type="button" className="button-secondary"
+              disabled={!selected || !selectedVisible}
+              onClick={() => sendCommand("detail")}>
+              Cận cảnh bề mặt
             </button>
             <button
               type="button"

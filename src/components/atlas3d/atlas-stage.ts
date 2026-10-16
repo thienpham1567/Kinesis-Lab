@@ -13,6 +13,7 @@ import {
 } from "./tissue-materials";
 import { isHipStudyStructure, HIP_STUDY_SAMPLES } from "./hip-material-policy";
 import { TissueStudyResources } from "./tissue-study-resources";
+import { findSurfaceFocus, surfaceFocusPose } from "./surface-focus.mjs";
 import { resolveRenderQuality, shouldUseOcclusion } from "./render-policy";
 import { isStructureVisible } from "@/lib/clinical/atlas-3d";
 import type { AtlasCanvasProps, CameraCommand } from "./types";
@@ -84,6 +85,7 @@ export class AtlasStage {
     canvas.addEventListener("pointermove", this.pointerMove);
     canvas.addEventListener("pointerup", this.pointerUp);
     canvas.addEventListener("pointercancel", this.pointerCancel);
+    canvas.addEventListener("dblclick", this.surfaceDoubleClick);
     this.observer = new ResizeObserver(this.resize);
     this.observer.observe(host);
     this.coarsePointer.addEventListener("change", this.resize);
@@ -151,20 +153,41 @@ export class AtlasStage {
     const start = this.pointer;
     this.pointer = null;
     if (!start || start.id !== event.pointerId || this.dragged) return;
+    const hit = this.hitAt(event.clientX, event.clientY);
+    if (hit) this.props.onSelect(hit.object.userData.structureId);
+  };
+  private hitAt(clientX: number, clientY: number) {
     const bounds = this.renderer.domElement.getBoundingClientRect();
     const ray = new THREE.Raycaster();
     ray.setFromCamera(
       new THREE.Vector2(
-        ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
-        (-(event.clientY - bounds.top) / bounds.height) * 2 + 1,
+        ((clientX - bounds.left) / bounds.width) * 2 - 1,
+        (-(clientY - bounds.top) / bounds.height) * 2 + 1,
       ),
       this.camera,
     );
     const candidates = [...this.meshes.values()]
       .flat()
       .filter((mesh) => mesh.visible);
-    const hit = ray.intersectObjects(candidates, false)[0];
-    if (hit) this.props.onSelect(hit.object.userData.structureId);
+    return ray.intersectObjects(candidates, false)[0];
+  }
+  private surfaceDoubleClick = (event: MouseEvent) => {
+    if (event.button !== 0) return;
+    const hit = this.hitAt(event.clientX, event.clientY);
+    if (!hit) return;
+    this.props.onSelect(hit.object.userData.structureId);
+    const box = new THREE.Box3().setFromObject(hit.object);
+    this.applySurfacePose(surfaceFocusPose(hit.point, this.camera.position, box.getSize(new THREE.Vector3()).length()));
+  };
+  private applySurfacePose(pose: { target: THREE.Vector3; position: THREE.Vector3 }) {
+    this.controls.target.copy(pose.target);
+    this.camera.position.copy(pose.position);
+    this.controls.minDistance = .005;
+    this.camera.near = .00005;
+    this.camera.far = 10;
+    this.camera.updateProjectionMatrix();
+    this.controls.update();
+    this.render();
   };
 
   private updateQuality() {
@@ -318,6 +341,12 @@ export class AtlasStage {
 
   command(command: CameraCommand) {
     if (!this.root) return;
+    if (command.type === "detail") {
+      const pose = findSurfaceFocus(this.meshes.get(this.props.selectedId ?? "") ?? [], this.camera.position);
+      if (pose) this.applySurfacePose(pose);
+      return;
+    }
+    this.controls.minDistance = .02;
     const box = new THREE.Box3();
     if (command.type === "hip") {
       for (const mesh of this.meshes.get(HIP_STUDY_SAMPLES.joint.selectedId) ??
@@ -381,6 +410,7 @@ export class AtlasStage {
     canvas.removeEventListener("pointermove", this.pointerMove);
     canvas.removeEventListener("pointerup", this.pointerUp);
     canvas.removeEventListener("pointercancel", this.pointerCancel);
+    canvas.removeEventListener("dblclick", this.surfaceDoubleClick);
     if (this.root) release(this.root);
     this.studio.dispose();
     this.renderer.dispose();
