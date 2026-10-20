@@ -43,7 +43,7 @@ That rendering is not byte-identical to the local file, but its content is the s
 - 889,212 of 889,245 visible pixels differ by less than 8/255 in every channel.
 - The remaining 33 pixels are isolated anti-aliased edge pixels, consistent with a re-run of the SVG rasterizer.
 
-The local file is therefore an unmodified rendering of that SVG. The crops are adaptations under CC BY-SA 4.0, and all three screens that use them show the attribution through `src/components/MusclePlateCredit.tsx`.
+The local file is therefore an unmodified rendering of that SVG. The crops are adaptations under CC BY-SA 4.0, and both screens that use them (Trigger Point and `BodyMapExplorer`) show the attribution through `src/components/MusclePlateCredit.tsx`.
 
 These consequences follow:
 - **Not an OpenStax original.** The plates are a simplified redraw, not the OpenStax original, and the posterior view was modified by the redrawer. They have not been compared with the OpenStax original or a current anatomy text, so their muscle borders and layers are unreviewed.

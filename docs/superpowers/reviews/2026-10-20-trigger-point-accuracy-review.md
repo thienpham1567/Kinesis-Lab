@@ -114,7 +114,7 @@ Phần này ghi lại các thay đổi phần mềm. Nó không phải phê duy�
    - Hai PNG được xác định là bản cắt trùng từng pixel của `muscles-front-back.png`.
    - Nguồn khả dĩ là [Muscles front and back.svg](https://commons.wikimedia.org/wiki/File:Muscles_front_and_back.svg), tác giả OpenStax & Tomáš Kebert & umimeto.org, giấy phép CC BY-SA 4.0. Đây là bản vẽ lại từ OpenStax 1105, trong đó mặt sau đã bị chỉnh sửa.
    - Đã tải bản render 1920 px từ Commons để đối chiếu. File không trùng byte, nhưng 889.212/889.245 pixel hiển thị lệch dưới 8/255; 33 pixel còn lại đều là pixel khử răng cưa ở mép. Kết luận: cùng nội dung, khác lần render.
-   - Chi tiết nằm trong `public/anatomy/SOURCES.md`. Cả ba màn hình dùng hai PNG (Trigger Point, `MuscleHypertrophyExplorer`, `BodyMapExplorer`) nay hiển thị ghi công qua `MusclePlateCredit`, kèm ghi chú về lớp nông.
+   - Chi tiết nằm trong `public/anatomy/SOURCES.md`. Cả hai màn hình dùng hai PNG (Trigger Point, `BodyMapExplorer`) nay hiển thị ghi công qua `MusclePlateCredit`, kèm ghi chú về lớp nông.
    - Đã bỏ chú thích mã gọi hai ảnh là “OpenStax”.
 
 5. **Phát hiện thêm khi sửa (đã sửa).**
