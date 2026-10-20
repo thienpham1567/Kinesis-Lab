@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+import { SurfaceLabels } from "./surface-labels.mjs";
 import { StudioRenderer } from "./studio-renderer";
 import {
   createTissueMaterial,
@@ -36,6 +37,7 @@ export class AtlasStage {
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(35, 1, 0.001, 100);
   private renderer: THREE.WebGLRenderer;
+  private labels: SurfaceLabels;
   private controls: OrbitControls;
   private studio: StudioRenderer;
   private coarsePointer = window.matchMedia("(pointer: coarse)");
@@ -75,6 +77,13 @@ export class AtlasStage {
       "Mô hình giải phẫu 3D. Kéo để xoay, cuộn để phóng to. Dùng danh sách cấu trúc và nút góc nhìn để điều khiển bằng bàn phím.",
     );
     this.host.appendChild(canvas);
+    this.labels = new SurfaceLabels(this.host, (kind: string) => {
+      const meshes = (
+        this.meshes.get(this.props.selectedId ?? "") ?? []
+      ).filter((mesh) => mesh.userData.tissueKind === kind);
+      const pose = findSurfaceFocus(meshes, this.camera.position);
+      if (pose) this.applySurfacePose(pose);
+    });
     this.controls = new OrbitControls(this.camera, canvas);
     this.controls.enableDamping = false;
     this.controls.minDistance = 0.02;
@@ -120,6 +129,15 @@ export class AtlasStage {
   private render = () => {
     if (!this.disposed) {
       this.studio.render();
+      const bounds = this.host.getBoundingClientRect();
+      this.labels.update(
+        this.props.selectedId,
+        this.props.showSurfaceLabels,
+        this.meshes,
+        this.camera,
+        bounds.width,
+        bounds.height,
+      );
       this.renderer.domElement.dataset.view = [
         ...this.camera.position.toArray(),
         ...this.controls.target.toArray(),
@@ -177,18 +195,27 @@ export class AtlasStage {
     if (!hit) return;
     this.props.onSelect(hit.object.userData.structureId);
     const box = new THREE.Box3().setFromObject(hit.object);
-    this.applySurfacePose(surfaceFocusPose(hit.point, this.camera.position, box.getSize(new THREE.Vector3()).length()));
+    this.applySurfacePose(
+      surfaceFocusPose(
+        hit.point,
+        this.camera.position,
+        box.getSize(new THREE.Vector3()).length(),
+      ),
+    );
   };
-  private applySurfacePose(pose: { target: THREE.Vector3; position: THREE.Vector3 }) {
+  private applySurfacePose(pose: {
+    target: THREE.Vector3;
+    position: THREE.Vector3;
+  }) {
     this.controls.target.copy(pose.target);
     this.camera.position.copy(pose.position);
-    this.controls.minDistance = .005;
-    this.camera.near = .00005;
+    this.controls.minDistance = 0.005;
+    this.camera.near = 0.00005;
     this.camera.far = 10;
     this.camera.updateProjectionMatrix();
     this.controls.update();
     this.render();
-  };
+  }
 
   private updateQuality() {
     const quality = resolveRenderQuality(this.props.quality, {
@@ -214,6 +241,7 @@ export class AtlasStage {
 
   update(props: AtlasCanvasProps) {
     this.props = props;
+    this.studio.setPresentation(props.presentation);
     this.study.setEnabled(
       props.materialStudy &&
         props.structures.some(
@@ -342,11 +370,14 @@ export class AtlasStage {
   command(command: CameraCommand) {
     if (!this.root) return;
     if (command.type === "detail") {
-      const pose = findSurfaceFocus(this.meshes.get(this.props.selectedId ?? "") ?? [], this.camera.position);
+      const pose = findSurfaceFocus(
+        this.meshes.get(this.props.selectedId ?? "") ?? [],
+        this.camera.position,
+      );
       if (pose) this.applySurfacePose(pose);
       return;
     }
-    this.controls.minDistance = .02;
+    this.controls.minDistance = 0.02;
     const box = new THREE.Box3();
     if (command.type === "hip") {
       for (const mesh of this.meshes.get(HIP_STUDY_SAMPLES.joint.selectedId) ??
@@ -362,7 +393,8 @@ export class AtlasStage {
         box.expandByObject(mesh);
     } else {
       // Fit the visible geometry; use regional bounds only when every layer is off.
-      for (const meshes of this.meshes.values()) {
+      for (const [id, meshes] of this.meshes) {
+        if (this.props.frameIds?.size && !this.props.frameIds.has(id)) continue;
         for (const mesh of meshes) if (mesh.visible) box.expandByObject(mesh);
       }
       if (box.isEmpty()) box.setFromObject(this.root);
@@ -379,6 +411,8 @@ export class AtlasStage {
     const distance = (radius / Math.sin(angle)) * 1.08;
     const direction = new THREE.Vector3(0, 0, 1);
     if (command.type === "back") direction.set(0, 0, -1);
+    if (command.type === "front-oblique") direction.set(0.65, 0.12, 1).normalize();
+    if (command.type === "back-oblique") direction.set(-0.65, 0.12, -1).normalize();
     if (command.type === "left") direction.set(1, 0, 0);
     if (command.type === "right") direction.set(-1, 0, 0);
     if (command.type === "hip") direction.set(1, 0.15, -0.15).normalize();
@@ -402,6 +436,7 @@ export class AtlasStage {
     this.generation++;
     this.observer.disconnect();
     this.coarsePointer.removeEventListener("change", this.resize);
+    this.labels.dispose();
     this.controls.dispose();
     this.decoder.dispose();
     this.study.dispose();

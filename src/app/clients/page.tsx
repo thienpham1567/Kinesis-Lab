@@ -254,7 +254,7 @@ export default function ClientsPage() {
                   }
                 >
                   Lưu thông tin ban đầu, sau đó bổ sung bệnh lý, thuốc và sàng
-                  lọc PAR-Q+ trong hồ sơ học viên.
+                  lọc trước tập trong hồ sơ học viên.
                 </EmptyState>
               </div>
             ) : !matchingClients.length && !listError ? (

@@ -1,5 +1,8 @@
 "use client";
 
+import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { ASSISTANT_EVIDENCE } from "@/lib/clinical/evidence-assessment";
+
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import {
@@ -174,6 +177,7 @@ export function ChatPanel({
       className="panel flex min-h-[660px] flex-col overflow-hidden"
       aria-label="Phiên tư vấn chuyên môn"
     >
+      <div className="px-5 pt-4"><ClinicalEvidencePanel evidence={ASSISTANT_EVIDENCE} title="Nguồn, phạm vi và giới hạn trợ lý" /></div>
       <div className="border-b border-rule px-5 py-4 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -185,7 +189,7 @@ export function ChatPanel({
                 {lockedClientId ? "Tư vấn theo hồ sơ" : "Phiên tư vấn"}
               </h2>
               <p className="mt-0.5 text-[10px] text-slate">
-                Tham chiếu ACSM · NSCA · PubMed
+                Nguồn theo chủ đề · Cần kiểm tra từng câu trả lời
               </p>
             </div>
           </div>

@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
+import {
+  SCREENING_EVIDENCE,
+  MEDICATION_EVIDENCE,
+  LAB_EVIDENCE,
+} from "@/lib/clinical/evidence-assessment";
+import { normalizeLabExtraction } from "@/lib/clinical/lab-extraction";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { TrainingLog } from "@/components/training/TrainingLog";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
 import { ChatPanel } from "@/components/ChatPanel";
 import { RomAssessment } from "@/components/RomAssessment";
@@ -11,7 +19,14 @@ import { matchClientIssuesToRegions } from "@/lib/clinical/anatomy-atlas";
 import { PARQ_ITEMS, safetyNotes } from "@/lib/clinical/safety";
 import type { BiomarkerRecord, Client } from "@/lib/types";
 
-type Tab = "ban-do" | "ho-so" | "co-do" | "bien-do" | "xet-nghiem" | "chat";
+type Tab =
+  | "ban-do"
+  | "ho-so"
+  | "co-do"
+  | "bien-do"
+  | "xet-nghiem"
+  | "chat"
+  | "training";
 
 const FIELD_LABELS: Record<string, string> = {
   name: "Tên bệnh lý / Thuốc",
@@ -24,8 +39,42 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 export default function ClientDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <p className="panel p-6 text-sm text-slate" role="status">
+          Đang mở hồ sơ…
+        </p>
+      }
+    >
+      <ClientDetailPageInner />
+    </Suspense>
+  );
+}
+
+function ClientDetailPageInner() {
   const { id } = useParams<{ id: string }>();
-  const [tab, setTab] = useState<Tab>("ban-do");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const requestedTab = searchParams.get("tab");
+  const tab: Tab = [
+    "ho-so",
+    "co-do",
+    "bien-do",
+    "xet-nghiem",
+    "chat",
+    "training",
+  ].includes(requestedTab ?? "")
+    ? (requestedTab as Tab)
+    : "ban-do";
+  function setTab(nextTab: Tab) {
+    const next = new URLSearchParams(searchParams.toString());
+    next.set("tab", nextTab);
+    if (nextTab !== "training") next.delete("exercise");
+    router.push(`/clients/${encodeURIComponent(id)}?${next}`, {
+      scroll: false,
+    });
+  }
   const [client, setClient] = useState<Client | null>(null);
   const [biomarkers, setBiomarkers] = useState<BiomarkerRecord[]>([]);
   const [chatPrompt, setChatPrompt] = useState<string>("");
@@ -122,11 +171,12 @@ export default function ClientDetailPage() {
     { id: "ho-so", label: "Hồ sơ lâm sàng" },
     {
       id: "co-do",
-      label: "Sàng lọc PAR-Q+",
+      label: "Bảng kiểm trước tập",
       badge: Object.values(client.red_flags?.parq ?? {}).filter(
         (v) => v === true,
       ).length,
     },
+    { id: "training", label: "Nhật ký tập luyện" },
     { id: "bien-do", label: "Biên độ khớp", badge: romRecords.length },
     {
       id: "xet-nghiem",
@@ -243,6 +293,12 @@ export default function ClientDetailPage() {
           client={client}
           onSave={save}
           saving={saving}
+        />
+      )}
+      {tab === "training" && (
+        <TrainingLog
+          clientId={client.id}
+          initialExerciseId={searchParams.get("exercise")}
         />
       )}
       {tab === "bien-do" && (
@@ -408,14 +464,20 @@ function RedFlagForm({
         void onSave({ red_flags: { parq: answers, notes } });
       }}
     >
+      <ClinicalEvidencePanel evidence={SCREENING_EVIDENCE} />
+      <ClinicalEvidencePanel
+        evidence={MEDICATION_EVIDENCE}
+        title="Thuốc và giới hạn cảnh báo tự động"
+      />
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-4">
         <div>
           <h2 className="font-display text-lg font-bold text-ink">
-            Bảng kiểm Sàng lọc PAR-Q+ & Cờ Đỏ Nội – Thần kinh
+            Bảng kiểm trước tập của ứng dụng
           </h2>
           <p className="text-xs text-slate">
-            Bất kỳ mục nào trả lời &ldquo;Có&rdquo; đều yêu cầu khai thác sâu
-            hoặc giấy đồng ý tập luyện từ bác sĩ chuyên khoa.
+            Bảy câu tự xây dựng, chưa được thẩm định hoặc xác thực bản dịch. Mục
+            Có cần khai thác thêm theo triệu chứng; không tự động cấp phép hoặc
+            cấm tập.
           </p>
         </div>
         <span
@@ -427,7 +489,7 @@ function RedFlagForm({
         >
           {positiveCount > 0
             ? `${positiveCount} mục trả lời CÓ — Cần lưu ý lâm sàng`
-            : "0 mục dương tính — Đạt sàng lọc cơ bản"}
+            : "Chưa ghi mục CÓ — không xác nhận an toàn tập"}
         </span>
       </div>
 
@@ -492,6 +554,9 @@ function Labs({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
+  const [draft, setDraft] = useState("");
+  const [confirmed, setConfirmed] = useState(false);
+
   async function upload(file: File) {
     setBusy(true);
     setMsg("");
@@ -507,23 +572,47 @@ function Labs({
         setMsg(data.error ?? "Không đọc được phiếu");
         return;
       }
-      const saved = await fetch("/api/biomarkers", {
+      setDraft(JSON.stringify(normalizeLabExtraction(data), null, 2));
+      setConfirmed(false);
+    } catch (err) {
+      setMsg(
+        err instanceof Error
+          ? err.message
+          : "Không đọc được phiếu; hãy thử lại",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveDraft() {
+    if (!confirmed) return;
+    setBusy(true);
+    setMsg("");
+    try {
+      const data = normalizeLabExtraction(JSON.parse(draft));
+      if (!data.recorded_at)
+        throw new Error(
+          "Cần điền recorded_at đúng ngày in trên phiếu trước khi lưu",
+        );
+      const res = await fetch("/api/biomarkers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_id: clientId,
-          kind: data.kind === "inbody" ? "inbody" : "blood_lab",
-          recorded_at: data.recorded_at,
-          metrics: data.metrics ?? {},
-          ai_summary: data.ai_summary,
+          ...data,
+          ai_summary:
+            "Người dùng đã xác nhận bản chép với phiếu gốc; chưa được chuyên gia diễn giải. " +
+            data.ai_summary,
         }),
       });
-      if (!saved.ok) {
-        const err = await saved.json();
-        setMsg(err.error ?? "Không lưu được");
-        return;
-      }
+      if (!res.ok)
+        throw new Error((await res.json()).error ?? "Không lưu được");
+      setDraft("");
+      setConfirmed(false);
       onChange();
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "Không lưu được bản chép");
     } finally {
       setBusy(false);
     }
@@ -531,6 +620,56 @@ function Labs({
 
   return (
     <div className="space-y-5">
+      <ClinicalEvidencePanel evidence={LAB_EVIDENCE} />
+      {draft && (
+        <section
+          className="panel space-y-3 p-4"
+          aria-label="Bản nháp phiếu cần đối chiếu"
+        >
+          <h3 className="font-semibold text-ink">Đối chiếu trước khi lưu</h3>
+          <p className="text-xs leading-5 text-slate">
+            So từng tên, giá trị, đơn vị, khoảng tham chiếu, cờ và ngày với
+            phiếu gốc. Sửa bản chép bên dưới nếu cần. Cờ unknown có nghĩa phiếu
+            chưa cho cờ rõ; không phải bình thường. Việc xác nhận không là chẩn
+            đoán.
+          </p>
+          <textarea
+            aria-label="Dữ liệu trích xuất để đối chiếu"
+            rows={14}
+            className="w-full rounded border border-rule p-3 font-mono text-xs"
+            value={draft}
+            onChange={(e) => {
+              setDraft(e.target.value);
+              setConfirmed(false);
+            }}
+          />
+          <label className="flex items-start gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={confirmed}
+              onChange={(e) => setConfirmed(e.target.checked)}
+            />
+            Tôi đã đối chiếu bản chép với phiếu gốc
+          </label>
+          <div className="flex gap-3">
+            <button
+              className="button-primary"
+              disabled={busy || !confirmed}
+              onClick={() => void saveDraft()}
+            >
+              Lưu bản đã đối chiếu
+            </button>
+            <button
+              className="text-xs text-slate underline"
+              disabled={busy}
+              onClick={() => setDraft("")}
+            >
+              Hủy bản nháp
+            </button>
+          </div>
+        </section>
+      )}
+
       <div className="rounded-lg border border-dashed border-rule-strong bg-sheet p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -605,8 +744,18 @@ function Labs({
               {Object.entries(r.metrics ?? {}).map(([k, v]) => {
                 const metric =
                   v && typeof v === "object" && "value" in v
-                    ? (v as { value: unknown; unit?: string; flag?: string })
-                    : { value: v, unit: "", flag: "normal" };
+                    ? (v as {
+                        value: unknown;
+                        unit?: string;
+                        flag?: string;
+                        reference_range?: string;
+                      })
+                    : {
+                        value: v,
+                        unit: "",
+                        flag: "unknown",
+                        reference_range: "",
+                      };
                 const isHigh = metric.flag === "high";
                 const isLow = metric.flag === "low";
                 const badgeCls = isHigh
@@ -623,9 +772,17 @@ function Labs({
                     <dd className="mt-0.5 font-mono text-sm font-semibold">
                       {String(metric.value)} {metric.unit ?? ""}
                     </dd>
+                    <p className="mt-1 text-[10px]">
+                      Khoảng trên phiếu: {metric.reference_range || "chưa có"} ·{" "}
+                      {metric.flag === "unknown" || !metric.flag
+                        ? "Chưa có cờ"
+                        : metric.flag === "normal"
+                          ? "Phiếu gắn cờ trong khoảng"
+                          : ""}
+                    </p>
                     {(isHigh || isLow) && (
                       <span className="mt-0.5 inline-block text-[10px] font-semibold">
-                        {isHigh ? "Cao hơn ngưỡng" : "Thấp hơn ngưỡng"}
+                        {isHigh ? "Phiếu gắn cờ cao" : "Phiếu gắn cờ thấp"}
                       </span>
                     )}
                   </div>
@@ -636,7 +793,7 @@ function Labs({
             {r.ai_summary ? (
               <div className="mt-4 rounded-md bg-surface/70 p-3.5 text-xs leading-6 text-ink">
                 <p className="font-display font-semibold text-ink">
-                  Nhận định Sinh lý Vận động & Phục hồi:
+                  Ghi chú AI / bản cũ có thể chưa được rà soát y khoa:
                 </p>
                 <p className="mt-1 whitespace-pre-wrap">{r.ai_summary}</p>
               </div>

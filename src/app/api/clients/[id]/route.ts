@@ -70,6 +70,7 @@ export async function DELETE(_: Request, ctx: Ctx) {
     const store = readLocalStore();
     store.clients = store.clients.filter((c) => c.id !== id);
     store.biomarkers = store.biomarkers.filter((b) => b.client_id !== id);
+    store.training_records = (store.training_records ?? []).filter((record) => record.client_id !== id);
     writeLocalStore(store);
     return Response.json({ ok: true });
   }

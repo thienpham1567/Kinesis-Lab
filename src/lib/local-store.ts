@@ -1,11 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import type { BiomarkerRecord, Client, KnowledgeDocument } from "@/lib/types";
+import type { TrainingRecord } from "@/lib/training-log";
 
 type StoreShape = {
   clients: Client[];
   biomarkers: BiomarkerRecord[];
   documents: KnowledgeDocument[];
+  training_records?: TrainingRecord[];
+  [key: string]: unknown;
 };
 
 const STORE_DIR = path.join(process.cwd(), ".data");
@@ -64,7 +68,7 @@ const SEED: StoreShape = {
         },
         notes: "Đã có giấy đồng ý tập luyện cường độ vừa từ BS Nội tim mạch (09/2026). Không có dấu hiệu chèn ép chùm đuôi ngựa.",
       },
-      notes: "Làm việc văn phòng 9 tiếng/ngày. Tránh nghiệm pháp Valsalva kéo dài; điều chỉnh tải theo RPE 6.5–7.5.",
+      notes: "Hồ sơ minh họa của ứng dụng; không phải hồ sơ người thật. Thông tin bài tập và tải trong ví dụ chưa được chuyên gia xác nhận cho một cá nhân.",
       created_at: "2026-09-15T08:00:00.000Z",
       updated_at: "2026-10-12T10:30:00.000Z",
     },
@@ -86,7 +90,7 @@ const SEED: StoreShape = {
         {
           name: "Metformin XR",
           dose: "500mg sau ăn tối",
-          notes: "Hiếm gây hạ đường huyết đơn độc nhưng cần ăn nhẹ trước buổi tập chiều",
+          notes: "Dữ liệu thuốc minh họa; không suy ra yêu cầu ăn nhẹ hoặc tự thay đổi thuốc từ ví dụ này.",
         },
       ],
       orthopedic_issues: [
@@ -109,7 +113,7 @@ const SEED: StoreShape = {
         },
         notes: "Đau cơ học thuần túy khi nâng tay quá đầu, không đau ban đêm.",
       },
-      notes: "Ưu tiên tập kháng lực 3 buổi/tuần kết hợp đi bộ nhanh 15 phút sau bữa ăn lớn để tăng nhạy cảm GLUT4.",
+      notes: "Hồ sơ minh họa của ứng dụng; không phải hồ sơ người thật. Lịch tập cần được trao đổi riêng với người phụ trách chuyên môn.",
       created_at: "2026-09-28T09:00:00.000Z",
       updated_at: "2026-10-14T15:00:00.000Z",
     },
@@ -129,7 +133,7 @@ const SEED: StoreShape = {
         "BMR": { value: 1640, unit: "kcal", flag: "normal" },
       },
       ai_summary:
-        "Mỡ nội tạng (118 cm²) và PBF (26.8%) vượt ngưỡng khuyến nghị, liên quan trực tiếp tới đề kháng insulin và tải trọng cơ học lên đĩa đệm L4-L5. Khối cơ xương (SMM 31.2 kg) đạt mức trung bình khá và tỷ lệ nước ngoại bào (ECW 0.384) bình thường, cho phép tập kháng lực toàn thân kết hợp Zone 2 cardio (tính theo RPE 5–6 do dùng Bisoprolol).",
+        "Dữ liệu InBody minh họa: VFA 118 cm², PBF 26,8%, SMM 31,2 kg, ECW Ratio 0,384. Cờ chỉ số là dữ liệu ví dụ, chưa đối chiếu khoảng tham chiếu của thiết bị. Không dùng các con số này để xác nhận đủ điều kiện tập, suy ra bệnh lý hoặc quy đổi Zone 2 sang RPE.",
       created_at: "2026-10-10T10:00:00.000Z",
     },
     {
@@ -147,7 +151,7 @@ const SEED: StoreShape = {
         "CK (Creatine Kinase)": { value: 148, unit: "U/L", flag: "normal" },
       },
       ai_summary:
-        "Triglyceride tăng nhẹ (2.1 mmol/L) và thiếu hụt Vitamin D (21.4 ng/mL) — yếu tố ảnh hưởng tới phục hồi cơ xương và mật độ xương cột sống. Chỉ số CK (148 U/L) và men gan bình thường khi đang dùng Rosuvastatin, chưa có dấu hiệu tiêu cơ vân do statin.",
+        "Kết quả xét nghiệm minh họa: triglyceride 2,1 mmol/L, vitamin D 21,4 ng/mL, CK 148 U/L. Chưa có khoảng tham chiếu và đánh giá lâm sàng cho ví dụ này; không kết luận mức độ thiếu vitamin, tổn thương cơ hoặc khả năng tập luyện từ các chỉ số đơn lẻ.",
       created_at: "2026-10-08T09:00:00.000Z",
     },
     {
@@ -163,33 +167,43 @@ const SEED: StoreShape = {
         TSH: { value: 1.9, unit: "mIU/L", flag: "normal" },
       },
       ai_summary:
-        "HbA1c 6.1% và Glucose đói 5.9 mmol/L ở ngưỡng tiền tiểu đường; tập kháng lực nhóm cơ lớn (chân, lưng) giúp tăng vận chuyển glucose qua GLUT4 độc lập với insulin. Ferritin dự trữ thấp (22 ng/mL) có thể gây mau hụt hơi khi tập volume cao — cần theo dõi mức năng lượng và tư vấn dinh dưỡng giàu sắt heme.",
+        "Kết quả xét nghiệm minh họa: HbA1c 6,1%, glucose đói 5,9 mmol/L, ferritin 22 ng/mL. Cần đối chiếu nguồn xét nghiệm và bối cảnh lâm sàng; ví dụ này không xác định nguyên nhân hụt hơi, thiếu sắt hoặc chỉ định tập luyện/dinh dưỡng.",
       created_at: "2026-10-05T09:00:00.000Z",
     },
   ],
   documents: [],
+  training_records: [],
 };
 
 export function readLocalStore(): StoreShape {
-  try {
-    if (!fs.existsSync(STORE_PATH)) {
-      fs.mkdirSync(STORE_DIR, { recursive: true });
-      fs.writeFileSync(STORE_PATH, JSON.stringify(SEED, null, 2), "utf8");
-      return structuredClone(SEED);
-    }
-    const raw = fs.readFileSync(STORE_PATH, "utf8");
-    const parsed = JSON.parse(raw) as Partial<StoreShape>;
-    return {
-      clients: parsed.clients ?? SEED.clients,
-      biomarkers: parsed.biomarkers ?? SEED.biomarkers,
-      documents: parsed.documents ?? [],
-    };
-  } catch {
+  if (!fs.existsSync(STORE_PATH)) {
+    fs.mkdirSync(STORE_DIR, { recursive: true });
+    fs.writeFileSync(STORE_PATH, JSON.stringify(SEED, null, 2), { encoding: "utf8", flag: "wx" });
     return structuredClone(SEED);
   }
+  // Do not replace unreadable user data with demo records. Callers must surface the error.
+  const parsed: unknown = JSON.parse(fs.readFileSync(STORE_PATH, "utf8"));
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("Kho dữ liệu cục bộ không hợp lệ; giữ nguyên tệp để khôi phục.");
+  }
+  const store = parsed as StoreShape;
+  for (const key of ["clients", "biomarkers", "documents"] as const) {
+    if (!Array.isArray(store[key])) throw new Error(`Kho dữ liệu cục bộ thiếu mảng ${key}; không ghi đè dữ liệu.`);
+  }
+  if (store.training_records !== undefined && !Array.isArray(store.training_records)) {
+    throw new Error("Nhật ký tập cục bộ không hợp lệ; không ghi đè dữ liệu.");
+  }
+  return { ...store, training_records: store.training_records ?? [] };
 }
 
 export function writeLocalStore(next: StoreShape) {
   fs.mkdirSync(STORE_DIR, { recursive: true });
-  fs.writeFileSync(STORE_PATH, JSON.stringify(next, null, 2), "utf8");
+  // Atomic replacement avoids leaving truncated JSON if the process is interrupted.
+  const temporaryPath = `${STORE_PATH}.${process.pid}.${crypto.randomUUID()}.tmp`;
+  try {
+    fs.writeFileSync(temporaryPath, JSON.stringify(next, null, 2), { encoding: "utf8", flag: "wx" });
+    fs.renameSync(temporaryPath, STORE_PATH);
+  } finally {
+    if (fs.existsSync(temporaryPath)) fs.unlinkSync(temporaryPath);
+  }
 }

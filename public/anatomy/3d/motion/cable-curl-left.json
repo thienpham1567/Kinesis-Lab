@@ -1,0 +1,691 @@
+{
+  "id": "cable-curl-left-pilot",
+  "status": "experimental-simulation",
+  "reviewedBy": null,
+  "sourceRepository": "https://github.com/Z-Anatomy/Models-of-human-anatomy",
+  "sourceCommit": "0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+  "license": "CC-BY-SA-4.0",
+  "assetSha256": "563f2c62e178cf8023542fa1b266d06832871b6e12067bcc2f8648fa568509dd",
+  "motion": {
+    "variant": "single-arm-low-cable-curl-study",
+    "durationSeconds": 6,
+    "authoredAngleRangeDegrees": [
+      10,
+      110
+    ],
+    "meaning": "Display convention from source rest pose; not personal ROM, measured kinematics or a prescribed training range."
+  },
+  "rig": {
+    "landmarkProvenance": "Z-Biomechanics Armature LeftArm and LeftForeArm rest coordinates; source model metadata, not independently verified anatomy.",
+    "weighting": "authored longitudinal mesh-bound skin weights; no source muscle skin weights were available",
+    "sourceRefs": {
+      "LeftArm": {
+        "name": "LeftArm",
+        "parent": "Scapula.l",
+        "head": [
+          0.16462178528308868,
+          0.022343834862113,
+          1.3897680044174194
+        ],
+        "tail": [
+          0.21672818064689636,
+          0.032886162400245667,
+          1.101140022277832
+        ],
+        "matrix": [
+          [
+            -0.984110414981842,
+            0.17754477262496948,
+            -0.0021150708198547363,
+            0.16462181508541107
+          ],
+          [
+            0.00862845778465271,
+            0.03592140972614288,
+            -0.9993173480033875,
+            0.02234383299946785
+          ],
+          [
+            -0.17734766006469727,
+            -0.9834569096565247,
+            -0.03688269853591919,
+            1.3897680044174194
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "deform": true,
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constraints": [
+          {
+            "name": "Set T-Pose",
+            "type": "COPY_ROTATION",
+            "mute": true,
+            "influence": 1.0,
+            "target": "AnatPoseToTPose",
+            "subtarget": "LeftArm"
+          },
+          {
+            "name": "Set AnatPose",
+            "type": "COPY_ROTATION",
+            "mute": false,
+            "influence": 1.0,
+            "target": "TPoseToAnatPose",
+            "subtarget": "LeftArm"
+          },
+          {
+            "name": "Limit Rotation",
+            "type": "LIMIT_ROTATION",
+            "mute": false,
+            "influence": 1.0,
+            "target": null,
+            "subtarget": null
+          }
+        ]
+      },
+      "LeftForeArm": {
+        "name": "LeftForeArm",
+        "parent": "LeftArm",
+        "head": [
+          0.21672819554805756,
+          0.031457144767045975,
+          1.101140022277832
+        ],
+        "tail": [
+          0.25021958351135254,
+          -0.013916071504354477,
+          0.8668127059936523
+        ],
+        "matrix": [
+          [
+            0.008938606828451157,
+            0.13895805180072784,
+            0.9902578592300415,
+            0.21672821044921875
+          ],
+          [
+            -0.9814861416816711,
+            -0.18825654685497284,
+            0.035276468843221664,
+            0.031457141041755676
+          ],
+          [
+            0.1913243681192398,
+            -0.9722399115562439,
+            0.134702667593956,
+            1.101140022277832
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "deform": true,
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constraints": [
+          {
+            "name": "Set T-Pose",
+            "type": "COPY_ROTATION",
+            "mute": true,
+            "influence": 1.0,
+            "target": "AnatPoseToTPose",
+            "subtarget": "LeftForeArm"
+          },
+          {
+            "name": "Set AnatPose",
+            "type": "COPY_ROTATION",
+            "mute": false,
+            "influence": 1.0,
+            "target": "TPoseToAnatPose",
+            "subtarget": "LeftArm"
+          },
+          {
+            "name": "Limit Rotation",
+            "type": "LIMIT_ROTATION",
+            "mute": false,
+            "influence": 1.0,
+            "target": null,
+            "subtarget": null
+          }
+        ]
+      },
+      "LeftHand": {
+        "name": "LeftHand",
+        "parent": "Radius.l",
+        "head": [
+          0.2618427276611328,
+          -0.015082679688930511,
+          0.8632447719573975
+        ],
+        "tail": [
+          0.26649385690689087,
+          -0.018281811848282814,
+          0.8243306875228882
+        ],
+        "matrix": [
+          [
+            0.050419390201568604,
+            0.1182849332690239,
+            -0.991698682308197,
+            0.2618427276611328
+          ],
+          [
+            0.995844304561615,
+            -0.08135853707790375,
+            0.04092613607645035,
+            -0.01508268341422081
+          ],
+          [
+            -0.07584210485219955,
+            -0.9896409511566162,
+            -0.12189549207687378,
+            0.8632449507713318
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "deform": true,
+        "rotation": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "constraints": [
+          {
+            "name": "Set T-Pose",
+            "type": "COPY_ROTATION",
+            "mute": true,
+            "influence": 1.0,
+            "target": null,
+            "subtarget": "RightHand"
+          }
+        ]
+      }
+    }
+  },
+  "structures": [
+    {
+      "id": "za-b74d57488ced",
+      "label": "Cơ delta · bó giữa",
+      "english": "Acromial part of deltoid muscle",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Acromial part of deltoid muscle.l",
+      "vertices": 1482
+    },
+    {
+      "id": "za-51cf66ea75e4",
+      "label": "Brachialis muscle",
+      "english": "Brachialis muscle",
+      "side": "left",
+      "layer": "muscle",
+      "role": "elbow-flexor",
+      "sourceName": "Brachialis muscle.l",
+      "vertices": 1741
+    },
+    {
+      "id": "za-507137502558",
+      "label": "Brachioradialis muscle",
+      "english": "Brachioradialis muscle",
+      "side": "left",
+      "layer": "muscle",
+      "role": "elbow-flexor",
+      "sourceName": "Brachioradialis muscle.l",
+      "vertices": 3658
+    },
+    {
+      "id": "za-4975bdbe8ca2",
+      "label": "Capitate bone",
+      "english": "Capitate bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Capitate bone.l",
+      "vertices": 238
+    },
+    {
+      "id": "za-7e513ab46e08",
+      "label": "Xương đòn",
+      "english": "Clavicle",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Clavicle.l",
+      "vertices": 789
+    },
+    {
+      "id": "za-50e681ac8f51",
+      "label": "Cơ delta · bó trước",
+      "english": "Clavicular part of deltoid muscle",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Clavicular part of deltoid muscle.l",
+      "vertices": 1453
+    },
+    {
+      "id": "za-ccff27b79ec8",
+      "label": "Distal phalanx of fifth finger of hand",
+      "english": "Distal phalanx of fifth finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Distal phalanx of fifth finger of hand.l",
+      "vertices": 98
+    },
+    {
+      "id": "za-48e48518b26b",
+      "label": "Distal phalanx of first finger of hand",
+      "english": "Distal phalanx of first finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Distal phalanx of first finger of hand.l",
+      "vertices": 113
+    },
+    {
+      "id": "za-fd4f42e27006",
+      "label": "Distal phalanx of fourth finger of hand",
+      "english": "Distal phalanx of fourth finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Distal phalanx of fourth finger of hand.l",
+      "vertices": 69
+    },
+    {
+      "id": "za-ab8574e540f5",
+      "label": "Distal phalanx of second finger of hand",
+      "english": "Distal phalanx of second finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Distal phalanx of second finger of hand.l",
+      "vertices": 127
+    },
+    {
+      "id": "za-f6f3b71c5c8c",
+      "label": "Distal phalanx of third finger of hand",
+      "english": "Distal phalanx of third finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Distal phalanx of third finger of hand.l",
+      "vertices": 98
+    },
+    {
+      "id": "za-0de3145162a4",
+      "label": "Extensor carpi radialis longus",
+      "english": "Extensor carpi radialis longus",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Extensor carpi radialis longus.l",
+      "vertices": 1857
+    },
+    {
+      "id": "za-22e10f0df37a",
+      "label": "Fifth metacarpal bone",
+      "english": "Fifth metacarpal bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Fifth metacarpal bone.l",
+      "vertices": 258
+    },
+    {
+      "id": "za-9df38dd0067f",
+      "label": "First metacarpal bone",
+      "english": "First metacarpal bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "First metacarpal bone.l",
+      "vertices": 343
+    },
+    {
+      "id": "za-8ef971f0d5b4",
+      "label": "Flexor carpi radialis",
+      "english": "Flexor carpi radialis",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Flexor carpi radialis.l",
+      "vertices": 835
+    },
+    {
+      "id": "za-72081f4dbc23",
+      "label": "Fourth metacarpal bone",
+      "english": "Fourth metacarpal bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Fourth metacarpal bone.l",
+      "vertices": 323
+    },
+    {
+      "id": "za-58ce878642aa",
+      "label": "Hamate bone",
+      "english": "Hamate bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Hamate bone.l",
+      "vertices": 270
+    },
+    {
+      "id": "za-392caa1c00b1",
+      "label": "Xương cánh tay",
+      "english": "Humerus",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Humerus.l",
+      "vertices": 2143
+    },
+    {
+      "id": "za-71505881f936",
+      "label": "Cơ tam đầu cánh tay",
+      "english": "Lateral head of triceps brachii",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Lateral head of triceps brachii.l",
+      "vertices": 1816
+    },
+    {
+      "id": "za-e51b14c43b3f",
+      "label": "Cơ nhị đầu cánh tay",
+      "english": "Long head of biceps brachii",
+      "side": "left",
+      "layer": "muscle",
+      "role": "elbow-flexor",
+      "sourceName": "Long head of biceps brachii.l",
+      "vertices": 1611
+    },
+    {
+      "id": "za-13175c41cad9",
+      "label": "Cơ tam đầu cánh tay",
+      "english": "Long head of triceps brachii",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Long head of triceps brachii.l",
+      "vertices": 1977
+    },
+    {
+      "id": "za-e7aadf98df59",
+      "label": "Lunate bone",
+      "english": "Lunate bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Lunate bone.l",
+      "vertices": 176
+    },
+    {
+      "id": "za-f0a2b9e97a61",
+      "label": "Cơ tam đầu cánh tay",
+      "english": "Medial head of triceps brachii",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Medial head of triceps brachii.l",
+      "vertices": 1345
+    },
+    {
+      "id": "za-20da467531b3",
+      "label": "Middle phalanx of fifth finger of hand",
+      "english": "Middle phalanx of fifth finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Middle phalanx of fifth finger of hand.l",
+      "vertices": 148
+    },
+    {
+      "id": "za-5955d7f9c310",
+      "label": "Middle phalanx of fourth finger of hand",
+      "english": "Middle phalanx of fourth finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Middle phalanx of fourth finger of hand.l",
+      "vertices": 225
+    },
+    {
+      "id": "za-d7ed85a2496b",
+      "label": "Middle phalanx of second finger of hand",
+      "english": "Middle phalanx of second finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Middle phalanx of second finger of hand.l",
+      "vertices": 159
+    },
+    {
+      "id": "za-6c214d35b4a9",
+      "label": "Middle phalanx of third finger of hand",
+      "english": "Middle phalanx of third finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Middle phalanx of third finger of hand.l",
+      "vertices": 182
+    },
+    {
+      "id": "za-2919eed4eb05",
+      "label": "Pisiform bone",
+      "english": "Pisiform bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Pisiform bone.l",
+      "vertices": 141
+    },
+    {
+      "id": "za-9324b86ccce8",
+      "label": "Cơ nhị đầu cánh tay",
+      "english": "Short head of biceps brachii",
+      "side": "left",
+      "layer": "muscle",
+      "role": "elbow-flexor",
+      "sourceName": "Short head of biceps brachii.l",
+      "vertices": 1344
+    },
+    {
+      "id": "za-e9effcce0414",
+      "label": "Proximal phalanx of fifth finger of hand",
+      "english": "Proximal phalanx of fifth finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Proximal phalanx of fifth finger of hand.l",
+      "vertices": 282
+    },
+    {
+      "id": "za-9e49555b8e92",
+      "label": "Proximal phalanx of first finger of hand",
+      "english": "Proximal phalanx of first finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Proximal phalanx of first finger of hand.l",
+      "vertices": 166
+    },
+    {
+      "id": "za-164e3978d469",
+      "label": "Proximal phalanx of fourth finger of hand",
+      "english": "Proximal phalanx of fourth finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Proximal phalanx of fourth finger of hand.l",
+      "vertices": 186
+    },
+    {
+      "id": "za-c36d7bb09a02",
+      "label": "Proximal phalanx of second finger of hand",
+      "english": "Proximal phalanx of second finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Proximal phalanx of second finger of hand.l",
+      "vertices": 209
+    },
+    {
+      "id": "za-c30338b26464",
+      "label": "Proximal phalanx of third finger of hand",
+      "english": "Proximal phalanx of third finger of hand",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Proximal phalanx of third finger of hand.l",
+      "vertices": 222
+    },
+    {
+      "id": "za-5e0d97935f00",
+      "label": "Xương quay",
+      "english": "Radius",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Radius.l",
+      "vertices": 394
+    },
+    {
+      "id": "za-dd59a0e4f0be",
+      "label": "Scaphoid bone",
+      "english": "Scaphoid bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Scaphoid bone.l",
+      "vertices": 197
+    },
+    {
+      "id": "za-82c423a2d962",
+      "label": "Xương bả vai",
+      "english": "Scapula",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Scapula.l",
+      "vertices": 12690
+    },
+    {
+      "id": "za-0378b861a51b",
+      "label": "Cơ delta · bó sau",
+      "english": "Scapular spinal part of deltoid muscle",
+      "side": "left",
+      "layer": "muscle",
+      "role": "context",
+      "sourceName": "Scapular spinal part of deltoid muscle.l",
+      "vertices": 2189
+    },
+    {
+      "id": "za-1557e03b4112",
+      "label": "Second metacarpal bone",
+      "english": "Second metacarpal bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Second metacarpal bone.l",
+      "vertices": 384
+    },
+    {
+      "id": "za-dd7c3d15646d",
+      "label": "Third metacarpal bone",
+      "english": "Third metacarpal bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Third metacarpal bone.l",
+      "vertices": 356
+    },
+    {
+      "id": "za-af5fa22f78a8",
+      "label": "Trapezium bone",
+      "english": "Trapezium bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Trapezium bone.l",
+      "vertices": 252
+    },
+    {
+      "id": "za-7d4e33b05b4f",
+      "label": "Trapezoid bone",
+      "english": "Trapezoid bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Trapezoid bone.l",
+      "vertices": 184
+    },
+    {
+      "id": "za-e3caca12db6f",
+      "label": "Triquetrum bone",
+      "english": "Triquetrum bone",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Triquetrum bone.l",
+      "vertices": 90
+    },
+    {
+      "id": "za-c187da6b8beb",
+      "label": "Xương trụ",
+      "english": "Ulna",
+      "side": "left",
+      "layer": "bone",
+      "role": "context",
+      "sourceName": "Ulna.l",
+      "vertices": 454
+    }
+  ],
+  "sources": [
+    {
+      "title": "OpenStax Anatomy and Physiology 2e §11.5 — Muscles That Move the Forearm",
+      "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+      "checkedAt": "2026-10-20",
+      "access": "Full section text, forearm-flexor paragraphs; supports biceps brachii, brachialis and brachioradialis elbow-flexion function only."
+    },
+    {
+      "title": "Z-Anatomy source meshes and Z-Biomechanics rig",
+      "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+      "checkedAt": "2026-10-20",
+      "access": "Local pinned Startup.blend and Biomechanics.blend; embedded scripts disabled; source metadata, not clinical validation."
+    }
+  ],
+  "supportedClaims": [
+    "Biceps brachii, brachialis and brachioradialis contribute to forearm flexion at the elbow."
+  ],
+  "limitations": [
+    "An experimental authored motion study, not motion capture or a validated exercise demonstration.",
+    "Skin weights and soft-tissue deformation are authored display approximations; no verified attachment or fascicle mapping.",
+    "Highlight identifies teaching structures, not EMG, force, percentage activation or phase-dependent recruitment.",
+    "Range and timing are display choices, not individualized exercise instructions.",
+    "Single arm only; grip, shoulder/scapular stabilization and cable/hand contact are not biomechanically validated.",
+    "Independent clinician/anatomist review of geometry, movement and mapping remains pending."
+  ]
+}

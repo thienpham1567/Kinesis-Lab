@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { MUSCLE_GROUP_EVIDENCE, EXERCISE_EVIDENCE } from "@/lib/clinical/evidence-muscle";
 import { useEffect, useState } from "react";
 import {
   HYPERTROPHY_EXERCISES,
@@ -378,7 +380,7 @@ export function MuscleHypertrophyExplorer({
     return match ? { exercise: ex, target: match } : null;
   })
     .filter((item): item is NonNullable<typeof item> => item !== null)
-    .sort((a, b) => b.target.activationPct - a.target.activationPct);
+    .sort((a, b) => ({primary:0,synergist:1,stabilizer:2}[a.target.role] - {primary:0,synergist:1,stabilizer:2}[b.target.role]));
 
   function renderMyologyFigure(
     side: "anterior" | "posterior",
@@ -534,7 +536,7 @@ export function MuscleHypertrophyExplorer({
                       fontWeight="800"
                       fill="#ffffff"
                     >
-                      {exTarget.activationPct}
+                      {exTarget.role === "primary" ? "C" : exTarget.role === "synergist" ? "P" : "Ổ"}
                     </text>
                   )}
                 </g>
@@ -548,6 +550,7 @@ export function MuscleHypertrophyExplorer({
 
   return (
     <div className="space-y-4">
+      <ClinicalEvidencePanel evidence={lookupMode === "ex_to_muscle" ? EXERCISE_EVIDENCE[activeExercise.id] : MUSCLE_GROUP_EVIDENCE[activeMuscle.id]} />
       {/* Top Control Bar: Bidirectional Mode Switch */}
       <div className="panel flex flex-wrap items-center gap-3 px-4 py-3.5">
         <div className="grid w-full grid-cols-2 gap-1 rounded-lg border border-rule bg-canvas p-1 sm:inline-flex sm:w-auto">
@@ -759,7 +762,7 @@ export function MuscleHypertrophyExplorer({
                         onClick={() => selectMuscle(t.muscleId)}
                         className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-[11px] font-bold transition-opacity hover:opacity-90 ${chipCls}`}
                       >
-                        <span className="font-mono">{t.activationPct}%</span>
+                        <span className="font-mono">{t.role === "primary" ? "Chính" : t.role === "synergist" ? "Phụ" : "Ổn định"}</span>
                         <span>{MUSCLE_SHORT_NAME[t.muscleId] ?? t.muscleId}</span>
                       </button>
                     );
@@ -1063,10 +1066,10 @@ export function MuscleHypertrophyExplorer({
                             }`}
                           >
                             {target.role === "primary"
-                              ? `CHỦ VẬN CHÍNH • ${target.activationPct}%`
+                              ? "CHỦ VẬN CHÍNH"
                               : target.role === "synergist"
-                                ? `ĐỒNG VẬN PHỤ • ${target.activationPct}%`
-                                : `GIỮ ỔN ĐỊNH • ${target.activationPct}%`}
+                                ? "ĐỒNG VẬN PHỤ"
+                                : "GIỮ ỔN ĐỊNH"}
                           </span>
                           <span className="font-mono text-[10px] text-cobalt">
                             Xem Heatmap →
@@ -1230,18 +1233,7 @@ export function MuscleHypertrophyExplorer({
                           </button>
                         </div>
 
-                        {/* Progress Bar */}
-                        <div className="mt-2.5 flex items-center gap-3">
-                          <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-surface">
-                            <div
-                              className={`h-full rounded-full ${barColor}`}
-                              style={{ width: `${t.activationPct}%` }}
-                            />
-                          </div>
-                          <span className="w-12 text-right font-mono text-xs font-bold text-ink">
-                            {t.activationPct}%
-                          </span>
-                        </div>
+                        <p className="mt-2 text-[11px] text-slate">Vai trò định tính theo thiết lập ví dụ; không có số đo % hoạt hóa cho bài này.</p>
 
                         <p className="mt-2 text-ink">
                           <strong>Bó cơ chịu tải chính:</strong>{" "}

@@ -1,5 +1,8 @@
 "use client";
 
+import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
+import { HANDBOOK_EVIDENCE } from "@/lib/clinical/evidence-assessment";
+
 import Link from "next/link";
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -99,6 +102,8 @@ function TopicView({ topic }: { topic: HandbookTopic }) {
         <h2 className="font-display text-2xl font-bold tracking-tight text-ink">{topic.title}</h2>
         <p className="max-w-3xl text-sm leading-6 text-ink">{topic.gist}</p>
       </header>
+
+      <ClinicalEvidencePanel evidence={HANDBOOK_EVIDENCE[topic.id]} />
 
       {topic.parts.map((part) => (
         <PartView key={part.label} part={part} />
@@ -261,52 +266,11 @@ function EvidenceBadge({ evidence }: { evidence: Evidence }) {
   );
 }
 
-// Knee flexion scale 0–160°: functional bands (Rowe 2000) and CDC adult means.
+// Descriptive CDC sample means only; no universal task or rehabilitation cutoff.
 function KneeFlexionChart() {
-  const means = ROM_MOVEMENTS.find((m) => m.id === "knee_flexion")!.means as Record<"F" | "M", number[]>;
-  const male = means.M[2];
-  const female = means.F[2];
-  const x = (deg: number) => 20 + (deg / 160) * 600;
-  const fmt = (n: number) => n.toFixed(1).replace(".", ",");
-  return (
-    <figure className="overflow-x-auto rounded-lg border border-rule bg-sheet p-4">
-      <svg
-        viewBox="0 0 660 150"
-        className="block h-auto w-full min-w-[520px]"
-        role="img"
-        aria-label={`Thang gập gối 0–160°: đi bộ cần dưới 90°, cầu thang và ngồi ghế 90–120°, mục tiêu phục hồi 110°, trung bình nam 20–44 tuổi ${fmt(male)}°, nữ ${fmt(female)}°`}
-      >
-        <rect x="20" y="66" width="600" height="16" rx="3" className="fill-rule" />
-        <rect x="20" y="66" width={x(90) - 20} height="16" rx="3" className="fill-cobalt-soft" />
-        <rect x={x(90)} y="66" width={x(120) - x(90)} height="16" className="fill-cobalt/30" />
-        <text x={(20 + x(90)) / 2} y="102" textAnchor="middle" fontSize="12" className="fill-slate">
-          đi bộ, đi dốc (&lt; 90°)
-        </text>
-        <text x={(x(90) + x(120)) / 2} y="102" textAnchor="middle" fontSize="12" className="fill-slate">
-          cầu thang, ngồi ghế (90–120°)
-        </text>
-        <line x1={x(110)} y1="55" x2={x(110)} y2="86" strokeWidth="2" className="stroke-cobalt" />
-        <text x={x(110)} y="50" textAnchor="middle" fontSize="12" fontWeight="700" className="fill-cobalt">
-          mục tiêu phục hồi 110°
-        </text>
-        <line x1={x(male)} y1="32" x2={x(male)} y2="86" strokeWidth="1.5" className="stroke-ink" />
-        <text x={x(male) - 5} y="30" textAnchor="end" fontSize="12" className="fill-ink">
-          TB nam 20–44: {fmt(male)}°
-        </text>
-        <line x1={x(female)} y1="8" x2={x(female)} y2="86" strokeWidth="1.5" strokeDasharray="3 2" className="stroke-ink" />
-        <text x={x(female) - 5} y="12" textAnchor="end" fontSize="12" className="fill-ink">
-          TB nữ 20–44: {fmt(female)}°
-        </text>
-        {[0, 30, 60, 90, 120, 150].map((d) => (
-          <text key={d} x={x(d)} y="130" textAnchor="middle" fontSize="11" className="fill-slate font-mono">
-            {d}°
-          </text>
-        ))}
-      </svg>
-      <figcaption className="mt-2 text-xs text-slate">
-        Trung bình theo CDC (Soucie 2011); mốc chức năng theo Rowe 2000. Trung bình là mức của người khỏe, không phải
-        ngưỡng chẩn đoán.
-      </figcaption>
-    </figure>
-  );
+  const means = ROM_MOVEMENTS.find(m=>m.id === "knee_flexion")!.means as Record<"F"|"M",number[]>;
+  return <figure className="rounded-lg border border-rule bg-sheet p-4">
+    <div className="grid gap-3 sm:grid-cols-2">{(["M","F"] as const).map(sex=><div key={sex} className="rounded border border-rule p-3"><p className="text-xs text-slate">{sex === "M" ? "Nam" : "Nữ"} · 20–44 tuổi · CDC</p><p className="mt-1 font-mono text-xl text-ink">{means[sex][2]}°</p></div>)}</div>
+    <figcaption className="mt-3 text-xs leading-5 text-slate">Trung bình gập gối của mẫu CDC, không phải ngưỡng chẩn đoán hoặc mục tiêu phục hồi. Mục tiêu cá nhân cần gắn với chức năng và đánh giá chuyên môn.</figcaption>
+  </figure>;
 }

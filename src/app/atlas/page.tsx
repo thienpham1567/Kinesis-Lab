@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
-import { MuscleHypertrophyExplorer } from "@/components/MuscleHypertrophyExplorer";
+import { TrainingAtlasExplorer } from "@/components/training/TrainingAtlasExplorer";
 import { TriggerPointExplorer } from "@/components/TriggerPointExplorer";
 import type { Client } from "@/lib/types";
 import { Icon, PageHeading, type IconName } from "@/components/WorkspaceUI";
@@ -41,17 +41,17 @@ const TAB_COPY: Record<AtlasTab, { title: string; subtitle: string }> = {
   hypertrophy: {
     title: "Atlas Cơ – Khớp",
     subtitle:
-      "Chọn bó cơ để ra bài tập, hoặc chọn bài tập để xem bản đồ nhiệt kích hoạt.",
+      "Liên kết bài tập, cơ–khớp và nhật ký huấn luyện; tra cứu nguồn ngay trong từng nội dung.",
   },
   trigger_points: {
     title: "Trigger Point & Cơ mạc",
     subtitle:
-      "Sờ nắn nhận diện nút, đọc đường đau quy chiếu, rồi giải phóng – kích hoạt – chỉnh kỹ thuật.",
+      "Tra cứu điểm đau và cơ mạc, đọc giới hạn bằng chứng và dấu hiệu cần đánh giá chuyên môn.",
   },
   clinical_rehab: {
     title: "Phục hồi khớp",
     subtitle:
-      "Sàng lọc vùng khớp, red flag và bài tập thay thế theo hồ sơ học viên.",
+      "Ghi nhận vùng khớp, triệu chứng và lưu ý theo hồ sơ; các từ khóa không thay thế đánh giá chuyên môn.",
   },
 };
 
@@ -119,7 +119,7 @@ function AtlasPageInner() {
         {(
           [
             { id: "3d", label: "Giải phẫu 3D", icon: "atlas" },
-            { id: "hypertrophy", label: "Cơ bắp & bài tập", icon: "activity" },
+            { id: "hypertrophy", label: "Huấn luyện PT", icon: "activity" },
             { id: "trigger_points", label: "Trigger Point", icon: "target" },
             { id: "clinical_rehab", label: "Phục hồi khớp", icon: "shield" },
           ] as const
@@ -142,11 +142,12 @@ function AtlasPageInner() {
         <Atlas3DExplorer
           initialArea={searchParams.get("area")}
           initialStructure={searchParams.get("structure")}
+          initialGroup={searchParams.get("group")}
         />
       ) : atlasTab === "hypertrophy" ? (
-        <MuscleHypertrophyExplorer
-          key={searchParams.get("muscle") ?? "default"}
+        <TrainingAtlasExplorer
           initialMuscleId={searchParams.get("muscle")}
+          initialExerciseId={searchParams.get("exercise")}
         />
       ) : atlasTab === "trigger_points" ? (
         <TriggerPointExplorer

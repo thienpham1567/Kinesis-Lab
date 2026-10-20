@@ -13,6 +13,7 @@ for (const [kind, parameters] of Object.entries(TISSUE_DETAIL_MAPS)) {
     .toBuffer();
   const path = new URL("../public" + parameters.url, import.meta.url);
   await writeFile(path, image);
+  const { height: heightAmplitudeMetres, ...surfaceParameters } = parameters;
   maps.push({
     kind,
     file: path.pathname.split("/").at(-1),
@@ -20,7 +21,8 @@ for (const [kind, parameters] of Object.entries(TISSUE_DETAIL_MAPS)) {
     height: size,
     bytes: image.length,
     sha256: createHash("sha256").update(image).digest("hex"),
-    ...parameters,
+    ...surfaceParameters,
+    heightAmplitudeMetres,
   });
 }
 const generator = await readFile(

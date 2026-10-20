@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+const policy=await import('../src/components/training/curl/motion-policy.ts');
+assert.equal(policy.clampPhase(-1),0);assert.equal(policy.clampPhase(2),1);assert.equal(policy.clampPhase(NaN),0);
+assert.equal(policy.cyclePhase(3,6,1),.5);assert.equal(policy.cyclePhase(6,6,1),0);assert.equal(policy.cyclePhase(3,6,.5),.25);
+assert.equal(policy.cyclePhase(3,6,2),0);assert.equal(policy.cyclePhase(-1,6,1),0);
+for(const n of [0,-1,NaN,Infinity])assert.throws(()=>policy.cyclePhase(1,n,1));
+assert.equal(policy.phaseLabel(0),'Bắt đầu');assert.equal(policy.phaseLabel(.25),'Gập khuỷu');assert.equal(policy.phaseLabel(.5),'Chuyển pha');assert.equal(policy.phaseLabel(.75),'Hạ có kiểm soát');assert.equal(policy.phaseLabel(1),'Kết thúc');
+const slots=policy.exportImageRect(400,600,1280,720);
+assert(slots.x>=0&&slots.y>=90);assert(slots.width<=1280&&slots.y+slots.height<=650);
+assert(Math.abs(slots.width/slots.height-400/600)<.00001);
+console.log('Curl motion policy: finite/clamped phases, time/speed loops, phase labels and uncropped export aspect ratio passed.');

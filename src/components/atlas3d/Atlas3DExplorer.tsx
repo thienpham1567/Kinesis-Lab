@@ -19,6 +19,15 @@ import {
 import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import type { RenderQuality } from "./render-policy";
 import type { CameraCommand } from "./types";
+import AnatomyEvidenceCard from "./AnatomyEvidenceCard";
+import { MuscleStudyCard } from "@/components/training/MuscleStudyCard";
+import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
+import { getCatalogEvidence } from "@/lib/clinical/evidence-registry";
+import {
+  matchingGroupStructures,
+  trainingGroupForStructure,
+  trainingHref,
+} from "@/lib/clinical/training-atlas";
 import HipMaterialStudyControls from "./HipMaterialStudyControls";
 import { HIP_STUDY_SAMPLES, type HipStudySample } from "./hip-material-policy";
 import type { StudyStatus } from "./tissue-study-resources";
@@ -67,9 +76,11 @@ function thicknessMillimeters(meters: number) {
 export default function Atlas3DExplorer({
   initialArea,
   initialStructure,
+  initialGroup,
 }: {
   initialArea?: string | null;
   initialStructure?: string | null;
+  initialGroup?: string | null;
 }) {
   const [manifest, setManifest] = useState<AtlasManifest | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -81,11 +92,13 @@ export default function Atlas3DExplorer({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [thicknessId, setThicknessId] = useState<string | null>(null);
   const [quality, setQuality] = useState<RenderQuality>("auto");
+  const [showSurfaceLabels, setShowSurfaceLabels] = useState(true);
   const [materialStudy, setMaterialStudy] = useState(false);
   const [studyStatus, setStudyStatus] = useState<StudyStatus>("idle");
   const [studyRetry, setStudyRetry] = useState(0);
   const [muscleOpacity, setMuscleOpacity] = useState(1);
   const [query, setQuery] = useState("");
+  const [focusedGroupId, setFocusedGroupId] = useState<string | null>(null);
   const [limit, setLimit] = useState(80);
   const [command, setCommand] = useState<CameraCommand>({
     type: "front",
@@ -104,18 +117,40 @@ export default function Atlas3DExplorer({
       .then((data) => {
         if (controller.signal.aborted) return;
         const nextArea = validArea(initialArea);
-        const initial = data.structures.find(
-          (structure) =>
-            structure.id === initialStructure &&
-            (nextArea === "full" || structure.areas.includes(nextArea)),
+        const focusGroup = MUSCLE_GROUP_ATLAS.find(
+          (g) => g.id === initialGroup,
         );
+        const groupStructures = focusGroup
+          ? matchingGroupStructures(data.structures, focusGroup.id).filter(
+              (s) => nextArea === "full" || s.areas.includes(nextArea),
+            )
+          : [];
+        const initial =
+          data.structures.find(
+            (structure) =>
+              structure.id === initialStructure &&
+              (nextArea === "full" || structure.areas.includes(nextArea)),
+          ) ?? groupStructures[0];
         setManifest(data);
         setArea(nextArea);
         setSelectedId(initial?.id ?? null);
         setThicknessId(null);
         setMaterialStudy(false);
         setStudyStatus("idle");
-        setHiddenIds(new Set());
+        setFocusedGroupId(groupStructures.length ? focusGroup!.id : null);
+        setHiddenIds(
+          groupStructures.length
+            ? new Set(
+                data.structures
+                  .filter(
+                    (s) =>
+                      s.layer !== "bone" &&
+                      !(trainingGroupForStructure(s) === focusGroup!.id),
+                  )
+                  .map((s) => s.id),
+              )
+            : new Set(),
+        );
         setIsolatedId(null);
         setLayers({
           ...DEFAULT_LAYERS,
@@ -131,7 +166,7 @@ export default function Atlas3DExplorer({
         if (!controller.signal.aborted) setLoadError(true);
       });
     return () => controller.abort();
-  }, [initialArea, initialStructure, retry]);
+  }, [initialArea, initialStructure, initialGroup, retry]);
 
   const results = useMemo(
     () => searchStructures(manifest?.structures ?? [], query, area),
@@ -151,7 +186,7 @@ export default function Atlas3DExplorer({
     (entry) => entry.id === selected?.clinicalRegion,
   );
   const muscleGroup = MUSCLE_GROUP_ATLAS.find(
-    (entry) => entry.id === selected?.group,
+    (entry) => selected && entry.id === trainingGroupForStructure(selected),
   );
   const selectedVisible =
     selected && isStructureVisible(selected, layers, hiddenIds, isolatedId);
@@ -178,6 +213,7 @@ export default function Atlas3DExplorer({
 
   function changeArea(nextArea: AtlasArea) {
     setArea(nextArea);
+    setFocusedGroupId(null);
     setSelectedId(null);
     setThicknessId(null);
     setMaterialStudy(false);
@@ -192,6 +228,7 @@ export default function Atlas3DExplorer({
   }
 
   function restoreVisibility() {
+    setFocusedGroupId(null);
     setLayers(DEFAULT_LAYERS);
     setHiddenIds(new Set());
     setIsolatedId(null);
@@ -289,6 +326,26 @@ export default function Atlas3DExplorer({
         </span>
       </div>
 
+      {focusedGroupId && (
+        <div
+          className="panel flex flex-wrap items-start justify-between gap-3 border-cobalt/25 bg-cobalt-soft/40 p-4"
+          role="status"
+        >
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-ink">
+              Đang xem nhóm:{" "}
+              {MUSCLE_GROUP_ATLAS.find((g) => g.id === focusedGroupId)?.name}
+            </p>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-slate">
+              Giữ xương làm mốc và hiện các mesh thuộc nhóm. Nhóm do app tổ
+              chức; không là bản đồ hoạt hóa hoặc xác nhận từng vị trí bám.
+            </p>
+          </div>
+          <button className="button-secondary" onClick={restoreVisibility}>
+            Hiện lại các lớp
+          </button>
+        </div>
+      )}
       <div className="panel p-4 sm:p-5">
         <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(200px,1fr)_auto] sm:items-end">
           <label className="field-label min-w-0">
@@ -408,6 +465,8 @@ export default function Atlas3DExplorer({
           onEnabled={setMaterialStudy}
           onSample={openStudySample}
           onRetry={() => setStudyRetry((value) => value + 1)}
+          showLabels={showSurfaceLabels}
+          onLabels={setShowSurfaceLabels}
         />
       )}
 
@@ -423,6 +482,7 @@ export default function Atlas3DExplorer({
               selectedId={selectedId}
               thicknessId={thicknessId}
               materialStudy={area === "hip" && materialStudy}
+              showSurfaceLabels={area === "hip" && showSurfaceLabels}
               studyRetry={studyRetry}
               onStudyStatus={setStudyStatus}
               muscleOpacity={muscleOpacity}
@@ -466,7 +526,10 @@ export default function Atlas3DExplorer({
             )}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule px-4 py-3 text-[11px] leading-5 text-slate">
-            <p>Kéo để xoay · Cuộn / chụm để thu phóng · Nhấp đúp để xem sát bề mặt</p>
+            <p>
+              Kéo để xoay · Cuộn / chụm để thu phóng · Nhấp đúp để xem sát bề
+              mặt
+            </p>
             <span className="font-mono">
               {visibleCount} / {areaStructures.length} cấu trúc ·{" "}
               {(bundle.bytes / 1024 / 1024).toFixed(1)} MB
@@ -486,9 +549,12 @@ export default function Atlas3DExplorer({
               <Icon name="target" className="size-4" />
               Tập trung
             </button>
-            <button type="button" className="button-secondary"
+            <button
+              type="button"
+              className="button-secondary"
               disabled={!selected || !selectedVisible}
-              onClick={() => sendCommand("detail")}>
+              onClick={() => sendCommand("detail")}
+            >
               Cận cảnh bề mặt
             </button>
             <button
@@ -660,6 +726,22 @@ export default function Atlas3DExplorer({
                     </div>
                   </dl>
                 </div>
+                <ClinicalEvidencePanel
+                  evidence={getCatalogEvidence(selected.id)}
+                  title="Nguồn mô hình & phạm vi đối chiếu"
+                />
+                <AnatomyEvidenceCard structureId={selected.id} />
+                {muscleGroup && (
+                  <div className="space-y-3">
+                    <Link
+                      href={trainingHref("muscle", muscleGroup.id)}
+                      className="button-primary w-full"
+                    >
+                      Giải phẫu nhóm & bài tập liên quan →
+                    </Link>
+                    <MuscleStudyCard muscle={muscleGroup} compact />
+                  </div>
+                )}
                 {selected.surfaces && (
                   <div className="border-t border-rule pt-3">
                     <p className="text-xs font-semibold text-ink">

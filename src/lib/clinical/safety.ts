@@ -31,28 +31,31 @@ export const PARQ_ITEMS: { id: string; label: string }[] = [
   },
 ];
 
+// Text matches are reminders, not diagnosis, clearance or medication reconciliation.
 const DRUG_NOTES: [RegExp, string][] = [
-  [/beta.?block|bisoprolol|atenolol|metoprolol|propranolol|chẹn beta/i, "Beta-blocker: nhịp tim tối đa bị chẹn — dùng RPE, không dùng %HRmax."],
-  [/insulin|metformin|sulfonyl|glimepiride|empagliflozin|sglt/i, "Thuốc hạ đường: nguy cơ hạ đường khi tập — mang carb nhanh, tránh tập lúc đói kéo dài."],
-  [/warfarin|rivaroxaban|apixaban|aspirin|clopidogrel/i, "Chống đông: tránh va chạm / bài tập có nguy cơ chấn thương cao."],
-  [/statin|atorvastatin|rosuvastatin/i, "Statin: theo dõi đau cơ bất thường, không nhầm với DOMS thông thường."],
-  [/nitroglycerin|isosorbide/i, "Nitrate: đau ngực khi tập là Red Flag — dừng, chuyển cấp cứu nếu không đỡ."],
+  [/beta.?block|bisoprolol|atenolol|metoprolol|propranolol|chẹn beta/i, "Beta-blocker: nhịp tim đáp ứng gắng sức có thể giảm. Dùng mức gắng sức cảm nhận/talk test hoặc mục tiêu nhịp tim do bác sĩ cá thể hóa; không tự đổi thuốc. [AHA: https://www.heart.org/en/health-topics/consumer-healthcare/medication-information/how-do-beta-blocker-drugs-affect-exercise]"],
+  [/insulin|sulfonyl|glimepiride|gliclazide|glipizide|glyburide|glibenclamide|repaglinide|nateglinide/i, "Insulin/thuốc kích thích tiết insulin: có nguy cơ hạ đường huyết khi hoặc sau tập; cần kế hoạch theo dõi glucose và xử trí do nhóm điều trị hướng dẫn. Không tự chỉnh liều. [ADA: https://doi.org/10.2337/dc16-1728]"],
+  [/metformin|empagliflozin|dapagliflozin|canagliflozin|sglt/i, "Metformin/SGLT2 dùng đơn độc không có cùng nguy cơ hạ glucose do tập như insulin; kiểm tra thuốc phối hợp và kế hoạch bệnh đái tháo đường của bác sĩ. Không tự đổi thuốc. [ADA: https://doi.org/10.2337/dc16-1728]"],
+  [/warfarin|rivaroxaban|apixaban|dabigatran|edoxaban/i, "Thuốc chống đông: tăng nguy cơ chảy máu; thảo luận hoạt động có va chạm/nguy cơ chấn thương và chỉ định cá nhân với nhóm điều trị. [NHS: https://www.nhs.uk/medicines/anticoagulants/]"],
+  [/aspirin|clopidogrel/i, "Thuốc kháng tiểu cầu: có thể tăng chảy máu; cần xác nhận chỉ định và kế hoạch hoạt động với nhóm điều trị. Đây là nhóm thuốc khác thuốc chống đông. [NHS: https://www.nhs.uk/medicines/clopidogrel/]"],
+  [/statin|atorvastatin|rosuvastatin/i, "Statin: báo bác sĩ khi đau/yếu cơ bất thường không giải thích được; triệu chứng nặng cần đánh giá sớm. Không tự kết luận là DOMS hoặc tự ngừng thuốc. [NHS: https://www.nhs.uk/medicines/statins/]"],
+  [/nitroglycerin|isosorbide/i, "Nitrate: xác nhận kế hoạch đau thắt ngực do bác sĩ cung cấp. Đau ngực mới, kéo dài, lan tay/hàm hoặc kèm khó thở, vã mồ hôi, choáng: dừng và gọi cấp cứu địa phương ngay. [NHS: https://www.nhs.uk/symptoms/chest-pain/]"],
 ];
 
 const CONDITION_NOTES: [RegExp, string][] = [
-  [/thoát vị|disc|herniation|L4|L5|S1/i, "Cột sống: tránh flexion có tải + xoay (sit-up, toe touch có tạ). Ưu tiên hip hinge trung tính, McGill Big 3 nếu phù hợp."],
-  [/huyết áp|hypertension/i, "Tăng huyết áp: tránh Valsalva, isometric tối đa kéo dài; theo dõi triệu chứng đau đầu/đau ngực."],
-  [/tiểu đường|đái tháo|diabetes/i, "Đái tháo đường: kiểm tra glucose trước tập nếu dùng insulin; mang giấy tờ/carb nhanh."],
-  [/gối|acl|meniscus|patell/i, "Gối: tôn trọng pain trigger; kiểm soát valgus; regression depth / open-chain nếu đau."],
-  [/vai|rotator|impingement|cuff/i, "Vai: hạn chế elevation quá đau, tránh behind-neck press; ưu tiên landmine / neutral grip."],
-  [/ung thư|cancer|sốt|night sweat|sụt cân/i, "Red Flag hệ thống: không tiến hành tập nặng — chuyển bác sĩ."],
+  [/thoát vị|disc|herniation|\bL[45]\b|\bS1\b/i, "Cột sống: tên bệnh trong hồ sơ không xác định bài tập bị cấm. Cá thể hóa theo triệu chứng, chức năng và kế hoạch chuyên môn; đau mới kèm rối loạn tiểu tiện/đại tiện hoặc tê vùng yên ngựa cần đánh giá cấp cứu. [NICE NG59: https://www.nice.org.uk/guidance/ng59/chapter/Recommendations]"],
+  [/huyết áp|hypertension/i, "Tăng huyết áp: xác nhận mức kiểm soát, thuốc và giới hạn gắng sức được bác sĩ hướng dẫn; đau ngực/khó thở bất thường cần dừng và đánh giá. Không cấp phép tập từ tên bệnh. [CSEP: https://csep.ca/2021/01/20/pre-screening-for-physical-activity/]"],
+  [/tiểu đường|đái tháo|diabetes/i, "Đái tháo đường: kế hoạch vận động phụ thuộc loại bệnh, thuốc và biến chứng; đặc biệt xác nhận theo dõi glucose nếu dùng insulin/thuốc kích thích tiết insulin. [ADA: https://doi.org/10.2337/dc16-1728]"],
+  [/gối|acl|meniscus|patell/i, "Gối: ghi đau, sưng, chức năng, giai đoạn chấn thương/phẫu thuật và giới hạn của nhóm điều trị; không tự chọn phác đồ từ từ khóa. [CSEP: https://csep.ca/2021/01/20/pre-screening-for-physical-activity/]"],
+  [/vai|rotator|impingement|cuff/i, "Vai: điều chỉnh hoạt động theo đáp ứng và đánh giá chuyên môn; tên bệnh không xác định một kiểu grip hay bài thay thế bắt buộc. [CSEP: https://csep.ca/2021/01/20/pre-screening-for-physical-activity/]"],
+  [/ung thư|cancer|sốt|night sweat|sụt cân/i, "Triệu chứng hệ thống mới hoặc không giải thích được cần đánh giá y tế trước khi quyết định tải tập. Tiền sử ung thư không tự động cấm mọi vận động; tuân thủ kế hoạch điều trị. [NICE NG59: https://www.nice.org.uk/guidance/ng59/chapter/Recommendations]"],
 ];
 
 export function safetyNotes(client: Client) {
   const lines: string[] = [];
   const parq = client.red_flags?.parq ?? {};
   const yes = PARQ_ITEMS.filter((q) => parq[q.id] === true).map((q) => q.label);
-  if (yes.length) lines.push(`PAR-Q+/Red Flags trả lời CÓ: ${yes.join(" | ")}`);
+  if (yes.length) lines.push(`Bảng kiểm trước tập (tự xây dựng, chưa thẩm định) trả lời CÓ: ${yes.join(" | ")}`);
 
   for (const c of client.medical_conditions ?? []) {
     const hit = CONDITION_NOTES.find(([re]) => re.test(c.name + " " + (c.notes ?? "")));

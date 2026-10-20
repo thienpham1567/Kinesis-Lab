@@ -1,0 +1,51 @@
+{
+  "source": "public/anatomy/3d/hip.glb",
+  "sha256": "2db62bd876e9fddd25c0b9d714c9abeade3d1f2ac637f06d5d6b8eff661146e3",
+  "note": "Decoded GLB audit; Distance welding is diagnostic and does not alter source or certify anatomy. Original source regions and silhouette retained.",
+  "structures": [
+    {
+      "id": "za-98cfd2e47395",
+      "regions": [
+        {
+          "kind": "muscle",
+          "vertices": 2239,
+          "triangles": 4374
+        },
+        {
+          "kind": "tendon",
+          "vertices": 453,
+          "triangles": 802
+        }
+      ],
+      "invalidPositions": 0,
+      "nonUnitNormals": 0,
+      "degenerateTriangles": 0,
+      "weldToleranceMetres": 0.00002,
+      "openEdgesAfterDistanceWeld": 0,
+      "nonManifoldEdgesAfterDistanceWeld": 0,
+      "maxTriangleEdgeMillimetres": 29.95858524295795
+    },
+    {
+      "id": "za-cc11824f98a0",
+      "regions": [
+        {
+          "kind": "muscle",
+          "vertices": 2239,
+          "triangles": 4374
+        },
+        {
+          "kind": "tendon",
+          "vertices": 453,
+          "triangles": 802
+        }
+      ],
+      "invalidPositions": 0,
+      "nonUnitNormals": 0,
+      "degenerateTriangles": 0,
+      "weldToleranceMetres": 0.00002,
+      "openEdgesAfterDistanceWeld": 0,
+      "nonManifoldEdgesAfterDistanceWeld": 0,
+      "maxTriangleEdgeMillimetres": 29.95857879570176
+    }
+  ]
+}

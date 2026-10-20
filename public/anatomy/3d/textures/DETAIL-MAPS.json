@@ -12,60 +12,64 @@
   "anatomicalFiberMap": false,
   "photographic": false,
   "generator": "scripts/tissue-detail-fields.mjs",
-  "generatorSha256": "d735382dad37e94e8576ba5e0390a167f573476a3e7e1864eed01ef8b11e01aa",
+  "generatorSha256": "6908340bdc99ccb3576257c37ff4494c852450982666c955d2aace263dba5bb2",
   "distribution": "Kinesis Lab illustrative assets, CC BY-SA 4.0",
   "maps": [
     {
       "kind": "muscle",
       "file": "muscle-detail-v1.png",
       "width": 256,
-      "height": 0.000006,
+      "height": 256,
       "bytes": 62468,
       "sha256": "ce9385fd603ec5cb1a7da9efb0ee65a10fd57de313dc297524f78f7b6b251cb4",
       "url": "/anatomy/3d/textures/muscle-detail-v1.png",
       "scale": 0.01,
       "roughness": 0.39,
       "variation": 0.07,
-      "uniform": "studyDetailMuscle"
+      "uniform": "studyDetailMuscle",
+      "heightAmplitudeMetres": 0.000006
     },
     {
       "kind": "tendon",
       "file": "tendon-detail-v1.png",
       "width": 256,
-      "height": 0.000004,
+      "height": 256,
       "bytes": 72634,
       "sha256": "dbe768d74093795e8b7e133235eca662b623df86e2ae1148af303d4675d7513d",
       "url": "/anatomy/3d/textures/tendon-detail-v1.png",
       "scale": 0.006,
       "roughness": 0.44,
       "variation": 0.06,
-      "uniform": "studyDetailTendon"
+      "uniform": "studyDetailTendon",
+      "heightAmplitudeMetres": 0.000004
     },
     {
       "kind": "bone",
       "file": "bone-detail-v1.png",
       "width": 256,
-      "height": 0.000008,
+      "height": 256,
       "bytes": 76905,
       "sha256": "afd2a4f4b448bdbf75ebcda1f0612221c789af6531c3e21fe1477a9cbf0078c5",
       "url": "/anatomy/3d/textures/bone-detail-v1.png",
       "scale": 0.012,
       "roughness": 0.62,
       "variation": 0.09,
-      "uniform": "studyDetailBone"
+      "uniform": "studyDetailBone",
+      "heightAmplitudeMetres": 0.000008
     },
     {
       "kind": "cartilage",
       "file": "cartilage-detail-v1.png",
       "width": 256,
-      "height": 0.000002,
+      "height": 256,
       "bytes": 16969,
       "sha256": "79846af512d20932e42ddffdc138e7be209665c27243ce14978c7e4672a0a08f",
       "url": "/anatomy/3d/textures/cartilage-detail-v1.png",
       "scale": 0.01,
       "roughness": 0.24,
       "variation": 0.025,
-      "uniform": "studyDetailCartilage"
+      "uniform": "studyDetailCartilage",
+      "heightAmplitudeMetres": 0.000002
     }
   ]
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { ANATOMY_REGION_EVIDENCE } from "@/lib/clinical/evidence-anatomy";
 import { useState } from "react";
 import {
   ANATOMY_REGIONS,
@@ -542,6 +544,7 @@ export function BodyMapExplorer({
 
   return (
     <div className="space-y-4">
+      <ClinicalEvidencePanel evidence={ANATOMY_REGION_EVIDENCE[activeRegion.id]} />
       {mode === "full" && (
         <div className="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -578,7 +581,7 @@ export function BodyMapExplorer({
                   }}
                   className="min-h-10 w-full max-w-full px-2.5 py-1 text-xs font-medium text-ink sm:w-auto"
                 >
-                  <option value="">Chế độ Học chuẩn (Không gắn học viên)</option>
+                  <option value="">Tra cứu kiến thức (Không gắn học viên)</option>
                   {clients.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name} ({c.orthopedic_issues?.length ?? 0} điểm đau)

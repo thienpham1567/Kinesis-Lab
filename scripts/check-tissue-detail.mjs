@@ -101,6 +101,15 @@ const metadata = JSON.parse(
     new URL("../public/anatomy/3d/textures/DETAIL-MAPS.json", import.meta.url),
   ),
 );
+assert.equal(
+  metadata.generatorSha256,
+  createHash("sha256")
+    .update(
+      readFileSync(new URL("./tissue-detail-fields.mjs", import.meta.url)),
+    )
+    .digest("hex"),
+  "provenance tracks current field generator",
+);
 let transfer = 0;
 const unique = new Set();
 for (const map of metadata.maps) {
@@ -114,6 +123,23 @@ for (const map of metadata.maps) {
     .raw()
     .toBuffer({ resolveWithObject: true });
   assert.equal(info.channels, 4);
+  assert.equal(map.width, info.width, "manifest width is in pixels");
+  assert.equal(
+    map.height,
+    info.height,
+    "manifest height is in pixels, not relief amplitude",
+  );
+  const { TISSUE_DETAIL_MAPS } =
+    await import("../src/components/atlas3d/tissue-detail-config.mjs");
+  assert.equal(map.heightAmplitudeMetres, TISSUE_DETAIL_MAPS[map.kind].height);
+  assert.deepEqual(
+    data,
+    (await import("./tissue-detail-fields.mjs")).detailImage(
+      map.kind,
+      info.width,
+    ),
+    "generator reproduces every packed data byte",
+  );
   for (let i = 0; i < data.length; i += 4) {
     const x = (data[i] / 255) * 2 - 1,
       y = (data[i + 1] / 255) * 2 - 1,

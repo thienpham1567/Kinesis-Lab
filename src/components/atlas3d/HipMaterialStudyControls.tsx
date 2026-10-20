@@ -7,7 +7,11 @@ export default function HipMaterialStudyControls({
   onEnabled,
   onSample,
   onRetry,
+  showLabels,
+  onLabels,
 }: {
+  showLabels: boolean;
+  onLabels: (value: boolean) => void;
   enabled: boolean;
   status: StudyStatus;
   onEnabled: (enabled: boolean) => void;
@@ -92,6 +96,21 @@ export default function HipMaterialStudyControls({
           </>
         )}
       </div>
+      <p className="mt-2 text-[11px] leading-5 text-slate">
+        Màu và vân bề mặt chỉ minh họa, không biểu diễn hướng sợi cơ đo thực tế.
+      </p>
+      <label className="mt-3 flex min-h-11 items-center gap-2 text-xs font-medium text-ink">
+        <input
+          type="checkbox"
+          checked={showLabels}
+          onChange={(event) => onLabels(event.target.checked)}
+        />
+        Nhãn cơ–gân trên mô hình
+      </label>
+      <p className="text-[11px] leading-5 text-slate">
+        Áp dụng khi chọn cơ mông nhỡ. Bấm nhãn để xem sát vùng cơ hoặc gân trong
+        mesh nguồn.
+      </p>
       <details className="mt-3 border-t border-rule pt-3">
         <summary className="min-h-9 text-xs font-medium text-ink">
           Nguồn & giới hạn của bản mẫu
@@ -99,9 +118,9 @@ export default function HipMaterialStudyControls({
         <p className="mt-2 max-w-3xl text-[11px] leading-6 text-slate">
           Màu mô minh họa tạo bằng AI; độ nhám và gồ ghề được mô phỏng riêng cho
           từng loại mô. Đây không phải ảnh chụp mô người hay bản đồ hướng sợi cơ
-          đo thực tế. Hình dạng và ranh giới cơ–gân–sụn giữ theo
-          Z-Anatomy. Hiệu ứng xuyên sáng dùng độ dày lưới ước lượng và thông số
-          thị giác thử nghiệm.
+          đo thực tế. Hình dạng và ranh giới cơ–gân–sụn giữ theo Z-Anatomy. Hiệu
+          ứng xuyên sáng dùng độ dày lưới ước lượng và thông số thị giác thử
+          nghiệm.
         </p>
         <p className="mt-2 text-[11px] leading-6 text-slate">
           Tài liệu đối chiếu hình thể:{" "}

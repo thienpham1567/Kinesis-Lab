@@ -16,3 +16,9 @@ export function shouldUseOcclusion(
 ) {
   return quality === "detailed" && (!visibleMuscles || muscleOpacity >= 1);
 }
+
+export type AtlasPresentation = "light" | "dark";
+
+export function presentationBackground(presentation?: AtlasPresentation) {
+  return presentation === "dark" ? 0x17242c : 0xeeefeb;
+}

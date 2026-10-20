@@ -41,573 +41,551 @@ export interface AnatomyRegion {
   sampleAiPrompt: string;
 }
 
+// Educational text and field-level source mappings were compared on 2026-10-19.
+// See evidence-anatomy.ts; clinician/anatomist review and spatial validation remain pending.
 export const ANATOMY_REGIONS: AnatomyRegion[] = [
   {
-    id: "cervical",
-    name: "Cột sống Cổ & Đai vai trên",
-    latinName: "Columna Cervicalis (C1–C7) & Cingulum Pectorale",
-    group: "spine_core",
-    views: ["anterior", "posterior"],
-    summary:
-      "Chịu trách nhiệm nâng đỡ sọ não và định vị tầm nhìn. Khi đầu nhô ra trước (Forward Head Posture) mỗi 2.5cm, mô-men xoắn lên đốt sống cổ dưới (C5–C7) tăng gấp đôi.",
-    biomechanicsKey:
-      "Cân bằng cặp lực giữa nhóm Gập cổ sâu (Deep Neck Flexors) phía trước và nhóm Duỗi cổ / Cơ thang trên (Upper Trapezius, Levator Scapulae) phía sau.",
-    structures: [
-      {
-        name: "Nhóm cơ gập cổ sâu",
-        latin: "Longus colli & Longus capitis",
-        originInsertion: "Mặt trước thân đốt sống C1–T3 → Nền xương chẩm & củ trước đốt sống cổ",
-        action: "Gập nhẹ đốt sống cổ trên (Chin tuck), giữ ổn định từng đốt sống cổ khi mang tải",
-      },
-      {
-        name: "Cơ nâng vai",
-        latin: "Levator scapulae",
-        originInsertion: "Mỏm ngang C1–C4 → Góc trên trong xương bả vai",
-        action: "Nâng xương bả vai và xoay xuống dưới; dễ co rút khi rụt vai đẩy tạ",
-      },
-      {
-        name: "Cơ thang bó trên",
-        latin: "Trapezius (Pars descendens)",
-        originInsertion: "Ụ chẩm ngoài, dây chằng gáy → 1/3 ngoài xương đòn",
-        action: "Nâng và xoay lên xương bả vai; thường hoạt động quá mức khi yếu cơ răng trước",
-      },
+    "id": "cervical",
+    "name": "Cột sống Cổ & Đai vai trên",
+    "latinName": "Columna Cervicalis (C1–C7) & Cingulum Pectorale",
+    "group": "spine_core",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Hội chứng chéo trên (Upper Crossed Syndrome)",
-      "Thoát vị / lồi đĩa đệm cổ C5–C6, C6–C7",
-      "Căng cơ nâng vai cấp tính khi gồng cổ lúc tập Overhead / Pull-up",
-    ],
-    painTriggers: [
-      "Ngửa cổ nhìn gương khi Deadlift hoặc Squat",
-      "Rụt vai (shrug) không kiểm soát khi kéo xô hoặc đẩy vai",
-      "Đưa cằm ra trước (poking chin) ở những rep cuối khi mỏi",
-    ],
-    screeningTests: [
+    "summary": "Cột sống cổ nâng đỡ và vận động đầu. Cơ, dây chằng và khớp cùng tham gia kiểm soát vận động; tư thế nhìn thấy không đủ để xác định nguyên nhân đau.",
+    "biomechanicsKey": "Nhóm gập, duỗi và xoay cổ phối hợp theo nhiệm vụ. Hướng dẫn đau cổ 2017 lựa chọn vận động và tăng sức mạnh/sức bền theo biểu hiện, thay vì dùng một quy tắc tải suy ra từ khoảng nhô đầu.",
+    "structures": [
       {
-        name: "Craniocervical Flexion Test (Chin Tuck)",
-        purpose: "Đánh giá sức bền nhóm cơ gập cổ sâu thay vì dùng cơ ức đòn chũm bù trừ",
+        "name": "Nhóm cơ gập cổ sâu",
+        "latin": "Longus colli & Longus capitis",
+        "originInsertion": "Longus colli: thân đốt sống và mỏm ngang cổ–ngực trên → cung trước C1 và thân đốt sống cổ; longus capitis: mỏm ngang C3–C6 → phần nền xương chẩm.",
+        "action": "Tham gia gập cổ/đầu; hai cơ có điểm bám và vai trò khác nhau."
       },
       {
-        name: "Spurling Sign (Tham khảo y khoa)",
-        purpose: "Nếu nghiêng đầu + ép nhẹ gây tê buốt lan xuống cánh tay → nghi ngờ chèn ép rễ thần kinh cổ",
-      },
-    ],
-    redFlags: [
-      "Đau cổ kèm tê rần hoặc yếu lực nắm bàn tay, teo cơ mô cái",
-      "Chóng mặt, hoa mắt, buồn nôn khi xoay hoặc ngửa cổ (nghi ngờ thiếu máu động mạch đốt sống)",
-    ],
-    protocols: [
-      {
-        avoid: "Behind-the-Neck Lat Pulldown / Behind-the-Neck Press",
-        whyAvoid: "Ép cột sống cổ gập cực đại ra trước kết hợp xoay ngoài vai cuối biên độ.",
-        rehabAlternative: "Front Chest-Supported Row + Chin-Tuck Isometric với dây kháng lực",
-        cuesAndTempo: "Giữ trục tai – mỏm cùng vai thẳng hàng; Tempo 3-2-1-1, RPE 6–7",
+        "name": "Cơ nâng vai",
+        "latin": "Levator scapulae",
+        "originInsertion": "Mỏm ngang C1–C4 → phần trên bờ trong xương bả vai.",
+        "action": "Nâng xương bả vai."
       },
       {
-        avoid: "Heavy Barbell Shrug khi đang co cứng cơ nâng vai",
-        whyAvoid: "Tăng lực kéo cắt lên mỏm ngang C1–C4 qua cơ nâng vai.",
-        rehabAlternative: "Scapular Upward Rotation (Y-Raise trên ghế nghiêng 30°)",
-        cuesAndTempo: "Hạ sườn, vươn xương bả vai mượt mà không nhún cổ; Tempo 2-2-2-0",
-      },
+        "name": "Cơ thang",
+        "latin": "Trapezius",
+        "originInsertion": "Xương chẩm, dây chằng gáy và mỏm gai đến T12 → xương đòn, mỏm cùng và gai vai.",
+        "action": "Các bó tham gia nâng, kéo về sau và xoay xương bả vai; tác dụng thay đổi theo bó cơ."
+      }
     ],
-    sampleAiPrompt:
-      "Phân tích cơ sinh học hội chứng Upper Crossed Syndrome ở học viên văn phòng đau mỏi cổ vai gáy: cách kích hoạt Deep Neck Flexors, Lower Trapezius và chỉnh kỹ thuật khi tập kéo/đẩy thân trên.",
+    "commonPathologies": [
+      "Đau cổ có hạn chế vận động hoặc giảm sức bền: cần đánh giá theo triệu chứng.",
+      "Bệnh rễ thần kinh cổ có thể gây đau lan, tê hoặc yếu tay; cần khám y khoa."
+    ],
+    "painTriggers": [
+      "Một số hướng xoay/ngửa cổ có thể làm tăng đau lan ở người có bệnh rễ; ghi nhận triệu chứng thay vì thử ép cổ."
+    ],
+    "screeningTests": [
+      {
+        "name": "Quan sát vận động cổ chủ động",
+        "purpose": "Ghi nhận hướng vận động dễ chịu, đau và ảnh hưởng sinh hoạt; không chẩn đoán từ tư thế đầu."
+      },
+      {
+        "name": "Khám thần kinh và nghiệm pháp cổ",
+        "purpose": "Spurling và các nghiệm pháp thần kinh thuộc đánh giá của người hành nghề phù hợp; không tự ép đầu hoặc dùng kết quả đơn lẻ để kết luận chèn ép rễ."
+      }
+    ],
+    "redFlags": [
+      "Đau cổ sau chấn thương, đau dữ dội kéo dài hoặc kèm đau đầu và tê/yếu tay chân: ngừng tập và được đánh giá y tế ngay."
+    ],
+    "protocols": [
+      {
+        "avoid": "Tạm điều chỉnh bài kéo/đẩy đang làm tăng đau cổ hoặc đau lan",
+        "whyAvoid": "Mức tải và biên độ cần phù hợp biểu hiện; tên bài tập không xác định tổn thương.",
+        "rehabAlternative": "Thảo luận bài vận động cổ và tăng sức mạnh/sức bền vùng cổ–vai phù hợp với chuyên viên phục hồi chức năng.",
+        "cuesAndTempo": "Vận động trong phạm vi được hướng dẫn; dừng nếu xuất hiện hoặc tăng tê/yếu."
+      },
+      {
+        "avoid": "Tự kéo nắn, ép hoặc xoay cổ để tìm điểm đau",
+        "whyAvoid": "Khám cần xem xét chấn thương, thần kinh và bệnh lý nghiêm trọng trước can thiệp.",
+        "rehabAlternative": "Ghi lại vị trí, thời điểm và hoạt động liên quan đến triệu chứng để cung cấp khi khám.",
+        "cuesAndTempo": "Đây là giáo dục và theo dõi triệu chứng; liều tập do người đánh giá lựa chọn."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích giải phẫu cổ–vai và giới hạn của việc suy luận bệnh từ tư thế. Với đau cổ kèm đau lan, nêu dấu hiệu cần khám và nguyên tắc điều chỉnh hoạt động theo hướng dẫn chuyên môn, kèm nguồn."
   },
   {
-    id: "shoulder",
-    name: "Khớp Vai, Mỏm cùng vai & Chóp xoay",
-    latinName: "Articulatio Humeri & Subacromial Space",
-    group: "upper_limb",
-    views: ["anterior", "posterior"],
-    summary:
-      "Khớp linh hoạt nhất cơ thể nhưng đánh đổi bằng độ vững cơ học. Để nâng tay qua đầu không bị kẹt gân dưới mỏm cùng vai, xương cánh tay và xương bả vai phải phối hợp theo nhịp 2:1 (Scapulohumeral Rhythm).",
-    biomechanicsKey:
-      "Khi cơ Delta kéo chỏm xương cánh tay lên trên, 4 cơ Chóp xoay (SITS) phải nén và trượt chỏm xuống dưới, đồng thời Cơ răng trước + Cơ thang dưới xoay xương bả vai lên trên để mở rộng khoảng dưới mỏm cùng vai (8–12mm).",
-    structures: [
-      {
-        name: "Cơ trên gai (thuộc Chóp xoay)",
-        latin: "Supraspinatus",
-        originInsertion: "Hố trên gai xương bả vai → Diện trên củ lớn xương cánh tay (đi dưới mỏm cùng vai)",
-        action: "Khởi phát dạng vai 0–30° và giữ chỏm xương cánh tay nằm trong ổ chảo",
-      },
-      {
-        name: "Cơ dưới gai & Cơ tròn bé",
-        latin: "Infraspinatus & Teres minor",
-        originInsertion: "Hố dưới gai / Bờ ngoài xương bả vai → Củ lớn xương cánh tay",
-        action: "Xoay ngoài khớp vai và kéo trượt chỏm xương cánh tay xuống dưới khi đưa tay qua đầu",
-      },
-      {
-        name: "Cơ răng trước",
-        latin: "Serratus anterior",
-        originInsertion: "Xương sườn 1–9 → Bờ trong mặt trước xương bả vai",
-        action: "Vươn (protraction), xoay lên trên và ép sát xương bả vai vào lồng ngực (chống Winged Scapula)",
-      },
+    "id": "shoulder",
+    "name": "Khớp Vai, Xương bả vai & Chóp xoay",
+    "latinName": "Articulatio Humeri & Scapula",
+    "group": "upper_limb",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Hội chứng chèn ép dưới mỏm cùng vai (Subacromial Impingement)",
-      "Viêm gân cơ trên gai / đầu dài gân cơ nhị đầu",
-      "Rối loạn vận động xương bả vai (Scapular Dyskinesis)",
-    ],
-    painTriggers: [
-      "Cung đau 70°–120° (Painful Arc) khi dạng ngang hoặc đẩy tạ qua đầu mặt phẳng trán",
-      "Đẩy ngực (Bench Press) khuỷu tay mở ngang 90° kèm trượt chỏm xương cánh tay ra trước",
-      "Upright Row tay cầm hẹp (dạng vai kèm xoay trong tối đa)",
-    ],
-    screeningTests: [
+    "summary": "Vận động nâng tay phối hợp khớp vai và xương bả vai. Nhịp vai–bả vai thay đổi theo giai đoạn nâng/hạ tay; tỉ lệ 2:1 không phải chuẩn cố định để chẩn đoán.",
+    "biomechanicsKey": "Chóp xoay tham gia vận động và ổn định khớp vai. Cơ răng trước và cơ thang tham gia vận động bả vai; không thể quy đau vai về một khoảng dưới mỏm cùng đoán từ tư thế.",
+    "structures": [
       {
-        name: "Painful Arc Sign (60°–120°)",
-        purpose: "Đau nhói khi nâng tay từ 60° đến 120° và giảm khi qua 120° → gợi ý chèn ép khoảng dưới mỏm cùng vai",
+        "name": "Cơ trên gai",
+        "latin": "Supraspinatus",
+        "originInsertion": "Hố trên gai xương bả vai → diện trên củ lớn xương cánh tay và bao khớp.",
+        "action": "Tham gia dạng cánh tay và ổn định khớp vai; không chỉ hoạt động ở một cung góc cố định."
       },
       {
-        name: "Wall Slide / Scapular Assistance Observation",
-        purpose: "Kiểm tra xem xương bả vai có xoay lên mượt mà hay bị nhô bờ trong (winging)",
-      },
-    ],
-    redFlags: [
-      "Đau vai dữ dội về đêm không nằm nghiêng được kèm mất hoàn toàn khả năng chủ động nâng tay (Drop Arm — nghi ngờ đứt toàn bộ chóp xoay)",
-      "Đau vai trái lan xuống mặt trong cánh tay kèm tức ngực, vã mồ hôi khi gắng sức (nghi ngờ tim mạch)",
-    ],
-    protocols: [
-      {
-        avoid: "Strict Barbell Overhead Press (mặt phẳng trán) hoặc Upright Row",
-        whyAvoid: "Thu hẹp tối đa khoảng dưới mỏm cùng vai khi xương bả vai chưa đủ góc xoay lên.",
-        rehabAlternative: "Half-Kneeling Single-Arm Landmine Press (góc mặt phẳng bả vai 30°)",
-        cuesAndTempo: "Hướng khuỷu tay 30–45° trước thân, vươn nhẹ bả vai ở đỉnh; Tempo 3-1-1-1",
+        "name": "Cơ dưới gai & cơ tròn bé",
+        "latin": "Infraspinatus & Teres minor",
+        "originInsertion": "Hố dưới gai / bờ ngoài xương bả vai → diện giữa / diện dưới củ lớn xương cánh tay và bao khớp.",
+        "action": "Xoay ngoài cánh tay và góp phần ổn định khớp vai."
       },
       {
-        avoid: "Flat Barbell Bench Press xuống chạm sâu ngực khi đang viêm đầu dài nhị đầu",
-        whyAvoid: "Duỗi vai quá mức ở đáy làm tăng lực trượt trước (anterior shear) lên chỏm xương cánh tay.",
-        rehabAlternative: "Neutral-Grip Floor Press hoặc Dumbbell Press góc 15° kết hợp Cable External Rotation",
-        cuesAndTempo: "Giữ cẳng tay vuông góc mặt đất, dừng cách ngực 3–5cm nếu đau; RPE 7",
-      },
+        "name": "Cơ răng trước",
+        "latin": "Serratus anterior",
+        "originInsertion": "Các xương sườn trên → mặt sườn của bờ trong xương bả vai.",
+        "action": "Vươn và xoay lên xương bả vai."
+      }
     ],
-    sampleAiPrompt:
-      "Học viên bị hội chứng chèn ép dưới mỏm cùng vai phải (đau ở cung 70-110 độ). Giải thích cơ chế cặp lực Rotator Cuff - Serratus Anterior và lên chuỗi bài tập 4 tuần từ Isometric đến Landmine Press.",
+    "commonPathologies": [
+      "Đau hoặc rách chóp xoay cần được phân biệt bằng bệnh sử và thăm khám.",
+      "Thay đổi vận động bả vai là mô tả quan sát, không tự xác định cơ yếu hoặc nguồn đau."
+    ],
+    "painTriggers": [
+      "Đau khi nâng/hạ tay hoặc mang tải có thể gặp ở bệnh lý chóp xoay; vị trí cung đau không đủ xác định mô tổn thương."
+    ],
+    "screeningTests": [
+      {
+        "name": "Quan sát nâng tay chủ động",
+        "purpose": "Ghi nhận tầm vận động và triệu chứng khi người tập tự nâng tay; không ép qua đau để tìm một cung góc."
+      },
+      {
+        "name": "Trao đổi khi cần khám vai",
+        "purpose": "Đánh giá sức mạnh, khả năng nâng tay và nghiệm pháp lâm sàng cần được diễn giải cùng bệnh sử bởi người có chuyên môn."
+      }
+    ],
+    "redFlags": [
+      "Đau vai kèm đau/tức ngực lan tay, cổ hoặc lưng, khó thở hay vã mồ hôi: ngừng tập và gọi cấp cứu ngay.",
+      "Đau vai đột ngột dữ dội, không cử động được tay, biến dạng/sưng lớn hoặc đau sau ngã/chấn thương: cần đánh giá y tế khẩn; không tự kết luận đứt chóp xoay."
+    ],
+    "protocols": [
+      {
+        "avoid": "Tiếp tục bài vai đang gây đau tăng",
+        "whyAvoid": "Chương trình vận động vai cần được chọn theo đánh giá và phản ứng triệu chứng.",
+        "rehabAlternative": "Thảo luận vận động vai nhẹ và bài tăng sức mạnh chóp xoay/bả vai với chuyên viên.",
+        "cuesAndTempo": "Chọn tải và biên độ thoải mái theo hướng dẫn; không áp một góc hoặc tempo cho mọi người."
+      },
+      {
+        "avoid": "Dùng một bài đẩy thay thế như phác đồ cho mọi dạng đau vai",
+        "whyAvoid": "Chẩn đoán, giai đoạn hồi phục và mục tiêu vận động khác nhau.",
+        "rehabAlternative": "Row hoặc xoay ngoài kháng lực có thể là ví dụ giáo dục nếu đã được người điều trị chọn.",
+        "cuesAndTempo": "Hỏi người điều trị về liều tập và tiêu chí tăng tải, nhất là sau chấn thương/phẫu thuật."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích vai trò chóp xoay và nhịp vai–bả vai biến thiên. Nêu giới hạn chẩn đoán từ cung đau và nguyên tắc chọn vận động theo đánh giá, không tự đặt chẩn đoán hoặc phác đồ 4 tuần."
   },
   {
-    id: "thoracic_core",
-    name: "Cột sống Ngực, Lồng ngực & Hộp Cơ Lõi",
-    latinName: "Columna Thoracica (T1–T12) & Cylindrus Abdominis",
-    group: "spine_core",
-    views: ["anterior", "posterior"],
-    summary:
-      "Cột sống ngực cần độ linh hoạt (duỗi & xoay) trong khi cột sống thắt lưng cần độ ổn định. Hộp cơ lõi hoạt động như một xi-lanh áp suất thủy tĩnh (IAP) bảo vệ cột sống khi nâng nặng.",
-    biomechanicsKey:
-      "Áp lực ổ bụng (Intra-Abdominal Pressure) được tạo bởi sự đồng co của 4 mặt: Cơ hoành (trên), Sàn chậu (dưới), Cơ ngang bụng TVA & Cơ chéo bụng (xung quanh), và Cơ nhiều chân Multifidus (sau).",
-    structures: [
-      {
-        name: "Cơ ngang bụng",
-        latin: "Transversus abdominis (TVA)",
-        originInsertion: "Mào chậu, mạc ngực-thắt lưng, sụn sườn 7–12 → Đường trắng giữa (Linea alba)",
-        action: "Đai siết tự nhiên làm căng mạc ngực – thắt lưng và tăng áp lực ổ bụng trước khi tay chân cử động",
-      },
-      {
-        name: "Cơ hoành",
-        latin: "Diaphragma",
-        originInsertion: "Mỏm mũi kiếm, xương sườn 7–12, đốt sống L1–L3 → Trung tâm gân cơ hoành",
-        action: "Hô hấp chính và hạ xuống tạo áp lực ổ bụng (360° Bracing) ổn định cột sống",
-      },
-      {
-        name: "Cơ chéo bụng trong & ngoài",
-        latin: "Obliquus internus & externus abdominis",
-        originInsertion: "Xương sườn dưới ↔ Mào chậu & dây chằng bẹn",
-        action: "Chống xoay (Anti-rotation), chống nghiêng bên và giữ khung sườn xếp chồng lên khung chậu (Ribcage-Pelvis Stack)",
-      },
+    "id": "thoracic_core",
+    "name": "Cột sống Ngực, Lồng ngực & Cơ thân mình",
+    "latinName": "Columna Thoracica (T1–T12) & Musculi Abdominis",
+    "group": "spine_core",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Gù cột sống ngực tư thế (Thoracic Kyphosis) gây hạn chế đưa tay qua đầu",
-      "Mất kiểm soát áp lực ổ bụng (ưỡn sườn - Rib Flare) làm quá tải thắt lưng",
-      "Tách cơ thẳng bụng sau sinh (Diastasis Recti)",
-    ],
-    painTriggers: [
-      "Ưỡn lồng ngực (Rib flare) để ăn gian biên độ khi đẩy vai qua đầu",
-      "Nín thở Valsalva quá lâu ở người có tăng huyết áp",
-      "Gập bụng (Sit-up / Crunch) tốc độ nhanh gây phồng đường trắng giữa ở người tách cơ bụng",
-    ],
-    screeningTests: [
+    "summary": "Cột sống ngực liên kết với xương sườn. Cơ thành bụng, cơ lưng và cơ hoành tham gia vận động thân mình, hô hấp và kiểm soát áp lực; cả cột sống ngực và thắt lưng đều có vận động.",
+    "biomechanicsKey": "Cơ hoành là cơ hít vào; cơ thành bụng hỗ trợ thở ra gắng sức và tăng áp lực ổ bụng. Một kiểu gồng hoặc quan sát bụng bằng tay không chứng minh cột sống được bảo vệ khỏi chấn thương.",
+    "structures": [
       {
-        name: "Seated Thoracic Rotation & Back-to-Wall Shoulder Flexion",
-        purpose: "Kiểm tra xem học viên có đủ 45° xoay ngực và duỗi ngực mà không ưỡn thắt lưng bù trừ",
+        "name": "Cơ ngang bụng",
+        "latin": "Transversus abdominis",
+        "originInsertion": "Bờ sườn, mạc thắt lưng, mào chậu và dây chằng bẹn → hệ cân thành bụng và vùng mu.",
+        "action": "Hỗ trợ thành bụng, thở ra gắng sức và tăng áp lực ổ bụng."
       },
       {
-        name: "360° Diaphragmatic Bracing Check",
-        purpose: "Đặt tay hai bên hông dưới xương sườn để kiểm tra khả năng giãn nở 360 độ khi hít thở gồng core",
-      },
-    ],
-    redFlags: [
-      "Đau thắt ngang ngực hoặc đau xuyên ra sau lưng kèm khó thở, vã mồ hôi khi tập",
-      "Khối phồng bất thường vùng bẹn hoặc rốn đau nhói khi gồng bụng (nghi ngờ thoát vị thành bụng/bẹn)",
-    ],
-    protocols: [
-      {
-        avoid: "Sit-ups / Russian Twists biên độ lớn có tạ",
-        whyAvoid: "Kết hợp gập và xoay cột sống lặp lại nhiều lần dưới tải nén.",
-        rehabAlternative: "Dead Bug (Hạ sườn thở ra) + Pallof Press (Anti-rotation)",
-        cuesAndTempo: "Thở ra kéo xương sườn dưới hướng về khung chậu; giữ 3 giây ở điểm xa nhất",
+        "name": "Cơ hoành",
+        "latin": "Diaphragma",
+        "originInsertion": "Mỏm mũi kiếm, các sườn dưới và trụ thắt lưng → trung tâm gân.",
+        "action": "Hít vào và hỗ trợ tăng áp lực ổ bụng."
       },
       {
-        avoid: "Ép duỗi lưng dưới khi cột sống ngực bị cứng",
-        whyAvoid: "Chuyển toàn bộ mô-men uốn vào bản lề L4–L5.",
-        rehabAlternative: "Thoracic Open-Book + Foam Roller Thoracic Extension trước buổi tập thân trên",
-        cuesAndTempo: "Giữ cố định hai gối, xoay mở lồng ngực theo nhịp thở ra 5 giây",
-      },
+        "name": "Cơ chéo bụng trong & ngoài",
+        "latin": "Obliquus internus & externus abdominis",
+        "originInsertion": "Cơ chéo ngoài nối các sườn dưới với hệ cân bụng/mào chậu; cơ chéo trong nối mạc thắt lưng, mào chậu, dây chằng bẹn với bờ sườn/hệ cân bụng.",
+        "action": "Tham gia xoay và nghiêng thân, hỗ trợ thành bụng và thở ra gắng sức."
+      }
     ],
-    sampleAiPrompt:
-      "Giải thích cơ chế Ribcage-Pelvis Stack (xếp chồng lồng ngực - khung chậu) và cách hướng dẫn học viên hít thở 360 độ tạo IAP bảo vệ cột sống mà không gây tăng huyết áp đột ngột.",
+    "commonPathologies": [
+      "Đau ngực hoặc lưng trên có nhiều nguyên nhân; cần đánh giá khi dai dẳng hoặc xuất hiện dấu hiệu toàn thân.",
+      "Tách cơ thẳng bụng sau sinh cần đánh giá riêng; hình dạng bụng không đủ để quyết định cấm bài tập."
+    ],
+    "painTriggers": [
+      "Nín thở khi gắng sức có thể làm tăng huyết áp; người có bệnh tim mạch cần hướng dẫn vận động riêng."
+    ],
+    "screeningTests": [
+      {
+        "name": "Quan sát hô hấp khi vận động nhẹ",
+        "purpose": "Ghi nhận người tập có thở đều và thoải mái hay không; không coi quan sát này là phép đo áp lực ổ bụng."
+      },
+      {
+        "name": "Ghi nhận đau ngực và triệu chứng đi kèm",
+        "purpose": "Hỏi thời điểm, hoạt động và khó thở/chóng mặt kèm theo; không dùng bài tập thử để loại trừ bệnh tim phổi."
+      }
+    ],
+    "redFlags": [
+      "Đau/tức ngực mới, kéo dài hoặc lan tay/cổ/lưng, kèm khó thở, vã mồ hôi hay choáng: ngừng tập và gọi cấp cứu ngay."
+    ],
+    "protocols": [
+      {
+        "avoid": "Gồng nín thở kéo dài, nhất là khi có tăng huyết áp",
+        "whyAvoid": "Nín thở có thể làm tăng huyết áp; hướng dẫn thở không bảo đảm loại bỏ mọi đáp ứng huyết áp.",
+        "rehabAlternative": "Giảm cường độ để có thể thở đều và xin hướng dẫn cá nhân từ đội ngũ chăm sóc.",
+        "cuesAndTempo": "Thở đều; tăng hoạt động dần theo khả năng và bệnh nền."
+      },
+      {
+        "avoid": "Tự áp dụng phác đồ core cho đau ngực hoặc tình trạng sau sinh chưa được đánh giá",
+        "whyAvoid": "Nhu cầu đánh giá và giới hạn tập khác nhau giữa các tình trạng.",
+        "rehabAlternative": "Trao đổi với người hành nghề phù hợp trước chương trình phục hồi chuyên biệt.",
+        "cuesAndTempo": "Nội dung này mô tả chức năng cơ và nguyên tắc vận động chung; không đưa liều điều trị."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích chức năng cơ hoành và cơ thành bụng có nguồn. Phân biệt giáo dục hô hấp với điều trị tăng huyết áp hoặc tách cơ bụng; nêu dấu hiệu đau ngực cần cấp cứu."
   },
   {
-    id: "lumbar",
-    name: "Cột sống Thắt lưng – Cùng (L1–S1)",
-    latinName: "Columna Lumbalis (L1–L5) & Discus Intervertebralis",
-    group: "spine_core",
-    views: ["posterior", "anterior"],
-    summary:
-      "Đoạn L4–L5 và L5–S1 chịu tải trọng nén và lực trượt trước – sau (Anteroposterior Shear Force) lớn nhất cơ thể. Khi cột sống thắt lưng gập tròn dưới tải nặng, nhân nhầy đĩa đệm bị ép dịch chuyển về phía sau – ngoài (nơi có rễ thần kinh tọa).",
-    biomechanicsKey:
-      "Giữ cột sống ở vùng trung tính (Neutral Zone) giúp các thớ sợi vòng (Annulus Fibrosus) và mấu khớp (Facet Joints) chia sẻ lực nén dọc trục đồng đều, giảm tới 50–70% lực cắt ngang lên L4–L5.",
-    structures: [
-      {
-        name: "Đĩa đệm gian đốt sống L4–L5 & L5–S1",
-        latin: "Discus intervertebralis",
-        originInsertion: "Gồm Nhân nhầy (Nucleus pulposus) ở giữa và Vòng sợi collagen (Annulus fibrosus) bao quanh",
-        action: "Phân tán lực nén thủy tĩnh; yếu nhất khi chịu tổ hợp Gập + Xoay dưới tải (Loaded Flexion-Rotation)",
-      },
-      {
-        name: "Cơ nhiều chân thắt lưng",
-        latin: "Multifidus lumborum",
-        originInsertion: "Xương cùng, mào chậu, mỏm ngang → Mỏm gai các đốt sống trên từ 2–4 tầng",
-        action: "Kiểm soát vi chuyển động và chống trượt từng đốt sống thắt lưng; dễ bị ức chế thần kinh sau cơn đau lưng cấp",
-      },
-      {
-        name: "Cơ vuông thắt lưng",
-        latin: "Quadratus lumborum (QL)",
-        originInsertion: "Mào chậu → Xương sườn 12 & mỏm ngang L1–L4",
-        action: "Giữ ổn định mặt phẳng trán (chống sập hông bên đối diện); được rèn tối ưu bằng bài Side Plank & Suitcase Carry",
-      },
+    "id": "lumbar",
+    "name": "Cột sống Thắt lưng – Cùng (L1–S1)",
+    "latinName": "Columna Lumbalis (L1–L5) & Discus Intervertebralis",
+    "group": "spine_core",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Thoát vị / lồi đĩa đệm L4–L5, L5–S1 (trung tâm hoặc sau – bên)",
-      "Đau lưng cơ học nhạy cảm với gập (Flexion-Intolerant Low Back Pain)",
-      "Hội chứng mấu khớp hoặc trượt đốt sống độ 1 (Spondylolisthesis — nhạy cảm với ưỡn quá mức)",
-    ],
-    painTriggers: [
-      "Gập lưng dưới có tải (Butt wink ở đáy Squat sâu hoặc tròn lưng khi kéo Deadlift từ sàn)",
-      "Ngồi lâu trên 45 phút sau đó đứng dậy cúi nhặt tạ ngay (hiệu ứng ngậm nước đĩa đệm)",
-      "Ưỡn lưng dưới quá mức (Hyperextension) khi đẩy tạ qua đầu hoặc Hip Thrust quá biên độ",
-    ],
-    screeningTests: [
+    "summary": "Đốt sống thắt lưng và đĩa đệm vừa chịu tải vừa cho phép vận động. Đau lưng có nhiều nguyên nhân; quan sát gập lưng trong một động tác không xác định được thoát vị hay mức tổn thương.",
+    "biomechanicsKey": "NICE NG59 khuyến khích duy trì hoạt động và chọn vận động theo nhu cầu, khả năng và sở thích sau đánh giá. Không có một tư thế hay bài thay thế bảo đảm giảm một tỉ lệ lực cắt cố định cho mọi người.",
+    "structures": [
       {
-        name: "Hip Hinge Dowel Rod Screen (Cây gậy 3 điểm chạm)",
-        purpose: "Kiểm tra khả năng gập thuần tại khớp háng trong khi giữ Chẩm – Ngực – Xương cùng chạm gậy",
+        "name": "Đĩa đệm gian đốt sống",
+        "latin": "Discus intervertebralis",
+        "originInsertion": "Nằm giữa các thân đốt sống; gồm vòng sợi bên ngoài và nhân nhầy bên trong.",
+        "action": "Góp phần chịu tải nén và cho phép vận động giữa các đốt sống."
       },
       {
-        name: "Slump / Straight Leg Raise (Tham khảo y khoa)",
-        purpose: "Nếu nâng chân thẳng gây đau buốt như điện giật lan qua gối xuống bàn chân → dấu hiệu kích thích rễ thần kinh tọa",
-      },
-    ],
-    redFlags: [
-      "Hội chứng Chùm đuôi ngựa (Cauda Equina): Tê vùng yên ngựa (bẹn/hậu môn), bí tiểu hoặc mất tự chủ đại tiểu tiện → CẤP CỨU Y KHOA NGAY",
-      "Yếu liệt tiến triển bàn chân (Foot drop — không đi bằng gót hoặc mũi chân được)",
-      "Đau lưng dữ dội về đêm kèm sụt cân không rõ nguyên nhân hoặc sốt",
-    ],
-    protocols: [
-      {
-        avoid: "Conventional Barbell Deadlift từ sàn hoặc Low-bar Back Squat vượt quá độ sâu gập háng (Butt wink)",
-        whyAvoid: "Tăng cánh tay đòn từ thanh đòn tới L4–L5 và buộc đốt sống thắt lưng gập cuối biên độ dưới tải nén lớn.",
-        rehabAlternative: "High-Handle Trap-Bar Deadlift + Bulgarian Split Squat + McGill Big 3 (Bird-Dog, Side Plank, Curl-up)",
-        cuesAndTempo: "Trọng tâm đi xuyên qua giữa bàn chân, gập háng giữ cột sống trung tính; Tempo 3-1-1-1, RPE 6.5–7.5",
+        "name": "Cơ nhiều chân",
+        "latin": "Multifidus",
+        "originInsertion": "Nhóm cơ sâu nối các thành phần sau của cột sống với mỏm gai ở các tầng phía trên.",
+        "action": "Tham gia duỗi và kiểm soát vận động cột sống; đây là mô tả nhóm cơ, không phải bản đồ điểm bám từng bó."
       },
       {
-        avoid: "Leg Press hạ quá sâu làm xương cùng cuộn nhấc khỏi đệm ghế",
-        whyAvoid: "Tạo mô-men gập cưỡng bức lên đĩa đệm L4–L5 và L5–S1 dù người tập tưởng đang được tựa lưng.",
-        rehabAlternative: "Goblet Box Squat chạm ghế ở góc không cuộn chậu + Suitcase Carry một bên",
-        cuesAndTempo: "Dừng đúng độ cao giữ nguyên độ cong sinh lý thắt lưng; nghỉ 90–120s giữa hiệp",
-      },
+        "name": "Cơ vuông thắt lưng",
+        "latin": "Quadratus lumborum",
+        "originInsertion": "Giữa mào chậu, xương sườn 12 và mỏm ngang thắt lưng.",
+        "action": "Nghiêng thân và cố định xương sườn 12 khi hô hấp."
+      }
     ],
-    sampleAiPrompt:
-      "Học viên thoát vị đĩa đệm L4-L5 đã qua giai đoạn cấp: hãy so sánh mô-men xoắn lên L4-L5 giữa Barbell Back Squat, Conventional Deadlift và High-Handle Trap-Bar Deadlift, kèm chương trình Rehab 3 giai đoạn.",
+    "commonPathologies": [
+      "Đau lưng có hoặc không kèm đau thần kinh tọa cần phân loại qua đánh giá.",
+      "Thoát vị đĩa đệm có thể liên quan triệu chứng rễ; không suy ra chẩn đoán từ một kiểu squat/deadlift."
+    ],
+    "painTriggers": [
+      "Ghi lại hoạt động, tư thế hoặc thời lượng liên quan đau của từng người; không áp mốc ngồi cố định hoặc coi một động tác là nguyên nhân chắc chắn."
+    ],
+    "screeningTests": [
+      {
+        "name": "Theo dõi hoạt động và chức năng",
+        "purpose": "Ghi nhận khả năng đi lại, ngồi, nâng vật và thay đổi triệu chứng để trao đổi khi khám."
+      },
+      {
+        "name": "Khám thần kinh khi có đau lan hoặc yếu",
+        "purpose": "Slump/straight leg raise thuộc thăm khám chuyên môn; không kéo căng thần kinh hoặc dùng một kết quả đơn lẻ để chẩn đoán."
+      }
+    ],
+    "redFlags": [
+      "Tê mới vùng yên ngựa, khó bắt đầu tiểu/bí tiểu hoặc mất kiểm soát tiểu tiện/đại tiện, đặc biệt cùng đau lưng/đau chân: đi cấp cứu ngay để loại trừ chùm đuôi ngựa.",
+      "Yếu chân mới xuất hiện hoặc tăng dần, đau lưng kèm sốt, sụt cân không rõ nguyên nhân hoặc chấn thương: cần được đánh giá y tế sớm/khẩn theo biểu hiện."
+    ],
+    "protocols": [
+      {
+        "avoid": "Tiếp tục mức tải đang làm triệu chứng tăng rõ hoặc vi phạm chỉ định điều trị",
+        "whyAvoid": "Cần điều chỉnh hoạt động theo khả năng, chẩn đoán và diễn biến; không cấm vĩnh viễn squat/deadlift vì tên bệnh.",
+        "rehabAlternative": "Duy trì hoạt động có thể dung nạp; thảo luận thay đổi tải, biên độ hoặc dạng vận động với chuyên viên.",
+        "cuesAndTempo": "Theo dõi chức năng và triệu chứng; liều tập và tiến triển cần cá nhân hóa."
+      },
+      {
+        "avoid": "Dùng hướng dẫn từ atlas như phác đồ sau mổ hoặc khi có dấu hiệu thần kinh mới",
+        "whyAvoid": "Các tình trạng này cần đánh giá và hướng dẫn riêng.",
+        "rehabAlternative": "Ưu tiên khám và chương trình do người điều trị thống nhất.",
+        "cuesAndTempo": "Ngừng tập và xử trí khẩn khi có dấu hiệu chùm đuôi ngựa."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích cấu trúc đĩa đệm và nguyên tắc duy trì hoạt động trong đau lưng theo NICE NG59. Nêu giới hạn suy luận từ tư thế, dấu hiệu cần khám và thông tin cần có trước đề xuất vận động."
   },
   {
-    id: "hip_pelvis",
-    name: "Khớp Háng, Khung chậu & Cơ Mông",
-    latinName: "Articulatio Coxae, Pelvis & Regio Glutealis",
-    group: "lower_limb",
-    views: ["posterior", "anterior"],
-    summary:
-      "Khớp chỏm – ổ cối truyền lực giữa thân dưới và cột sống. Khi khớp háng bị thiếu độ linh hoạt hoặc cơ mông nhỡ (Gluteus Medius) yếu, toàn bộ lực xoay và gập dư thừa sẽ dồn lên cột sống thắt lưng và khớp gối.",
-    biomechanicsKey:
-      "Trong pha đứng một chân (Single-leg Stance), cơ Mông nhỡ phải tạo lực gấp 2 lần trọng lượng cơ thể để giữ khung chậu không bị sập sang bên đối diện (dấu hiệu Trendelenburg) và ngăn xương đùi xoay trong gây sập gối (Dynamic Knee Valgus).",
-    structures: [
-      {
-        name: "Cơ mông lớn",
-        latin: "Gluteus maximus",
-        originInsertion: "Mặt sau xương cánh chậu, xương cùng, dây chằng cùng-ụ ngồi → Dải chậu chày (ITB) & lồi củ cơ mông xương đùi",
-        action: "Duỗi háng mạnh nhất, xoay ngoài đùi và kiểm soát nghiêng sau khung chậu",
-      },
-      {
-        name: "Cơ mông nhỡ & Mông bé",
-        latin: "Gluteus medius & minimus",
-        originInsertion: "Mặt ngoài xương cánh chậu → Mấu chuyển lớn xương đùi",
-        action: "Dạng háng và giữ thăng bằng khung chậu trên mặt phẳng trán khi bước đi, chạy hoặc Split Squat",
-      },
-      {
-        name: "Cơ thắt lưng – chậu",
-        latin: "Iliopsoas (Psoas major + Iliacus)",
-        originInsertion: "Thân & mỏm ngang T12–L5, hố chậu → Mấu chuyển bé xương đùi",
-        action: "Gập háng chính; khi co rút do ngồi nhiều sẽ kéo cột sống thắt lưng ưỡn trước (Anterior Pelvic Tilt)",
-      },
+    "id": "hip_pelvis",
+    "name": "Khớp Háng, Khung chậu & Cơ Mông",
+    "latinName": "Articulatio Coxae, Pelvis & Regio Glutealis",
+    "group": "lower_limb",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Hội chứng chèn ép khớp háng (Femoroacetabular Impingement — FAI)",
-      "Viêm gân cơ mông nhỡ / đau mặt ngoài mấu chuyển lớn (GTPS)",
-      "Hội chứng cơ hình lê (Piriformis Syndrome) chèn ép dây thần kinh tọa ngoài cột sống",
-    ],
-    painTriggers: [
-      "Đau nhói vùng bẹn trước (Pinching sensation) khi Squat sâu quá 90° với hai chân khép hẹp",
-      "Sập gối vào trong (Knee valgus) và lệch hông khi tập Lunge hoặc bước lên bục",
-      "Đau sâu giữa mông lan xuống mặt sau đùi khi ngồi ghế cứng lâu",
-    ],
-    screeningTests: [
+    "summary": "Khớp háng là khớp chỏm–ổ cối. Cơ mông và các cơ quanh háng tạo vận động và hỗ trợ kiểm soát khung chậu; đau bẹn hay gối đi vào trong không tự chứng minh một cơ yếu.",
+    "biomechanicsKey": "Cơ mông nhỡ/bé tham gia dạng háng và kiểm soát khung chậu khi đi. Hội chứng FAI cần đồng thời triệu chứng, dấu hiệu lâm sàng và hình ảnh phù hợp; không xác định FAI chỉ qua độ sâu squat.",
+    "structures": [
       {
-        name: "Single-Leg Squat & Trendelenburg Screen",
-        purpose: "Quan sát xem gai chậu trước trên có bị tụt xuống hoặc gối sập vào trong khi đứng/squat 1 chân",
+        "name": "Cơ mông lớn",
+        "latin": "Gluteus maximus",
+        "originInsertion": "Phần sau xương cánh chậu, xương cùng/cụt và dây chằng cùng–ụ ngồi → dải chậu chày và lồi củ cơ mông xương đùi.",
+        "action": "Duỗi và xoay ngoài háng."
       },
       {
-        name: "Thomas Test (Đánh giá độ căng Iliopsoas & Rectus Femoris)",
-        purpose: "Kiểm tra xem cơ gập háng có bị co rút gây ưỡn lưng bù trừ khi duỗi háng",
-      },
-    ],
-    redFlags: [
-      "Đau khớp háng vùng bẹn không chịu được lực tỳ đè sau ngã hoặc ở người lớn tuổi / dùng Corticoid kéo dài (nghi ngờ hoại tử chỏm xương đùi hoặc gãy cổ xương đùi)",
-    ],
-    protocols: [
-      {
-        avoid: "Narrow-Stance Ass-to-Grass Squat khi học viên có cấu trúc ổ cối sâu hoặc FAI",
-        whyAvoid: "Cổ xương đùi va chạm sớm vào bờ trước trên ổ cối gây tổn thương sụn viền (Labrum).",
-        rehabAlternative: "Box Squat mở góc mũi chân 15–30° vừa biên độ + Romanian Deadlift (Hip Hinge)",
-        cuesAndTempo: "Tìm độ rộng chân và góc xoay mũi chân không gây cấn bẹn trước; Tempo 3-1-1-0",
+        "name": "Cơ mông nhỡ & mông bé",
+        "latin": "Gluteus medius & minimus",
+        "originInsertion": "Mặt ngoài xương cánh chậu → mấu chuyển lớn; vị trí bám khác nhau giữa hai cơ.",
+        "action": "Dạng háng và tham gia kiểm soát khung chậu khi đi; mô tả này không xác định chức năng từng phân khu trên mesh."
       },
       {
-        avoid: "Chạy nhảy Plyometrics cường độ cao khi chưa kiểm soát được trục Hông – Gối – Cổ chân",
-        whyAvoid: "Làm quá tải dải chậu chày (IT Band) và khớp chè – đùi.",
-        rehabAlternative: "Wall-Press Single-Leg RDL + Lateral Band Monster Walk + Step-Down kiểm soát",
-        cuesAndTempo: "Giữ tâm xương bánh chè thẳng hàng ngón chân thứ 2; Tempo chậm 3 giây pha hạ",
-      },
+        "name": "Cơ thắt lưng–chậu",
+        "latin": "Iliopsoas (Psoas major + Iliacus)",
+        "originInsertion": "Psoas major từ thân đốt T12–L5/mỏm ngang thắt lưng; iliacus từ hố chậu → vùng mấu chuyển bé xương đùi.",
+        "action": "Gập háng; không suy ra co rút cơ từ thời gian ngồi hoặc hình dạng chậu."
+      }
     ],
-    sampleAiPrompt:
-      "Học viên bị đau cấn mặt trước khớp háng (nghi ngờ FAI nhẹ) khi Squat sâu và yếu cơ mông nhỡ gây sập gối. Hãy hướng dẫn cách chọn Stance Width và thiết kế chuỗi bài tập kích hoạt Glute Medius.",
+    "commonPathologies": [
+      "Hội chứng FAI: chẩn đoán cần kết hợp triệu chứng, thăm khám và hình ảnh.",
+      "Đau mặt ngoài háng hoặc đau mông có thể có nhiều nguồn; cần phân biệt khi khám."
+    ],
+    "painTriggers": [
+      "Đau háng/bẹn liên quan vận động hoặc tư thế có thể gặp trong FAI nhưng không đặc hiệu; ghi lại hoạt động gây đau."
+    ],
+    "screeningTests": [
+      {
+        "name": "Quan sát đứng một chân hoặc bước lên bục khi thoải mái",
+        "purpose": "Ghi nhận thăng bằng, triệu chứng và cách vận động; không quy trực tiếp lệch chậu/gối cho yếu cơ mông nhỡ."
+      },
+      {
+        "name": "Đánh giá đau háng chuyên môn",
+        "purpose": "Nghiệm pháp háng và hình ảnh chỉ có ý nghĩa trong bệnh cảnh phù hợp; PT không tự đặt chẩn đoán FAI từ một dấu hiệu."
+      }
+    ],
+    "redFlags": [
+      "Đau háng/bẹn dữ dội sau ngã/chấn thương hoặc không thể đi, chịu lực: ngừng tập và đến cấp cứu.",
+      "Đau háng đột ngột nặng, khớp nóng/sưng hoặc kèm sốt: cần đánh giá y tế khẩn."
+    ],
+    "protocols": [
+      {
+        "avoid": "Lặp lại độ sâu hoặc tư thế đang làm đau bẹn tăng",
+        "whyAvoid": "Trong FAI đã được đánh giá, điều chỉnh hoạt động và phục hồi chức năng có thể là lựa chọn; không áp một độ rộng chân cho mọi cấu trúc háng.",
+        "rehabAlternative": "Trao đổi cách giảm biên độ/tải và lựa chọn vận động với người điều trị.",
+        "cuesAndTempo": "Chọn cách vận động phù hợp triệu chứng; không cố ép qua cảm giác cấn đau."
+      },
+      {
+        "avoid": "Dùng bài kích hoạt cơ mông thay cho đánh giá đau háng kéo dài",
+        "whyAvoid": "Điều trị phụ thuộc nguyên nhân và mục tiêu, không chỉ kết quả quan sát gối/chậu.",
+        "rehabAlternative": "Chương trình chuyên môn có thể gồm sức mạnh, kiểm soát vận động và tầm vận động phù hợp.",
+        "cuesAndTempo": "Không áp một số lần hoặc thời hạn phục hồi chung từ atlas."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích chức năng cơ quanh háng và tiêu chí Warwick cho FAI. Với đau bẹn khi squat, nêu thông tin cần khám, các cách điều chỉnh theo triệu chứng và giới hạn chẩn đoán từ quan sát."
   },
   {
-    id: "thigh_hamstring",
-    name: "Cơ Đùi trước & Chuỗi sau (Hamstrings / Adductors)",
-    latinName: "Regio Femoralis Anterior & Posterior",
-    group: "lower_limb",
-    views: ["anterior", "posterior"],
-    summary:
-      "Cơ Tứ đầu đùi (Quadriceps) và Gân kheo (Hamstrings) tạo thành cặp đối vận kiểm soát khớp gối và khớp háng. 3/4 cơ gân kheo và cơ thẳng đùi (Rectus Femoris) là cơ đa khớp (Bi-articular), chịu lực căng lớn nhất khi kéo giãn đồng thời ở cả 2 khớp.",
-    biomechanicsKey:
-      "Gân kheo vừa duỗi háng vừa gập gối, đồng thời đóng vai trò là 'dây chằng động' kéo mâm chày ra sau để bảo vệ dây chằng chéo trước (ACL) không bị trượt trước.",
-    structures: [
-      {
-        name: "Nhóm cơ Tứ đầu đùi",
-        latin: "Rectus femoris, Vastus lateralis, Vastus medialis (VMO), Vastus intermedius",
-        originInsertion: "Gai chậu trước dưới (Rectus femoris) & thân xương đùi → Xương bánh chè → Lồi củ chày",
-        action: "Duỗi gối toàn bộ; riêng Vastus Medialis Obliquus (VMO) giữ xương bánh chè không trượt lệch ra ngoài",
-      },
-      {
-        name: "Nhóm cơ Gân kheo",
-        latin: "Biceps femoris, Semitendinosus, Semimembranosus",
-        originInsertion: "Ụ ngồi (Ischial tuberosity) → Đầu xương mác & mặt trong đầu trên xương chày",
-        action: "Duỗi háng (khi gối duỗi) và gập gối; hãm tốc tâm trương (Eccentric) khi chạy nước rút",
-      },
-      {
-        name: "Nhóm cơ Khép đùi",
-        latin: "Adductor magnus, longus, brevis & Gracilis",
-        originInsertion: "Xương mu & ngành ngồi-mu → Đường ráp xương đùi (Linea aspera)",
-        action: "Khép đùi và hỗ trợ mạnh mẽ cho duỗi háng ở đáy Squat sâu (đặc biệt là Adductor Magnus)",
-      },
+    "id": "thigh_hamstring",
+    "name": "Cơ Đùi trước, Gân kheo & Cơ Khép",
+    "latinName": "Regio Femoralis Anterior, Posterior & Medialis",
+    "group": "lower_limb",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Căng / rách điểm bám cao gân kheo (Proximal Hamstring Tendinopathy tại ụ ngồi)",
-      "Mất cân bằng lực Quad : Hamstring làm tăng nguy cơ chấn thương gối",
-      "Căng cơ khép háng (Groin strain) khi đổi hướng đột ngột hoặc mở rộng chân quá nhanh",
-    ],
-    painTriggers: [
-      "Đau sâu ngay nếp lằn mông (ụ ngồi) khi kéo giãn gân kheo kết hợp gập háng sâu (như Good Morning / ngồi ghế lâu)",
-      "Giật gân kheo khi tăng tốc chạy mà chưa khởi động pha tâm trương (Eccentric)",
-    ],
-    screeningTests: [
+    "summary": "Cơ tứ đầu duỗi gối; gân kheo gập gối và phần lớn còn duỗi háng. Đầu ngắn cơ nhị đầu đùi không đi qua khớp háng; cơ thẳng đùi đi qua cả háng và gối.",
+    "biomechanicsKey": "Sau căng gân kheo, hướng dẫn 2022 khuyến nghị phục hồi theo khả năng, gồm tăng sức mạnh với pha co cơ khi kéo dài và tiến triển chạy. Một tỉ lệ sức mạnh hay số lần bridge đơn lẻ không đủ quyết định trở lại thể thao.",
+    "structures": [
       {
-        name: "Active Knee Extension (90/90 Hamstring Length Test)",
-        purpose: "Phân biệt độ linh hoạt thực sự của gân kheo với cảm giác căng dây thần kinh tọa",
+        "name": "Nhóm cơ tứ đầu đùi",
+        "latin": "Rectus femoris, Vastus lateralis, Vastus medialis & Vastus intermedius",
+        "originInsertion": "Cơ thẳng đùi từ gai chậu trước dưới/vùng trên ổ cối; các cơ rộng từ xương đùi → gân tứ đầu, bánh chè và dây chằng bánh chè đến lồi củ chày.",
+        "action": "Duỗi gối; cơ thẳng đùi còn gập háng. Không coi một bó VMO là cơ chế duy nhất kiểm soát bánh chè."
       },
       {
-        name: "Single-Leg Hamstring Bridge Endurance",
-        purpose: "Kiểm tra sức bền chuỗi sau độc lập từng chân (mục tiêu >20 lần kiểm soát tốt)",
-      },
-    ],
-    redFlags: [
-      "Tiếng 'bụp' lớn mặt sau đùi kèm vết bầm tím lan rộng và lõm cơ sờ thấy được (nghi ngờ đứt gân kheo độ 3)",
-      "Sưng nóng đỏ đau bắp đùi/bắp chân một bên sau chấn thương hoặc bất động lâu (nghi ngờ huyết khối tĩnh mạch sâu — DVT)",
-    ],
-    protocols: [
-      {
-        avoid: "Static Stretching kéo giãn gân kheo cuối biên độ khi đang viêm điểm bám cao tại ụ ngồi",
-        whyAvoid: "Khi gập háng sâu, gân kheo bị ép chặt (Compression) vào ụ ngồi làm nặng thêm bệnh lý gân.",
-        rehabAlternative: "Isometric Supine Hamstring Bridge góc háng trung tính → Romanian Deadlift giới hạn biên độ",
-        cuesAndTempo: "Giữ isometric 30–45 giây x 4 hiệp để giảm đau gân (Analgesic effect) trước khi tăng tải",
+        "name": "Nhóm cơ gân kheo",
+        "latin": "Biceps femoris, Semitendinosus & Semimembranosus",
+        "originInsertion": "Phần lớn từ ụ ngồi; đầu ngắn nhị đầu từ xương đùi → đầu xương mác hoặc phía trong đầu trên xương chày.",
+        "action": "Gập gối; các phần đi qua háng còn tham gia duỗi háng."
       },
       {
-        avoid: "Chỉ tập Leg Extension mà bỏ qua chuỗi sau",
-        whyAvoid: "Làm tăng lực kéo trượt xương chày ra trước mà thiếu lực đối kháng từ Hamstrings.",
-        rehabAlternative: "Nordic Hamstring Curl (hỗ trợ dây kháng lực) + Copenhagen Adductor Plank",
-        cuesAndTempo: "Hạ chậm pha tâm trương 4 giây, giữ hông thẳng hàng với gối",
-      },
+        "name": "Nhóm cơ khép đùi",
+        "latin": "Adductor magnus, longus, brevis & Gracilis",
+        "originInsertion": "Từ vùng mu/ngồi đến xương đùi; riêng gracilis đến mặt trong đầu trên xương chày.",
+        "action": "Khép háng; gracilis còn tham gia gập gối, các phần cơ khép lớn có tác dụng khác nhau."
+      }
     ],
-    sampleAiPrompt:
-      "Học viên bị viêm điểm bám cao gân kheo (đau ở ụ ngồi khi ngồi lâu và khi cúi sâu). Tại sao kéo giãn tĩnh lại làm đau hơn và cần lên phác đồ Isometric -> Heavy Slow Resistance như thế nào?",
+    "commonPathologies": [
+      "Căng cơ gân kheo khi hoạt động nhanh: chẩn đoán và mức độ cần đánh giá.",
+      "Đau gần ụ ngồi có thể cần phân biệt tổn thương cơ, gân hoặc bong điểm bám."
+    ],
+    "painTriggers": [
+      "Đau đột ngột mặt sau đùi khi chạy nhanh có thể liên quan căng cơ; không xác định độ rách chỉ qua triệu chứng."
+    ],
+    "screeningTests": [
+      {
+        "name": "Ghi nhận khả năng đi, chạy và triệu chứng",
+        "purpose": "Theo dõi chức năng theo kế hoạch điều trị; không yêu cầu chạy thử nếu mới chấn thương."
+      },
+      {
+        "name": "Đo sức mạnh và tầm vận động chuyên môn",
+        "purpose": "Hướng dẫn gân kheo dùng đo sức mạnh và độ duỗi gối trong đánh giá tổng thể; phép đo chiều dài đơn lẻ không phân biệt chắc chắn đau thần kinh."
+      }
+    ],
+    "redFlags": [
+      "Đau đột ngột kèm tiếng bụp, bầm lan rộng, yếu rõ hoặc đau sát ụ ngồi: ngừng tập và được đánh giá sớm để loại trừ rách/bong điểm bám gân.",
+      "Đau và sưng đùi/bắp chân một bên, nhất là sau bất động hoặc phẫu thuật: cần đánh giá khẩn vì có thể huyết khối tĩnh mạch sâu. Nếu kèm khó thở hoặc đau ngực, gọi cấp cứu ngay."
+    ],
+    "protocols": [
+      {
+        "avoid": "Trở lại chạy nước rút chỉ dựa vào hết đau khi nghỉ hoặc một số lần bridge",
+        "whyAvoid": "Tiến triển cần cân nhắc sức mạnh, đau, chức năng đi/chạy và chương trình đã hoàn thành.",
+        "rehabAlternative": "Theo chương trình phục hồi có tăng sức mạnh, co cơ khi kéo dài và tiến triển chạy được chuyên viên lựa chọn.",
+        "cuesAndTempo": "Mức tải theo khả năng; không áp mốc trở lại thể thao chung."
+      },
+      {
+        "avoid": "Tự áp phác đồ căng cơ cấp cho đau gân mạn tính hoặc tổn thương bong điểm bám",
+        "whyAvoid": "Hướng dẫn căng cơ gân kheo không bao phủ mọi nguyên nhân đau gần ụ ngồi.",
+        "rehabAlternative": "Khám để xác định tình trạng trước chương trình tải gân hoặc bài Nordic cường độ cao.",
+        "cuesAndTempo": "Bài Nordic có bằng chứng trong chương trình phòng ngừa; không phải mặc định cho mọi giai đoạn chấn thương."
+      }
+    ],
+    "sampleAiPrompt": "Phân biệt giải phẫu cơ hai khớp và đầu ngắn cơ nhị đầu đùi. Giải thích nguyên tắc hướng dẫn căng gân kheo 2022, giới hạn khi áp cho đau gân mạn tính và các tiêu chí cần đánh giá trước tăng tải."
   },
   {
-    id: "knee",
-    name: "Khớp Gối, Khớp Chè – Đùi & Dây chằng",
-    latinName: "Articulatio Genus, Patellofemoral & Ligamenta Cruciata",
-    group: "lower_limb",
-    views: ["anterior", "posterior"],
-    summary:
-      "Khớp gối là khớp bản lề biến đổi nằm kẹp giữa hai đòn bẩy dài nhất cơ thể (xương đùi và xương chày). Đa số các ca đau gối không do chấn thương trực tiếp tại phòng tập đều bắt nguồn từ kiểm soát kém ở Khớp Háng (trên) hoặc cứng Cổ chân (dưới).",
-    biomechanicsKey:
-      "Lực phản hồi lên khớp chè – đùi (PFJ Reaction Force) phụ thuộc vào tích số giữa Lực căng cơ Tứ đầu đùi và Góc gập gối: trong bài chuỗi đóng (Squat), lực nén PFJ tăng mạnh từ 60°–90°; trong bài chuỗi mở (Leg Extension), lực trượt ACL cao nhất ở góc duỗi cuối 30°–0°.",
-    structures: [
-      {
-        name: "Khớp Chè – Đùi & Gân bánh chè",
-        latin: "Articulatio patellofemoralis & Ligamentum patellae",
-        originInsertion: "Mặt sau xương bánh chè trượt trên rãnh ròng rọc xương đùi → bám vào lồi củ xương chày",
-        action: "Ròng rọc cơ học giúp tăng cánh tay đòn của cơ Tứ đầu đùi thêm ~30%",
-      },
-      {
-        name: "Dây chằng chéo trước & chéo sau",
-        latin: "Ligamentum cruciatum anterius (ACL) & posterius (PCL)",
-        originInsertion: "Lồi cầu xương đùi ↔ Vùng gian lồi cầu mâm chày",
-        action: "ACL ngăn xương chày trượt ra trước và chống xoay trong quá mức; PCL ngăn xương chày trượt ra sau",
-      },
-      {
-        name: "Sụn chêm trong & ngoài",
-        latin: "Meniscus medialis & lateralis",
-        originInsertion: "Hai vòng sụn sợi hình bán nguyệt nằm trên mâm chày",
-        action: "Hấp thụ 50–70% xung lực nén và tăng diện tích tiếp xúc khớp đùi – chày",
-      },
+    "id": "knee",
+    "name": "Khớp Gối, Khớp Chè–Đùi & Dây chằng",
+    "latinName": "Articulatio Genus & Articulatio Patellofemoralis",
+    "group": "lower_limb",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Hội chứng đau khớp chè – đùi (Patellofemoral Pain Syndrome — PFPS / Đau mặt trước gối)",
-      "Viêm gân bánh chè (Patellar Tendinopathy / Jumper's Knee)",
-      "Phục hồi sau tái tạo dây chằng chéo trước (ACL) hoặc tổn thương sụn chêm",
-    ],
-    painTriggers: [
-      "Đau mặt trước gối khi đi xuống cầu thang, đứng dậy từ ghế thấp hoặc đẩy gối vượt mũi chân quá sớm dưới tải nặng",
-      "Đau nhói khe khớp kèm tiếng lạo xạo/kẹt khớp khi xoay vặn trên chân trụ đang gập",
-    ],
-    screeningTests: [
+    "summary": "Gối gồm khớp đùi–chày và chè–đùi, với dây chằng và sụn chêm góp phần ổn định. Đau gối có nhiều nguyên nhân; không thể mặc định phần lớn bắt nguồn từ háng hoặc cổ chân.",
+    "biomechanicsKey": "Đau chè–đùi cần đánh giá và giáo dục kết hợp bài tập gối, có thể thêm bài háng theo nhu cầu. Sau tái tạo ACL, bài chuỗi mở và chuỗi đóng đều có vai trò; liều, biên độ và thời điểm do đội điều trị quyết định.",
+    "structures": [
       {
-        name: "Forward Step-Down Test (Bước xuống bục 15–20cm)",
-        purpose: "Đánh giá đau chè – đùi, độ lệch trục gối (Valgus) và khả năng hãm tâm trương của cơ Tứ đầu đùi",
+        "name": "Khớp chè–đùi & dây chằng bánh chè",
+        "latin": "Articulatio patellofemoralis & Ligamentum patellae",
+        "originInsertion": "Bánh chè tiếp khớp với rãnh xương đùi; dây chằng bánh chè nối bánh chè với lồi củ chày.",
+        "action": "Tham gia cơ chế duỗi gối qua gân tứ đầu–bánh chè–dây chằng bánh chè."
       },
       {
-        name: "Thessaly / McMurray History Check",
-        purpose: "Nếu có tiền sử kẹt cứng khớp (Locking) không duỗi thẳng được → nghi ngờ rách sụn chêm cơ học",
-      },
-    ],
-    redFlags: [
-      "Kẹt khớp cơ học thực sự (True Locking — gối bị khóa cứng không thể tự duỗi thẳng)",
-      "Tràn dịch khớp gối sưng to nhanh chóng trong vòng vài giờ sau chấn thương kèm cảm giác sụp gối (Giving way)",
-    ],
-    protocols: [
-      {
-        avoid: "Deep Sissy Squat / Jumping Lunges khi đang đau cấp khớp chè – đùi (PFPS)",
-        whyAvoid: "Tạo mô-men gập gối cực đại làm ép xương bánh chè vào rãnh xương đùi với lực gấp 5–7 lần trọng lượng cơ thể.",
-        rehabAlternative: "Spanish Squat Isometric (45s) + Box Squat ống chân gần thẳng đứng + Hip Thrust",
-        cuesAndTempo: "Đẩy hông ra sau nhiều hơn (Hip-dominant) ở giai đoạn đầu để giảm tải PFJ, sau đó tăng dần góc gập gối theo dung nạp",
+        "name": "Dây chằng chéo trước & sau",
+        "latin": "Ligamentum cruciatum anterius & posterius",
+        "originInsertion": "Nối xương đùi và xương chày trong khớp gối.",
+        "action": "Hai dây chằng chéo góp phần ổn định và kiểm soát di chuyển trước–sau giữa chày và đùi."
       },
       {
-        avoid: "Open-Chain Knee Extension từ 30° đến 0° với tạ nặng ở giai đoạn sớm sau mổ ACL",
-        whyAvoid: "Cơ tứ đầu kéo xương chày trượt ra trước mạnh nhất ở 30° cuối mà không có lực đồng co của gân kheo.",
-        rehabAlternative: "Closed-Chain Mini Squat / Leg Press góc an toàn (0°–60°) + Terminal Knee Extension (TKE) với dây band",
-        cuesAndTempo: "Kiểm soát đồng co Quad – Hamstring; Tempo 3-2-1-1",
-      },
+        "name": "Sụn chêm trong & ngoài",
+        "latin": "Meniscus medialis & lateralis",
+        "originInsertion": "Hai cấu trúc sụn sợi nằm giữa đầu dưới xương đùi và đầu trên xương chày.",
+        "action": "Phân bố tải, đệm và góp phần ổn định khớp; không gán một phần trăm hấp thụ lực chung."
+      }
     ],
-    sampleAiPrompt:
-      "Học viên đau mặt trước khớp gối trái khi xuống cầu thang (hội chứng chè – đùi PFPS). Giải thích cách điều chỉnh tỷ lệ mô-men Khớp Gối vs Khớp Háng trong bài Squat/Split Squat để vẫn tập chân hiệu quả mà không đau gối.",
+    "commonPathologies": [
+      "Đau chè–đùi thường liên quan hoạt động chịu tải khi gối gập; cần phân biệt nguyên nhân khác.",
+      "Tổn thương dây chằng/sụn chêm và tình trạng sau mổ cần đánh giá, chỉ định riêng."
+    ],
+    "painTriggers": [
+      "Đau trước gối khi lên/xuống cầu thang hoặc squat có thể gặp trong đau chè–đùi; gối vượt mũi chân không tự là dấu hiệu tổn thương."
+    ],
+    "screeningTests": [
+      {
+        "name": "Quan sát bước xuống bục phù hợp khả năng",
+        "purpose": "Ghi nhận triệu chứng và chức năng; không chẩn đoán PFPS từ một kiểu chuyển động gối."
+      },
+      {
+        "name": "Hỏi về kẹt gối, sưng và chấn thương",
+        "purpose": "Nếu không thể duỗi hoặc chịu lực, cần khám; không tự thực hiện Thessaly/McMurray để xác nhận rách sụn chêm."
+      }
+    ],
+    "redFlags": [
+      "Gối khóa không vận động được, không chịu lực được, sưng lớn/biến dạng hoặc mất vững rõ: ngừng tập và được đánh giá khẩn.",
+      "Gối nóng đỏ kèm sốt/rét run: cần đánh giá khẩn vì có thể nhiễm trùng."
+    ],
+    "protocols": [
+      {
+        "avoid": "Giữ nguyên mức tải/góc gập đang làm đau gối tăng",
+        "whyAvoid": "Hướng dẫn đau chè–đùi điều chỉnh nhiệm vụ, tải và tần suất theo mức kích thích.",
+        "rehabAlternative": "Bài tập gối kết hợp giáo dục; thêm bài háng khi phù hợp theo đánh giá chuyên môn.",
+        "cuesAndTempo": "Tăng dần theo khả năng và chức năng; không ấn định Spanish squat hay một góc an toàn chung."
+      },
+      {
+        "avoid": "Tự đổi chương trình sau mổ ACL theo atlas",
+        "whyAvoid": "Giới hạn phụ thuộc phẫu thuật, mô ghép và tổn thương phối hợp.",
+        "rehabAlternative": "Tuân thủ đội điều trị; có thể dùng cả bài chuỗi mở và chuỗi đóng khi được chỉ định.",
+        "cuesAndTempo": "Theo dõi đau trước gối, sưng và chức năng; không tự chọn thời điểm trở lại chạy/nhảy."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích giải phẫu gối và hướng dẫn đau chè–đùi 2024. Phân biệt với phục hồi ACL sau mổ, nêu vai trò cả bài chuỗi mở/đóng và thông tin cần từ đội điều trị trước thay đổi tập."
   },
   {
-    id: "ankle_foot",
-    name: "Cổ chân, Gân Achilles & Vòm bàn chân",
-    latinName: "Articulatio Talocruralis, Tendo Calcaneus & Planta Pedis",
-    group: "lower_limb",
-    views: ["anterior", "posterior"],
-    summary:
-      "Điểm tiếp xúc duy nhất giữa cơ thể và mặt sàn. Khi biên độ gập mu chân (Ankle Dorsiflexion) bị hạn chế (<35°), xương chày không thể tiến về trước khi Squat, buộc bàn chân phải sập vòm (Overpronation), gối sập vào trong và thắt lưng phải gập bù trừ.",
-    biomechanicsKey:
-      "Phức hợp Bắp chân – Gân Achilles (Gastrocnemius, Soleus) hoạt động như chiếc lò xo đàn hồi lớn nhất cơ thể; riêng cơ Dép (Soleus) chịu tải cao nhất khi gối gập (Bent-knee Calf Raise & Squat).",
-    structures: [
-      {
-        name: "Cơ bụng chân & Cơ dép (Tam đầu cẳng chân)",
-        latin: "Gastrocnemius & Soleus (Triceps surae)",
-        originInsertion: "Lồi cầu xương đùi (Gastrocnemius) & mặt sau xương chày/mác (Soleus) → Gân Achilles → Xương gót",
-        action: "Gập lòng bàn chân (Plantarflexion) và hãm tốc xương chày tiến về trước khi Squat/tiếp đất",
-      },
-      {
-        name: "Cơ chày sau",
-        latin: "Tibialis posterior",
-        originInsertion: "Mặt sau xương chày, xương mác & màng gian cốt → Xương ghe và các xương cổ chân",
-        action: "Nâng đỡ vòm dọc trong bàn chân (chống bàn chân bẹt chức năng và chống sập cổ chân vào trong)",
-      },
-      {
-        name: "Cơ chày trước",
-        latin: "Tibialis anterior",
-        originInsertion: "Mặt ngoài xương chày → Xương chêm trong & nền xương đốt bàn 1",
-        action: "Gập mu bàn chân (Dorsiflexion) và kiểm soát hạ bàn chân êm ái khi bước đi/chạy",
-      },
+    "id": "ankle_foot",
+    "name": "Cổ chân, Gân Achilles & Bàn chân",
+    "latinName": "Articulatio Talocruralis, Tendo Calcaneus & Pes",
+    "group": "lower_limb",
+    "views": [
+      "anterior",
+      "posterior"
     ],
-    commonPathologies: [
-      "Hạn chế biên độ gập mu chân (Ankle Dorsiflexion Restriction) sau bong gân cổ chân cũ",
-      "Viêm gân Achilles (Mid-portion hoặc Insertional Achilles Tendinopathy)",
-      "Viêm cân gan chân (Plantar Fasciitis) & Sập vòm bàn chân (Pes Planus chức năng)",
-    ],
-    painTriggers: [
-      "Nhấc gót chân hoặc đổ người ra trước quá mức khi Squat xuống sâu",
-      "Đau cứng gân Achilles hoặc gót chân vào những bước đầu tiên buổi sáng",
-      "Bật nhảy dây / Box Jump liên tục khi gân Achilles chưa đủ sức bền tải nặng",
-    ],
-    screeningTests: [
+    "summary": "Cổ chân và bàn chân tham gia chịu lực và vận động. Cơ bụng chân và cơ dép truyền lực qua gân Achilles tới xương gót; một giá trị gập mu chân không đủ giải thích mọi thay đổi squat hoặc chẩn đoán bệnh.",
+    "biomechanicsKey": "Cơ bụng chân đi qua gối và cổ chân; cơ dép không đi qua gối. Với bệnh gân Achilles đoạn giữa đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân theo khả năng và giáo dục; không áp trực tiếp cho đứt gân hoặc mọi đau gót.",
+    "structures": [
       {
-        name: "Knee-to-Wall Test (Weight-Bearing Lunge Test)",
-        purpose: "Đặt mũi chân cách tường 10–12cm, đẩy gối chạm tường không nhấc gót để đo độ linh hoạt Dorsiflexion",
+        "name": "Cơ bụng chân & cơ dép",
+        "latin": "Gastrocnemius & Soleus",
+        "originInsertion": "Cơ bụng chân từ vùng lồi cầu đùi; cơ dép từ mặt sau chày/mác → gân Achilles → xương gót.",
+        "action": "Gập lòng bàn chân; cơ bụng chân còn tham gia gập gối."
       },
       {
-        name: "Single-Leg Heel Raise Capacity",
-        purpose: "Kiểm tra sức bền phức hợp Gastrocnemius–Soleus (chuẩn khỏe mạnh: 25 lần hết biên độ)",
-      },
-    ],
-    redFlags: [
-      "Nghe tiếng nổ 'bốp' ở gót chân như bị ai đá vào sau cổ chân kèm mất khả năng nhón gót (Test Thompson dương tính — Đứt gân Achilles)",
-      "Đau nhói trên xương bàn chân tăng dần ở người tăng khối lượng chạy bộ đột ngột (nghi ngờ gãy xương mỏi — Stress Fracture)",
-    ],
-    protocols: [
-      {
-        avoid: "Ép Squat chân phẳng trên sàn khi học viên bị cứng khớp cổ chân (kẹt xương sên)",
-        whyAvoid: "Buộc bàn chân xoay ngoài, sập vòm trong và tạo mô-men xoắn vặn lên khớp gối.",
-        rehabAlternative: "Heel-Elevated Goblet Squat (Kê gót 1.5–2cm) + Banded Ankle Joint Mobilization",
-        cuesAndTempo: "Giữ 3 điểm chạm bàn chân (Tripod Foot: gốc ngón cái, gốc ngón út, giữa gót)",
+        "name": "Cơ chày sau",
+        "latin": "Tibialis posterior",
+        "originInsertion": "Mặt sau chày/mác và màng gian cốt → vùng xương ghe và các điểm bám ở bàn chân.",
+        "action": "Gập lòng, nghiêng trong bàn chân và hỗ trợ vòm dọc trong."
       },
       {
-        avoid: "Hạ gót sâu dưới bậc thềm (Deficit Calf Raise) khi bị viêm điểm bám gân Achilles vào xương gót",
-        whyAvoid: "Ép mặt trước gân Achilles vào bờ trên xương gót (Insertional compression).",
-        rehabAlternative: "Flat-Ground Heavy Slow Calf Raise ( cả thẳng gối cho Gastroc & gập gối cho Soleus)",
-        cuesAndTempo: "Chỉ hạ ngang mặt sàn phẳng; Tempo 3 giây lên – giữ 2 giây – 3 giây xuống",
-      },
+        "name": "Cơ chày trước",
+        "latin": "Tibialis anterior",
+        "originInsertion": "Mặt ngoài xương chày và màng gian cốt → xương chêm trong và nền xương đốt bàn I.",
+        "action": "Gập mu và nghiêng trong bàn chân."
+      }
     ],
-    sampleAiPrompt:
-      "Học viên có tiền sử lật sơ mi cổ chân phải, hiện tại bài Knee-to-Wall chỉ đạt 5cm làm gối phải sập vào trong khi Squat. Hãy lên quy trình cải thiện Dorsiflexion và điều chỉnh bài tập thân dưới.",
-  },
+    "commonPathologies": [
+      "Bệnh gân Achilles đoạn giữa và tại điểm bám cần được phân biệt.",
+      "Đau gót/bàn chân hoặc hạn chế vận động sau chấn thương cần đánh giá nguyên nhân."
+    ],
+    "painTriggers": [
+      "Đau Achilles khi chịu tải và cứng sau nghỉ có thể gặp trong bệnh gân; không xác định chẩn đoán chỉ qua đau sáng sớm."
+    ],
+    "screeningTests": [
+      {
+        "name": "Ghi nhận vận động cổ chân chủ động",
+        "purpose": "Theo dõi sự thay đổi và triệu chứng; không dùng một mốc khoảng cách knee-to-wall làm chuẩn cho mọi người."
+      },
+      {
+        "name": "Theo dõi nhón gót khi đã được hướng dẫn",
+        "purpose": "Đánh giá chức năng cần xét tuổi, khả năng, đau và cách đo; không dùng 25 lần làm chuẩn chẩn đoán hay tự thử khi nghi đứt gân."
+      }
+    ],
+    "redFlags": [
+      "Tiếng bụp đột ngột sau cổ chân/gót, sưng đau và khó đi hoặc không nhón gót được: ngừng tập và khám khẩn để loại trừ đứt Achilles; không tự làm Thompson để trì hoãn khám.",
+      "Đau khu trú vùng xương bàn chân tăng khi chạy/đi lại, nhất là sau tăng tải: dừng hoạt động gây đau và khám sớm để đánh giá tổn thương xương do stress; không tự nhảy thử để xác nhận."
+    ],
+    "protocols": [
+      {
+        "avoid": "Duy trì chạy/nhảy ở mức làm đau Achilles tăng rõ",
+        "whyAvoid": "Với bệnh gân đoạn giữa, hoạt động và tải gân cần điều chỉnh trong khả năng; nghỉ hoàn toàn không phải khuyến nghị chung.",
+        "rehabAlternative": "Theo chương trình tải gân tiến triển và giáo dục được chuyên viên lựa chọn.",
+        "cuesAndTempo": "Liều và tiến triển theo khả năng, triệu chứng và chức năng; đây không phải phác đồ cho đứt gân."
+      },
+      {
+        "avoid": "Áp bài hạ gót sâu cho mọi người đau gót",
+        "whyAvoid": "Bệnh gân tại điểm bám, đoạn giữa và các nguyên nhân đau khác có kế hoạch khác nhau.",
+        "rehabAlternative": "Khám xác định vị trí và tình trạng; hỏi người điều trị về biên độ calf raise phù hợp.",
+        "cuesAndTempo": "Không ép gập mu hoặc tự kéo nắn cổ chân để vượt một mốc đo chung."
+      }
+    ],
+    "sampleAiPrompt": "Giải thích khác biệt cơ bụng chân–cơ dép và phạm vi hướng dẫn Achilles đoạn giữa 2024. Nêu cách theo dõi triệu chứng, giới hạn knee-to-wall và dấu hiệu cần khám khẩn; không tự đặt chẩn đoán từ số đo."
+  }
 ];
 
 export interface ClientRegionAlert {
@@ -678,7 +656,8 @@ export function matchClientIssuesToRegions(
     if (matchedIssues.length > 0 || matchedConditions.length > 0) {
       result[region.id] = {
         regionId: region.id,
-        severity: matchedIssues.length > 0 && matchedConditions.length > 0 ? "crimson" : "caution",
+        // Keyword overlap is a navigation cue, not a measure of clinical urgency.
+        severity: "caution",
         matchedIssues,
         matchedConditions,
       };

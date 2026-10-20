@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { HANDBOOK_EVIDENCE } from "@/lib/clinical/evidence-assessment";
 import {
   INSTRUMENT_LABELS,
   KNEE_SEM_SOURCE,
@@ -88,6 +90,7 @@ export function RomAssessment({
 
   return (
     <div className="space-y-5">
+      <ClinicalEvidencePanel evidence={HANDBOOK_EVIDENCE.rom} />
       <form onSubmit={submit} className="panel space-y-4 p-5">
         <div>
           <h2 className="font-display text-base font-bold text-ink">Nhập số đo biên độ khớp</h2>
@@ -281,7 +284,7 @@ function LatestSession({ client, records }: { client: Client; records: Biomarker
                           className={`block text-[11px] ${change.beyondError ? "font-semibold text-cleared" : "text-slate"}`}
                         >
                           {change.beyondError == null
-                            ? "Chưa có số liệu sai số đo"
+                            ? "Chưa xác nhận quy trình để áp MDC"
                             : change.beyondError
                               ? `Vượt sai số đo (MDC ${change.mdc}°)`
                               : `Trong sai số đo (MDC ${change.mdc}°)`}

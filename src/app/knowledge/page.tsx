@@ -9,6 +9,7 @@ import {
 } from "@/components/WorkspaceUI";
 import type { KnowledgeDocument } from "@/lib/types";
 import { PubMedSearch } from "@/components/PubMedSearch";
+import { ClinicalEvidenceIndex } from "@/components/ClinicalEvidenceIndex";
 
 async function fetchDocuments(): Promise<KnowledgeDocument[]> {
   const res = await fetch("/api/knowledge");
@@ -148,6 +149,7 @@ export default function KnowledgePage() {
         title="Kiến thức cho từng quyết định."
         description="Lưu giáo trình chuyên ngành và tra cứu nghiên cứu để đối chiếu khi xây dựng chương trình tập luyện."
       />
+      <ClinicalEvidenceIndex />
       <div className="grid items-start gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
         <section
           className="panel order-last min-w-0 overflow-hidden xl:order-none"

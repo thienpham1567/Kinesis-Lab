@@ -1,0 +1,14 @@
+import assert from "node:assert/strict";
+import { normalizeLabExtraction } from "../src/lib/clinical/lab-extraction.ts";
+const r = normalizeLabExtraction({kind:"blood_lab",recorded_at:null,metrics:{Glucose:{value:5.3,unit:"mmol/L",reference_range:"4–6"},Na:{value:140,flag:"normal"},Bad:{value:null},Infinity:{value:Infinity}},ai_summary:"Diagnose diabetes!"});
+assert.equal(r.metrics.Glucose.flag,"unknown");
+assert.equal(r.metrics.Glucose.reference_range,"4–6");
+assert.equal(r.metrics.Na.flag,"normal");
+assert.equal(r.recorded_at,null);
+assert(!("Bad" in r.metrics));
+assert(!("Infinity" in r.metrics));
+assert(!r.ai_summary.includes("Diagnose"));
+assert.throws(()=>normalizeLabExtraction({kind:"other",metrics:{}}));
+assert.throws(()=>normalizeLabExtraction({kind:"blood_lab",metrics:{}}));
+assert.equal(normalizeLabExtraction({kind:"inbody",recorded_at:"2026-02-31",metrics:{W:{value:"70"}}}).recorded_at,null);
+console.log("Lab extraction checks passed");

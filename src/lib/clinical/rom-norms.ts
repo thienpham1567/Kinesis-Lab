@@ -13,7 +13,7 @@ export type RomMovement = {
   region: string;
   label: string;
   sides: RomSide[];
-  // CDC: means per age band [2–8, 9–19, 20–44, 45–69]; spine: one mean for everyone.
+  // CDC: age bands [2–8, 9–19, 20–44, 45–69]; spine: pooled mean, ages 18–29 only.
   means: Record<Sex, number[]> | number;
   sem?: Partial<Record<RomInstrument, number>>;
   source: string;
@@ -40,11 +40,11 @@ export const ROM_MOVEMENTS: RomMovement[] = [
   cdc("hip_extension", "Hông", "Duỗi hông", [26.2, 20.5, 18.1, 16.7], [28.3, 18.2, 17.4, 13.5]),
   {
     ...cdc("knee_flexion", "Gối", "Gập gối", [152.6, 142.3, 141.9, 137.8], [147.8, 142.2, 137.7, 132.9]),
-    sem: { goniometer: 3.41, smartphone: 2.72 },
+    // Study-specific SEM not applied to a generic instrument category.
   },
   {
     ...cdc("knee_extension", "Gối", "Duỗi gối (quá duỗi; âm = thiếu duỗi)", [5.4, 2.4, 1.6, 1.2], [1.6, 1.8, 1.0, 0.5]),
-    sem: { goniometer: 1.62, smartphone: 1.18 },
+    // i-Goni v1.1 / OA or TKR protocol is not established by this form.
   },
   cdc("ankle_dorsiflexion", "Cổ chân", "Gập mu cổ chân", [24.8, 17.3, 13.8, 11.6], [22.8, 16.3, 12.7, 11.9]),
   cdc("ankle_plantarflexion", "Cổ chân", "Gập gan cổ chân", [67.1, 57.3, 62.1, 56.5], [55.8, 52.8, 54.6, 49.4]),
@@ -90,18 +90,15 @@ export function normFor(movementId: string, age: number | null, sex: string | nu
   const m = movementById(movementId);
   if (!m) return { reason: "Động tác chưa có chuẩn tham chiếu" };
   if (typeof m.means === "number") {
-    return { mean: m.means, population: "Người trẻ khỏe (JTSS 2023)" };
+    if (age == null || !Number.isFinite(age) || age < 18 || age > 29) return { reason: "JTSS chỉ khảo sát người khỏe 18–29 tuổi; không ngoại suy" };
+    return { mean: m.means, population: "Trung bình gộp người khỏe 18–29 tuổi, goniometer kỹ thuật số (JTSS 2023); không là mục tiêu điều trị" };
   }
   const s = parseSex(sex);
   if (age == null || s == null) return { reason: "Cần tuổi và giới trong hồ sơ để so chuẩn" };
-  if (age < 2) return { reason: "Dữ liệu CDC chỉ từ 2 tuổi" };
-  const i = BANDS.findIndex((b) => age <= b.max);
-  const band = i === -1 ? BANDS.length - 1 : i;
+  if (!Number.isFinite(age) || age < 2 || age > 69) return { reason: "Dữ liệu CDC chỉ trong khoảng 2–69 tuổi; không ngoại suy" };
+  const band = BANDS.findIndex((b) => age <= b.max);
   const sexLabel = s === "F" ? "Nữ" : "Nam";
-  const population =
-    i === -1
-      ? `${sexLabel} ${BANDS[band].label} (CDC; ngoài khoảng tuổi nghiên cứu)`
-      : `${sexLabel} ${BANDS[band].label} (CDC)`;
+  const population = `${sexLabel} ${BANDS[band].label} (CDC; trung bình mẫu, không là ngưỡng chẩn đoán)`;
   return { mean: m.means[s][band], population };
 }
 

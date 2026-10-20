@@ -1,3 +1,4 @@
+import { normalizeLabExtraction } from "@/lib/clinical/lab-extraction";
 import { extractText, getDocumentProxy } from "unpdf";
 import { chatComplete, MODELS } from "@/lib/ai/openrouter";
 import { LAB_EXTRACT_PROMPT } from "@/lib/ai/prompts/clinical-pt-system";
@@ -64,5 +65,9 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ error: "Không parse được kết quả Vision", raw }, { status: 502 });
   }
-  return Response.json(parsed);
+  try {
+    return Response.json(normalizeLabExtraction(parsed));
+  } catch (err) {
+    return Response.json({error: err instanceof Error ? err.message : "Cần kiểm tra phiếu gốc"}, {status:422});
+  }
 }

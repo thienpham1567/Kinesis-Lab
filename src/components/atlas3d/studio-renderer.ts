@@ -4,7 +4,11 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-import type { ResolvedRenderQuality } from "./render-policy";
+import {
+  presentationBackground,
+  type AtlasPresentation,
+  type ResolvedRenderQuality,
+} from "./render-policy";
 
 /** Studio lighting and optional postprocessing; model geometry stays in AtlasStage. */
 export class StudioRenderer {
@@ -54,6 +58,12 @@ export class StudioRenderer {
       this.rim,
       this.rim.target,
     );
+  }
+
+  setPresentation(presentation?: AtlasPresentation) {
+    // A scene background clears in the active render target color space.
+    // A renderer clear color can be copied as sRGB into the linear composer buffer.
+    this.scene.background = new THREE.Color(presentationBackground(presentation));
   }
 
   setBounds(box: THREE.Box3) {

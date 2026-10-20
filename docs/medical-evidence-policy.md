@@ -1,0 +1,35 @@
+# Medical evidence requirements
+
+User requirement recorded 2026-10-19: anatomical and medical accuracy takes precedence over visual realism.
+
+## Applying sources
+
+- New medical/anatomical statements need a traceable source at claim level. Prefer established anatomy textbooks, university medical teaching resources, peer-reviewed anatomical research, and specialty guidance appropriate to the claim.
+- Record the exact document, date checked and access scope (full text, table, abstract). PubMed indexing and NCBI hosting do not imply endorsement of an app or replace reading the source.
+- Distinguish established gross anatomy, study-specific observations, simulation and source-mesh metadata. Do not infer measured fascicle paths, attachment footprints or individual tissue thickness from mesh shape or AI texture.
+- Where studies define compartments differently, record that difference rather than inventing one definitive partition or mapping it onto an unsegmented mesh.
+- Paraphrase facts concisely; link the source. Do not redistribute protected textbook/atlas images or full text without a compatible license.
+
+## Review status
+
+“Literature checked” records a source comparison only. A named qualified clinician/anatomist must independently review content and its spatial 3D mapping before that mapping is described as clinically/anatomically validated. Store reviewer identity/date explicitly; keep them null until review occurs. Automated tests check software/data consistency, not medical truth. Do not label the app “medical standard”, certified, fully verified or clinically validated without the corresponding review/authorization.
+
+## Current coverage (integration 2026-10-20)
+
+The finite built-in inventory has an explicit source/scope record for 8 regional anatomy cards, 11 muscle groups, 13 exercise records, 10 trigger-point muscle entries and the general protocol, 8 illustrative pain sites, 4 movement handbook lessons, 17 ROM movements, and the screening, medication, lab-extraction and assistant workflows. Pain-site entries inherit the common limits and linked muscles' sources; they are not individually validated diagnostic maps. Scope and access limitations differ by record: `literature-reviewed` means a documented source comparison; `limited` marks restricted evidence, illustrative conventions or workflow policy. Neither means clinician approval. These records do not certify every prior sentence, a personal treatment plan or AI output.
+
+All 1,031 catalog structure IDs resolve to a separate `source-only` record. The catalog audit records Z-Anatomy provenance at commit `0dd2329622c42b4fdcaabbf5ff6ad234df49b659`, asset version 2 and CC-BY-SA-4.0, plus string comparison with the upstream derivative TA2.csv. There are 884 English/Latin matching pairs; the remaining 147 lack a matching pair in that comparison. This is not independent verification against original FIPAT terminology, approval of Vietnamese translations, confirmation of mesh labels, or spatial/clinical validation. Unknown IDs return no evidence rather than silently inheriting a reviewed state.
+
+The existing bilateral gluteus medius detailed record remains in `src/lib/clinical/anatomy-evidence.mjs`. Broader source/claim records live in `evidence-anatomy.ts`, `evidence-muscle.ts`, `evidence-trigger.ts` and `evidence-assessment.ts` under `src/lib/clinical/`; catalog bookkeeping is in `catalog-evidence.json`. The integrated inventory and lookup are in `evidence-registry.ts`; the knowledge library provides search by record, domain, status and source. Source checked dates and access scopes remain those of the actual domain research, not the integration date.
+
+Every record keeps `reviewedBy: null`. Independent clinician/anatomist review of content, translations and spatial mapping remains pending. Mesh regions are Z-Anatomy classifications; material maps and procedural movement studies are display simulations, not measured anatomy or validated muscle deformation. There is no validated source-to-mesh fascicle map; the geometry-inferred fan prototype remains withheld from runtime.
+
+## Assistant context and search
+
+The chat route supplies a locally selected, bounded set of relevant curated records with claims, sources, checked dates, access scopes and limitations. It preserves existing RAG and PubMed context and adds curated records to stream metadata and stored Supabase citation context. Those fields describe sources supplied to the model, not proof that each generated claim was supported or that a clinician reviewed it.
+
+Public literature searches use only a fixed topic vocabulary selected from the current question; raw questions, stored client profiles, lab values, document text and medication lists are not forwarded to PubMed. Unsupported topics skip public retrieval instead of sending free text. Local curated matching is not a clinical decision rule. Uploaded documents and retrieved material remain untrusted source data, and the assistant may cite only sources actually supplied in its context. Prompts cannot guarantee compliance or factual output; individual responses require review.
+
+## Regression checks
+
+`scripts/check-evidence-coverage.mjs` checks the exact finite ID inventory, no silent coverage gaps, record/source metadata, pending reviewer state, catalog provenance, unknown/prototype IDs, retrieval relevance, bounded context and route integration. Domain-specific scripts retain their narrower checks. These checks establish software/data consistency only; they cannot establish medical truth or clinical validation. Research and integration limits are recorded in `docs/superpowers/reviews/2026-10-20-evidence-integration.md` and the earlier domain review notes.

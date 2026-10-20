@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { TRIGGER_POINT_EVIDENCE, TRIGGER_GENERAL_EVIDENCE } from "@/lib/clinical/evidence-trigger";
 import { useMemo, useState, type ReactNode } from "react";
 import {
   CATEGORY_LABELS,
@@ -535,7 +537,7 @@ export function TriggerPointExplorer({
               <div className="min-w-0">
                 <h2 className="font-display text-sm font-bold text-ink">
                   {lookupMode === "pain_to_muscle"
-                    ? "Vùng đau (nạn nhân) → Thủ phạm"
+                    ? "Vùng đau → Nội dung tham khảo"
                     : "Điểm X & vùng đau quy chiếu"}
                 </h2>
                 <p className="truncate text-[11px] text-slate">
@@ -579,7 +581,7 @@ export function TriggerPointExplorer({
                     {culpritMusclesForSite(hoveredPainSite ?? activePainSite)
                       .map((m) => m.shortName)
                       .join(" · ")}{" "}
-                    là thủ phạm cần sờ
+                    là các nhóm cơ để tham khảo, chưa xác định nguồn đau
                   </span>
                 </>
               ) : hoveredMuscle ? (
@@ -693,6 +695,7 @@ function MuscleClinicalPanel({
 
   return (
     <>
+      <ClinicalEvidencePanel evidence={TRIGGER_POINT_EVIDENCE[muscle.id]} />
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-rule pb-4">
         <div className="min-w-0 flex-1">
           <span className="rounded bg-crimson-soft px-2.5 py-0.5 font-mono text-[11px] font-semibold text-crimson">
@@ -709,21 +712,21 @@ function MuscleClinicalPanel({
           href={`/?prompt=${encodeURIComponent(muscle.sampleAiPrompt)}`}
           className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-white hover:opacity-95"
         >
-          Tư vấn phác đồ AI
+          Trao đổi với AI
         </Link>
       </div>
 
       <div className="space-y-2.5 rounded-md border border-crimson/25 bg-crimson-soft/40 p-3.5 text-xs leading-6 text-ink">
         <div>
           <span className="font-display font-bold text-crimson">
-            Cơ chế Integrated Trigger Point Hypothesis:{" "}
+            Giả thuyết và giới hạn cơ chế:{" "}
           </span>
           {muscle.mechanism}
         </div>
         {muscle.references.length > 0 && (
           <div className="border-t border-crimson/15 pt-2">
             <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase text-crimson">
-              Dẫn chứng Travell / PubMed:
+              Nguồn tham khảo (xem phạm vi ở trên):
             </span>
             <ReferenceChips references={muscle.references} />
           </div>
@@ -814,12 +817,12 @@ function MuscleClinicalPanel({
 
       <section className="space-y-2">
         <h3 className="font-display text-base font-bold text-ink">
-          3. Phác đồ khắc phục 4 bước cho PT
+          3. Các lựa chọn và giới hạn thực hành
         </h3>
         <ol className="grid gap-2.5">
           <ProtocolStep
             n={1}
-            title="Giải phóng điểm kích hoạt (SMR / Ischemic Compression)"
+            title="Tự chăm sóc: giới hạn và lựa chọn"
             tone="crimson"
           >
             <p>
@@ -839,12 +842,12 @@ function MuscleClinicalPanel({
               {muscle.protocol.step1Release.pinAndStretch}
             </p>
           </ProtocolStep>
-          <ProtocolStep n={2} title="Mở biên độ thần kinh–cơ" tone="caution">
+          <ProtocolStep n={2} title="Vận động trong khả năng phù hợp" tone="caution">
             <p>{muscle.protocol.step2Mobility}</p>
           </ProtocolStep>
           <ProtocolStep
             n={3}
-            title="Kích hoạt cơ bị ức chế (chống tái phát 24h)"
+            title="Tập cơ theo đánh giá và mục tiêu"
             tone="cleared"
           >
             <p>{muscle.protocol.step3Activation}</p>
@@ -896,9 +899,10 @@ function PainSitePanel({
 
   return (
     <>
+      <ClinicalEvidencePanel evidence={TRIGGER_GENERAL_EVIDENCE} />
       <div className="border-b border-rule pb-4">
         <span className="rounded bg-caution-soft px-2.5 py-0.5 font-mono text-[11px] font-semibold text-caution">
-          Nơi khách chỉ đau ≠ nơi có nút
+          Đau có thể có nhiều nguyên nhân
         </span>
         <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight text-ink sm:text-2xl">
           {site.name}
@@ -928,7 +932,7 @@ function PainSitePanel({
               </div>
               <p className="mt-2 leading-6 text-slate">{c.whyDeceptive}</p>
               <p className="mt-2 font-semibold text-cobalt">
-                Mở hồ sơ sờ nắn &amp; phác đồ 4 bước →
+                Xem nội dung và giới hạn theo nhóm cơ →
               </p>
             </button>
           );
@@ -936,16 +940,14 @@ function PainSitePanel({
       </div>
 
       <div className="rounded-md border border-rule bg-surface/70 p-3.5 text-xs leading-6 text-ink">
-        <strong>Quy tắc Travell cho PT: </strong>
-        sờ nút thủ phạm, ấn VAS 5–6, hỏi khách có tái hiện ĐÚNG cơn đau họ than
-        không. Nếu không tái hiện — không kết luận TrP; sàng lọc khớp, rễ thần
-        kinh, red flag.{" "}
+        <strong>Giới hạn tra cứu: </strong>
+        Bản đồ là sơ đồ giáo dục chưa được thẩm định vị trí. Đau tái hiện khi sờ không xác nhận một cơ là nguồn đau duy nhất; không dùng dấu X để tự ấn sâu hoặc loại trừ bệnh khớp, thần kinh, mạch máu hay nội tạng.{" "}
         {culprits[0] && (
           <Link
             href={`/?prompt=${encodeURIComponent(culprits[0].sampleAiPrompt)}`}
             className="font-semibold text-cobalt hover:underline"
           >
-            Hỏi AI phác đồ cho thủ phạm hàng đầu
+            Trao đổi với AI về giới hạn đánh giá
           </Link>
         )}
       </div>
@@ -957,6 +959,7 @@ function HandbookPanel() {
   const f = PALPATION_FUNDAMENTALS;
   return (
     <div className="space-y-4 rounded-lg border border-rule bg-sheet p-4 shadow-xs sm:p-5">
+      <ClinicalEvidencePanel evidence={TRIGGER_GENERAL_EVIDENCE} />
       <div className="border-b border-rule pb-4">
         <h2 className="font-display text-xl font-bold tracking-tight text-ink sm:text-2xl">
           {f.title}
@@ -975,7 +978,7 @@ function HandbookPanel() {
 
       <section>
         <h3 className="font-display text-base font-bold text-ink">
-          4 tiêu chuẩn nhận diện (Delphi 2018)
+          Tiêu chí đồng thuận và độ tin cậy sờ nắn
         </h3>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {f.diagnosticCriteria.map((c) => (
@@ -995,7 +998,7 @@ function HandbookPanel() {
 
       <section>
         <h3 className="font-display text-base font-bold text-ink">
-          3 kỹ thuật đặt ngón tay
+          Thông tin về sờ nắn và giới hạn
         </h3>
         <div className="mt-2 grid gap-2 md:grid-cols-3">
           {f.techniques.map((t) => (

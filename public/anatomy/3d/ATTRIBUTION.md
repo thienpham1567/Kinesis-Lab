@@ -65,3 +65,18 @@ Nominal surface periods (6–12 mm), cosmetic height amplitudes (2–8 µm), rou
 Muscle-only backlighting follows the technique illustrated by the installed Three.js SubsurfaceScatteringShader (MIT), using the existing per-vertex thickness/validity. The 9 mm attenuation length, color, distortion and strength are art settings. Invalid/zero thickness and transparent muscle suppress this contribution. Heatmap output takes priority. This is a real-time translucency approximation; no measured optical coefficients or tissue-specific scattering validation is claimed. Tendon, cartilage and bone retain separate surface profiles without this muscle scattering term.
 
 Gross-shape reference comparison: OpenStax Anatomy and Physiology 2e [11.6](https://openstax.org/books/anatomy-and-physiology-2e/pages/11-6-appendicular-muscles-of-the-pelvic-girdle-and-lower-limbs) and [9.6](https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints). Reference links do not certify the source mesh or synthetic texture; no OpenStax image is redistributed by this study.
+
+## Source-region labels and anatomy evidence (2026-10-19)
+
+Bilateral gluteus medius has optional “muscle belly” and “tendon region” labels. Each label is placed at a camera-facing ray hit in the corresponding source material region. It is hidden when occluded, outside the view or lacking enough display space; its text position is not moved onto another tissue to fit the viewport. These are navigation labels, not measured anatomical attachment landmarks.
+
+The accompanying educational fact record links each statement to its source (UW Radiology Muscle Atlas, McGraw Hill Gross Anatomy table 35-1, StatPearls superior gluteal nerve, and anatomical studies PMID 23625344 and 30653048). The source comparison date is recorded separately from independent clinical/anatomical review, which has not occurred. No third-party illustration is included. A geometry-inferred fan field was investigated and withheld after the requirement for verified medical accuracy; no new fiber direction map is shipped. The existing synthetic material remains explicitly cosmetic.
+
+
+## Experimental cable-curl arm study (2026-10-20)
+
+`motion/cable-curl-left.glb` derives its 44 left upper-limb source structures from the pinned Z-Anatomy / BodyParts3D meshes above. This derivative asset and exported anatomy videos remain CC BY-SA 4.0 with the attribution chain preserved. `motion/cable-curl-left.json` records source IDs, commit, sources and review limits.
+
+The two-bone display rig uses rest reference coordinates from Z-Biomechanics; muscle skin weights, animation timing/range and cable/handle drawing are authored for this prototype. They are not source muscle attachment weights, measured fascicle paths, EMG data, motion capture or a clinically validated cable-curl demonstration. Full-body technique and grip are not modeled or validated. No independent clinician/anatomist has approved this animation or its mapping. Original static Atlas assets remain separate.
+
+Elbow-flexor teaching claim: OpenStax Anatomy and Physiology 2e §11.5, “Muscles That Move the Forearm”, full section checked 2026-10-20: https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs . This supports the stated gross function of biceps brachii, brachialis and brachioradialis; it does not validate the authored movement or deformation.
