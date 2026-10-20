@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { MusclePlateCredit } from "./MusclePlateCredit";
 import { TRIGGER_POINT_EVIDENCE, TRIGGER_GENERAL_EVIDENCE } from "@/lib/clinical/evidence-trigger";
 import { useMemo, useState, type ReactNode } from "react";
 import {
@@ -28,7 +29,10 @@ interface BodyHitZone {
   d: string;
 }
 
-/** Clickable muscle territories on the same 900×1620 OpenStax body plates as Atlas. */
+/**
+ * Coarse lookup regions on the 900×1620 body plates shared with Atlas (provenance unverified,
+ * see public/anatomy/SOURCES.md). Regions are on-body orientation targets, not muscle borders.
+ */
 const BODY_HIT_ZONES: BodyHitZone[] = [
   {
     id: "ant-pec",
@@ -40,7 +44,13 @@ const BODY_HIT_ZONES: BodyHitZone[] = [
     id: "ant-serratus-l",
     muscleId: "lats_serratus",
     view: "anterior",
-    d: "M 230 460 C 290 450, 320 510, 300 580 L 250 590 C 210 540, 205 490, 230 460 Z",
+    d: "M 286 432 L 335 445 L 338 525 L 300 548 L 290 490 Z",
+  },
+  {
+    id: "ant-serratus-r",
+    muscleId: "lats_serratus",
+    view: "anterior",
+    d: "M 614 432 L 565 445 L 562 525 L 600 548 L 610 490 Z",
   },
   {
     id: "ant-psoas-l",
@@ -70,13 +80,13 @@ const BODY_HIT_ZONES: BodyHitZone[] = [
     id: "ant-shin-l",
     muscleId: "soleus_gastroc",
     view: "anterior",
-    d: "M 320 1190 L 426 1190 L 418 1530 L 332 1530 Z",
+    d: "M 320 1190 L 426 1190 L 420 1330 L 402 1400 L 352 1400 L 335 1330 Z",
   },
   {
     id: "ant-shin-r",
     muscleId: "soleus_gastroc",
     view: "anterior",
-    d: "M 474 1190 L 580 1190 L 568 1530 L 482 1530 Z",
+    d: "M 580 1190 L 474 1190 L 480 1330 L 498 1400 L 548 1400 L 565 1330 Z",
   },
   {
     id: "post-traps",
@@ -100,13 +110,13 @@ const BODY_HIT_ZONES: BodyHitZone[] = [
     id: "post-infra-l",
     muscleId: "infraspinatus",
     view: "posterior",
-    d: "M 222 330 L 352 345 L 342 465 L 218 450 Z",
+    d: "M 360 380 L 364 465 L 302 445 Z",
   },
   {
     id: "post-infra-r",
     muscleId: "infraspinatus",
     view: "posterior",
-    d: "M 548 345 L 678 330 L 682 450 L 558 465 Z",
+    d: "M 540 380 L 536 465 L 598 445 Z",
   },
   {
     id: "post-lats-l",
@@ -136,13 +146,13 @@ const BODY_HIT_ZONES: BodyHitZone[] = [
     id: "post-calf-l",
     muscleId: "soleus_gastroc",
     view: "posterior",
-    d: "M 326 1185 L 438 1185 L 430 1535 L 352 1535 Z",
+    d: "M 332 1100 L 440 1100 L 422 1400 L 418 1500 L 385 1500 L 352 1400 Z",
   },
   {
     id: "post-calf-r",
     muscleId: "soleus_gastroc",
     view: "posterior",
-    d: "M 462 1185 L 574 1185 L 548 1535 L 470 1535 Z",
+    d: "M 568 1100 L 460 1100 L 478 1400 L 482 1500 L 515 1500 L 548 1400 Z",
   },
 ];
 
@@ -538,12 +548,12 @@ export function TriggerPointExplorer({
                 <h2 className="font-display text-sm font-bold text-ink">
                   {lookupMode === "pain_to_muscle"
                     ? "Vùng đau → Nội dung tham khảo"
-                    : "Điểm X & vùng đau quy chiếu"}
+                    : "Vùng minh họa & đau lan (chưa xác minh)"}
                 </h2>
                 <p className="truncate text-[11px] text-slate">
                   {lookupMode === "pain_to_muscle"
                     ? "Nhấn vùng khách than đau trên hình"
-                    : "Nhấn nhóm cơ hoặc dấu X trên hình"}
+                    : "Nhấn vùng tra cứu hoặc dấu X trên hình"}
                 </p>
               </div>
               <div className="inline-flex shrink-0 rounded-md border border-rule bg-canvas p-0.5 text-[11px]">
@@ -626,15 +636,15 @@ export function TriggerPointExplorer({
               <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-rule pt-2 text-[11px] text-slate">
                 <span className="inline-flex items-center gap-1.5 font-semibold text-crimson">
                   <span className="h-2 w-2 rounded-full bg-crimson" />
-                  Cơ đang chọn
+                  Vùng tra cứu (không phải ranh giới cơ)
                 </span>
                 <span className="inline-flex items-center gap-1.5 font-semibold text-crimson">
                   <span className="font-display text-sm leading-none">✕</span>
-                  Nút Trigger Point
+                  Vùng minh họa, chưa xác minh vị trí
                 </span>
                 <span className="inline-flex items-center gap-1.5 font-semibold text-crimson">
                   <span className="h-2 w-4 rounded-sm border border-dashed border-crimson bg-crimson/20" />
-                  Đau quy chiếu
+                  Đau lan minh họa
                 </span>
                 {lookupMode === "pain_to_muscle" && (
                   <span className="inline-flex items-center gap-1.5 font-semibold text-caution">
@@ -644,6 +654,7 @@ export function TriggerPointExplorer({
                 )}
                 <span>Rê chuột / nhấn trên hình</span>
               </div>
+              <MusclePlateCredit note="Dấu X, vùng tra cứu và vùng lan đau do app vẽ, chưa được chuyên gia duyệt." />
             </div>
 
             {lookupMode === "muscle_to_pain" && (
@@ -736,7 +747,7 @@ function MuscleClinicalPanel({
       {relatedSites.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           <span className="self-center text-[11px] font-semibold text-slate">
-            Khách hay than:
+            Vùng đau liên quan để tra cứu:
           </span>
           {relatedSites.map((site) => (
             <button
@@ -769,14 +780,14 @@ function MuscleClinicalPanel({
           />
         </div>
         <div className="rounded-md border border-rule bg-canvas/70 px-3 py-2.5 text-xs leading-6 text-ink">
-          <strong className="text-crimson">Phản ứng khách (Jump Sign / referred): </strong>
+          <strong className="text-crimson">Ghi nhận phản ứng: </strong>
           {muscle.palpation.clientResponse}
         </div>
       </section>
 
       <section className="space-y-2">
         <h3 className="font-display text-base font-bold text-ink">
-          2. Chuỗi cơ liên đới (Key vs Satellite)
+          2. Cơ liên quan cần đánh giá (giả thuyết, chưa xác nhận)
         </h3>
         <div className="rounded-lg border border-rule bg-canvas/60 p-4 text-xs leading-6">
           <p>
@@ -788,7 +799,7 @@ function MuscleClinicalPanel({
           <div className="mt-3 grid gap-2.5 md:grid-cols-2">
             <div className="rounded border border-cleared/30 bg-cleared-soft/50 p-2.5">
               <span className="inline-block rounded bg-cleared px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
-                CƠ BỊ ỨC CHẾ — PHẢI KÍCH HOẠT
+                Vận động/bài tập có thể cân nhắc sau đánh giá
               </span>
               <p className="mt-1.5 font-display font-bold text-ink">
                 {muscle.chain.antagonistOrInhibited.muscles}
@@ -797,13 +808,13 @@ function MuscleClinicalPanel({
                 {muscle.chain.antagonistOrInhibited.whyRelated}
               </p>
               <p className="mt-1.5 text-ink">
-                <strong>Bài kích hoạt: </strong>
+                <strong>Ví dụ nếu phù hợp: </strong>
                 {muscle.chain.antagonistOrInhibited.activationExercise}
               </p>
             </div>
             <div className="rounded border border-rule bg-sheet p-2.5">
               <span className="font-mono text-[10px] font-bold uppercase text-slate">
-                Trigger Point vệ tinh
+                Vùng liên quan khác (chưa xác nhận)
               </span>
               <ul className="mt-1.5 list-disc space-y-0.5 pl-4 text-ink">
                 {muscle.chain.satelliteTriggerPoints.map((s) => (
@@ -864,7 +875,7 @@ function MuscleClinicalPanel({
         </h3>
         <div className="grid gap-2.5 md:grid-cols-2">
           <div className="rounded-md border border-rule bg-canvas/60 p-3 text-xs">
-            <p className="font-display font-bold text-ink">Khi nào TrP cháy</p>
+            <p className="font-display font-bold text-ink">Tình huống tập có thể làm triệu chứng tăng</p>
             <ul className="mt-1.5 list-disc space-y-1 pl-4 text-slate">
               {muscle.gymTriggers.map((g) => (
                 <li key={g}>{g}</li>
@@ -924,7 +935,7 @@ function PainSitePanel({
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <h3 className="font-display text-sm font-bold text-ink">
-                  Thủ phạm: {muscle.shortName}
+                  Nhóm cơ để tham khảo: {muscle.shortName}
                 </h3>
                 <span className="font-mono text-[11px] text-crimson">
                   {muscle.latinName}

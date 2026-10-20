@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { MusclePlateCredit } from "./MusclePlateCredit";
 import { MUSCLE_GROUP_EVIDENCE, EXERCISE_EVIDENCE } from "@/lib/clinical/evidence-muscle";
 import { useEffect, useState } from "react";
 import {
@@ -744,6 +745,7 @@ export function MuscleHypertrophyExplorer({
                     "/anatomy/muscles-posterior.png",
                   )}
               </div>
+              <MusclePlateCredit note="Vùng cơ do app vẽ để tra cứu, không phải ranh giới cơ đã được duyệt." />
 
               {/* Non-obscuring Active Target Chips below the anatomical figures */}
               {lookupMode === "ex_to_muscle" ? (

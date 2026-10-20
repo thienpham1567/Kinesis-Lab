@@ -253,16 +253,16 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
         "code": "Vùng minh họa",
         "locationLabel": "Minh họa vùng vai trên giữa cổ và mỏm cùng vai, không là mốc ấn hoặc vị trí nút đã xác minh.",
         "view": "posterior",
-        "x": 352,
-        "y": 278
+        "x": 340,
+        "y": 296
       },
       {
         "id": "ut-trp1-r",
         "code": "Vùng minh họa",
         "locationLabel": "Minh họa vùng vai trên giữa cổ và mỏm cùng vai, không là mốc ấn hoặc vị trí nút đã xác minh.",
         "view": "posterior",
-        "x": 548,
-        "y": 278
+        "x": 560,
+        "y": 296
       },
       {
         "id": "ut-trp2-l",
@@ -276,16 +276,16 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "referredPain": [
       {
         "view": "posterior",
-        "d": "M 330 240 C 370 210, 430 205, 470 230 L 520 280 C 490 310, 400 300, 360 320 L 310 290 Z",
-        "labelX": 455,
-        "labelY": 222,
+        "d": "M 382 178 C 398 172, 416 182, 420 200 L 420 268 C 408 280, 390 278, 380 270 Z",
+        "labelX": 285,
+        "labelY": 215,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       },
       {
         "view": "anterior",
-        "d": "M 175 175 C 230 145, 290 155, 318 200 L 300 245 C 250 255, 190 235, 170 205 Z",
-        "labelX": 210,
-        "labelY": 158,
+        "d": "M 500 74 C 514 72, 522 88, 522 112 L 520 196 C 514 212, 500 210, 497 196 L 497 120 Z",
+        "labelX": 535,
+        "labelY": 70,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       }
     ],
@@ -421,39 +421,39 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
         "code": "Vùng minh họa",
         "locationLabel": "Minh họa vùng sau bả vai dưới gai bả; vị trí teres minor gần bờ ngoài chỉ là định hướng vùng, không là tọa độ tiếp cận.",
         "view": "posterior",
-        "x": 302,
-        "y": 412
+        "x": 340,
+        "y": 429
       },
       {
         "id": "is-trp1-r",
         "code": "Vùng minh họa",
         "locationLabel": "Minh họa vùng sau bả vai dưới gai bả; vị trí teres minor gần bờ ngoài chỉ là định hướng vùng, không là tọa độ tiếp cận.",
         "view": "posterior",
-        "x": 598,
-        "y": 412
+        "x": 560,
+        "y": 429
       },
       {
         "id": "tm-trp-l",
         "code": "Vùng minh họa",
         "locationLabel": "Minh họa vùng sau bả vai dưới gai bả; vị trí teres minor gần bờ ngoài chỉ là định hướng vùng, không là tọa độ tiếp cận.",
         "view": "posterior",
-        "x": 268,
-        "y": 448
+        "x": 316,
+        "y": 440
       }
     ],
     "referredPain": [
       {
         "view": "anterior",
-        "d": "M 218 330 C 270 300, 330 325, 348 380 L 330 470 C 270 500, 210 455, 205 390 Z",
-        "labelX": 175,
-        "labelY": 355,
+        "d": "M 682 330 C 630 300, 570 325, 552 380 L 570 470 C 630 500, 690 455, 695 390 Z",
+        "labelX": 705,
+        "labelY": 330,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       },
       {
         "view": "anterior",
-        "d": "M 195 455 C 250 470, 265 560, 235 720 L 175 710 C 155 560, 160 480, 195 455 Z",
-        "labelX": 145,
-        "labelY": 590,
+        "d": "M 640 450 C 665 445, 680 470, 685 500 L 720 570 L 770 690 L 735 700 L 690 590 L 655 510 Z",
+        "labelX": 760,
+        "labelY": 600,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       },
       {
@@ -550,7 +550,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       },
       {
         "view": "anterior",
-        "d": "M 230 430 C 280 450, 270 560, 240 700 L 185 690 C 175 540, 185 460, 230 430 Z",
+        "d": "M 225 445 C 250 440, 268 455, 262 500 L 238 570 L 200 700 L 160 690 L 200 560 L 215 500 Z",
         "labelX": 145,
         "labelY": 560,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
@@ -628,8 +628,8 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
         "code": "Vùng minh họa",
         "locationLabel": "Sơ đồ vùng lưng bên và thành ngực; không dùng số xương sườn hoặc bờ nách làm tọa độ ấn.",
         "view": "anterior",
-        "x": 268,
-        "y": 505
+        "x": 595,
+        "y": 495
       }
     ],
     "referredPain": [
@@ -642,9 +642,9 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       },
       {
         "view": "anterior",
-        "d": "M 230 460 C 290 450, 320 510, 300 580 L 250 590 C 210 540, 205 490, 230 460 Z",
-        "labelX": 165,
-        "labelY": 505,
+        "d": "M 614 440 C 582 445, 565 480, 568 540 L 592 598 C 602 580, 608 540, 612 500 Z",
+        "labelX": 720,
+        "labelY": 470,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       }
     ],
@@ -989,14 +989,14 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
         "code": "Vùng minh họa",
         "locationLabel": "Minh họa vùng ngoài hông/đùi; không phải tọa độ bóng dưới ASIS hoặc sát gối.",
         "view": "anterior",
-        "x": 328,
-        "y": 1125
+        "x": 335,
+        "y": 1075
       }
     ],
     "referredPain": [
       {
         "view": "anterior",
-        "d": "M 275 760 C 330 740, 360 800, 350 900 L 340 1140 C 310 1180, 280 1100, 270 900 Z",
+        "d": "M 292 740 C 310 735, 325 760, 325 800 L 345 1000 L 350 1100 C 350 1140, 342 1140, 340 1110 L 302 1000 L 291 820 Z",
         "labelX": 175,
         "labelY": 980,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
@@ -1065,30 +1065,30 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
         "code": "Vùng minh họa",
         "locationLabel": "Sơ đồ vùng bắp chân và cẳng chân trước; không là vị trí ấn sâu qua gastrocnemius để tìm soleus.",
         "view": "posterior",
-        "x": 380,
-        "y": 1368
+        "x": 365,
+        "y": 1370
       },
       {
         "id": "ta-l",
         "code": "Vùng minh họa",
         "locationLabel": "Sơ đồ vùng bắp chân và cẳng chân trước; không là vị trí ấn sâu qua gastrocnemius để tìm soleus.",
         "view": "anterior",
-        "x": 368,
+        "x": 532,
         "y": 1285
       }
     ],
     "referredPain": [
       {
         "view": "posterior",
-        "d": "M 340 1320 C 400 1300, 430 1360, 420 1480 L 390 1580 C 350 1590, 330 1480, 335 1380 Z",
+        "d": "M 362 1320 C 385 1310, 412 1315, 420 1340 L 418 1500 L 435 1540 C 438 1575, 420 1590, 400 1590 C 380 1590, 372 1570, 378 1540 L 388 1500 L 360 1380 Z",
         "labelX": 210,
         "labelY": 1480,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       },
       {
         "view": "anterior",
-        "d": "M 330 1220 C 390 1200, 420 1280, 405 1420 L 360 1460 C 325 1380, 315 1280, 330 1220 Z",
-        "labelX": 175,
+        "d": "M 570 1220 C 510 1200, 480 1280, 495 1420 L 540 1460 C 575 1380, 585 1280, 570 1220 Z",
+        "labelX": 645,
         "labelY": 1320,
         "description": "Vùng triệu chứng minh họa, chưa xác minh nguồn–vị trí; không xác định nguyên nhân hoặc bắt buộc đau lan theo vùng này. [Delphi 2018]"
       }
@@ -1168,9 +1168,9 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "name": "Đau gáy, thái dương và góc hàm",
     "shortName": "Gáy & thái dương",
     "view": "anterior",
-    "zoneD": "M 175 155 C 250 125, 350 140, 420 175 L 400 250 C 320 270, 230 250, 180 210 Z",
-    "pinX": 250,
-    "pinY": 195,
+    "zoneD": "M 380 74 C 392 72, 402 88, 402 115 L 402 200 C 406 225, 418 245, 420 268 L 402 276 C 390 252, 382 226, 380 200 L 378 115 Z",
+    "pinX": 392,
+    "pinY": 150,
     "victimLabel": "Vùng đau đầu/cổ có nhiều nguyên nhân; sơ đồ không phân loại đau đầu hoặc xác nhận bệnh cột sống.",
     "culprits": [
       {
@@ -1232,7 +1232,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "name": "Đau mông lan mặt sau đùi",
     "shortName": "Mông & đùi sau",
     "view": "posterior",
-    "zoneD": "M 300 760 C 380 730, 470 770, 460 900 L 420 1120 C 360 1180, 300 1020, 285 860 Z",
+    "zoneD": "M 305 760 C 380 730, 470 770, 460 900 L 420 1080 C 380 1120, 340 1020, 318 900 Z",
     "pinX": 360,
     "pinY": 920,
     "victimLabel": "Đau lan chân cần đánh giá cột sống, háng và thần kinh theo triệu chứng. MRI cột sống bình thường không xác nhận đau do trigger point.",
@@ -1252,8 +1252,8 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "name": "Đau mặt ngoài gối",
     "shortName": "Mặt ngoài gối",
     "view": "anterior",
-    "zoneD": "M 290 1080 C 350 1060, 390 1100, 380 1180 L 350 1240 C 310 1250, 280 1180, 285 1120 Z",
-    "pinX": 330,
+    "zoneD": "M 338 1062 C 356 1056, 372 1080, 372 1120 L 370 1200 C 360 1215, 346 1210, 342 1195 L 340 1140 Z",
+    "pinX": 355,
     "pinY": 1155,
     "victimLabel": "Không suy từ đau ngoài gối sang nút TFL/VL hoặc cơ hông yếu. Sưng, kẹt/khóa hoặc mất khả năng chịu lực cần đánh giá.",
     "culprits": [
@@ -1272,8 +1272,8 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "name": "Đau gót và gan chân",
     "shortName": "Gót chân",
     "view": "posterior",
-    "zoneD": "M 345 1480 C 400 1465, 430 1510, 420 1585 L 375 1610 C 335 1600, 325 1530, 345 1480 Z",
-    "pinX": 380,
+    "zoneD": "M 380 1500 C 400 1495, 425 1498, 435 1520 L 440 1575 C 430 1592, 395 1595, 382 1580 L 375 1540 Z",
+    "pinX": 408,
     "pinY": 1545,
     "victimLabel": "Đau gót buổi sáng không tự xác nhận hoặc loại plantar fasciitis. Một điểm nhạy bắp chân không thay thế đánh giá đau gót. [Koc 2023: phạm vi]",
     "culprits": [

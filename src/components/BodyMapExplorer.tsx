@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
+import { MusclePlateCredit } from "./MusclePlateCredit";
 import { ANATOMY_REGION_EVIDENCE } from "@/lib/clinical/evidence-anatomy";
 import { useState } from "react";
 import {
@@ -740,6 +741,9 @@ export function BodyMapExplorer({
                       "/anatomy/muscles-posterior.png",
                     )}
                 </div>
+              )}
+              {bodySide !== "openstax" && (
+                <MusclePlateCredit note="Vùng nhấn do app vẽ để tra cứu, không phải ranh giới cơ đã được duyệt." />
               )}
 
               {/* Color Legend */}

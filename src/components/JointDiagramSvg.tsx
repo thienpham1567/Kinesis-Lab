@@ -483,7 +483,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
         <div>
           <div className="flex items-center gap-2">
             <span className="rounded bg-cobalt px-2 py-0.5 font-mono text-[10px] font-bold text-white">
-              ATLAS Y KHOA CHUẨN
+              HÌNH MINH HỌA CÓ NGUỒN
             </span>
             <span className="text-[11px] font-medium text-slate">
               {activePlate.sourceCredit}

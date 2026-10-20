@@ -86,3 +86,51 @@ Các nguồn còn lại trong `evidence-trigger.ts` giữ phạm vi/ngày kiểm
 2. Xác minh/thay ảnh có nguồn rõ ràng; tách các cơ đang gộp và dùng lớp nông/sâu đúng.
 3. Chỉ hiển thị vùng đau/điểm có hồ sơ nguồn cụ thể; giữ các vùng chưa có bằng chứng ở trạng thái chưa xác nhận, không vẽ như bản đồ chuẩn.
 4. Review độc lập từng lớp/vị trí và nội dung trước khi ghi trạng thái đã được chuyên gia duyệt. Kiểm thử phần mềm tiếp tục là một kiểm tra riêng.
+
+## Xử lý ngày 2026-10-20
+
+Phần này ghi lại các thay đổi phần mềm. Nó không phải phê duyệt chuyên môn: mọi bản ghi vẫn ở trạng thái `reviewedBy: null`, và các tọa độ mới vẫn chỉ là minh họa, chưa được xác minh.
+
+1. **P1, ngôn ngữ (đã sửa).** Các tiêu đề trong `TriggerPointExplorer.tsx` đã được đổi như sau:
+
+   | Tiêu đề cũ | Tiêu đề mới |
+   | --- | --- |
+   | “CƠ BỊ ỨC CHẾ — PHẢI KÍCH HOẠT” | “Vận động/bài tập có thể cân nhắc sau đánh giá” |
+   | “Bài kích hoạt” | “Ví dụ nếu phù hợp” |
+   | “Thủ phạm” | “Nhóm cơ để tham khảo” |
+   | “Key vs Satellite” | “Cơ liên quan cần đánh giá (giả thuyết, chưa xác nhận)” |
+   | “Trigger Point vệ tinh” | “Vùng liên quan khác (chưa xác nhận)” |
+   | “Khi nào TrP cháy” | “Tình huống tập có thể làm triệu chứng tăng” |
+   | “Nút Trigger Point” | “Vùng minh họa, chưa xác minh vị trí” |
+   | “Cơ đang chọn” | “Vùng tra cứu (không phải ranh giới cơ)” |
+
+   Ngoài ra, nhãn “Jump Sign” và “Khách hay than” đã được thay bằng nhãn trung tính.
+
+2. **P2, thái dương (đã sửa).** Vùng lan trước của thang trên và vùng đau `neck_temple` nay đã nằm trên đầu/cổ theo mốc trên PNG. Vùng lan sau của thang trên nay nằm trên cổ sau-bên.
+
+3. **P2, dưới gai (đã sửa).** Vùng tra cứu và các dấu X của dưới gai đã được dời vào khoảng tam giác nhìn thấy giữa bờ sau cơ delta và bờ ngoài cơ thang. Dấu X của tròn bé vẫn chỉ là vị trí định hướng. Lớp sâu chưa được thể hiện vì hình nền chỉ có lớp nông.
+
+4. **P2, nguồn ảnh (đã truy vết).**
+   - Hai PNG được xác định là bản cắt trùng từng pixel của `muscles-front-back.png`.
+   - Nguồn khả dĩ là [Muscles front and back.svg](https://commons.wikimedia.org/wiki/File:Muscles_front_and_back.svg), tác giả OpenStax & Tomáš Kebert & umimeto.org, giấy phép CC BY-SA 4.0. Đây là bản vẽ lại từ OpenStax 1105, trong đó mặt sau đã bị chỉnh sửa.
+   - Đã tải bản render 1920 px từ Commons để đối chiếu. File không trùng byte, nhưng 889.212/889.245 pixel hiển thị lệch dưới 8/255; 33 pixel còn lại đều là pixel khử răng cưa ở mép. Kết luận: cùng nội dung, khác lần render.
+   - Chi tiết nằm trong `public/anatomy/SOURCES.md`. Cả ba màn hình dùng hai PNG (Trigger Point, `MuscleHypertrophyExplorer`, `BodyMapExplorer`) nay hiển thị ghi công qua `MusclePlateCredit`, kèm ghi chú về lớp nông.
+   - Đã bỏ chú thích mã gọi hai ảnh là “OpenStax”.
+
+5. **Phát hiện thêm khi sửa (đã sửa).**
+   - **Ngoài cơ thể:** các dấu X `ut-trp1-l/r`, `sa-trp-l`, `vl-dist-l` nằm ngoài cơ thể. Vùng lan tay của pec minor và dưới gai, vùng lan của răng trước, TFL/VL và soleus, cùng các vùng đau `lateral_knee`, `heel_foot` và các vùng tra cứu bắp chân/cẳng chân đều có 18–57% diện tích nằm ngoài cơ thể.
+   - **Sai bên:** vùng lan mặt trước của thang trên, dưới gai, răng trước và chày trước được vẽ ở bên cơ thể đối diện với vùng/điểm mặt sau. Trên ảnh mặt sau, bên trái ảnh là bên trái người; trên ảnh mặt trước, bên phải ảnh mới là bên trái người.
+
+6. **Kiểm tra hồi quy.** `scripts/check-trigger-evidence.mjs` nay đọc kênh alpha của hai PNG và kiểm tra ba điều:
+   - mọi dấu X nằm trên cơ thể;
+   - mọi vùng có ≤15% diện tích nằm ngoài cơ thể;
+   - vùng lan của mỗi mục không bị vẽ ở cả hai bên.
+
+   Script thất bại với tọa độ cũ và đạt với tọa độ mới. Script vẫn **không** kiểm tra một điểm có nằm đúng cơ hay đúng lớp hay không.
+
+Ảnh tọa độ sau khi sửa: `assets/2026-10-20-trigger-review/after-overlays.png`.
+
+**Còn mở:**
+- Hình lớp sâu có nguồn cho các cơ sâu, và tách các mục đang gộp nhiều cơ.
+- Chỉ vẽ vùng/điểm có hồ sơ nguồn riêng.
+- Duyệt độc lập của chuyên gia giải phẫu/lâm sàng.
