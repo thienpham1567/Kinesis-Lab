@@ -620,7 +620,7 @@ export function BodyMapExplorer({
 
       <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
         {/* Left column: Authentic Anatomical Muscular System Explorer */}
-        <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-6.25rem)] lg:overflow-y-auto">
+        <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-10.75rem)] lg:overflow-y-auto xl:max-h-[calc(100dvh-6.25rem)]">
           <div>
             <div className="flex items-center justify-between border-b border-rule pb-3">
               <div>
@@ -839,11 +839,11 @@ export function BodyMapExplorer({
           {activeAlert && (
             <div className="rounded-md border border-crimson/30 bg-crimson-soft/50 p-3.5 text-xs">
               <p className="font-display font-bold text-crimson">
-                Dữ liệu Bệnh án Thực tế của {client?.name} tại vùng này:
+                Hồ sơ của {client?.name} có ghi nhận liên quan vùng này:
               </p>
               {activeAlert.matchedConditions.length > 0 && (
                 <p className="mt-1 text-ink">
-                  <span className="font-semibold">Chẩn đoán y khoa:</span>{" "}
+                  <span className="font-semibold">Bệnh lý trong hồ sơ:</span>{" "}
                   {activeAlert.matchedConditions.join(" • ")}
                 </p>
               )}
@@ -854,7 +854,7 @@ export function BodyMapExplorer({
                     <p className="mt-0.5 text-ink">{iss.painTriggers || "Chưa ghi nhận"}</p>
                   </div>
                   <div className="rounded border border-cleared/30 bg-sheet p-2">
-                    <span className="font-semibold text-cleared">Biên độ & Bài tập an toàn (Safe ROM):</span>
+                    <span className="font-semibold text-cleared">Biên độ & bài tập đã ghi trong hồ sơ:</span>
                     <p className="mt-0.5 text-ink">{iss.safeRom || "Chưa ghi nhận"}</p>
                   </div>
                 </div>
@@ -868,7 +868,7 @@ export function BodyMapExplorer({
           {/* Biomechanics Key Callout */}
           <div className="rounded-md border border-cobalt/25 bg-cobalt-soft/50 p-3.5 text-xs leading-6 text-ink">
             <span className="font-display font-bold text-cobalt">
-              Nguyên lý Cơ sinh học Cốt lõi (Key Biomechanics):{" "}
+              Cơ sinh học & hướng dẫn liên quan:{" "}
             </span>
             {activeRegion.biomechanicsKey}
           </div>
@@ -887,7 +887,7 @@ export function BodyMapExplorer({
                   <p className="font-display font-bold text-ink">{st.name}</p>
                   <p className="font-mono text-[11px] text-cobalt">{st.latin}</p>
                   <p className="mt-1.5 text-slate">
-                    <strong className="text-ink">Đường đi:</strong> {st.originInsertion}
+                    <strong className="text-ink">Vị trí / điểm bám:</strong> {st.originInsertion}
                   </p>
                   <p className="mt-1 text-slate">
                     <strong className="text-ink">Chức năng:</strong> {st.action}
@@ -901,7 +901,7 @@ export function BodyMapExplorer({
           <div className="grid gap-4 md:grid-cols-2">
             <div className="rounded-md border border-rule bg-canvas/50 p-3.5 text-xs">
               <h3 className="font-display font-bold text-ink">
-                2. Nghiệm pháp Sàng lọc Vận động tại Phòng tập
+                2. Quan sát tại phòng tập & khi nào cần khám
               </h3>
               <ul className="mt-2 space-y-2">
                 {activeRegion.screeningTests.map((t) => (
@@ -915,7 +915,7 @@ export function BodyMapExplorer({
 
             <div className="rounded-md border border-crimson/30 bg-crimson-soft/40 p-3.5 text-xs">
               <h3 className="font-display font-bold text-crimson">
-                3. Dấu hiệu Cờ Đỏ (Red Flags) — Dừng tập & Chuyển khám BS
+                3. Dấu hiệu Cờ Đỏ (Red Flags) — Dừng tập & tìm trợ giúp y tế
               </h3>
               <ul className="mt-2 space-y-1.5 text-ink">
                 {activeRegion.redFlags.map((rf) => (
@@ -930,7 +930,7 @@ export function BodyMapExplorer({
           {/* 4. Exercise Modification Matrix (Avoid vs Rehab Alternative) */}
           <div className="space-y-2">
             <h3 className="font-display text-sm font-bold text-ink">
-              4. Ma trận Chuyển đổi Bài tập (Contraindicated vs. Rehab Regression)
+              4. Điều chỉnh hoạt động: điều cần thận trọng & hướng thay thế
             </h3>
             <div className="grid gap-3">
               {activeRegion.protocols.map((p) => (
@@ -940,7 +940,7 @@ export function BodyMapExplorer({
                 >
                   <div className="rounded border border-crimson/25 bg-crimson-soft/40 p-2.5">
                     <span className="inline-block rounded bg-crimson px-1.5 py-0.5 text-[10px] font-bold text-white">
-                      TRÁNH / THẬN TRỌNG CAO
+                      CẦN THẬN TRỌNG
                     </span>
                     <p className="mt-1.5 font-display font-bold text-ink">{p.avoid}</p>
                     <p className="mt-1 text-slate">{p.whyAvoid}</p>
@@ -948,7 +948,7 @@ export function BodyMapExplorer({
 
                   <div className="rounded border border-cleared/30 bg-cleared-soft/40 p-2.5">
                     <span className="inline-block rounded bg-cleared px-1.5 py-0.5 text-[10px] font-bold text-white">
-                      PHỤC HỒI & THAY THẾ AN TOÀN
+                      HƯỚNG THAY THẾ · TRAO ĐỔI VỚI CHUYÊN VIÊN
                     </span>
                     <p className="mt-1.5 font-display font-bold text-ink">
                       {p.rehabAlternative}

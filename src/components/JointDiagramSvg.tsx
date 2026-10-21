@@ -48,7 +48,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Herniated disc (Nucleus pulposus)",
           vnLabel: "Khối thoát vị đĩa đệm (Nhân nhầy lồi ra sau)",
           clinicalNote:
-            "Đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy bên trong. Khi thoát vị, nhân nhầy đẩy qua chỗ yếu của vòng sợi, thường ra sau – bên, và có thể chèn ép rễ thần kinh.",
+            "Đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy bên trong. Khi thoát vị, nhân nhầy đẩy qua chỗ yếu của vòng sợi ra phía sau và có thể chèn ép rễ thần kinh.",
         },
         {
           code: "04",
@@ -119,7 +119,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Articular cartilage & Joint cavity",
           vnLabel: "Sụn khớp & Ổ khớp hoạt dịch",
           clinicalNote:
-            "Ổ chảo nông và nhỏ hơn chỏm xương cánh tay nên khớp vai có biên độ lớn; độ vững dựa nhiều vào sụn viền, bao khớp, dây chằng và các cơ quanh khớp.",
+            "Ổ chảo nông và chỉ bằng khoảng một phần ba kích thước chỏm xương cánh tay nên khớp vai có biên độ lớn; độ vững dựa nhiều vào sụn viền, bao khớp, dây chằng và các cơ quanh khớp.",
         },
         {
           code: "04",
@@ -183,21 +183,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Anterior & Posterior cruciate ligament (ACL / PCL)",
           vnLabel: "Dây chằng chéo trước (ACL) & Dây chằng chéo sau (PCL)",
           clinicalNote:
-            "Hai dây chằng chéo nối xương đùi và xương chày trong khớp gối. ACL hạn chế xương chày trượt ra trước và góp phần vững xoay; PCL hạn chế xương chày trượt ra sau.",
+            "Hai dây chằng chéo nằm trong khớp, bắt chéo hình chữ X và kiểm soát vận động trước – sau của gối. ACL căng khi duỗi gối và chống duỗi quá mức; PCL giữ xương đùi không trượt ra trước trên mâm chày khi gối gập chịu tải.",
         },
         {
           code: "03",
           enLabel: "Medial & Lateral meniscus (Hình b)",
-          vnLabel: "Sụn chêm trong (hình chữ C) & Sụn chêm ngoài (gần tròn)",
+          vnLabel: "Sụn chêm trong & Sụn chêm ngoài (hình chữ C)",
           clinicalNote:
-            "Hai cấu trúc sụn sợi nằm giữa lồi cầu xương đùi và mâm chày; phân bố tải, đệm và góp phần ổn định khớp.",
+            "Hai đĩa sụn sợi bám vào mâm chày, nằm giữa lồi cầu xương đùi và mâm chày; đệm và lấp khoảng trống giữa hai mặt khớp. Sụn chêm trong ít di động hơn vì dính vào bao khớp và dây chằng bên chày.",
         },
         {
           code: "04",
           enLabel: "Tibial (MCL) & Fibular (LCL) collateral ligament",
           vnLabel: "Dây chằng bên chày (MCL) & Dây chằng bên mác (LCL)",
           clinicalNote:
-            "MCL ở mặt trong chống lực vẹo ngoài (valgus); LCL ở mặt ngoài chống lực vẹo trong (varus) trên mặt phẳng trán.",
+            "Hai dây chằng bên nằm ngoài bao khớp và kiểm soát vận động sang bên: MCL ở mặt trong chống lực vẹo ngoài (valgus), LCL ở mặt ngoài chống lực vẹo trong (varus).",
         },
       ],
     },
@@ -287,7 +287,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Internal & External oblique",
           vnLabel: "Cơ chéo bụng trong & Cơ chéo bụng ngoài",
           clinicalNote:
-            "Hướng thớ hai cơ gần vuông góc nhau; tham gia xoay và nghiêng thân, hỗ trợ thành bụng và thở ra gắng sức.",
+            "Cơ chéo ngoài là lớp nông, cơ chéo trong là lớp giữa của thành bụng bên; tham gia xoay và nghiêng thân, hỗ trợ thành bụng và thở ra gắng sức.",
         },
         {
           code: "03",
@@ -327,7 +327,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Piriformis & Deep lateral rotators",
           vnLabel: "Cơ hình lê (Piriformis) & Nhóm 6 cơ xoay ngoài sâu",
           clinicalNote:
-            "Cơ hình lê đi từ mặt trước xương cùng qua khuyết ngồi lớn tới mấu chuyển lớn và xoay ngoài háng; thần kinh ngồi thường đi dưới cơ, có biến thể đi xuyên qua. Đau mông lan chân có thể do cột sống, háng hoặc chèn ép thần kinh vùng mông sâu và cần được đánh giá.",
+            "Cơ hình lê đi từ mặt trước xương cùng qua lỗ ngồi lớn tới bờ trên mấu chuyển lớn và xoay ngoài háng; thần kinh ngồi thường đi dưới cơ, có biến thể đi xuyên qua. Đau mông lan chân có thể do cột sống, háng hoặc chèn ép thần kinh vùng mông sâu và cần được đánh giá.",
         },
         {
           code: "03",
@@ -445,10 +445,10 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
-          enLabel: "Achilles tendon mid-portion",
-          vnLabel: "Đoạn giữa gân Achilles",
+          enLabel: "Achilles tendon mid-portion (2–6 cm above insertion)",
+          vnLabel: "Đoạn giữa gân Achilles (khoảng 2–6 cm trên điểm bám)",
           clinicalNote:
-            "Vị trí của bệnh gân Achilles đoạn giữa. Khi đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân tiến triển theo khả năng và giáo dục; không áp trực tiếp cho đứt gân.",
+            "Đau khu trú khoảng 2–6 cm trên điểm bám là một tiêu chí chẩn đoán bệnh gân Achilles đoạn giữa. Khi đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân tiến triển theo khả năng và giáo dục; không áp trực tiếp cho đứt gân.",
         },
         {
           code: "03",
