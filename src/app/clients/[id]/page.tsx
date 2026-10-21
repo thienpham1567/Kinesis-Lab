@@ -8,6 +8,7 @@ import {
   LAB_EVIDENCE,
 } from "@/lib/clinical/evidence-assessment";
 import { normalizeLabExtraction } from "@/lib/clinical/lab-extraction";
+import { compressImageForUpload, MAX_UPLOAD_BYTES } from "@/lib/image-compress";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { TrainingLog } from "@/components/training/TrainingLog";
@@ -561,12 +562,21 @@ function Labs({
     setBusy(true);
     setMsg("");
     try {
+      const payload = await compressImageForUpload(file);
+      if (payload.size > MAX_UPLOAD_BYTES) {
+        setMsg("PDF vượt 4 MB; hãy xuất ảnh JPG/PNG hoặc PDF nhỏ hơn rồi tải lại.");
+        return;
+      }
       const fd = new FormData();
-      fd.set("file", file);
+      fd.set("file", payload);
       const extracted = await fetch("/api/extract-lab", {
         method: "POST",
         body: fd,
       });
+      if (extracted.status === 413) {
+        setMsg("Tệp vượt giới hạn tải lên của máy chủ (4,5 MB); hãy dùng tệp nhỏ hơn.");
+        return;
+      }
       const data = await extracted.json();
       if (!extracted.ok) {
         setMsg(data.error ?? "Không đọc được phiếu");
