@@ -628,7 +628,7 @@ const REGION_KEYWORDS: Record<AnatomyRegionId, string[]> = {
   hip_pelvis: ["háng", "khung chậu", "mông", "glute", "fai", "ổ cối", "hình lê", "piriformis", "bẹn"],
   thigh_hamstring: ["đùi", "gân kheo", "hamstring", "quad", "tứ đầu", "cơ khép", "adductor", "ụ ngồi"],
   knee: ["gối", "bánh chè", "chè đùi", "pfps", "acl", "pcl", "mcl", "sụn chêm", "meniscus", "chày"],
-  ankle_foot: ["cổ chân", "bàn chân", "achilles", "gót", "cân gan chân", "bắp chân", "sơ mi", "dorsiflexion"],
+  ankle_foot: ["cổ chân", "bàn chân", "achilles", "gót", "cân gan chân", "bắp chân", "dorsiflexion"],
 };
 
 export function matchClientIssuesToRegions(

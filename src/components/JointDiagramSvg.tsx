@@ -17,6 +17,8 @@ interface MedicalPlate {
   }[];
 }
 
+// Notes restate gross anatomy and the claim limits in the region evidence records
+// (evidence-anatomy.ts). Unsourced percentages, causal chains and fixed rules were removed.
 const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
   lumbar: [
     {
@@ -32,28 +34,28 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Lumbar spine (L1–L5)",
           vnLabel: "Đoạn cột sống thắt lưng L1–L5",
           clinicalNote:
-            "Chịu mô-men uốn lớn nhất khi gập thân có tải; cần giữ độ cong sinh lý trung tính (Neutral Lordosis).",
+            "Năm đốt sống thắt lưng và các đĩa đệm vừa chịu tải vừa cho phép vận động. Quan sát tư thế gập lưng trong một động tác không xác định được thoát vị hay mức tổn thương.",
         },
         {
           code: "02",
           enLabel: "Vertebra (Vertebral body)",
           vnLabel: "Thân đốt sống thắt lưng",
           clinicalNote:
-            "Chịu 80% tải trọng nén dọc trục (Axial compression) khi đứng và gánh tạ.",
+            "Thân đốt sống là phần phía trước của mỗi đốt và đỡ trọng lượng cơ thể; thân đốt thắt lưng lớn và dày nhất cột sống.",
         },
         {
           code: "03",
           enLabel: "Herniated disc (Nucleus pulposus)",
           vnLabel: "Khối thoát vị đĩa đệm (Nhân nhầy lồi ra sau)",
           clinicalNote:
-            "Khi gập tròn lưng (Flexion) dưới tải nặng, áp lực phía trước ép nhân nhầy rách qua vòng sợi (Annulus fibrosus) về phía sau – bên.",
+            "Đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy bên trong. Khi thoát vị, nhân nhầy đẩy qua chỗ yếu của vòng sợi, thường ra sau – bên, và có thể chèn ép rễ thần kinh.",
         },
         {
           code: "04",
           enLabel: "Pinched nerve (Spinal nerve root)",
           vnLabel: "Rễ thần kinh tủy sống bị chèn ép",
           clinicalNote:
-            "Gây đau buốt lan theo đường dây thần kinh tọa xuống mông, mặt sau đùi và bàn chân (Radiculopathy).",
+            "Có thể gây đau lan, tê hoặc yếu theo vùng rễ chi phối, ví dụ đau thần kinh tọa xuống mông và chân. Cần khám thần kinh; tê vùng yên ngựa hoặc rối loạn tiểu tiện/đại tiện mới xuất hiện cần đi cấp cứu.",
         },
       ],
     },
@@ -61,7 +63,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       id: "lumbar-deep-psoas",
       title: "Giải phẫu Cơ Thắt lưng – Chậu (Iliopsoas) & Cơ Vuông thắt lưng (Quadratus Lumborum)",
       subtitle:
-        "Các cơ sâu bám trực tiếp vào thân và mỏm ngang đốt sống thắt lưng L1–L5",
+        "Các cơ sâu liên quan cột sống thắt lưng: cơ thắt lưng lớn, cơ chậu, cơ vuông thắt lưng và cơ ngang bụng",
       src: "/anatomy/core-abdomen.jpg",
       sourceCredit: "OpenStax Anatomy & Physiology — Rice University (CC BY 4.0)",
       landmarks: [
@@ -70,21 +72,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Quadratus lumborum (Hình b)",
           vnLabel: "Cơ vuông thắt lưng (QL)",
           clinicalNote:
-            "Nối xương sườn 12 với mào chậu & mỏm ngang L1–L4; giữ ổn định mặt phẳng trán trong bài Side Plank & Suitcase Carry.",
+            "Nối mào chậu với xương sườn 12 và mỏm ngang các đốt thắt lưng; nghiêng thân và cố định xương sườn 12 khi hô hấp.",
         },
         {
           code: "02",
           enLabel: "Psoas major & Iliacus (Hình b)",
           vnLabel: "Phức hợp Cơ thắt lưng lớn & Cơ chậu (Iliopsoas)",
           clinicalNote:
-            "Bám trực tiếp vào thân đốt sống T12–L5; khi co rút do ngồi lâu sẽ kéo cột sống thắt lưng ưỡn quá mức (Anterior Pelvic Tilt).",
+            "Cơ thắt lưng lớn bám từ thân đốt T12–L5 và mỏm ngang thắt lưng; cơ chậu từ hố chậu. Cả hai bám tận vùng mấu chuyển bé và gập háng. Không suy ra co rút cơ từ thời gian ngồi hoặc hình dạng khung chậu.",
         },
         {
           code: "03",
           enLabel: "Transversus abdominis (Hình a)",
           vnLabel: "Cơ ngang bụng (TVA)",
           clinicalNote:
-            "Lớp cơ sâu nhất tạo đai áp lực ổ bụng 360° (IAP) làm căng mạc ngực – thắt lưng để giảm tải cho L4–L5.",
+            "Lớp sâu nhất của thành bụng, thớ cơ chạy ngang; hỗ trợ thành bụng, thở ra gắng sức và tăng áp lực ổ bụng. Không đo được mức giảm tải cho một tầng đĩa đệm từ cách gồng bụng.",
         },
       ],
     },
@@ -103,28 +105,28 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Clavicle & Scapula (Acromion)",
           vnLabel: "Xương đòn & Mỏm cùng vai (Trần khoang dưới mỏm cùng)",
           clinicalNote:
-            "Khi đẩy qua đầu ở mặt phẳng ngang 90° mà xương bả vai không xoay lên kịp, mỏm cùng vai sẽ cọ xát vào gân cơ trên gai.",
+            "Mỏm cùng vai tiếp khớp với xương đòn tạo khớp cùng – đòn và nằm phía trên gân cơ trên gai. Vị trí cung đau khi nâng tay không đủ xác định mô tổn thương.",
         },
         {
           code: "02",
           enLabel: "Humerus (Humeral head)",
           vnLabel: "Chỏm xương cánh tay",
           clinicalNote:
-            "Cần được 4 cơ Chóp xoay (Rotator Cuff) giữ định tâm và kéo trượt xuống dưới khi cơ Delta nâng cánh tay.",
+            "Bốn cơ chóp xoay (trên gai, dưới gai, tròn bé, dưới vai) bám quanh chỏm xương cánh tay, tham gia vận động và giữ chỏm trong ổ chảo; mỗi cơ có hướng kéo riêng.",
         },
         {
           code: "03",
           enLabel: "Articular cartilage & Joint cavity",
           vnLabel: "Sụn khớp & Ổ khớp hoạt dịch",
           clinicalNote:
-            "Ổ chảo rất nông (chỉ tiếp xúc ~1/3 chỏm xương cánh tay), nên khớp vai phụ thuộc lớn vào kiểm soát thần kinh – cơ.",
+            "Ổ chảo nông và nhỏ hơn chỏm xương cánh tay nên khớp vai có biên độ lớn; độ vững dựa nhiều vào sụn viền, bao khớp, dây chằng và các cơ quanh khớp.",
         },
         {
           code: "04",
           enLabel: "Fibrous joint capsule & Synovial membrane",
           vnLabel: "Bao khớp sợi & Màng hoạt dịch",
           clinicalNote:
-            "Bao khớp sau thường bị dày và căng ở người tập Bench Press nhiều, đẩy chỏm xương cánh tay trượt ra trước – lên trên.",
+            "Bao khớp sợi bao quanh khớp, mặt trong lót màng hoạt dịch tiết dịch bôi trơn. Độ căng bao khớp ở từng người cần được khám, không suy ra từ loại bài tập.",
         },
       ],
     },
@@ -141,21 +143,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Serratus anterior (Hình trái)",
           vnLabel: "Cơ răng trước",
           clinicalNote:
-            "Bám từ xương sườn 1–9 vào bờ trong mặt trước xương bả vai; cơ chủ đạo giúp xoay xương bả vai lên trên để mở rộng khoảng dưới mỏm cùng vai.",
+            "Bám từ các xương sườn trên vào mặt sườn bờ trong xương bả vai; vươn và xoay lên xương bả vai.",
         },
         {
           code: "02",
           enLabel: "Pectoralis minor & Coracoid process",
           vnLabel: "Cơ ngực bé & Mỏm quạ xương bả vai",
           clinicalNote:
-            "Khi cơ ngực bé bị co rút (do ngồi gù lưng), nó kéo mỏm quạ chúi ra trước – xuống dưới (Anterior Tilt), làm hẹp trực tiếp khoang dưới mỏm cùng vai.",
+            "Bám từ các xương sườn 3–5 vào mỏm quạ; kéo xương bả vai ra trước – xuống. Ở người không đau, cơ ngắn khi nghỉ liên quan khác biệt vận động bả vai, nhưng không chứng minh gây hẹp khoang dưới mỏm cùng.",
         },
         {
           code: "03",
           enLabel: "Trapezius & Rhomboid major / minor (Hình phải)",
           vnLabel: "Cơ thang (Trên/Giữa/Dưới) & Cơ trám lớn / bé",
           clinicalNote:
-            "Tạo cặp lực (Force couple) với cơ răng trước để kiểm soát nhịp bả vai – cánh tay (Scapulohumeral Rhythm 2:1).",
+            "Các bó cơ thang cùng cơ răng trước tham gia xoay lên xương bả vai; cơ trám kéo bả vai về phía cột sống. Nhịp vai – bả vai thay đổi theo người và giai đoạn nâng tay; tỉ lệ 2:1 chỉ là trung bình mô tả, không phải chuẩn chẩn đoán.",
         },
       ],
     },
@@ -174,28 +176,28 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Patella & Tendon of quadriceps / Patellar ligament",
           vnLabel: "Xương bánh chè, Gân tứ đầu đùi & Dây chằng bánh chè",
           clinicalNote:
-            "Đóng vai trò ròng rọc cơ học; góc gập gối càng lớn dưới tải nặng thì vector lực ép xương bánh chè vào xương đùi (PFJ force) càng cao.",
+            "Gân tứ đầu – bánh chè – dây chằng bánh chè truyền lực duỗi gối tới lồi củ chày. Đau trước gối khi gập gối chịu tải cần được đánh giá; không có một góc gập an toàn chung.",
         },
         {
           code: "02",
           enLabel: "Anterior & Posterior cruciate ligament (ACL / PCL)",
           vnLabel: "Dây chằng chéo trước (ACL) & Dây chằng chéo sau (PCL)",
           clinicalNote:
-            "ACL ngăn mâm chày trượt ra trước và chống sập xoay gối vào trong (Dynamic Valgus); gân kheo là cơ đồng vận bảo vệ ACL.",
+            "Hai dây chằng chéo nối xương đùi và xương chày trong khớp gối. ACL hạn chế xương chày trượt ra trước và góp phần vững xoay; PCL hạn chế xương chày trượt ra sau.",
         },
         {
           code: "03",
           enLabel: "Medial & Lateral meniscus (Hình b)",
-          vnLabel: "Sụn chêm trong (hình chữ C) & Sụn chêm ngoài (hình chữ O)",
+          vnLabel: "Sụn chêm trong (hình chữ C) & Sụn chêm ngoài (gần tròn)",
           clinicalNote:
-            "Sụn chêm trong ít di động hơn nên dễ rách hơn khi vừa chịu lực nén dọc trục vừa xoay vặn gối đang gập.",
+            "Hai cấu trúc sụn sợi nằm giữa lồi cầu xương đùi và mâm chày; phân bố tải, đệm và góp phần ổn định khớp.",
         },
         {
           code: "04",
           enLabel: "Tibial (MCL) & Fibular (LCL) collateral ligament",
           vnLabel: "Dây chằng bên chày (MCL) & Dây chằng bên mác (LCL)",
           clinicalNote:
-            "Chống lực vẹo trong (Valgus stress) và vẹo ngoài (Varus stress) trên mặt phẳng trán.",
+            "MCL ở mặt trong chống lực vẹo ngoài (valgus); LCL ở mặt ngoài chống lực vẹo trong (varus) trên mặt phẳng trán.",
         },
       ],
     },
@@ -212,21 +214,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Quadriceps & Patella",
           vnLabel: "Cơ tứ đầu đùi & Xương bánh chè",
           clinicalNote:
-            "Tạo lực duỗi gối; ở góc duỗi cuối (30°–0°) trong bài chuỗi mở (Leg Extension), lực kéo trượt xương chày ra trước đạt đỉnh.",
+            "Cơ tứ đầu duỗi gối qua bánh chè; cơ thẳng đùi còn đi qua khớp háng. Sau tái tạo ACL, bài chuỗi mở và chuỗi đóng đều có vai trò; biên độ, tải và thời điểm do đội điều trị quyết định.",
         },
         {
           code: "02",
           enLabel: "Hamstrings",
           vnLabel: "Nhóm cơ gân kheo",
           clinicalNote:
-            "Đồng co trong các bài chuỗi đóng (Squat, Lunge, Leg Press) để kéo giữ đầu trên xương chày về phía sau, giảm tải cho ACL.",
+            "Nằm ở mặt sau đùi và gập gối; các phần đi qua khớp háng còn duỗi háng.",
         },
         {
           code: "03",
           enLabel: "Meniscus (Blue cartilage)",
           vnLabel: "Sụn chêm đệm giữa Lồi cầu đùi & Mâm chày",
           clinicalNote:
-            "Phân tán 50–70% tải trọng nén qua khớp gối khi chạy nhảy và gánh tạ.",
+            "Góp phần phân bố tải, đệm và ổn định khớp gối; không gán một tỉ lệ phần trăm hấp thụ lực chung cho mọi hoạt động.",
         },
       ],
     },
@@ -245,21 +247,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Sternocleidomastoid & Scalenes (Hình trên)",
           vnLabel: "Cơ ức – đòn – chũm & Nhóm cơ bậc thang (Scalenes)",
           clinicalNote:
-            "Thường bị co rút và hoạt động bù trừ quá mức ở người có tư thế đầu nhô ra trước (Forward Head Posture) hoặc thở ngực nông.",
+            "Nằm ở mặt bên cổ, tham gia gập, nghiêng và xoay cổ; cơ bậc thang bám vào xương sườn 1–2 và có thể hỗ trợ hít vào gắng sức. Tư thế đầu nhô ra trước không đủ để kết luận cơ co rút hay hoạt động bù trừ.",
         },
         {
           code: "02",
           enLabel: "Levator scapulae & Trapezius",
           vnLabel: "Cơ nâng vai & Cơ thang bó trên",
           clinicalNote:
-            "Bám từ mỏm ngang C1–C4 xuống góc trên xương bả vai; khi người tập nhún vai (shrug) lúc đẩy/kéo tạ sẽ gây đau mỏi cổ gáy cấp.",
+            "Cơ nâng vai đi từ mỏm ngang C1–C4 tới phần trên bờ trong xương bả vai và nâng xương bả vai; bó trên cơ thang đi từ xương chẩm – dây chằng gáy tới xương đòn. Đau cổ khi tập cần được ghi nhận và đánh giá, không quy cho một cơ từ một động tác.",
         },
         {
           code: "03",
           enLabel: "Suboccipital, Semispinalis & Multifidus (Hình dưới)",
           vnLabel: "Nhóm cơ dưới chẩm, Cơ bán gai & Cơ nhiều chân cổ",
           clinicalNote:
-            "Chứa mật độ thụ thể cảm thụ bản thể (Proprioceptors) dày đặc; bị chèn ép khi ngửa cổ gập gáy nhìn gương lúc Deadlift.",
+            "Các cơ sâu vùng gáy nối xương chẩm với đốt đội, đốt trục và các đốt cổ; tham gia duỗi, xoay đầu – cổ và kiểm soát vận động cột sống cổ.",
         },
       ],
     },
@@ -278,28 +280,28 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Transversus abdominis (TVA)",
           vnLabel: "Cơ ngang bụng (Lớp sâu nhất)",
           clinicalNote:
-            "Các thớ cơ chạy ngang vòng quanh bụng như chiếc đai lưng tự nhiên; co trước tiên để tạo áp lực ổ bụng 360° (IAP).",
+            "Thớ cơ chạy ngang quanh thành bụng; hỗ trợ thành bụng, thở ra gắng sức và tăng áp lực ổ bụng. Một kiểu gồng bụng không chứng minh cột sống được bảo vệ khỏi chấn thương.",
         },
         {
           code: "02",
           enLabel: "Internal & External oblique",
           vnLabel: "Cơ chéo bụng trong & Cơ chéo bụng ngoài",
           clinicalNote:
-            "Các thớ cơ đan chéo vuông góc nhau giúp chống xoay (Anti-rotation), chống nghiêng bên và kéo hạ khung sườn (Ribcage Stack).",
+            "Hướng thớ hai cơ gần vuông góc nhau; tham gia xoay và nghiêng thân, hỗ trợ thành bụng và thở ra gắng sức.",
         },
         {
           code: "03",
           enLabel: "Rectus abdominis & Linea alba",
           vnLabel: "Cơ thẳng bụng & Đường trắng giữa (Linea alba)",
           clinicalNote:
-            "Đường trắng giữa là nơi dễ bị giãn tách ở phụ nữ sau sinh (Diastasis Recti) — cần tránh Crunch/Sit-up gây phồng đỉnh bụng.",
+            "Cơ thẳng bụng chạy dọc hai bên đường trắng giữa và gập thân. Tách cơ thẳng bụng sau sinh cần đánh giá lâm sàng; chưa đủ bằng chứng để cấm mặc định crunch/sit-up hay chọn một phác đồ tập duy nhất.",
         },
         {
           code: "04",
           enLabel: "Serratus anterior & Latissimus dorsi",
           vnLabel: "Cơ răng trước & Cơ lưng rộng (Xô)",
           clinicalNote:
-            "Kết nối đai vai với lồng ngực và mạc ngực – thắt lưng để truyền lực từ thân dưới lên tay.",
+            "Cơ răng trước nối các xương sườn với xương bả vai; cơ lưng rộng nối cột sống ngực – thắt lưng, mạc ngực – thắt lưng và mào chậu với xương cánh tay.",
         },
       ],
     },
@@ -318,21 +320,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Gluteus maximus, medius & minimus (Hình dưới phải)",
           vnLabel: "Cơ mông lớn, Cơ mông nhỡ & Cơ mông bé",
           clinicalNote:
-            "Cơ mông nhỡ & mông bé giữ khung chậu cân bằng trên mặt phẳng trán khi đứng 1 chân; yếu cơ này gây sập gối (Dynamic Knee Valgus).",
+            "Cơ mông lớn duỗi và xoay ngoài háng; mông nhỡ và mông bé dạng háng và tham gia kiểm soát khung chậu khi đứng một chân. Gối đi vào trong khi squat không tự chứng minh yếu cơ mông.",
         },
         {
           code: "02",
           enLabel: "Piriformis & Deep lateral rotators",
           vnLabel: "Cơ hình lê (Piriformis) & Nhóm 6 cơ xoay ngoài sâu",
           clinicalNote:
-            "Dây thần kinh tọa chạy ngay dưới (hoặc xuyên qua) cơ hình lê; co thắt cơ này gây đau giả thần kinh tọa vùng giữa mông.",
+            "Cơ hình lê đi từ mặt trước xương cùng qua khuyết ngồi lớn tới mấu chuyển lớn và xoay ngoài háng; thần kinh ngồi thường đi dưới cơ, có biến thể đi xuyên qua. Đau mông lan chân có thể do cột sống, háng hoặc chèn ép thần kinh vùng mông sâu và cần được đánh giá.",
         },
         {
           code: "03",
           enLabel: "Psoas major, Iliacus & Tensor fasciae latae (TFL)",
           vnLabel: "Cơ thắt lưng – chậu & Cơ căng mạc đùi (TFL)",
           clinicalNote:
-            "Khi cơ mông nhỡ yếu, học viên thường dùng TFL bù trừ khi dạng háng/Squat, gây căng dải chậu chày (IT Band) và xoay trong đùi.",
+            "Cơ thắt lưng lớn và cơ chậu gập háng; cơ căng mạc đùi đi từ gai chậu trước trên vào dải chậu – chày, góp phần gập, dạng và xoay trong háng. Không suy ra TFL hoạt động bù trừ chỉ từ quan sát chuyển động.",
         },
       ],
     },
@@ -349,14 +351,14 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Acetabulum & Ball (Femoral head)",
           vnLabel: "Ổ cối xương chậu & Chỏm xương đùi",
           clinicalNote:
-            "Độ sâu ổ cối và góc cổ xương đùi quyết định độ rộng chân tối ưu khi Squat; ép Squat chân hẹp ở người có FAI gây cấn bờ trước ổ cối.",
+            "Khớp háng là khớp chỏm – ổ cối, có sụn viền ổ cối bao quanh. Hội chứng FAI cần đồng thời triệu chứng, dấu hiệu lâm sàng và hình ảnh; không có một độ rộng chân khi squat phù hợp cho mọi cấu trúc háng.",
         },
         {
           code: "02",
           enLabel: "Sacrum, Ilium & Pubis",
           vnLabel: "Xương cùng, Xương cánh chậu & Xương mu",
           clinicalNote:
-            "Tạo vòng chậu vững chắc truyền tải lực giữa cột sống thắt lưng và hai chân.",
+            "Xương cùng và hai xương chậu (gồm cánh chậu, ngồi, mu) tạo vòng chậu, nối cột sống với hai chi dưới qua khớp cùng – chậu và khớp mu.",
         },
       ],
     },
@@ -373,23 +375,23 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         {
           code: "01",
           enLabel: "Rectus femoris, Vastus lateralis & Vastus medialis (Hình trên)",
-          vnLabel: "Cơ thẳng đùi, Cơ rộng ngoài & Cơ rộng trong (VMO)",
+          vnLabel: "Cơ thẳng đùi, Cơ rộng ngoài & Cơ rộng trong",
           clinicalNote:
-            "Riêng cơ thẳng đùi (Rectus femoris) vượt qua cả khớp háng lẫn khớp gối; VMO giữ xương bánh chè trượt đúng rãnh.",
+            "Cơ thẳng đùi đi qua cả khớp háng và khớp gối; các cơ rộng chỉ đi qua gối. VMO là phần sợi chéo dưới của cơ rộng trong, không phải cơ chế duy nhất kiểm soát bánh chè.",
         },
         {
           code: "02",
           enLabel: "Adductor brevis, longus, magnus & Gracilis (Hình dưới trái)",
           vnLabel: "Cơ khép ngắn, khép dài, khép lớn & Cơ thon",
           clinicalNote:
-            "Cơ khép lớn (Adductor magnus) có bó sau bám vào ụ ngồi, hoạt động như một cơ duỗi háng cực mạnh ở đáy Squat sâu.",
+            "Nhóm cơ khép đi từ xương mu – ngồi tới xương đùi; riêng cơ thon tới mặt trong đầu trên xương chày. Phần ngồi – lồi cầu của cơ khép lớn bám ụ ngồi và góp phần duỗi háng.",
         },
         {
           code: "03",
           enLabel: "Biceps femoris, Semitendinosus & Semimembranosus (Hình dưới phải)",
           vnLabel: "Cơ nhị đầu đùi, Cơ bán gân & Cơ bán màng (Gân kheo)",
           clinicalNote:
-            "Đều bám nguyên ủy vào ụ ngồi (Ischial tuberosity); vừa duỗi háng vừa gập gối và chịu tải tâm trương lớn khi chạy/RDLs.",
+            "Đầu dài cơ nhị đầu đùi, cơ bán gân và cơ bán màng bám ụ ngồi, đi qua háng và gối nên vừa duỗi háng vừa gập gối. Đầu ngắn cơ nhị đầu đùi xuất phát từ xương đùi nên chỉ đi qua gối.",
         },
       ],
     },
@@ -408,29 +410,29 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Anterior talofibular (ATFL) & Calcaneofibular ligament (Hình dưới)",
           vnLabel: "Dây chằng sên – mác trước (ATFL) & Dây chằng mác – gót (CFL)",
           clinicalNote:
-            "ATFL là dây chằng bị tổn thương trong >80% các ca lật sơ mi cổ chân (Inversion sprain); sau chấn thương thường để lại hạn chế gập mu chân (Dorsiflexion).",
+            "Thuộc nhóm dây chằng bên ngoài cổ chân, hạn chế lật bàn chân vào trong (inversion). Bong gân do lật cổ chân cần được đánh giá mức độ; app chưa đối chiếu hướng dẫn bong gân nên không nêu tỉ lệ hay phác đồ.",
         },
         {
           code: "02",
           enLabel: "Deltoid ligament & Medial malleolus (Hình trên)",
           vnLabel: "Phức hợp dây chằng Delta & Mắt cá trong xương chày",
           clinicalNote:
-            "Giữ vững mặt trong cổ chân và ngăn bàn chân sập vòm quá mức (Overpronation).",
+            "Nối mắt cá trong với xương sên, xương gót và xương ghe; giữ vững mặt trong cổ chân và hạn chế lật bàn chân ra ngoài (eversion).",
         },
         {
           code: "03",
           enLabel: "Subtalar joint & Talus",
           vnLabel: "Khớp dưới sên & Xương sên (Talus)",
           clinicalNote:
-            "Khi gập mu chân (Squat), xương sên phải trượt ra sau trong gọng kìm chày – mác; nếu xương sên bị kẹt trước, người tập sẽ bị nhấc gót hoặc sập gối.",
+            "Xương sên khớp với gọng chày – mác ở trên (khớp sên – cẳng chân) và với xương gót ở dưới (khớp dưới sên); khớp dưới sên tham gia lật trong – lật ngoài bàn chân. Hạn chế gập mu khi squat có nhiều nguyên nhân, không tự xác định một cấu trúc bị kẹt.",
         },
       ],
     },
     {
       id: "achilles-pathology-3d",
-      title: "Giải phẫu Phức hợp Bắp chân – Gân Achilles & Vị trí Tổn thương Điển hình",
+      title: "Giải phẫu Phức hợp Bắp chân – Gân Achilles & Vị trí Bệnh gân Thường gặp",
       subtitle:
-        "Hình minh họa 3D cơ bụng chân, cơ dép, gân gót (Achilles) bám vào xương gót và vùng nghèo mạch máu",
+        "Hình minh họa 3D cơ bụng chân, cơ dép và gân gót (Achilles) bám vào xương gót",
       src: "/anatomy/achilles-tendon.png",
       sourceCredit: "Blausen Medical Communications — Scientific Medical Atlas (CC BY 3.0)",
       landmarks: [
@@ -439,21 +441,21 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
           enLabel: "Gastrocnemius & Soleus muscles",
           vnLabel: "Cơ bụng chân (2 đầu) & Cơ dép (Soleus)",
           clinicalNote:
-            "Cơ bụng chân đi qua cả khớp gối và cổ chân (tập khi thẳng gối); cơ dép chỉ đi qua cổ chân (chịu tải chính khi gối gập trong lúc Squat và chạy).",
+            "Cơ bụng chân đi qua cả khớp gối và cổ chân; cơ dép chỉ đi qua cổ chân. Cả hai gập lòng bàn chân qua gân Achilles bám vào xương gót.",
         },
         {
           code: "02",
-          enLabel: "Achilles tendon watershed zone (2–6 cm above calcaneus)",
-          vnLabel: "Vùng giữa gân Achilles (cách xương gót 2–6 cm)",
+          enLabel: "Achilles tendon mid-portion",
+          vnLabel: "Đoạn giữa gân Achilles",
           clinicalNote:
-            "Vùng nghèo mạch máu nuôi dưỡng nhất nên dễ bị viêm thoái hóa gân (Mid-portion tendinopathy) hoặc đứt gân khi bật nhảy đột ngột.",
+            "Vị trí của bệnh gân Achilles đoạn giữa. Khi đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân tiến triển theo khả năng và giáo dục; không áp trực tiếp cho đứt gân.",
         },
         {
           code: "03",
           enLabel: "Calcaneus insertion",
           vnLabel: "Điểm bám tận gân Achilles vào xương gót",
           clinicalNote:
-            "Nếu đau ngay điểm bám vào xương gót (Insertional tendinopathy), tuyệt đối tránh hạ gót sâu dưới bậc thềm (Deficit Calf Raise).",
+            "Bệnh gân tại điểm bám cần được phân biệt với bệnh gân đoạn giữa vì kế hoạch tập khác nhau; hỏi người điều trị về biên độ calf raise phù hợp, kể cả hạ gót dưới bậc.",
         },
       ],
     },
@@ -541,7 +543,10 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
         {/* Right side: Vietnamese – English/Latin Landmark Key & Clinical Biomechanics */}
         <div className="space-y-2.5">
           <p className="font-display text-xs font-bold uppercase tracking-wide text-slate">
-            Chú giải Thuật ngữ trên Hình & Ứng dụng Lâm sàng PT
+            Chú giải Thuật ngữ trên Hình
+          </p>
+          <p className="text-[11px] leading-4 text-slate">
+            Tóm tắt giải phẫu theo nguồn của thẻ vùng này; không phải chẩn đoán hay phác đồ. Chưa có chuyên gia duyệt.
           </p>
           <div className="space-y-2">
             {activePlate.landmarks.map((lm) => (
