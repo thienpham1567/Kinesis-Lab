@@ -81,6 +81,15 @@ const tendon = createTissueMaterial('tendon', true);
 setTissueSelection(tendon, 'tendon', true);
 setTissueSelection(tendon, 'tendon', false);
 assert.equal(tendon.color.getHex(), TISSUE_COLORS.tendon);
+assert.equal(tendon.emissiveIntensity, 0);
+for (const kind of Object.keys(TISSUE_COLORS)) {
+  const material = createTissueMaterial(kind);
+  setTissueSelection(material, kind, true);
+  const { r, g, b } = material.color;
+  assert.ok(b > r && b > g, `selected ${kind} reads as blue`);
+  assert.ok(material.emissiveIntensity > 0, `selected ${kind} glows`);
+  material.dispose();
+}
 setThicknessView(tendon, true);
 assert.equal(tendon.userData.thicknessUniform.value, 1);
 setThicknessView(tendon, false);
@@ -93,4 +102,4 @@ assert.ok(shader.vertexShader.includes('attribute float _thickness;'));
 assert.ok(shader.fragmentShader.includes('vThicknessValid < 0.999'));
 assert.equal(shader.uniforms.thicknessView, tendon.userData.thicknessUniform);
 tendon.dispose();
-console.log('Source tissue families and thickness shader checks passed (10 assertions).');
+console.log('Source tissue families and thickness shader checks passed (11 assertions + selection per tissue).');
