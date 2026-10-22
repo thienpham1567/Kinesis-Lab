@@ -1,10 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NcsfQuiz } from "@/components/NcsfQuiz";
 import { Icon, PageHeading } from "@/components/WorkspaceUI";
-import { NCSF_CPT, NCSF_SOURCE } from "@/lib/ncsf-cpt";
+import { NCSF_CPT, NCSF_LESSONS, NCSF_SOURCE, lessonOf } from "@/lib/ncsf-cpt";
+import type { PdfReaderHandle } from "@/components/PdfReader";
 
 // pdf.js needs browser APIs, so skip SSR.
 const PdfReader = dynamic(() => import("@/components/PdfReader"), { ssr: false });
@@ -87,11 +88,27 @@ export default function NcsfLibraryPage() {
 function NcsfContent({ heading }: { heading: React.ReactNode }) {
   const [view, setView] = useState<"read" | "quiz">("read");
   const [slug, setSlug] = useState<string>(NCSF_CPT[0].slug);
-  const [page, setPage] = useState(1);
-  const current = NCSF_CPT.find((c) => c.slug === slug) ?? NCSF_CPT[0];
+  const [startPage, setStartPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const readerRef = useRef<PdfReaderHandle | null>(null);
+  const chapterIndex = NCSF_CPT.findIndex((c) => c.slug === slug);
+  const current = NCSF_CPT[chapterIndex] ?? NCSF_CPT[0];
+  const lessons =
+    chapterIndex >= 0 && chapterIndex < NCSF_LESSONS.length
+      ? NCSF_LESSONS[chapterIndex]
+      : undefined;
+  const activeLesson = lessons ? lessonOf(chapterIndex + 1, currentPage) : -1;
+
+  const openChapter = (s: string) => {
+    setSlug(s);
+    setStartPage(1);
+    setCurrentPage(1);
+    setView("read");
+  };
+  const jumpToPage = (p: number) => readerRef.current?.jumpTo(p);
   const open = (s: string, p = 1) => {
     setSlug(s);
-    setPage(p);
+    setStartPage(p);
     setView("read");
   };
 
@@ -112,29 +129,90 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
         </section>
       ) : (
         <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <nav
-            className="panel p-2 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto"
-            aria-label="Chương"
-          >
-            <ul className="space-y-1">
-              {NCSF_CPT.map((c) => (
-                <li key={c.slug}>
-                  <button
-                    onClick={() => open(c.slug)}
-                    aria-current={c.slug === slug ? "page" : undefined}
-                    className={`w-full rounded-lg px-3 py-2 text-left text-sm leading-5 ${
-                      c.slug === slug ? "bg-cobalt-soft font-semibold text-cobalt" : "text-ink hover:bg-surface"
-                    }`}
-                  >
+          <div className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
+            <label className="block lg:hidden">
+              <span className="field-label">Chương</span>
+              <select
+                value={slug}
+                onChange={(e) => openChapter(e.target.value)}
+                className="min-h-11 w-full px-3 text-sm"
+              >
+                {NCSF_CPT.map((c) => (
+                  <option key={c.slug} value={c.slug}>
                     {c.title}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
+                  </option>
+                ))}
+              </select>
+            </label>
+            <nav className="panel hidden p-2 lg:block" aria-label="Chương">
+              <ul className="space-y-1">
+                {NCSF_CPT.map((c) => (
+                  <li key={c.slug}>
+                    <button
+                      onClick={() => openChapter(c.slug)}
+                      aria-current={c.slug === slug ? "page" : undefined}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm leading-5 ${
+                        c.slug === slug ? "bg-cobalt-soft font-semibold text-cobalt" : "text-ink hover:bg-surface"
+                      }`}
+                    >
+                      {c.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            {lessons && (
+              <section className="panel p-3" aria-label="Bài trong chương">
+                <h3 className="px-1 text-sm font-semibold text-ink">Bài trong chương</h3>
+                <label className="mt-2 block lg:hidden">
+                  <span className="sr-only">Chọn bài</span>
+                  <select
+                    value={activeLesson}
+                    onChange={(e) => {
+                      const lesson = lessons[Number(e.target.value)];
+                      if (lesson) jumpToPage(lesson.from);
+                    }}
+                    className="min-h-11 w-full px-3 text-sm"
+                  >
+                    {lessons.map((l, i) => (
+                      <option key={l.title} value={i}>
+                        Bài {i + 1} · {l.title} (trang {l.from})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <ul className="mt-2 hidden space-y-1 lg:block">
+                  {lessons.map((l, i) => (
+                    <li key={l.title}>
+                      <button
+                        onClick={() => jumpToPage(l.from)}
+                        aria-current={i === activeLesson ? "page" : undefined}
+                        className={`w-full rounded-lg px-3 py-2 text-left text-sm leading-5 ${
+                          i === activeLesson
+                            ? "bg-cobalt-soft font-semibold text-cobalt"
+                            : "text-ink hover:bg-surface"
+                        }`}
+                      >
+                        Bài {i + 1} · {l.title}
+                        <span className="block text-xs font-normal text-slate">
+                          Từ trang {l.from}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
           <section className="panel min-w-0 p-4 sm:p-5" aria-label={current.title}>
             <h2 className="mb-3 text-base font-semibold text-ink">{current.title}</h2>
-            <PdfReader key={`${slug}-${page}`} file={`/api/ncsf/${slug}`} initialPage={page} />
+            <PdfReader
+              key={slug}
+              file={`/api/ncsf/${slug}`}
+              startPage={startPage}
+              apiRef={readerRef}
+              onPageChange={setCurrentPage}
+            />
           </section>
         </div>
       )}

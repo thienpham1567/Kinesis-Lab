@@ -1,0 +1,10 @@
+.data
+.next
+node_modules
+.vercel
+.env*
+output
+*.blend
+*.dmg
+*.7z
+*.zip
