@@ -14,6 +14,7 @@ import {
 import { safetyNotes } from "@/lib/clinical/safety";
 import type { ChatMessage, Client, PubMedPaper, RagHit } from "@/lib/types";
 import { JointDiagramSvg } from "./JointDiagramSvg";
+import { MarkdownAnswer } from "./MarkdownAnswer";
 import { Icon } from "./WorkspaceUI";
 
 const REGION_CHIP: Record<AnatomyRegionId, string> = {
@@ -351,17 +352,21 @@ export function ChatPanel({
                     : "Phân tích lâm sàng & vận động"}
                 </span>
               </div>
-              <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
-                {m.content ||
-                  (busy ? (
-                    <span className="inline-flex items-center gap-2 text-xs text-slate">
-                      <Icon name="spinner" className="size-4 animate-spin" />
-                      Đang đối chiếu y văn và hồ sơ…
-                    </span>
-                  ) : (
-                    ""
-                  ))}
-              </div>
+              {m.role === "assistant" && m.content ? (
+                <MarkdownAnswer text={m.content} className="text-sm" />
+              ) : (
+                <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
+                  {m.content ||
+                    (busy ? (
+                      <span className="inline-flex items-center gap-2 text-xs text-slate">
+                        <Icon name="spinner" className="size-4 animate-spin" />
+                        Đang đối chiếu y văn và hồ sơ…
+                      </span>
+                    ) : (
+                      ""
+                    ))}
+                </div>
+              )}
             </article>
           ),
         )}

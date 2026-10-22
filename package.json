@@ -22,7 +22,10 @@
     "next": "16.4.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-markdown": "^10.1.0",
     "react-pdf": "^11.0.0",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1",
     "three": "^0.186.1",
     "unpdf": "^1.8.1"
   },

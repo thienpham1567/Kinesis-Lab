@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { StudyChatWidget } from "./StudyChatWidget";
 import { Icon, type IconName } from "./WorkspaceUI";
 
 const NAV: {
@@ -150,6 +151,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </footer>
       </div>
+      {/* Bàn tư vấn đã có khung chat đầy đủ, không cần thêm chat nổi */}
+      {!isActive("/consult") && (
+        <StudyChatWidget pathname={path} pageLabel={current.label} />
+      )}
       <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">
         {NAV.map((item) => (
           <Link

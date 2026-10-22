@@ -3,6 +3,7 @@ import {
   CLINICAL_PT_SYSTEM,
   clientContextBlock,
   evidenceBlock,
+  studyContextBlock,
 } from "@/lib/ai/prompts/clinical-pt-system";
 import { formatClient, safetyNotes } from "@/lib/clinical/safety";
 import { selectCuratedEvidence, formatCuratedEvidence, normalizeEvidenceQuery } from "@/lib/clinical/evidence-registry";
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
   const body = (await req.json()) as {
     messages: ChatMessage[];
     clientId?: string;
+    studyPage?: string;
   };
   const messages = body.messages ?? [];
   const last = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
@@ -107,6 +109,7 @@ export async function POST(req: Request) {
           safetyNotes(client),
         )
       : "",
+    typeof body.studyPage === "string" ? studyContextBlock(body.studyPage) : "",
     formatCuratedEvidence(curated),
     evidenceBlock(formatRag(rag), formatPubMed(pubmed)),
   ]
