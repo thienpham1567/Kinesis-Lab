@@ -828,7 +828,7 @@ export function BodyMapExplorer({
               </button>
             ) : (
               <Link
-                href={`/?prompt=${encodeURIComponent(activeRegion.sampleAiPrompt)}${
+                href={`/consult?prompt=${encodeURIComponent(activeRegion.sampleAiPrompt)}${
                   client?.id ? `&clientId=${encodeURIComponent(client.id)}` : ""
                 }`}
                 className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-white hover:opacity-95"

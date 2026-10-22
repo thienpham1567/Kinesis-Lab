@@ -13,7 +13,7 @@ const NAV: {
   description: string;
 }[] = [
   {
-    href: "/",
+    href: "/consult",
     label: "Bàn tư vấn",
     short: "Tư vấn",
     icon: "message",
@@ -51,8 +51,10 @@ const NAV: {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  /* Trang chủ là trang giới thiệu, đứng độc lập ngoài khung làm việc */
+  if (path === "/") return <>{children}</>;
   const isActive = (href: string) =>
-    href === "/" ? path === "/" : path === href || path.startsWith(href + "/");
+    path === href || path.startsWith(href + "/");
   const current = NAV.find((item) => isActive(item.href)) ?? NAV[0];
 
   return (
@@ -64,7 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Link
           href="/"
           className="flex items-center gap-3 px-6 py-7"
-          aria-label="Kinesis Lab — Trang tư vấn"
+          aria-label="Kinesis Lab — Trang chủ"
         >
           <KinesisLogo className="size-10" />
           <div>
@@ -107,7 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               href="/"
               className="flex shrink-0 items-center gap-2.5 xl:hidden"
-              aria-label="Kinesis Lab — Trang tư vấn"
+              aria-label="Kinesis Lab — Trang chủ"
             >
               <KinesisLogo className="size-9 shrink-0" />
               <span className="whitespace-nowrap text-sm font-bold tracking-tight text-ink">

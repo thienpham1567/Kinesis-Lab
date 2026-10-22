@@ -212,7 +212,7 @@ function MuscleClinicalPanel({
           </p>
         </div>
         <Link
-          href={`/?prompt=${encodeURIComponent(muscle.sampleAiPrompt)}`}
+          href={`/consult?prompt=${encodeURIComponent(muscle.sampleAiPrompt)}`}
           className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-white hover:opacity-95"
         >
           Trao đổi với AI
@@ -464,7 +464,7 @@ function PainSitePanel({
         Vùng chọn triệu chứng chỉ giúp điều hướng; chưa có nguồn ánh xạ các tọa độ trigger point hoặc vùng đau lan cũ. Đau tái hiện khi sờ không xác nhận một cơ là nguồn đau duy nhất; không dùng hình minh họa để tự ấn sâu hoặc loại trừ bệnh khớp, thần kinh, mạch máu hay nội tạng.{" "}
         {culprits[0] && (
           <Link
-            href={`/?prompt=${encodeURIComponent(culprits[0].sampleAiPrompt)}`}
+            href={`/consult?prompt=${encodeURIComponent(culprits[0].sampleAiPrompt)}`}
             className="font-semibold text-cobalt hover:underline"
           >
             Trao đổi với AI về giới hạn đánh giá

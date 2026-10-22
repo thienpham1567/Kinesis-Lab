@@ -772,7 +772,7 @@ export default function Atlas3DExplorer({
                 )}
                 <div className="space-y-2 border-t border-rule pt-3">
                   <Link
-                    href={`/?prompt=${encodeURIComponent(prompt)}`}
+                    href={`/consult?prompt=${encodeURIComponent(prompt)}`}
                     className="button-primary w-full text-center"
                   >
                     <Icon name="message" className="size-4" />
