@@ -15,7 +15,6 @@ import { safetyNotes } from "@/lib/clinical/safety";
 import type { ChatMessage, Client, PubMedPaper, RagHit } from "@/lib/types";
 import { JointDiagramSvg } from "./JointDiagramSvg";
 import { Icon } from "./WorkspaceUI";
-import { ConsultationCases, ConsultationWelcome } from "./ConsultationWelcome";
 
 const REGION_CHIP: Record<AnatomyRegionId, string> = {
   cervical: "Cổ",
@@ -318,17 +317,6 @@ export function ChatPanel({
               <p className="text-xs leading-6 text-slate">
                 {activeVisualRegion.biomechanicsKey}
               </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setInput(activeVisualRegion.sampleAiPrompt);
-                  composer.current?.focus();
-                }}
-                className="button-secondary w-full"
-              >
-                Dùng câu hỏi mẫu vùng này
-                <Icon name="arrow-right" className="size-4" />
-              </button>
             </div>
           </details>
         )}
@@ -341,45 +329,41 @@ export function ChatPanel({
         aria-busy={busy}
         className={`flex-1 space-y-5 overflow-y-auto px-5 py-2 sm:px-6 ${messages.length > 0 ? "max-h-[62dvh] min-h-[320px] py-6" : ""}`}
       >
-        {messages.length === 0 ? (
-          <ConsultationWelcome />
-        ) : (
-          messages.map((m, idx) =>
-            m.role === "assistant" && !m.content && !busy ? null : (
-              <article
-                key={`${m.role}-${idx}`}
-                className={`[overflow-wrap:anywhere] ${m.role === "user" ? "ml-auto max-w-[92%] rounded-2xl rounded-tr-sm border border-cobalt/10 bg-cobalt-soft px-4 py-3.5" : "rounded-xl py-2"}`}
-              >
-                <div className="mb-2 flex items-center gap-2 text-xs">
-                  <span
-                    className={`flex size-6 items-center justify-center rounded-md text-[9px] font-semibold ${m.role === "user" ? "bg-cobalt/10 text-cobalt" : "bg-cleared-soft text-cleared"}`}
-                  >
-                    {m.role === "user" ? (
-                      "PT"
-                    ) : (
-                      <Icon name="activity" className="size-3.5" />
-                    )}
-                  </span>
-                  <span className="font-semibold text-ink">
-                    {m.role === "user"
-                      ? "Câu hỏi của bạn"
-                      : "Phân tích lâm sàng & vận động"}
-                  </span>
-                </div>
-                <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
-                  {m.content ||
-                    (busy ? (
-                      <span className="inline-flex items-center gap-2 text-xs text-slate">
-                        <Icon name="spinner" className="size-4 animate-spin" />
-                        Đang đối chiếu y văn và hồ sơ…
-                      </span>
-                    ) : (
-                      ""
-                    ))}
-                </div>
-              </article>
-            ),
-          )
+        {messages.map((m, idx) =>
+          m.role === "assistant" && !m.content && !busy ? null : (
+            <article
+              key={`${m.role}-${idx}`}
+              className={`[overflow-wrap:anywhere] ${m.role === "user" ? "ml-auto max-w-[92%] rounded-2xl rounded-tr-sm border border-cobalt/10 bg-cobalt-soft px-4 py-3.5" : "rounded-xl py-2"}`}
+            >
+              <div className="mb-2 flex items-center gap-2 text-xs">
+                <span
+                  className={`flex size-6 items-center justify-center rounded-md text-[9px] font-semibold ${m.role === "user" ? "bg-cobalt/10 text-cobalt" : "bg-cleared-soft text-cleared"}`}
+                >
+                  {m.role === "user" ? (
+                    "PT"
+                  ) : (
+                    <Icon name="activity" className="size-3.5" />
+                  )}
+                </span>
+                <span className="font-semibold text-ink">
+                  {m.role === "user"
+                    ? "Câu hỏi của bạn"
+                    : "Phân tích lâm sàng & vận động"}
+                </span>
+              </div>
+              <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
+                {m.content ||
+                  (busy ? (
+                    <span className="inline-flex items-center gap-2 text-xs text-slate">
+                      <Icon name="spinner" className="size-4 animate-spin" />
+                      Đang đối chiếu y văn và hồ sơ…
+                    </span>
+                  ) : (
+                    ""
+                  ))}
+              </div>
+            </article>
+          ),
         )}
       </div>
       {error && (
@@ -510,15 +494,6 @@ export function ChatPanel({
           )}
         </p>
       </form>
-      {messages.length === 0 && (
-        <ConsultationCases
-          onSelect={(item) => {
-            setInput(item.prompt);
-            setVisualRegionId(item.regionId);
-            composer.current?.focus();
-          }}
-        />
-      )}
     </section>
   );
 }

@@ -42,6 +42,7 @@ export type PainSiteId =
   | "heel_foot"
   | "anterior_hip";
 
+/** Legacy illustrative coordinates, retained for compatibility; withheld from the UI because a source-to-location mapping is unavailable. */
 export interface TriggerPointNode {
   id: string;
   code: string;
@@ -51,6 +52,7 @@ export interface TriggerPointNode {
   y: number;
 }
 
+/** Legacy illustrative referral shapes, not a validated map; withheld from the UI. */
 export interface ReferredPainZone {
   view: "anterior" | "posterior";
   d: string;
@@ -90,12 +92,50 @@ export interface FourStepProtocol {
   step4LoadCue: string;
 }
 
+/** One muscle inside a grouped entry; layer and study coverage are cited per component. */
+export interface TriggerMuscleComponent {
+  name: string;
+  latin: string;
+  layer: string;
+  trpStudy: string;
+}
+
+/** Sourced OpenStax plates (provenance in public/anatomy/SOURCES.md). */
+export const SOURCE_PLATES = {
+  openstax1105: {
+    src: "/anatomy/full-body-muscles-openstax.jpg",
+    width: 1304,
+    height: 3033,
+    title: "OpenStax A&P, hình 1105 — mặt trước/sau; nửa phải người: nông, nửa trái người: sâu",
+    credit: "OpenStax, CC BY 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:1105_Anterior_and_Posterior_Views_of_Muscles.jpg",
+  },
+  openstaxGluteal: {
+    src: "/anatomy/glute-deep-openstax.jpg",
+    width: 1713,
+    height: 2175,
+    title: "OpenStax A&P, hình 1122 — cơ chậu hông và đùi",
+    credit: "OpenStax, CC BY 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:1122_Gluteal_Muscles_that_Move_the_Femur.jpg",
+  },
+} as const;
+
+export interface SourcePlateView {
+  plate: keyof typeof SOURCE_PLATES;
+  /** x, y, width, height in source pixels; framing only, not an anatomical claim. */
+  crop: [number, number, number, number];
+  /** Labels printed on the source figure that belong to this entry. */
+  labels: string[];
+}
+
 export interface TriggerPointMuscle {
   id: TriggerPointMuscleId;
   shortName: string;
   name: string;
   latinName: string;
   category: TriggerPointCategory;
+  components: TriggerMuscleComponent[];
+  plateViews: SourcePlateView[];
   summary: string;
   mechanism: string;
   nodes: TriggerPointNode[];
@@ -147,9 +187,9 @@ export const CORE_TRP_REFERENCES: ScientificReference[] = [
 
 // Kept for API compatibility. Neither book was accessed for detailed claim verification.
 export const TEXTBOOK_TRAVELL: ScientificReference = {
-  title: "Travell & Simons — The Trigger Point Manual (tài liệu lịch sử; chưa đọc toàn văn trong rà soát này)",
+  title: "Travell, Simons & Simons’ Myofascial Pain and Dysfunction, 3rd ed. (2019): The Trigger Point Manual (chỉ kiểm tra trang nhà xuất bản)",
   source: "Không dùng xác nhận bản đồ hoặc phác đồ trong app",
-  url: "https://pubmed.ncbi.nlm.nih.gov/25724849/",
+  url: "https://shop.lww.com/Travell--Simons---Simons--Myofascial-Pain-and-Dysfunction/p/9781451119237",
 };
 export const JANDA_REFERENCE: ScientificReference = {
   title: "Page, Frank & Lardner (2010) — Assessment and Treatment of Muscle Imbalance: The Janda Approach (chưa đọc trong rà soát này)",
@@ -157,7 +197,7 @@ export const JANDA_REFERENCE: ScientificReference = {
   url: "https://www.ncbi.nlm.nih.gov/nlmcatalog/101521868",
 };
 
-// General principles and every muscle record were compared with sources on 2026-10-19.
+// Initial source comparison: 2026-10-19; all ten entries and the handbook rechecked on 2026-10-22.
 // The four legacy protocol fields are navigation slots, not a validated treatment sequence.
 export const PALPATION_FUNDAMENTALS = {
   "title": "Điểm nhạy cơ: cách hiểu và giới hạn cho huấn luyện viên",
@@ -198,7 +238,7 @@ export const PALPATION_FUNDAMENTALS = {
     {
       "name": "Deep / Snapping Palpation" as PalpationTechnique,
       "when": "Không đưa vào tự chăm sóc hoặc hướng dẫn thực hành của app.",
-      "how": "Không ấn sâu cổ, quanh đòn/nách, bụng/bẹn hoặc vùng gây tê. Không búng cơ để tạo giật; giới hạn này là lựa chọn thận trọng do app chưa được chuyên gia thẩm định. [NCCIH; Chang 2015]"
+      "how": "Không ấn sâu cổ, quanh đòn/nách, bụng/bẹn hoặc vùng gây tê. Không búng cơ để tạo giật; đây là lựa chọn thận trọng của ứng dụng vì có báo cáo tổn thương thần kinh sau massage, không phải kỹ thuật đã được thử nghiệm cho từng cơ. [NCCIH; Chang 2015]"
     }
   ],
   "pressureScale": [
@@ -212,7 +252,7 @@ export const PALPATION_FUNDAMENTALS = {
     },
     {
       "level": "Dừng và đánh giá",
-      "meaning": "Dừng khi đau nhói, tê, yếu, chóng mặt, khó thở hoặc triệu chứng tăng. Dấu hiệu đáng lo cần đánh giá y tế, không thử tăng lực. [NCCIH; NHS]"
+      "meaning": "Dừng khi đau nhói, tê, yếu, chóng mặt, khó thở hoặc triệu chứng tăng. Dấu hiệu đáng lo cần đánh giá y tế, không thử tăng lực. [NCCIH; NHS Chest pain]"
     }
   ],
   "differentials": [
@@ -230,11 +270,11 @@ export const PALPATION_FUNDAMENTALS = {
     },
     {
       "name": "Dấu hiệu cần chuyển khám/cấp cứu",
-      "vs": "Đau ngực mới kèm khó thở/toát mồ hôi: cấp cứu. Đau/sưng một chân: khám khẩn; kèm khó thở/đau ngực: cấp cứu. Đau lưng kèm thay đổi cảm giác vùng yên ngựa, bí tiểu mới hoặc rối loạn đại tiểu tiện: đánh giá cấp cứu. Yếu tiến triển, sốt hoặc chấn thương đáng kể cần khám, không chờ hết một đợt SMR. [NHS; NICE]"
+      "vs": "Đau ngực mới kèm khó thở/toát mồ hôi: cấp cứu. Đau/sưng một chân: khám khẩn; kèm khó thở/đau ngực: cấp cứu. Đau lưng kèm thay đổi cảm giác vùng yên ngựa, bí tiểu mới hoặc rối loạn đại tiểu tiện: đánh giá cấp cứu. Yếu tiến triển, sốt hoặc chấn thương đáng kể cần khám, không chờ hết một đợt SMR. [NHS Chest pain; NHS DVT; NHS Back pain; North Bristol NHS CES]"
     }
   ],
   "smrMechanism": "Foam rolling có thể cải thiện ROM và đau mỏi ngắn hạn. Cơ chế điều biến cảm giác và cơ học vẫn đang được nghiên cứu; không chứng minh bóng phá sẹo hoặc loại bỏ nút. Các tổng quan không xác lập quy tắc tái phát trong một ngày, cửa sổ kích hoạt hoặc phác đồ bốn bước bắt buộc. [Behm & Wilke 2019; Cheatham 2015]",
-  "ptScope": "Trong app này PT là huấn luyện viên thể hình. Hỗ trợ tập luyện theo dung nạp và điều chỉnh tải trong năng lực/ủy quyền địa phương; không dùng sơ đồ để chẩn đoán hoặc thực hiện thủ thuật lâm sàng. Khi có triệu chứng chưa rõ, kéo dài, tăng lên hoặc ảnh hưởng chức năng, khuyến khích đánh giá bởi chuyên viên y tế. Chưa có chuyên gia độc lập duyệt nội dung và bản đồ. [NCCIH; NICE]",
+  "ptScope": "Trong app này PT là huấn luyện viên thể hình. Hỗ trợ tập luyện theo dung nạp và điều chỉnh tải trong năng lực/ủy quyền địa phương; không dùng sơ đồ để chẩn đoán hoặc thực hiện thủ thuật lâm sàng. Khi có triệu chứng chưa rõ, kéo dài, tăng lên hoặc ảnh hưởng chức năng, khuyến khích đánh giá bởi chuyên viên y tế. Các ví dụ vận động do ứng dụng biên soạn; nguồn không xác nhận một trình tự điều trị chung hoặc bản đồ vị trí ấn. [NCCIH; NICE NG59]",
   references: TRIGGER_GENERAL_EVIDENCE.sources.map(evidenceReference),
 };
 
@@ -245,6 +285,15 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ thang bó trên — điểm nhạy vùng cổ vai",
     "latinName": "M. Trapezius, pars descendens",
     "category": "neck_shoulder",
+    "components": [
+      {
+        "name": "Thang bó trên",
+        "latin": "M. trapezius, pars descendens",
+        "layer": "Nhóm cơ sau đai vai. [OpenStax §11.5]",
+        "trpStudy": "Có: nghiên cứu cổ 20/20 người. [Fernández-de-las-Peñas 2007]"
+      }
+    ],
+    "plateViews": [{"plate": "openstax1105", "crop": [0, 1560, 1304, 570], "labels": ["Trapezius"]}, {"plate": "openstax1105", "crop": [0, 0, 1304, 470], "labels": ["Trapezius"]}],
     "summary": "Điểm nhạy và đau lan ở cơ cổ, gồm thang trên, được mô tả trong một nghiên cứu nhỏ về đau cổ. Đau gáy hoặc thái dương có nhiều nguyên nhân; sơ đồ không chẩn đoán đau đầu hay bệnh cột sống. [Fernández-de-las-Peñas 2007; Delphi 2018]",
     "mechanism": "Có các giả thuyết về cơ chế đau cơ; không thể suy ra thang trên bị khóa ngắn hoặc cơ cổ sâu bị ức chế từ tư thế hay một điểm đau. Khác biệt hóa học trong nghiên cứu nhỏ không chứng minh chuỗi cơ chế đó ở từng người. [Shah 2008, 2015]",
     "nodes": [
@@ -325,11 +374,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     ],
     "contraindications": [
       "Không ấn sâu vùng cổ hoặc quanh đòn; dừng nếu chóng mặt, tê hay đau tăng.",
-      "Yếu/tê tăng, đau đầu hoặc đau cổ mới bất thường cần đánh giá y tế; chóng mặt đơn độc không xác định một bệnh mạch cụ thể.",
+      "Đau đầu đột ngột cực kỳ dữ dội hoặc kèm yếu/tê mặt/cơ thể: cấp cứu. Đau đầu kèm đau hàm khi nhai/đau da đầu: khám khẩn. Triệu chứng cổ/tay mới hoặc tăng cần đánh giá y tế. [NHS Headaches; NHS Shoulder pain]",
       "Đau ngực kèm khó thở/toát mồ hôi cần cấp cứu."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Thang trên. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng upper_trapezius, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Thang trên. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng upper_trapezius, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "levator_scapulae",
@@ -337,6 +386,15 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ nâng vai — đau vùng góc cổ và bả vai",
     "latinName": "M. Levator scapulae",
     "category": "neck_shoulder",
+    "components": [
+      {
+        "name": "Nâng vai",
+        "latin": "M. levator scapulae",
+        "layer": "Nguồn văn bản đã đọc không mô tả lớp; hình 1105 ghi nhãn ở nửa lớp sâu.",
+        "trpStudy": "Có: nghiên cứu cổ 20/20 người và vai 12/10 người. [Fernández-de-las-Peñas 2007; Hidalgo-Lozano 2010]"
+      }
+    ],
+    "plateViews": [{"plate": "openstax1105", "crop": [0, 1560, 1304, 570], "labels": ["Levator scapulae"]}],
     "summary": "Cơ nâng vai có trong nghiên cứu điểm đau ở người đau cổ, nhưng đau góc bả và hạn chế quay cổ không xác nhận cơ này là nguồn đau. Ngay nghiên cứu nhỏ đó không tìm thấy khác biệt phân bố điểm có ý nghĩa cho cả hai levator. [Fernández-de-las-Peñas 2007]",
     "mechanism": "Không suy từ tư thế bả vai sang cơ nâng vai khóa ngắn, pec minor thắng hay serratus bị ức chế. Đây là các diễn giải giả thuyết, cần khám trực tiếp nếu liên quan triệu chứng. [Delphi 2018; Myburgh 2008]",
     "nodes": [
@@ -405,7 +463,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Tê/ yếu lan tay, triệu chứng tăng hoặc hạn chế chức năng cần đánh giá y tế."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Nâng vai. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng levator_scapulae, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Nâng vai. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng levator_scapulae, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "infraspinatus",
@@ -413,6 +471,21 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ dưới gai và tròn bé — triệu chứng vùng vai",
     "latinName": "M. Infraspinatus & M. Teres minor",
     "category": "neck_shoulder",
+    "components": [
+      {
+        "name": "Dưới gai",
+        "latin": "M. infraspinatus",
+        "layer": "Dưới gai bả vai; thuộc nhóm chóp xoay. [OpenStax §11.5]",
+        "trpStudy": "Có: nghiên cứu vai 12/10 người. [Hidalgo-Lozano 2010]"
+      },
+      {
+        "name": "Tròn bé",
+        "latin": "M. teres minor",
+        "layer": "Thuộc nhóm chóp xoay. [OpenStax §11.5]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      }
+    ],
+    "plateViews": [{"plate": "openstax1105", "crop": [0, 1560, 1304, 570], "labels": ["Infraspinatus", "Teres minor"]}],
     "summary": "Một nghiên cứu 12 người đau vai và 10 chứng ghi nhận điểm đau hoạt động ở infraspinatus trong một số người bệnh. Điều này không chứng minh đau mặt trước vai luôn xuất phát từ mặt sau bả. Teres minor không được khảo sát trong nghiên cứu này. [Hidalgo-Lozano 2010]",
     "mechanism": "Không thể xác nhận cơ dưới gai bị kéo dài hay chỏm trượt trước do pec co ngắn qua sơ đồ. Đau vai và nhạy áp lực có thể cùng tồn tại; liên hệ không xác lập chuỗi nguyên nhân. [Hidalgo-Lozano 2010]",
     "nodes": [
@@ -504,7 +577,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Đau ngực kèm khó thở/toát mồ hôi: cấp cứu trước khi xét nguyên nhân cơ."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Dưới gai. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng infraspinatus, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Dưới gai. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng infraspinatus, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "pec_minor",
@@ -512,7 +585,22 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ ngực bé và ngực lớn — vùng ngực trước và vai",
     "latinName": "M. Pectoralis minor & M. Pectoralis major",
     "category": "neck_shoulder",
-    "summary": "Nghiên cứu 50 người không đau cho thấy chiều dài nghỉ pec minor liên hệ với vận động bả vai. Nghiên cứu này không xác nhận trigger point, hội chứng chèn ép hay nguyên nhân đau vai. Tê tay hoặc đau ngực cần đánh giá riêng. [Borstad & Ludewig 2005; NHS]",
+    "components": [
+      {
+        "name": "Ngực bé",
+        "latin": "M. pectoralis minor",
+        "layer": "Nhóm cơ trước đai vai; hình 11.22 phải cắt ngực lớn mới thấy lớp sâu hơn. [OpenStax §11.5]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này. Chỉ có nghiên cứu chiều dài–vận động bả ở người không đau. [Borstad 2005]"
+      },
+      {
+        "name": "Ngực lớn",
+        "latin": "M. pectoralis major",
+        "layer": "Phủ phần lớn ngực trước trên. [OpenStax §11.5]",
+        "trpStudy": "Có: nghiên cứu vai 12/10 người. [Hidalgo-Lozano 2010]"
+      }
+    ],
+    "plateViews": [{"plate": "openstax1105", "crop": [0, 0, 1304, 470], "labels": ["Pectoralis major", "Pectoralis minor"]}],
+    "summary": "Nghiên cứu 50 người không đau cho thấy chiều dài nghỉ pec minor liên hệ với vận động bả vai. Nghiên cứu này không xác nhận trigger point, hội chứng chèn ép hay nguyên nhân đau vai. Tê tay hoặc đau ngực cần đánh giá riêng. [Borstad & Ludewig 2005; NHS Shoulder pain; NHS Chest pain]",
     "mechanism": "Pec minor ngắn và khác biệt vận động bả là quan sát ở nhóm người không đau; không suy ra cơ khóa ngắn, chèn mạch hoặc làm các cơ khác bị ức chế ở một cá nhân. [Borstad & Ludewig 2005]",
     "nodes": [
       {
@@ -596,7 +684,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Đau ngực mới kéo dài hoặc kèm khó thở/toát mồ hôi/choáng: cấp cứu."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Ngực bé. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng pec_minor, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Ngực bé. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng pec_minor, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "lats_serratus",
@@ -604,7 +692,22 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ lưng rộng và răng trước — vùng bả vai và thành ngực",
     "latinName": "M. Latissimus dorsi & M. Serratus anterior",
     "category": "trunk",
-    "summary": "Sơ đồ chỉ định hướng trao đổi triệu chứng vùng bả vai/thành ngực. Các nguồn lăn cơ nói chung không xác nhận bản đồ đau riêng của lats hoặc serratus. Đau sườn khi thở cần xem nguyên nhân khác trước khi thử tự chăm sóc. [Cheatham 2015; NHS]",
+    "components": [
+      {
+        "name": "Lưng rộng",
+        "latin": "M. latissimus dorsi",
+        "layer": "Phần dưới lưng. [OpenStax §11.5]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      },
+      {
+        "name": "Răng trước",
+        "latin": "M. serratus anterior",
+        "layer": "Nhóm cơ trước đai vai. [OpenStax §11.5]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      }
+    ],
+    "plateViews": [{"plate": "openstax1105", "crop": [0, 1560, 1304, 570], "labels": ["Latissimus dorsi"]}, {"plate": "openstax1105", "crop": [0, 0, 1304, 470], "labels": ["Serratus anterior"]}],
+    "summary": "Sơ đồ chỉ định hướng trao đổi triệu chứng vùng bả vai/thành ngực. Các nguồn lăn cơ nói chung không xác nhận bản đồ đau riêng của lats hoặc serratus. Đau sườn khi thở cần xem nguyên nhân khác trước khi thử tự chăm sóc. [Cheatham 2015; NHS Chest pain]",
     "mechanism": "Không thể kết luận lats rút, serratus yếu hoặc winging do trigger point chỉ từ tư thế và đau. Chưa có nguồn đã đọc xác nhận cơ chế riêng cho hai cơ trong bản ghi này.",
     "nodes": [
       {
@@ -687,14 +790,23 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Không ấn nách hoặc thành ngực để thử loại trừ nguyên nhân nguy hiểm."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Xô & Răng trước. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng lats_serratus, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Xô & Răng trước. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng lats_serratus, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "quadratus_lumborum",
     "shortName": "QL",
     "name": "Cơ vuông thắt lưng — vùng hông lưng",
-    "latinName": "M. Quadratus lumborum (superficial & deep)",
+    "latinName": "M. quadratus lumborum",
     "category": "trunk",
+    "components": [
+      {
+        "name": "Vuông thắt lưng",
+        "latin": "M. quadratus lumborum",
+        "layer": "Thành bụng sau. [OpenStax §11.4]",
+        "trpStudy": "Có: nghiên cứu đau lưng 42/42 người. [Iglesias-González 2013]"
+      }
+    ],
+    "plateViews": [{"plate": "openstaxGluteal", "crop": [0, 0, 860, 935], "labels": ["Quadratus lumborum"]}],
     "summary": "QL là một cơ có điểm đau hoạt động thường gặp trong một nghiên cứu cắt ngang về đau lưng mạn. Kết quả không xếp QL là nguyên nhân lớn nhất hoặc biến hip hike thành dấu hiệu chẩn đoán. [Iglesias-González 2013]",
     "mechanism": "Không xác nhận QL gồng bù glute med yếu hoặc một bên khóa ngắn từ lệch hông. Độ tin cậy sờ mô mềm lưng không nhất quán và độ giá trị chẩn đoán còn bất định. [Nolet 2021]",
     "nodes": [
@@ -768,11 +880,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     ],
     "contraindications": [
       "Đau lưng kèm bí tiểu mới, thay đổi cảm giác yên ngựa hoặc rối loạn đại tiểu tiện: cấp cứu.",
-      "Sốt, tiểu máu, chấn thương đáng kể hoặc triệu chứng tăng cần đánh giá y tế.",
+      "Đau lưng kèm sốt/khó chịu toàn thân hoặc tăng nhanh: khám khẩn; sau tai nạn nghiêm trọng: cấp cứu. [NHS Back pain]",
       "Không ấn sâu dưới sườn hoặc dùng massage để trì hoãn khám."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng QL. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng quadratus_lumborum, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng QL. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng quadratus_lumborum, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "iliopsoas",
@@ -780,6 +892,21 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ thắt lưng chậu — cơ sâu vùng hông và bụng sau",
     "latinName": "M. Psoas major & M. Iliacus",
     "category": "trunk",
+    "components": [
+      {
+        "name": "Thắt lưng lớn",
+        "latin": "M. psoas major",
+        "layer": "Thành bụng sau. [OpenStax §11.4]",
+        "trpStudy": "Tóm tắt nghiên cứu đau lưng 42/42 người ghi psoas, không tách nhãn psoas major/minor và không khảo sát iliacus. [Iglesias-González 2013]"
+      },
+      {
+        "name": "Chậu",
+        "latin": "M. iliacus",
+        "layer": "Thành bụng sau. [OpenStax §11.4]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      }
+    ],
+    "plateViews": [{"plate": "openstaxGluteal", "crop": [0, 0, 860, 935], "labels": ["Psoas major", "Iliacus"]}, {"plate": "openstax1105", "crop": [0, 500, 1304, 500], "labels": ["Iliopsoas"]}],
     "summary": "Psoas được khảo sát trong nghiên cứu điểm đau ở người đau lưng; kết quả không xác nhận đau khi đứng dậy là psoas. Đau bẹn, háng, lưng hoặc bụng có nhiều nguyên nhân và không thể định vị bằng sơ đồ. [Iglesias-González 2013]",
     "mechanism": "Iliopsoas nằm sâu và liên quan tạng, mạch, thần kinh. Không suy từ ngồi lâu sang co ngắn hay glute max bị ức chế. Sờ bụng không xác nhận cơ chế trigger point. [StatPearls Psoas Major; Nolet 2021]",
     "nodes": [
@@ -859,12 +986,12 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Ngồi lâu hoặc leg raise không tự chứng minh psoas rút ngắn."
     ],
     "contraindications": [
-      "Đau bụng/bẹn mới, tăng, kèm sốt, nôn hoặc đau nhiều cần đánh giá y tế khẩn theo mức độ.",
+      "Đau bụng đột ngột hoặc dữ dội: cấp cứu. Đau bụng tăng, kéo dài hoặc tái diễn cần khám khẩn; không ấn để thử psoas. [NHS Stomach ache]",
       "Đau lưng kèm bí tiểu mới, thay đổi cảm giác yên ngựa hoặc rối loạn đại tiểu tiện: cấp cứu.",
       "Không tự ấn bụng/bẹn, kể cả dùng bóng mềm; thai kỳ hoặc bệnh nền cần tư vấn phù hợp."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Iliopsoas. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng iliopsoas, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Iliopsoas. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng iliopsoas, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "glute_med_piriformis",
@@ -872,6 +999,27 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ mông nhỡ, mông bé và hình lê — triệu chứng mông và chân",
     "latinName": "M. Gluteus medius, minimus & M. Piriformis",
     "category": "hip_leg",
+    "components": [
+      {
+        "name": "Mông nhỡ",
+        "latin": "M. gluteus medius",
+        "layer": "Dưới mông lớn. [OpenStax §11.6]",
+        "trpStudy": "Có: nghiên cứu đau lưng 42/42 người. [Iglesias-González 2013]"
+      },
+      {
+        "name": "Mông bé",
+        "latin": "M. gluteus minimus",
+        "layer": "Dưới mông nhỡ. [OpenStax §11.6]",
+        "trpStudy": "Có: nghiên cứu đau lưng 42/42 người. [Iglesias-González 2013]"
+      },
+      {
+        "name": "Hình lê",
+        "latin": "M. piriformis",
+        "layer": "Nhóm xoay ngoài dưới mông lớn. [OpenStax §11.6]",
+        "trpStudy": "Có: nghiên cứu đau lưng 42/42 người. [Iglesias-González 2013] Tổng quan hội chứng hình lê không phải nghiên cứu trigger point. [Hopayian 2010]"
+      }
+    ],
+    "plateViews": [{"plate": "openstaxGluteal", "crop": [815, 1130, 898, 500], "labels": ["Gluteus medius (cut)", "Gluteus minimus", "Piriformis"]}],
     "summary": "Đau mông lan chân có thể liên quan cột sống, háng hoặc thần kinh vùng mông sâu. MRI cột sống bình thường không xác nhận trigger point. Piriformis syndrome có bằng chứng chẩn đoán còn hạn chế và không đồng nghĩa mọi đau vùng này. [Hopayian 2010; Martin 2015]",
     "mechanism": "Không xác nhận glute med bị khóa dài, TFL thắng hoặc piriformis gồng bù từ valgus/Trendelenburg. Hội chứng mông sâu có thể gồm chèn ép thần kinh và cần đánh giá phân biệt, không chỉ một nút cơ. [Martin 2015]",
     "nodes": [
@@ -957,7 +1105,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Không ấn mạnh hoặc ngồi đè bóng khi gây đau điện/tê."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Mông nhỡ & Hình lê. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng glute_med_piriformis, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Mông nhỡ & Hình lê. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng glute_med_piriformis, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "tfl_vastus_lateralis",
@@ -965,6 +1113,21 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ căng mạc đùi và rộng ngoài — triệu chứng đùi và gối",
     "latinName": "M. Tensor fasciae latae & M. Vastus lateralis",
     "category": "hip_leg",
+    "components": [
+      {
+        "name": "Căng mạc đùi",
+        "latin": "M. tensor fasciae latae",
+        "layer": "Phần trên mặt ngoài đùi. [OpenStax §11.6]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      },
+      {
+        "name": "Rộng ngoài",
+        "latin": "M. vastus lateralis",
+        "layer": "Mặt ngoài đùi. [OpenStax §11.6]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      }
+    ],
+    "plateViews": [{"plate": "openstaxGluteal", "crop": [0, 0, 860, 935], "labels": ["Tensor fascia latae", "Vastus lateralis"]}, {"plate": "openstax1105", "crop": [0, 500, 1304, 500], "labels": ["Tensor fasciae latae", "Vastus lateralis"]}],
     "summary": "Đau mặt ngoài gối có nhiều nguyên nhân. Nguồn lăn cơ không chứng minh nút ở TFL/VL là nguồn đau. Nếu được đánh giá là đau bánh chè, giáo dục và tập gối, có thể kết hợp tập hông, là hướng tiếp cận chính. [Neal 2024]",
     "mechanism": "Không thể suy từ valgus hoặc đau khi lăn sang TFL thắng glute med hay VMO hoạt động trễ. Cần đánh giá gối/hông và tải hoạt động trước khi chọn can thiệp. [Neal 2024]",
     "nodes": [
@@ -1037,11 +1200,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "Gối đi vào trong không tự xác định nguyên nhân đau hoặc cơ yếu."
     ],
     "contraindications": [
-      "Gối sưng, khóa/kẹt, không chịu lực được hoặc sau chấn thương cần đánh giá y tế theo mức độ.",
+      "Gối sưng nhiều, khóa/kẹt, không chịu lực được hoặc đỏ/nóng kèm sốt: đánh giá khẩn. [NHS Knee pain]",
       "Không cố massage mạnh vùng đau khớp hoặc bẹn để tái hiện triệu chứng."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng TFL & Rộng ngoài. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng tfl_vastus_lateralis, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng TFL & Rộng ngoài. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng tfl_vastus_lateralis, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   },
   {
     "id": "soleus_gastroc",
@@ -1049,7 +1212,28 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     "name": "Cơ bụng chân, cơ dép và chày trước — triệu chứng cẳng chân và gót",
     "latinName": "M. Gastrocnemius, M. Soleus & M. Tibialis anterior",
     "category": "hip_leg",
-    "summary": "Đau gót buổi sáng không tự chứng minh điểm đau soleus và không đủ để bác bỏ plantar fasciitis. Đau gót/cẳng chân cần đánh giá các nguyên nhân phù hợp; hướng dẫn heel pain không xác nhận bản đồ trigger point trong app. [Koc 2023: phạm vi hướng dẫn]",
+    "components": [
+      {
+        "name": "Bụng chân",
+        "latin": "M. gastrocnemius",
+        "layer": "Cơ nông nhất của bắp chân. [OpenStax §11.6]",
+        "trpStudy": "CPG 2023 tóm tắt RCT 21/21 về trị liệu MTrP bắp chân phối hợp siêu âm và giãn; chưa đọc độc lập thử nghiệm gốc, không xác nhận bản đồ cơ này. [Koc 2023, CPG9–10]"
+      },
+      {
+        "name": "Dép",
+        "latin": "M. soleus",
+        "layer": "Dưới cơ bụng chân. [OpenStax §11.6]",
+        "trpStudy": "CPG 2023 tóm tắt RCT 21/21 về trị liệu MTrP bắp chân phối hợp siêu âm và giãn; chưa đọc độc lập thử nghiệm gốc, không xác nhận bản đồ cơ này. [Koc 2023, CPG9–10]"
+      },
+      {
+        "name": "Chày trước",
+        "latin": "M. tibialis anterior",
+        "layer": "Mặt ngoài xương chày. [OpenStax §11.6]",
+        "trpStudy": "Chưa có nghiên cứu trigger point đã đọc khảo sát cơ này."
+      }
+    ],
+    "plateViews": [{"plate": "openstax1105", "crop": [0, 2370, 1304, 520], "labels": ["Gastrocnemius (dissected)", "Soleus"]}, {"plate": "openstax1105", "crop": [0, 900, 1304, 440], "labels": ["Tibialis anterior"]}],
+    "summary": "Đau mặt trong gan gót khi bước đầu sau nghỉ là đặc điểm thường gặp của plantar fasciitis; cần đánh giá cùng dấu hiệu khác và nguyên nhân khác. Không quy đau gót buổi sáng cho điểm đau soleus hoặc dùng sờ bắp chân để loại bệnh cân gan chân. [Koc 2023, CPG4/7]",
     "mechanism": "Hạn chế vận động cổ chân, đau gót và điểm nhạy có thể cần đánh giá riêng. Không suy ra soleus khóa ngắn, tibialis anterior bị ức chế hoặc nguyên nhân ở lưng từ một động tác squat. [Delphi 2018; Myburgh 2008]",
     "nodes": [
       {
@@ -1129,11 +1313,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
     ],
     "contraindications": [
       "Đau hoặc sưng một chân chưa rõ, đổi màu/nóng: đánh giá y tế khẩn; không massage để kiểm tra. Kèm khó thở/đau ngực: cấp cứu. [NHS DVT]",
-      "Đau xương khu trú, sau chấn thương hoặc không chịu lực được cần khám; không quy cho trigger point.",
+      "Đau gót nhiều sau chấn thương, nghe tiếng bật, biến dạng hoặc không đi được cần khám khẩn; không quy cho trigger point. [NHS 111 Wales Heel pain]",
       "Không ấn sâu khoeo hoặc cẳng chân; dừng khi tê/đau tăng."
     ],
     "references": [],
-    "sampleAiPrompt": "Người tập có triệu chứng vùng Bắp chân & Dép. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng soleus_gastroc, ghi phạm vi và giới hạn; bản đồ chưa được chuyên gia duyệt."
+    "sampleAiPrompt": "Người tập có triệu chứng vùng Bắp chân & Dép. Hãy hỏi diễn tiến, tải hoạt động, chức năng và dấu hiệu cần chuyển khám/cấp cứu. Không chẩn đoán từ bản đồ, không mặc định locked-long/short hoặc cơ bị ức chế. Phân biệt giả thuyết với bằng chứng và chỉ nêu tự chăm sóc nhẹ/vận động theo dung nạp khi phù hợp; không hướng dẫn ấn sâu cổ, nách, bụng/bẹn hoặc gây tê. Dùng nguồn trong hồ sơ bằng chứng soleus_gastroc, ghi phạm vi và giới hạn; tọa độ điểm ấn và vùng đau lan cũ đang ẩn vì chưa có nguồn ánh xạ từng vị trí."
   }
 ];
 
@@ -1159,7 +1343,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
       },
       {
         "muscleId": "pec_minor",
-        "whyDeceptive": "Chiều dài pec minor liên hệ vận động bả ở người không đau; không xác nhận trigger point hoặc TOS. Tê/yếu tay hoặc đau ngực cần đánh giá riêng. [Borstad 2005; NHS]"
+        "whyDeceptive": "Chiều dài pec minor liên hệ vận động bả ở người không đau; không xác nhận trigger point hoặc TOS. Tê/yếu tay hoặc đau ngực cần đánh giá riêng. [Borstad 2005; NHS Shoulder pain; NHS Chest pain]"
       }
     ]
   },
@@ -1171,7 +1355,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "zoneD": "M 380 74 C 392 72, 402 88, 402 115 L 402 200 C 406 225, 418 245, 420 268 L 402 276 C 390 252, 382 226, 380 200 L 378 115 Z",
     "pinX": 392,
     "pinY": 150,
-    "victimLabel": "Vùng đau đầu/cổ có nhiều nguyên nhân; sơ đồ không phân loại đau đầu hoặc xác nhận bệnh cột sống.",
+    "victimLabel": "Vùng đau đầu/cổ có nhiều nguyên nhân. Đau đầu đột ngột cực kỳ dữ dội hoặc kèm yếu/tê mặt/cơ thể: cấp cứu. Đau đầu kèm đau hàm khi nhai hoặc đau da đầu: khám khẩn. [NHS Headaches]",
     "culprits": [
       {
         "muscleId": "upper_trapezius",
@@ -1195,7 +1379,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "culprits": [
       {
         "muscleId": "lats_serratus",
-        "whyDeceptive": "Chưa có nguồn đã đọc xác nhận vùng đau riêng của lats/serratus trong app; đau ngực/sườn kèm khó thở cần đánh giá khẩn. [NHS]"
+        "whyDeceptive": "Chưa có nguồn đã đọc xác nhận vùng đau riêng của lats/serratus trong app; đau ngực/sườn kèm khó thở cần đánh giá khẩn. [NHS Chest pain]"
       },
       {
         "muscleId": "levator_scapulae",
@@ -1239,7 +1423,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "culprits": [
       {
         "muscleId": "glute_med_piriformis",
-        "whyDeceptive": "Cơ mông và piriformis là một phần đánh giá phân biệt; hội chứng mông sâu có thể gồm chèn ép thần kinh. Sờ đau hoặc SLR âm tính không tự loại bệnh rễ. [Hopayian 2010; Martin 2015]"
+        "whyDeceptive": "Cơ mông và piriformis là một phần đánh giá phân biệt; hội chứng mông sâu có thể gồm chèn ép thần kinh. Sờ đau hoặc SLR âm tính không tự loại bệnh rễ. [Hopayian 2010; Martin 2015; SLR diagnostic study 2023; NeuPSIG 2023]"
       },
       {
         "muscleId": "quadratus_lumborum",
@@ -1255,7 +1439,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "zoneD": "M 338 1062 C 356 1056, 372 1080, 372 1120 L 370 1200 C 360 1215, 346 1210, 342 1195 L 340 1140 Z",
     "pinX": 355,
     "pinY": 1155,
-    "victimLabel": "Không suy từ đau ngoài gối sang nút TFL/VL hoặc cơ hông yếu. Sưng, kẹt/khóa hoặc mất khả năng chịu lực cần đánh giá.",
+    "victimLabel": "Không suy từ đau ngoài gối sang nút TFL/VL hoặc cơ hông yếu. Gối sưng nhiều, kẹt/khóa, không chịu lực được hoặc đỏ/nóng kèm sốt cần đánh giá khẩn. [NHS Knee pain]",
     "culprits": [
       {
         "muscleId": "tfl_vastus_lateralis",
@@ -1275,7 +1459,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "zoneD": "M 380 1500 C 400 1495, 425 1498, 435 1520 L 440 1575 C 430 1592, 395 1595, 382 1580 L 375 1540 Z",
     "pinX": 408,
     "pinY": 1545,
-    "victimLabel": "Đau gót buổi sáng không tự xác nhận hoặc loại plantar fasciitis. Một điểm nhạy bắp chân không thay thế đánh giá đau gót. [Koc 2023: phạm vi]",
+    "victimLabel": "Đau mặt trong gan gót khi bước đầu sau nghỉ thường gặp trong plantar fasciitis; cần đánh giá cùng các dấu hiệu khác. Một điểm nhạy bắp chân không thay thế đánh giá đau gót. [Koc 2023, CPG4/7]",
     "culprits": [
       {
         "muscleId": "soleus_gastroc",
@@ -1291,7 +1475,7 @@ export const PAIN_SITE_CULPRIT_MAP: PainSiteCulprit[] = [
     "zoneD": "M 310 700 C 380 680, 440 720, 430 790 L 380 830 C 320 825, 290 770, 310 700 Z",
     "pinX": 360,
     "pinY": 760,
-    "victimLabel": "Đau trước háng/bẹn có nhiều nguyên nhân; không chọn cơ dựa vào vị trí tô màu và không tự ấn bụng/bẹn để tìm nút.",
+    "victimLabel": "Đau trước háng/bẹn cần đánh giá nhiều nguyên nhân; không tự ấn bụng/bẹn để tìm nút. Đau bụng xuất hiện đột ngột hoặc dữ dội: cấp cứu. [StatPearls Psoas Major; NHS Stomach ache]",
     "culprits": [
       {
         "muscleId": "iliopsoas",

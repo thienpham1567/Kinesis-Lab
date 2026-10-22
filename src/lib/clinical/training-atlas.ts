@@ -90,7 +90,9 @@ export function atlasGroupHref(id: MuscleGroupId) {
 }
 // Conservative, explicit memberships for teaching links. Legacy catalog regexes
 // include thumb/toe adductors and unrelated lower-leg muscles; never trust them
-// to select a thigh/calf teaching card. These are app groupings, not activity maps.
+// to select a thigh/calf teaching card. Pectineus and tibialis anterior belong to
+// the named teaching cards, with different functions from other members.
+// These are app groupings, not activity maps or claims that every member is active.
 const GROUP_MEMBERS: Array<[MuscleGroupId, RegExp]> = [
   ["chest", /\bpectoralis major\b|\bserratus anterior\b/i],
   ["lats_teres", /\blatissimus dorsi\b|\bteres major\b/i],
@@ -108,10 +110,10 @@ const GROUP_MEMBERS: Array<[MuscleGroupId, RegExp]> = [
   ["glutes", /\bgluteus (?:maximus|medius|minimus)\b/i],
   [
     "quads_adductors",
-    /\brectus femoris\b|\bvastus (?:intermedius|lateralis|medialis)\b|\badductor (?:brevis|longus|magnus|minimus)\b|\bgracilis\b/i,
+    /\brectus femoris\b|\bvastus (?:intermedius|lateralis|medialis)\b|\badductor (?:brevis|longus|magnus|minimus)\b|\bgracilis\b|\bpectineus\b/i,
   ],
   ["hamstrings", /\bbiceps femoris\b|\bsemimembranosus\b|\bsemitendinosus\b/i],
-  ["calves", /\bgastrocnemius\b|\bsoleus\b/i],
+  ["calves", /\bgastrocnemius\b|\bsoleus\b|\btibialis anterior\b/i],
 ];
 export function trainingGroupForStructure(
   structure: Pick<AtlasStructure, "english" | "layer">,

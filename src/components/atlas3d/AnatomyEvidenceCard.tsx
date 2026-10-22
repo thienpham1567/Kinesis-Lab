@@ -17,8 +17,8 @@ export default function AnatomyEvidenceCard({
       <p className="eyebrow">Giải phẫu có nguồn</p>
       <p className="mt-2 text-[11px] leading-5 text-slate">
         Đối chiếu tài liệu:{" "}
-        {record.review.literatureCheckedAt.split("-").reverse().join("/")}. Chưa
-        có chuyên gia duyệt độc lập.
+        {record.review.literatureCheckedAt.split("-").reverse().join("/")}. Các nguồn
+        mô tả giải phẫu đại thể; không xác nhận tọa độ điểm bám hoặc hướng sợi trên mesh.
       </p>
       <dl className="mt-3 space-y-3 text-xs leading-6">
         {record.facts.map((fact) => (
@@ -44,7 +44,7 @@ export default function AnatomyEvidenceCard({
       </dl>
       <details className="mt-4 border-t border-rule pt-3">
         <summary className="min-h-9 text-xs font-semibold text-ink">
-          Nguồn & mức độ kiểm chứng
+          Nguồn & phạm vi đối chiếu
         </summary>
         <ol className="mt-2 space-y-2 text-[11px] leading-5">
           {entries.map(([id, source]) => (
@@ -57,6 +57,9 @@ export default function AnatomyEvidenceCard({
               >
                 [{numbers.get(id)}] {source.label}
               </a>
+              <p className="mt-0.5 text-slate">
+                Đối chiếu {source.checkedAt}: {source.access}
+              </p>
             </li>
           ))}
         </ol>

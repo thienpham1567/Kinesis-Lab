@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { AnatomyRegionId } from "@/lib/clinical/anatomy-atlas";
+import { ANATOMY_REGION_EVIDENCE } from "@/lib/clinical/evidence-anatomy";
 
 interface MedicalPlate {
   id: string;
@@ -14,6 +15,8 @@ interface MedicalPlate {
     enLabel: string;
     vnLabel: string;
     clinicalNote: string;
+    /** One-based sources in the region evidence record, attached to this note. */
+    sourceRefs: number[];
   }[];
 }
 
@@ -31,6 +34,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [1, 4],
           enLabel: "Lumbar spine (L1–L5)",
           vnLabel: "Đoạn cột sống thắt lưng L1–L5",
           clinicalNote:
@@ -38,6 +42,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [1],
           enLabel: "Vertebra (Vertebral body)",
           vnLabel: "Thân đốt sống thắt lưng",
           clinicalNote:
@@ -45,13 +50,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [1, 10],
           enLabel: "Herniated disc (Nucleus pulposus)",
-          vnLabel: "Khối thoát vị đĩa đệm (Nhân nhầy lồi ra sau)",
+          vnLabel: "Thoát vị đĩa đệm (hình minh họa)",
           clinicalNote:
-            "Đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy bên trong. Khi thoát vị, nhân nhầy đẩy qua chỗ yếu của vòng sợi ra phía sau và có thể chèn ép rễ thần kinh.",
+            "Đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy bên trong. Vật liệu đĩa đệm thoát qua vùng vòng sợi tổn thương có thể ảnh hưởng rễ thần kinh; hình minh họa không cho biết tình trạng của người đang xem.",
         },
         {
           code: "04",
+          sourceRefs: [5, 10],
           enLabel: "Pinched nerve (Spinal nerve root)",
           vnLabel: "Rễ thần kinh tủy sống bị chèn ép",
           clinicalNote:
@@ -69,6 +76,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [3],
           enLabel: "Quadratus lumborum (Hình b)",
           vnLabel: "Cơ vuông thắt lưng (QL)",
           clinicalNote:
@@ -76,6 +84,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [6, 7],
           enLabel: "Psoas major & Iliacus (Hình b)",
           vnLabel: "Phức hợp Cơ thắt lưng lớn & Cơ chậu (Iliopsoas)",
           clinicalNote:
@@ -83,10 +92,11 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [8, 9],
           enLabel: "Transversus abdominis (Hình a)",
           vnLabel: "Cơ ngang bụng (TVA)",
           clinicalNote:
-            "Lớp sâu nhất của thành bụng, thớ cơ chạy ngang; hỗ trợ thành bụng, thở ra gắng sức và tăng áp lực ổ bụng. Không đo được mức giảm tải cho một tầng đĩa đệm từ cách gồng bụng.",
+            "Lớp sâu nhất trong ba lớp cơ thành bụng bên, thớ cơ chạy ngang; hỗ trợ thành bụng, thở ra gắng sức và tăng áp lực ổ bụng. Không đo được mức giảm tải cho một tầng đĩa đệm từ cách gồng bụng.",
         },
       ],
     },
@@ -102,6 +112,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [10, 7],
           enLabel: "Clavicle & Scapula (Acromion)",
           vnLabel: "Xương đòn & Mỏm cùng vai (Trần khoang dưới mỏm cùng)",
           clinicalNote:
@@ -109,6 +120,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [10],
           enLabel: "Humerus (Humeral head)",
           vnLabel: "Chỏm xương cánh tay",
           clinicalNote:
@@ -116,13 +128,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [10],
           enLabel: "Articular cartilage & Joint cavity",
           vnLabel: "Sụn khớp & Ổ khớp hoạt dịch",
           clinicalNote:
-            "Ổ chảo nông và chỉ bằng khoảng một phần ba kích thước chỏm xương cánh tay nên khớp vai có biên độ lớn; độ vững dựa nhiều vào sụn viền, bao khớp, dây chằng và các cơ quanh khớp.",
+            "Chỏm xương cánh tay tiếp khớp với ổ chảo tương đối nông. Sụn viền, bao khớp, dây chằng và các cơ quanh vai cùng góp phần giữ vững khớp.",
         },
         {
           code: "04",
+          sourceRefs: [12],
           enLabel: "Fibrous joint capsule & Synovial membrane",
           vnLabel: "Bao khớp sợi & Màng hoạt dịch",
           clinicalNote:
@@ -140,6 +154,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [4],
           enLabel: "Serratus anterior (Hình trái)",
           vnLabel: "Cơ răng trước",
           clinicalNote:
@@ -147,13 +162,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [11],
           enLabel: "Pectoralis minor & Coracoid process",
           vnLabel: "Cơ ngực bé & Mỏm quạ xương bả vai",
           clinicalNote:
-            "Bám từ các xương sườn 3–5 vào mỏm quạ; kéo xương bả vai ra trước – xuống. Ở người không đau, cơ ngắn khi nghỉ liên quan khác biệt vận động bả vai, nhưng không chứng minh gây hẹp khoang dưới mỏm cùng.",
+            "Cơ ngực bé nối các xương sườn trên với mỏm quạ, tham gia kéo bả vai ra trước – xuống. Số thứ tự sườn bám có biến thể; không suy ra cơ ngắn hoặc nguồn đau từ tư thế vai.",
         },
         {
           code: "03",
+          sourceRefs: [11, 5],
           enLabel: "Trapezius & Rhomboid major / minor (Hình phải)",
           vnLabel: "Cơ thang (Trên/Giữa/Dưới) & Cơ trám lớn / bé",
           clinicalNote:
@@ -173,6 +190,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [2, 3, 6],
           enLabel: "Patella & Tendon of quadriceps / Patellar ligament",
           vnLabel: "Xương bánh chè, Gân tứ đầu đùi & Dây chằng bánh chè",
           clinicalNote:
@@ -180,13 +198,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [1, 6],
           enLabel: "Anterior & Posterior cruciate ligament (ACL / PCL)",
           vnLabel: "Dây chằng chéo trước (ACL) & Dây chằng chéo sau (PCL)",
           clinicalNote:
-            "Hai dây chằng chéo nằm trong khớp, bắt chéo hình chữ X và kiểm soát vận động trước – sau của gối. ACL căng khi duỗi gối và chống duỗi quá mức; PCL giữ xương đùi không trượt ra trước trên mâm chày khi gối gập chịu tải.",
+            "Hai dây chằng chéo nằm trong bao khớp, bắt chéo và góp phần kiểm soát vận động trước – sau: ACL hạn chế chày trượt ra trước so với đùi; PCL hạn chế chày trượt ra sau.",
         },
         {
           code: "03",
+          sourceRefs: [6],
           enLabel: "Medial & Lateral meniscus (Hình b)",
           vnLabel: "Sụn chêm trong & Sụn chêm ngoài (hình chữ C)",
           clinicalNote:
@@ -194,10 +214,11 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "04",
+          sourceRefs: [6],
           enLabel: "Tibial (MCL) & Fibular (LCL) collateral ligament",
           vnLabel: "Dây chằng bên chày (MCL) & Dây chằng bên mác (LCL)",
           clinicalNote:
-            "Hai dây chằng bên nằm ngoài bao khớp và kiểm soát vận động sang bên: MCL ở mặt trong chống lực vẹo ngoài (valgus), LCL ở mặt ngoài chống lực vẹo trong (varus).",
+            "MCL ở mặt trong và LCL ở mặt ngoài góp phần hạn chế mở khớp sang bên. Mặt sâu MCL liên kết với bao khớp và sụn chêm trong; không coi hai dây chằng có cùng quan hệ với bao khớp.",
         },
       ],
     },
@@ -211,6 +232,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [2, 4],
           enLabel: "Quadriceps & Patella",
           vnLabel: "Cơ tứ đầu đùi & Xương bánh chè",
           clinicalNote:
@@ -218,6 +240,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [7],
           enLabel: "Hamstrings",
           vnLabel: "Nhóm cơ gân kheo",
           clinicalNote:
@@ -225,6 +248,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [1, 6],
           enLabel: "Meniscus (Blue cartilage)",
           vnLabel: "Sụn chêm đệm giữa Lồi cầu đùi & Mâm chày",
           clinicalNote:
@@ -244,6 +268,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [9],
           enLabel: "Sternocleidomastoid & Scalenes (Hình trên)",
           vnLabel: "Cơ ức – đòn – chũm & Nhóm cơ bậc thang (Scalenes)",
           clinicalNote:
@@ -251,6 +276,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [4, 5],
           enLabel: "Levator scapulae & Trapezius",
           vnLabel: "Cơ nâng vai & Cơ thang bó trên",
           clinicalNote:
@@ -258,10 +284,11 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [9],
           enLabel: "Suboccipital, Semispinalis & Multifidus (Hình dưới)",
           vnLabel: "Nhóm cơ dưới chẩm, Cơ bán gai & Cơ nhiều chân cổ",
           clinicalNote:
-            "Các cơ sâu vùng gáy nối xương chẩm với đốt đội, đốt trục và các đốt cổ; tham gia duỗi, xoay đầu – cổ và kiểm soát vận động cột sống cổ.",
+            "Các nhóm cơ sau cổ có điểm bám khác nhau trên sọ và cột sống; tham gia vận động đầu – cổ. Đây là mô tả nhóm cơ, không phải bảng điểm bám chi tiết từng cơ dưới chẩm hoặc từng bó cơ nhiều chân.",
         },
       ],
     },
@@ -269,7 +296,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
   thoracic_core: [
     {
       id: "core-abdomen-openstax",
-      title: "Giải phẫu 4 Lớp Cơ Thành bụng & Hệ thống Ổn định Lõi Sâu (Core Cylinder)",
+      title: "Giải phẫu Các Nhóm Cơ Thành bụng & Thành bụng sau",
       subtitle:
         "(a) Các lớp cơ thành bụng trước – bên & Bao cơ thẳng bụng, (b) Các cơ thành bụng sau & cột sống",
       src: "/anatomy/core-abdomen.jpg",
@@ -277,13 +304,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [2, 9],
           enLabel: "Transversus abdominis (TVA)",
-          vnLabel: "Cơ ngang bụng (Lớp sâu nhất)",
+          vnLabel: "Cơ ngang bụng (Lớp sâu của thành bụng bên)",
           clinicalNote:
             "Thớ cơ chạy ngang quanh thành bụng; hỗ trợ thành bụng, thở ra gắng sức và tăng áp lực ổ bụng. Một kiểu gồng bụng không chứng minh cột sống được bảo vệ khỏi chấn thương.",
         },
         {
           code: "02",
+          sourceRefs: [4, 5, 9],
           enLabel: "Internal & External oblique",
           vnLabel: "Cơ chéo bụng trong & Cơ chéo bụng ngoài",
           clinicalNote:
@@ -291,6 +320,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [8, 9],
           enLabel: "Rectus abdominis & Linea alba",
           vnLabel: "Cơ thẳng bụng & Đường trắng giữa (Linea alba)",
           clinicalNote:
@@ -298,6 +328,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "04",
+          sourceRefs: [10],
           enLabel: "Serratus anterior & Latissimus dorsi",
           vnLabel: "Cơ răng trước & Cơ lưng rộng (Xô)",
           clinicalNote:
@@ -317,6 +348,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [1, 2, 3],
           enLabel: "Gluteus maximus, medius & minimus (Hình dưới phải)",
           vnLabel: "Cơ mông lớn, Cơ mông nhỡ & Cơ mông bé",
           clinicalNote:
@@ -324,17 +356,19 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [9],
           enLabel: "Piriformis & Deep lateral rotators",
           vnLabel: "Cơ hình lê (Piriformis) & Nhóm 6 cơ xoay ngoài sâu",
           clinicalNote:
-            "Cơ hình lê đi từ mặt trước xương cùng qua lỗ ngồi lớn tới bờ trên mấu chuyển lớn và xoay ngoài háng; thần kinh ngồi thường đi dưới cơ, có biến thể đi xuyên qua. Đau mông lan chân có thể do cột sống, háng hoặc chèn ép thần kinh vùng mông sâu và cần được đánh giá.",
+            "Cơ hình lê và các cơ xoay ngoài sâu nằm dưới cơ mông lớn, tham gia xoay ngoài đùi tại háng. Đau mông lan chân cần được đánh giá; vị trí trên hình không xác định một cơ đang chèn ép thần kinh.",
         },
         {
           code: "03",
+          sourceRefs: [4, 5, 9],
           enLabel: "Psoas major, Iliacus & Tensor fasciae latae (TFL)",
           vnLabel: "Cơ thắt lưng – chậu & Cơ căng mạc đùi (TFL)",
           clinicalNote:
-            "Cơ thắt lưng lớn và cơ chậu gập háng; cơ căng mạc đùi đi từ gai chậu trước trên vào dải chậu – chày, góp phần gập, dạng và xoay trong háng. Không suy ra TFL hoạt động bù trừ chỉ từ quan sát chuyển động.",
+            "Cơ thắt lưng lớn và cơ chậu gập háng; cơ căng mạc đùi liên kết với dải chậu – chày và tham gia gập, dạng háng. Không suy ra TFL hoạt động bù trừ chỉ từ quan sát chuyển động.",
         },
       ],
     },
@@ -348,6 +382,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [6, 8],
           enLabel: "Acetabulum & Ball (Femoral head)",
           vnLabel: "Ổ cối xương chậu & Chỏm xương đùi",
           clinicalNote:
@@ -355,6 +390,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [10],
           enLabel: "Sacrum, Ilium & Pubis",
           vnLabel: "Xương cùng, Xương cánh chậu & Xương mu",
           clinicalNote:
@@ -374,13 +410,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [1, 2],
           enLabel: "Rectus femoris, Vastus lateralis & Vastus medialis (Hình trên)",
           vnLabel: "Cơ thẳng đùi, Cơ rộng ngoài & Cơ rộng trong",
           clinicalNote:
-            "Cơ thẳng đùi đi qua cả khớp háng và khớp gối; các cơ rộng chỉ đi qua gối. VMO là phần sợi chéo dưới của cơ rộng trong, không phải cơ chế duy nhất kiểm soát bánh chè.",
+            "Cơ thẳng đùi đi qua cả khớp háng và khớp gối; các cơ rộng chỉ đi qua gối. Cơ tứ đầu truyền lực duỗi gối qua bánh chè; vị trí đau trước gối không xác định một bó cơ bị yếu.",
         },
         {
           code: "02",
+          sourceRefs: [1, 4],
           enLabel: "Adductor brevis, longus, magnus & Gracilis (Hình dưới trái)",
           vnLabel: "Cơ khép ngắn, khép dài, khép lớn & Cơ thon",
           clinicalNote:
@@ -388,6 +426,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "03",
+          sourceRefs: [1, 3],
           enLabel: "Biceps femoris, Semitendinosus & Semimembranosus (Hình dưới phải)",
           vnLabel: "Cơ nhị đầu đùi, Cơ bán gân & Cơ bán màng (Gân kheo)",
           clinicalNote:
@@ -407,20 +446,23 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [8],
           enLabel: "Anterior talofibular (ATFL) & Calcaneofibular ligament (Hình dưới)",
           vnLabel: "Dây chằng sên – mác trước (ATFL) & Dây chằng mác – gót (CFL)",
           clinicalNote:
-            "Thuộc nhóm dây chằng bên ngoài cổ chân, hạn chế lật bàn chân vào trong (inversion). Bong gân do lật cổ chân cần được đánh giá mức độ; app chưa đối chiếu hướng dẫn bong gân nên không nêu tỉ lệ hay phác đồ.",
+            "Thuộc nhóm dây chằng bên ngoài cổ chân, hạn chế lật bàn chân vào trong (inversion). Bong gân do lật cổ chân cần được đánh giá mức độ; hình minh họa dây chằng không xác định mức tổn thương hoặc liều phục hồi.",
         },
         {
           code: "02",
+          sourceRefs: [8],
           enLabel: "Deltoid ligament & Medial malleolus (Hình trên)",
           vnLabel: "Phức hợp dây chằng Delta & Mắt cá trong xương chày",
           clinicalNote:
-            "Nối mắt cá trong với xương sên, xương gót và xương ghe; giữ vững mặt trong cổ chân và hạn chế lật bàn chân ra ngoài (eversion).",
+            "Phức hợp dây chằng ở phía mắt cá trong hỗ trợ mặt trong cổ chân và hạn chế lật bàn chân ra ngoài quá mức (eversion).",
         },
         {
           code: "03",
+          sourceRefs: [8],
           enLabel: "Subtalar joint & Talus",
           vnLabel: "Khớp dưới sên & Xương sên (Talus)",
           clinicalNote:
@@ -438,6 +480,7 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
+          sourceRefs: [1, 2],
           enLabel: "Gastrocnemius & Soleus muscles",
           vnLabel: "Cơ bụng chân (2 đầu) & Cơ dép (Soleus)",
           clinicalNote:
@@ -445,13 +488,15 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
         },
         {
           code: "02",
+          sourceRefs: [5],
           enLabel: "Achilles tendon mid-portion (2–6 cm above insertion)",
           vnLabel: "Đoạn giữa gân Achilles (khoảng 2–6 cm trên điểm bám)",
           clinicalNote:
-            "Đau khu trú khoảng 2–6 cm trên điểm bám là một tiêu chí chẩn đoán bệnh gân Achilles đoạn giữa. Khi đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân tiến triển theo khả năng và giáo dục; không áp trực tiếp cho đứt gân.",
+            "Đau khu trú khoảng 2–6 cm trên điểm bám là một tiêu chí chẩn đoán bệnh gân Achilles đoạn giữa. Với người đã được đánh giá và không nghi suy yếu cấu trúc gân, hướng dẫn 2024 ưu tiên tải gân theo khả năng và giáo dục; không áp trực tiếp cho đứt gân.",
         },
         {
           code: "03",
+          sourceRefs: [5],
           enLabel: "Calcaneus insertion",
           vnLabel: "Điểm bám tận gân Achilles vào xương gót",
           clinicalNote:
@@ -546,7 +591,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
             Chú giải Thuật ngữ trên Hình
           </p>
           <p className="text-[11px] leading-4 text-slate">
-            Tóm tắt giải phẫu theo nguồn của thẻ vùng này; không phải chẩn đoán hay phác đồ. Chưa có chuyên gia duyệt.
+            Chú giải tóm tắt theo các nguồn được liên kết dưới từng mục. Các số là khóa chú giải, không xác nhận tọa độ điểm bám, kích thước mô hay nguồn đau của một người.
           </p>
           <div className="space-y-2">
             {activePlate.landmarks.map((lm) => (
@@ -567,7 +612,25 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
                         {lm.enLabel}
                       </span>
                     </div>
-                    <p className="leading-5 text-slate">{lm.clinicalNote}</p>
+                    <p className="leading-5 text-slate">
+                      {lm.clinicalNote}{" "}
+                      {lm.sourceRefs.map((number) => {
+                        const source = ANATOMY_REGION_EVIDENCE[regionId].sources[number - 1];
+                        return (
+                          <a
+                            key={number}
+                            href={source.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={`${source.title} · Đối chiếu ${source.checkedAt}`}
+                            className="ml-1 font-mono text-cobalt underline underline-offset-2"
+                            aria-label={`Nguồn ${number} cho ${lm.vnLabel}`}
+                          >
+                            [{number}]
+                          </a>
+                        );
+                      })}
+                    </p>
                   </div>
                 </div>
               </div>

@@ -1,0 +1,172 @@
+import type { EvidenceSource } from "./evidence-types";
+
+export type MovementSource = EvidenceSource & {
+  id: string;
+  label: string;
+  kind: string;
+};
+const checked = (
+  id: string,
+  label: string,
+  title: string,
+  url: string,
+  kind: string,
+  access: string,
+): MovementSource => ({
+  id,
+  label,
+  title,
+  url,
+  kind,
+  access,
+  checkedAt: "2026-10-22",
+});
+
+// Actual access on the checked date, not an implied full-text review.
+export const MOVEMENT_SOURCES = {
+  bahr: checked(
+    "bahr",
+    "Bahr 2016",
+    "Why screening tests to predict injury do not work—and probably never will…: a critical review",
+    "https://pubmed.ncbi.nlm.nih.gov/27095747/",
+    "Tổng quan phê bình",
+    "Đã đọc abstract PubMed. Phạm vi: sàng lọc dự báo chấn thương thể thao; không xác nhận phân loại bài tập, nguyên nhân đau hoặc cơ yếu.",
+  ),
+  squat: checked(
+    "squat",
+    "Lorenzetti 2018",
+    "How to squat? Effects of various stance widths, foot placement angles and level of experience on knee, hip and trunk motion and loading",
+    "https://link.springer.com/article/10.1186/s13102-018-0103-7",
+    "Nghiên cứu cơ sinh học",
+    "Đã đọc phương pháp, kết quả, giới hạn, Hình 1 và quyền sử dụng. 42 người khỏe; đo động học và mô-men khớp, không theo dõi chấn thương. Đã đọc đính chính 2020 về dấu chỉ số ΔD*: https://doi.org/10.1186/s13102-020-0160-6 . Không dùng các suy đoán nguy cơ trong bàn luận làm ngưỡng an toàn.",
+  ),
+  hollman: checked(
+    "hollman",
+    "Hollman 2014",
+    "Frontal and transverse plane hip kinematics and gluteus maximus recruitment correlate with frontal plane knee kinematics during single-leg squat tests in women",
+    "https://pubmed.ncbi.nlm.nih.gov/24467971/",
+    "Nghiên cứu quan sát",
+    "Đã đọc abstract; 41 phụ nữ hoạt động thể chất. Nhóm phân theo quan sát không khác sức mạnh hông trong mẫu này; không phải test chẩn đoán cơ yếu ở mọi người.",
+  ),
+  parkinson: checked(
+    "parkinson",
+    "Parkinson 2021",
+    "The Calculation, Thresholds and Reporting of Inter-Limb Strength Asymmetry: A Systematic Review",
+    "https://www.jssm.org/volume20/iss4/cap/jssm-20-594.pdf",
+    "Tổng quan hệ thống",
+    "Đã mở PDF nhà xuất bản; phần thực đọc là abstract và Introduction trang 594–595. Chưa đọc toàn bộ 24 trang. Phạm vi bất đối xứng sức mạnh; không suy một công thức/ngưỡng cho mọi phép đo.",
+  ),
+  wellsandt: checked(
+    "wellsandt",
+    "Wellsandt 2017",
+    "Limb Symmetry Indexes Can Overestimate Knee Function After Anterior Cruciate Ligament Injury",
+    "https://pubmed.ncbi.nlm.nih.gov/28355978/",
+    "Nghiên cứu theo dõi sau ACL",
+    "Đã đọc abstract; 70 vận động viên, sức mạnh tứ đầu và bốn hop test trước/sau tái tạo ACL. Không phải tiêu chí cho mọi bệnh hoặc giấy phép trở lại thể thao.",
+  ),
+  barry: checked(
+    "barry",
+    "Barry 2014",
+    "Is the Timed Up and Go test a useful predictor of risk of falls in community dwelling older adults: a systematic review and meta-analysis",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC3924230/",
+    "Tổng quan hệ thống",
+    "Đã đọc abstract, bối cảnh và phương pháp. TUG ở người cao tuổi sống tại cộng đồng; không khảo sát Berg hoặc định lượng lệch hai chi.",
+  ),
+  cdc: checked(
+    "cdc",
+    "CDC · bảng ROM",
+    "CDC: Joint Range of Motion Study — reference values",
+    "https://archive.cdc.gov/www_cdc_gov/ncbddd/jointrom/index.html",
+    "Bảng dữ liệu tham chiếu",
+    "Đã đọc mô tả nghiên cứu và bảng 11 động tác theo tuổi/giới; đối chiếu số trong app. ROM thụ động, tuổi 2–69; CI 95% là CI của trung bình, không là khoảng bình thường cá nhân.",
+  ),
+  soucie: checked(
+    "soucie",
+    "Soucie 2011",
+    "Range of motion measurements: reference values and a database for comparison studies",
+    "https://pubmed.ncbi.nlm.nih.gov/21070485/",
+    "Nghiên cứu tham chiếu",
+    "Đã đọc abstract PubMed và nhà xuất bản: 674 người khỏe, 9 PT, thước đo góc phổ thông, đo ROM thụ động hai bên. Không đọc toàn văn.",
+  ),
+  cdcProtocol: checked(
+    "cdcProtocol",
+    "CDC · quy trình đo",
+    "Public Use Dataset for Normal Joint Range of Motion: Data Description and Sample Data Tables",
+    "https://stacks.cdc.gov/view/cdc/153156",
+    "Quy trình nghiên cứu",
+    "Đã mở PDF chính thức 5 trang; đọc các đoạn quy trình liên quan ở trang 1–3, chưa đọc hết bảng trang 4–5. Gập mu cổ chân với gối gập ít nhất 30°. Tài liệu có nhãn Public Domain; ảnh riêng trên trang CDC không tự có cùng quyền sử dụng.",
+  ),
+  jtss: checked(
+    "jtss",
+    "Apti / JTSS 2023",
+    "Normative Values for Cervical and Lumbar Range of Motion in Healthy Young Adults",
+    "https://www.jtss.org/articles/normative-values-for-cervical-and-lumbar-range-of-motion-in-healthy-young-adults/doi/jtss.galenos.2023.33042",
+    "Nghiên cứu tham chiếu",
+    "Đã đọc toàn văn phương pháp/kết quả: 300 sinh viên khỏe 18–29 tuổi, ROM chủ động với thước kỹ thuật số hai tay. Nghiêng cổ và xoay cổ công bố riêng từng bên; 42°/71° trong app là số đại diện làm tròn, không phải trung bình gộp do tác giả báo cáo.",
+  ),
+  keogh: checked(
+    "keogh",
+    "Keogh 2019",
+    "Reliability and validity of clinically accessible smartphone applications to measure joint range of motion: A systematic review",
+    "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0215806",
+    "Tổng quan hệ thống",
+    "Đã đọc phương pháp, kết quả và bàn luận toàn văn PLOS. Độ tin cậy/giá trị phụ thuộc app, thiết bị, khớp và quy trình; không chứng nhận mọi ứng dụng.",
+  ),
+  mehta: checked(
+    "mehta",
+    "Mehta 2017",
+    "Reliability, Concurrent Validity, and Minimal Detectable Change for iPhone Goniometer App in Assessing Knee Range of Motion",
+    "https://pubmed.ncbi.nlm.nih.gov/27894147/",
+    "Nghiên cứu đo lường",
+    "Đã đọc abstract; bài 2017, online 2016. 60 người OA/sau thay khớp, AROM gối, i-Goni v1.1. Trang toàn văn nhà xuất bản bị chặn; không chuyển MDC sang mọi dụng cụ.",
+  ),
+  devet: checked(
+    "devet",
+    "de Vet 2006",
+    "Minimal changes in health status questionnaires: distinction between minimally detectable change and minimally important change",
+    "https://pubmed.ncbi.nlm.nih.gov/16925807/",
+    "Nguyên tắc đo lường",
+    "Đã đọc abstract. Phân biệt thay đổi phát hiện được và thay đổi quan trọng trong thang đo tình trạng sức khỏe; dùng cho nguyên tắc diễn giải, không cung cấp MCID cho ROM.",
+  ),
+  chua: checked(
+    "chua",
+    "Chua 2021",
+    "Superiority of external attentional focus for motor performance and learning: Systematic reviews and meta-analyses",
+    "https://pubmed.ncbi.nlm.nih.gov/34843301/",
+    "Tổng quan và phân tích gộp",
+    "Đã đọc abstract được lập chỉ mục; không ghi đã đọc toàn văn. Phân biệt performance, retention, transfer và báo cáo ưu thế trung bình của hướng chú ý ngoài. Cần đọc cùng phân tích phản biện McKay 2024.",
+  ),
+  mckay: checked(
+    "mckay",
+    "McKay 2024",
+    "Reporting bias, not external focus: A robust Bayesian meta-analysis and systematic review of the external focus of attention literature",
+    "https://pubmed.ncbi.nlm.nih.gov/39480294/",
+    "Phân tích gộp phản biện",
+    "Đã đọc đầy đủ abstract tại hồ sơ tác giả McMaster; không đọc toàn văn. Điều chỉnh thiên lệch công bố làm giảm nhiều hiệu ứng hướng chú ý ngoài; không kết luận mọi cue ngoài đều vô ích.",
+  ),
+  cochrane: checked(
+    "cochrane",
+    "Cochrane 2016",
+    "Motor control exercise for chronic non-specific low-back pain",
+    "https://www.cochrane.org/evidence/CD012004_motor-control-exercise-chronic-non-specific-low-back-pain",
+    "Tổng quan Cochrane",
+    "Đã đọc bản tóm tắt công khai và abstract đầy đủ, tìm kiếm tới 04/2015. Phạm vi đau lưng mạn không đặc hiệu; không đọc trọn review trả phí hoặc chứng minh hiệu quả mọi phân nhóm.",
+  ),
+  who: checked(
+    "who",
+    "WHO 2023",
+    "WHO guideline for non-surgical management of chronic primary low back pain in adults — quick reference guide",
+    "https://www.who.int/publications/i/item/9789240081789",
+    "Hướng dẫn chuyên ngành",
+    "Đã đọc quick guide chính thức 2 trang được liên kết từ WHO: đánh giá, chăm sóc theo cá nhân và tập có cấu trúc (khuyến nghị có điều kiện, độ chắc chắn thấp). Không ghi đã đọc toàn bộ guideline; phạm vi đau lưng mạn nguyên phát.",
+  ),
+  motions: checked(
+    "motions",
+    "OpenStax · hướng vận động",
+    "Anatomy and Physiology — 9.5 Types of Body Movements",
+    "https://openstax.org/books/anatomy-and-physiology/pages/9-5-types-of-body-movements",
+    "Giáo trình giải phẫu",
+    "Đã đọc phần gập/duỗi và mô tả hướng vận động. Chỉ hỗ trợ thuật ngữ/hướng; không là quy trình đặt thước hoặc mốc ROM. Hình lịch sử có provenance/giấy phép riêng ở chú thích, không suy giấy phép từ trang web hiện tại.",
+  ),
+} as const;
+export type MovementSourceId = keyof typeof MOVEMENT_SOURCES;

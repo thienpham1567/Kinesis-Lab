@@ -7,6 +7,7 @@ import { ANATOMY_REGION_EVIDENCE } from "@/lib/clinical/evidence-anatomy";
 import { useState } from "react";
 import {
   ANATOMY_REGIONS,
+  REGION_FOUNDATIONS,
   matchClientIssuesToRegions,
   type AnatomyRegion,
   type AnatomyRegionId,
@@ -42,9 +43,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-cervical",
     regionId: "cervical",
-    vnLabel: "Cơ Ức – Đòn – Chũm & Cơ Bậc thang cổ",
-    latinLabel: "M. Sternocleidomastoideus & Scaleni",
-    shortTag: "Cổ & Cơ bậc thang",
+    vnLabel: "Vùng cổ trước",
+    latinLabel: "Cervical region · anterior",
+    shortTag: "Cổ trước",
     d: "M 365 215 C 395 205, 505 205, 535 215 L 560 305 C 510 320, 390 320, 340 305 Z",
     pinX: 450,
     pinY: 265,
@@ -55,9 +56,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-shoulder-l",
     regionId: "shoulder",
-    vnLabel: "Cơ Delta trước – giữa & Khớp Cùng – Đòn",
-    latinLabel: "M. Deltoideus (pars clavicularis & acromialis)",
-    shortTag: "Vai & Delta",
+    vnLabel: "Vùng vai trước",
+    latinLabel: "Shoulder region · anterior",
+    shortTag: "Vai trước",
     d: "M 225 320 C 255 295, 315 300, 340 325 L 325 460 C 275 465, 220 440, 208 395 Z",
     pinX: 268,
     pinY: 380,
@@ -68,9 +69,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-shoulder-r",
     regionId: "shoulder",
-    vnLabel: "Cơ Delta trước – giữa & Khớp Cùng – Đòn",
-    latinLabel: "M. Deltoideus (pars clavicularis & acromialis)",
-    shortTag: "Vai & Delta",
+    vnLabel: "Vùng vai trước",
+    latinLabel: "Shoulder region · anterior",
+    shortTag: "Vai trước",
     d: "M 560 325 C 585 300, 645 295, 675 320 L 692 395 C 680 440, 625 465, 575 460 Z",
     pinX: 632,
     pinY: 380,
@@ -81,9 +82,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-chest",
     regionId: "thoracic_core",
-    vnLabel: "Cơ Ngực lớn, Ngực bé & Cơ Răng trước",
-    latinLabel: "M. Pectoralis major & M. Serratus anterior",
-    shortTag: "Ngực & Răng trước",
+    vnLabel: "Vùng ngực trước",
+    latinLabel: "Thoracic region · anterior",
+    shortTag: "Ngực trước",
     d: "M 335 318 C 390 308, 510 308, 565 318 L 595 475 C 520 492, 380 492, 305 475 Z",
     pinX: 385,
     pinY: 405,
@@ -94,9 +95,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-core",
     regionId: "thoracic_core",
-    vnLabel: "Cơ Thẳng bụng, Chéo bụng trong/ngoài & Cơ Ngang bụng",
-    latinLabel: "M. Rectus abdominis, Obliquus & Transversus",
-    shortTag: "Hộp Cơ Lõi (Core)",
+    vnLabel: "Vùng thành bụng",
+    latinLabel: "Abdominal region · anterior",
+    shortTag: "Thành bụng",
     d: "M 310 480 L 590 480 L 598 720 C 525 745, 375 745, 302 720 Z",
     pinX: 450,
     pinY: 595,
@@ -107,9 +108,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-hip-l",
     regionId: "hip_pelvis",
-    vnLabel: "Cơ Thắt lưng – Chậu (Iliopsoas), Căng mạc đùi (TFL) & Lược",
-    latinLabel: "M. Iliopsoas, Tensor fasciae latae & Pectineus",
-    shortTag: "Gập Háng & TFL",
+    vnLabel: "Vùng háng trước",
+    latinLabel: "Hip region · anterior",
+    shortTag: "Háng trước",
     d: "M 295 725 L 442 738 L 435 865 L 285 855 Z",
     pinX: 355,
     pinY: 795,
@@ -120,9 +121,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-hip-r",
     regionId: "hip_pelvis",
-    vnLabel: "Cơ Thắt lưng – Chậu (Iliopsoas), Căng mạc đùi (TFL) & Lược",
-    latinLabel: "M. Iliopsoas, Tensor fasciae latae & Pectineus",
-    shortTag: "Gập Háng & TFL",
+    vnLabel: "Vùng háng trước",
+    latinLabel: "Hip region · anterior",
+    shortTag: "Háng trước",
     d: "M 458 738 L 605 725 L 615 855 L 465 865 Z",
     pinX: 545,
     pinY: 795,
@@ -133,9 +134,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-thigh-l",
     regionId: "thigh_hamstring",
-    vnLabel: "Cơ Tứ đầu đùi (Rectus femoris, Vastus) & Nhóm cơ Khép đùi",
-    latinLabel: "M. Quadriceps femoris & Mm. Adductores",
-    shortTag: "Tứ đầu & Cơ khép",
+    vnLabel: "Vùng đùi trước và trong",
+    latinLabel: "Thigh region · anterior / medial",
+    shortTag: "Đùi trước / trong",
     d: "M 285 860 L 438 868 L 432 1095 L 325 1095 Z",
     pinX: 365,
     pinY: 975,
@@ -146,9 +147,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-thigh-r",
     regionId: "thigh_hamstring",
-    vnLabel: "Cơ Tứ đầu đùi (Rectus femoris, Vastus) & Nhóm cơ Khép đùi",
-    latinLabel: "M. Quadriceps femoris & Mm. Adductores",
-    shortTag: "Tứ đầu & Cơ khép",
+    vnLabel: "Vùng đùi trước và trong",
+    latinLabel: "Thigh region · anterior / medial",
+    shortTag: "Đùi trước / trong",
     d: "M 462 868 L 615 860 L 575 1095 L 468 1095 Z",
     pinX: 535,
     pinY: 975,
@@ -159,9 +160,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-knee-l",
     regionId: "knee",
-    vnLabel: "Khớp Chè – Đùi, Xương bánh chè, Gân bánh chè & Sụn chêm",
-    latinLabel: "Articulatio genus, Patella & Lig. patellae",
-    shortTag: "Khớp Gối & Bánh chè",
+    vnLabel: "Vùng gối trước",
+    latinLabel: "Knee region · anterior",
+    shortTag: "Gối trước",
     d: "M 328 1098 L 432 1098 L 428 1210 L 325 1210 Z",
     pinX: 380,
     pinY: 1152,
@@ -172,9 +173,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-knee-r",
     regionId: "knee",
-    vnLabel: "Khớp Chè – Đùi, Xương bánh chè, Gân bánh chè & Sụn chêm",
-    latinLabel: "Articulatio genus, Patella & Lig. patellae",
-    shortTag: "Khớp Gối & Bánh chè",
+    vnLabel: "Vùng gối trước",
+    latinLabel: "Knee region · anterior",
+    shortTag: "Gối trước",
     d: "M 468 1098 L 572 1098 L 575 1210 L 472 1210 Z",
     pinX: 520,
     pinY: 1152,
@@ -185,9 +186,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-ankle-l",
     regionId: "ankle_foot",
-    vnLabel: "Cơ Chày trước, Cơ Mác dài & Khớp Cổ chân – Bàn chân",
-    latinLabel: "M. Tibialis anterior, Fibularis & Talocruralis",
-    shortTag: "Chày trước & Cổ chân",
+    vnLabel: "Vùng cẳng chân trước, cổ chân và bàn chân",
+    latinLabel: "Leg, ankle and foot · anterior",
+    shortTag: "Cổ chân / bàn chân",
     d: "M 320 1215 L 426 1215 L 420 1575 L 330 1575 Z",
     pinX: 375,
     pinY: 1385,
@@ -198,9 +199,9 @@ const ANTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "ant-ankle-r",
     regionId: "ankle_foot",
-    vnLabel: "Cơ Chày trước, Cơ Mác dài & Khớp Cổ chân – Bàn chân",
-    latinLabel: "M. Tibialis anterior, Fibularis & Talocruralis",
-    shortTag: "Chày trước & Cổ chân",
+    vnLabel: "Vùng cẳng chân trước, cổ chân và bàn chân",
+    latinLabel: "Leg, ankle and foot · anterior",
+    shortTag: "Cổ chân / bàn chân",
     d: "M 474 1215 L 580 1215 L 570 1575 L 480 1575 Z",
     pinX: 525,
     pinY: 1385,
@@ -214,9 +215,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-cervical",
     regionId: "cervical",
-    vnLabel: "Cột sống Cổ (C1–C7), Cơ Thang bó trên & Cơ Nâng vai",
-    latinLabel: "Vertebrae cervicales, M. Trapezius descendens & Levator scapulae",
-    shortTag: "Cổ C1–C7 & Cơ Thang trên",
+    vnLabel: "Vùng cổ sau",
+    latinLabel: "Cervical region · posterior",
+    shortTag: "Cổ sau",
     d: "M 355 205 L 545 205 L 588 345 L 312 345 Z",
     pinX: 450,
     pinY: 278,
@@ -227,9 +228,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-shoulder-l",
     regionId: "shoulder",
-    vnLabel: "Nhóm cơ Chóp xoay (Dưới gai, Tròn bé), Tròn lớn & Delta sau",
-    latinLabel: "M. Infraspinatus, Teres minor/major & Deltoideus spinalis",
-    shortTag: "Chóp xoay & Bả vai",
+    vnLabel: "Vùng vai và bả vai sau",
+    latinLabel: "Shoulder region · posterior",
+    shortTag: "Vai / bả vai",
     d: "M 225 335 L 372 345 L 362 505 L 218 485 Z",
     pinX: 295,
     pinY: 412,
@@ -240,9 +241,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-shoulder-r",
     regionId: "shoulder",
-    vnLabel: "Nhóm cơ Chóp xoay (Dưới gai, Tròn bé), Tròn lớn & Delta sau",
-    latinLabel: "M. Infraspinatus, Teres minor/major & Deltoideus spinalis",
-    shortTag: "Chóp xoay & Bả vai",
+    vnLabel: "Vùng vai và bả vai sau",
+    latinLabel: "Shoulder region · posterior",
+    shortTag: "Vai / bả vai",
     d: "M 528 345 L 675 335 L 682 485 L 538 505 Z",
     pinX: 605,
     pinY: 412,
@@ -253,9 +254,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-thoracic",
     regionId: "thoracic_core",
-    vnLabel: "Cột sống Ngực (T1–T12), Cơ Thang giữa/dưới, Cơ Trám & Xô trên",
-    latinLabel: "M. Trapezius, Mm. Rhomboidei & M. Latissimus dorsi",
-    shortTag: "Lưng trên & Cơ Xô",
+    vnLabel: "Vùng lưng ngực",
+    latinLabel: "Thoracic region · posterior",
+    shortTag: "Lưng ngực",
     d: "M 365 348 L 535 348 L 568 558 L 332 558 Z",
     pinX: 450,
     pinY: 455,
@@ -266,9 +267,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-lumbar",
     regionId: "lumbar",
-    vnLabel: "Cột sống Thắt lưng (L1–S1), Cân ngực – thắt lưng, Cơ Dựng sống & Đa chân",
-    latinLabel: "Columna lumbalis, Fascia thoracolumbalis, Erector spinae & Multifidus",
-    shortTag: "Thắt lưng L1–S1",
+    vnLabel: "Vùng thắt lưng – cùng",
+    latinLabel: "Lumbosacral region · posterior",
+    shortTag: "Thắt lưng – cùng",
     d: "M 328 562 L 572 562 L 582 738 L 318 738 Z",
     pinX: 450,
     pinY: 648,
@@ -279,9 +280,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-glute",
     regionId: "hip_pelvis",
-    vnLabel: "Cơ Mông lớn, Cơ Mông nhỡ & Nhóm cơ Xoay ngoài sâu (Cơ Hình lê)",
-    latinLabel: "M. Gluteus maximus, Gluteus medius & M. Piriformis",
-    shortTag: "Cơ Mông & Khung chậu",
+    vnLabel: "Vùng mông và khung chậu",
+    latinLabel: "Gluteal / pelvic region · posterior",
+    shortTag: "Mông / khung chậu",
     d: "M 305 742 L 595 742 L 592 918 L 308 918 Z",
     pinX: 515,
     pinY: 828,
@@ -292,9 +293,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-hamstring-l",
     regionId: "thigh_hamstring",
-    vnLabel: "Nhóm cơ Gân kheo (Nhị đầu đùi, Bán gân & Bán màng)",
-    latinLabel: "M. Biceps femoris, Semitendinosus & Semimembranosus",
-    shortTag: "Gân kheo (Hamstrings)",
+    vnLabel: "Vùng đùi sau",
+    latinLabel: "Thigh region · posterior",
+    shortTag: "Đùi sau",
     d: "M 312 922 L 438 922 L 432 1105 L 332 1105 Z",
     pinX: 378,
     pinY: 1012,
@@ -305,9 +306,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-hamstring-r",
     regionId: "thigh_hamstring",
-    vnLabel: "Nhóm cơ Gân kheo (Nhị đầu đùi, Bán gân & Bán màng)",
-    latinLabel: "M. Biceps femoris, Semitendinosus & Semimembranosus",
-    shortTag: "Gân kheo (Hamstrings)",
+    vnLabel: "Vùng đùi sau",
+    latinLabel: "Thigh region · posterior",
+    shortTag: "Đùi sau",
     d: "M 462 922 L 588 922 L 568 1105 L 468 1105 Z",
     pinX: 522,
     pinY: 1012,
@@ -318,9 +319,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-knee-l",
     regionId: "knee",
-    vnLabel: "Hố khoeo chân (Popliteal fossa), Bao khớp sau & Dây chằng chéo sau",
-    latinLabel: "Fossa poplitea & Lig. cruciatum posterius (PCL)",
-    shortTag: "Hố khoeo & PCL",
+    vnLabel: "Vùng sau gối",
+    latinLabel: "Knee region · posterior",
+    shortTag: "Sau gối",
     d: "M 332 1108 L 432 1108 L 436 1198 L 330 1198 Z",
     pinX: 382,
     pinY: 1152,
@@ -331,9 +332,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-knee-r",
     regionId: "knee",
-    vnLabel: "Hố khoeo chân (Popliteal fossa), Bao khớp sau & Dây chằng chéo sau",
-    latinLabel: "Fossa poplitea & Lig. cruciatum posterius (PCL)",
-    shortTag: "Hố khoeo & PCL",
+    vnLabel: "Vùng sau gối",
+    latinLabel: "Knee region · posterior",
+    shortTag: "Sau gối",
     d: "M 468 1108 L 568 1108 L 570 1198 L 464 1198 Z",
     pinX: 518,
     pinY: 1152,
@@ -344,9 +345,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-calf-l",
     regionId: "ankle_foot",
-    vnLabel: "Cơ Bụng chân (Gastrocnemius), Cơ Dép (Soleus) & Gân gót Achilles",
-    latinLabel: "M. Triceps surae (Gastrocnemius, Soleus) & Tendo calcaneus",
-    shortTag: "Bắp chân & Gân Achilles",
+    vnLabel: "Vùng bắp chân và gân gót",
+    latinLabel: "Calf / Achilles region · posterior",
+    shortTag: "Bắp chân / gân gót",
     d: "M 326 1202 L 438 1202 L 432 1575 L 360 1575 Z",
     pinX: 386,
     pinY: 1365,
@@ -357,9 +358,9 @@ const POSTERIOR_ZONES: InteractiveZone[] = [
   {
     id: "post-calf-r",
     regionId: "ankle_foot",
-    vnLabel: "Cơ Bụng chân (Gastrocnemius), Cơ Dép (Soleus) & Gân gót Achilles",
-    latinLabel: "M. Triceps surae (Gastrocnemius, Soleus) & Tendo calcaneus",
-    shortTag: "Bắp chân & Gân Achilles",
+    vnLabel: "Vùng bắp chân và gân gót",
+    latinLabel: "Calf / Achilles region · posterior",
+    shortTag: "Bắp chân / gân gót",
     d: "M 462 1202 L 574 1202 L 540 1575 L 468 1575 Z",
     pinX: 514,
     pinY: 1365,
@@ -545,7 +546,6 @@ export function BodyMapExplorer({
 
   return (
     <div className="space-y-4">
-      <ClinicalEvidencePanel evidence={ANATOMY_REGION_EVIDENCE[activeRegion.id]} />
       {mode === "full" && (
         <div className="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -699,7 +699,7 @@ export function BodyMapExplorer({
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-[11px] text-slate">
                     <span className="font-mono font-bold text-cobalt">
-                      OPENSTAX FIG 11.5 — CƠ NÔNG (PHẢI) VS. CƠ SÂU (TRÁI)
+                      OPENSTAX — HÌNH CƠ TOÀN THÂN, CÓ LỚP NÔNG VÀ SÂU
                     </span>
                     <a
                       href="/anatomy/full-body-muscles-openstax.jpg"
@@ -743,24 +743,26 @@ export function BodyMapExplorer({
                 </div>
               )}
               {bodySide !== "openstax" && (
-                <MusclePlateCredit note="Vùng nhấn do app vẽ để tra cứu, không phải ranh giới cơ đã được duyệt." />
+                <MusclePlateCredit note="Vùng nhấn là vùng tra cứu do app vẽ; không biểu thị ranh giới cơ, cấu trúc sâu hoặc vị trí tổn thương." />
               )}
 
               {/* Color Legend */}
-              <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3 border-t border-rule pt-2 text-[11px] text-slate">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-cobalt" />
-                  Đang xem giải phẫu
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-crimson" />
-                  Bệnh lý / Điểm đau
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                  Cần chỉnh biên độ
-                </span>
-              </div>
+              {Object.keys(clientAlerts).length > 0 && (
+                <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3 border-t border-rule pt-2 text-[11px] text-slate">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-cobalt" />
+                    Đang xem giải phẫu
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-crimson" />
+                    Ghi nhận trong hồ sơ
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+                    Trùng từ khóa hồ sơ
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Clickable Region List */}
@@ -794,6 +796,7 @@ export function BodyMapExplorer({
 
         {/* Right column: Deep Anatomical & Biomechanical Card */}
         <div className="space-y-4 rounded-lg border border-rule bg-sheet p-5 shadow-xs">
+          <ClinicalEvidencePanel evidence={ANATOMY_REGION_EVIDENCE[activeRegion.id]} />
           {/* Header */}
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-rule pb-4">
             <div>
@@ -803,7 +806,7 @@ export function BodyMapExplorer({
                 </span>
                 {activeAlert && (
                   <span className="rounded bg-crimson-soft px-2.5 py-0.5 text-xs font-semibold text-crimson">
-                    Vùng tổn thương của {client?.name}
+                    Vùng liên quan hồ sơ của {client?.name}
                   </span>
                 )}
               </div>
@@ -839,7 +842,7 @@ export function BodyMapExplorer({
           {activeAlert && (
             <div className="rounded-md border border-crimson/30 bg-crimson-soft/50 p-3.5 text-xs">
               <p className="font-display font-bold text-crimson">
-                Hồ sơ của {client?.name} có ghi nhận liên quan vùng này:
+                Hồ sơ của {client?.name} có từ khóa liên quan vùng này (không xác định vị trí tổn thương):
               </p>
               {activeAlert.matchedConditions.length > 0 && (
                 <p className="mt-1 text-ink">
@@ -873,6 +876,35 @@ export function BodyMapExplorer({
             {activeRegion.biomechanicsKey}
           </div>
 
+          {/* Kiến thức nền giải phẫu, diễn đạt lại từ nguồn trong hồ sơ vùng */}
+          <div className="space-y-2">
+            <h3 className="font-display text-sm font-bold text-ink">Kiến thức nền</h3>
+            <ul className="space-y-1.5 rounded-md border border-rule bg-canvas/60 p-3.5 text-xs leading-6 text-slate">
+              {REGION_FOUNDATIONS[activeRegion.id].map((item) => (
+                <li key={item.text}>
+                  • {item.text}{" "}
+                  {item.sourceRefs.map((number) => {
+                    const source =
+                      ANATOMY_REGION_EVIDENCE[activeRegion.id].sources[number - 1];
+                    return (
+                      <a
+                        key={number}
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={`${source.title} · Đối chiếu ${source.checkedAt}`}
+                        className="ml-1 font-mono text-cobalt underline underline-offset-2"
+                        aria-label={`Nguồn ${number} cho kiến thức nền vùng ${activeRegion.name}`}
+                      >
+                        [{number}]
+                      </a>
+                    );
+                  })}
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* 2. Anatomical Structures (Origin - Insertion - Action) */}
           <div className="space-y-2">
             <h3 className="font-display text-sm font-bold text-ink">
@@ -894,6 +926,32 @@ export function BodyMapExplorer({
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Tình trạng thường gặp & hoạt động liên quan triệu chứng (dữ liệu đã có hồ sơ nguồn) */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-md border border-rule bg-canvas/50 p-3.5 text-xs">
+              <h3 className="font-display font-bold text-ink">Tình trạng thường gặp</h3>
+              <ul className="mt-2 space-y-1.5 text-slate">
+                {activeRegion.commonPathologies.map((item) => (
+                  <li key={item} className="leading-5">• {item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-md border border-rule bg-canvas/50 p-3.5 text-xs">
+              <h3 className="font-display font-bold text-ink">
+                Hoạt động thường liên quan triệu chứng
+              </h3>
+              <ul className="mt-2 space-y-1.5 text-slate">
+                {activeRegion.painTriggers.map((item) => (
+                  <li key={item} className="leading-5">• {item}</li>
+                ))}
+              </ul>
+              <p className="mt-2 leading-5 text-slate">
+                Liên quan triệu chứng không tự cho biết mô tổn thương; đánh giá cần bệnh sử
+                và thăm khám phù hợp.
+              </p>
             </div>
           </div>
 

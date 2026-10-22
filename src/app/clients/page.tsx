@@ -285,7 +285,7 @@ export default function ClientsPage() {
         </section>
 
         <section
-          className="panel min-w-0 p-5 sm:p-6"
+          className="panel min-w-0 p-5 sm:p-6 xl:sticky xl:top-24"
           aria-label="Tạo hồ sơ học viên"
         >
           <SectionHeading number="02" title="Học viên mới" />

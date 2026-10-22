@@ -3,12 +3,11 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { EmptyState, Icon, SectionHeading } from "@/components/WorkspaceUI";
+import { EmptyState, Icon } from "@/components/WorkspaceUI";
 import { ANATOMY_REGIONS } from "@/lib/clinical/anatomy-atlas";
 import {
   ATLAS_AREAS,
   ATLAS_LAYERS,
-  TISSUE_LABELS,
   isStructureVisible,
   searchStructures,
   type AtlasArea,
@@ -313,19 +312,6 @@ export default function Atlas3DExplorer({
 
   return (
     <section className="min-w-0 space-y-4" aria-label="Atlas 3D hệ vận động">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <SectionHeading number="3D" title="Hệ vận động" />
-          <p className="mt-2 max-w-2xl text-xs leading-6 text-slate">
-            Xoay mô hình, tách lớp và chọn cấu trúc để tra cứu. Bộ mô hình này
-            gồm hệ vận động; không bao gồm đầu và nội tạng.
-          </p>
-        </div>
-        <span className="badge bg-sheet text-slate">
-          Z-Anatomy · dữ liệu giải phẫu
-        </span>
-      </div>
-
       {focusedGroupId && (
         <div
           className="panel flex flex-wrap items-start justify-between gap-3 border-cobalt/25 bg-cobalt-soft/40 p-4"
@@ -436,7 +422,6 @@ export default function Atlas3DExplorer({
           <label className="flex min-h-11 flex-wrap items-center gap-3 text-xs font-medium text-ink">
             Chất lượng hình ảnh
             <select
-              aria-describedby="atlas-quality-help"
               value={quality}
               onChange={(event) =>
                 setQuality(event.target.value as RenderQuality)
@@ -448,13 +433,6 @@ export default function Atlas3DExplorer({
               <option value="detailed">Chi tiết</option>
             </select>
           </label>
-          <p
-            id="atlas-quality-help"
-            className="max-w-lg text-[11px] leading-5 text-slate"
-          >
-            Chi tiết tăng chiều sâu và bóng mềm. Chọn Nhanh nếu thao tác chưa
-            mượt.
-          </p>
         </div>
       </div>
 
@@ -525,15 +503,11 @@ export default function Atlas3DExplorer({
               </div>
             )}
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule px-4 py-3 text-[11px] leading-5 text-slate">
+          <div className="border-t border-rule px-4 py-3 text-[11px] leading-5 text-slate">
             <p>
               Kéo để xoay · Cuộn / chụm để thu phóng · Nhấp đúp để xem sát bề
               mặt
             </p>
-            <span className="font-mono">
-              {visibleCount} / {areaStructures.length} cấu trúc ·{" "}
-              {(bundle.bytes / 1024 / 1024).toFixed(1)} MB
-            </span>
           </div>
           <div
             className="flex flex-wrap gap-2 border-t border-rule p-3"
@@ -641,13 +615,6 @@ export default function Atlas3DExplorer({
                   hiddenIds,
                   isolatedId,
                 );
-                const state = hiddenIds.has(structure.id)
-                  ? "Đã ẩn"
-                  : !layers[structure.layer]
-                    ? "Lớp đang tắt"
-                    : isolatedId && isolatedId !== structure.id
-                      ? "Ngoài cấu trúc tách"
-                      : "Đang hiện";
                 return (
                   <li key={structure.id}>
                     <button
@@ -665,7 +632,7 @@ export default function Atlas3DExplorer({
                           {structure.label}
                         </span>
                         <span className="block text-[10px] leading-5 text-slate">
-                          {sideLabel(structure)} · {state}
+                          {sideLabel(structure)}
                         </span>
                       </span>
                     </button>
@@ -742,23 +709,6 @@ export default function Atlas3DExplorer({
                     <MuscleStudyCard muscle={muscleGroup} compact />
                   </div>
                 )}
-                {selected.surfaces && (
-                  <div className="border-t border-rule pt-3">
-                    <p className="text-xs font-semibold text-ink">
-                      Vùng vật liệu từ mô hình gốc
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {selected.surfaces.map((surface) => (
-                        <span
-                          key={surface.kind}
-                          className="badge bg-surface text-slate"
-                        >
-                          {TISSUE_LABELS[surface.kind]}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
                 <div className="border-t border-rule pt-3">
                   <p className="text-xs font-semibold text-ink">
                     Độ dày ước lượng từ hình học
@@ -819,23 +769,6 @@ export default function Atlas3DExplorer({
                       Ngữ cảnh theo vùng từ thư viện phục hồi khớp.
                     </p>
                   </details>
-                )}
-                {muscleGroup && (
-                  <div className="border-t border-rule pt-3">
-                    <p className="text-xs font-semibold text-ink">
-                      Nhóm cơ liên quan
-                    </p>
-                    <p className="mt-1 text-xs leading-5 text-slate">
-                      {muscleGroup.name}
-                    </p>
-                    <Link
-                      href={`/atlas?tab=hypertrophy&muscle=${encodeURIComponent(muscleGroup.id)}`}
-                      className="mt-2 inline-flex min-h-11 items-center gap-2 text-xs font-semibold text-cobalt"
-                    >
-                      Xem cơ bắp & bài tập
-                      <Icon name="arrow-right" className="size-3.5" />
-                    </Link>
-                  </div>
                 )}
                 <div className="space-y-2 border-t border-rule pt-3">
                   <Link

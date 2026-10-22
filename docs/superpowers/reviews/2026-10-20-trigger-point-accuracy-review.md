@@ -130,7 +130,31 @@ Phần này ghi lại các thay đổi phần mềm. Nó không phải phê duy�
 
 Ảnh tọa độ sau khi sửa: `assets/2026-10-20-trigger-review/after-overlays.png`.
 
+## Xử lý tiếp ngày 2026-10-20
+
+Phần này cũng không phải phê duyệt chuyên môn: mọi bản ghi vẫn ở trạng thái `reviewedBy: null`.
+
+1. **Hình lớp sâu có nguồn (đã làm).** Mỗi mục trong tab nay có khung cắt từ hình OpenStax có nhãn gốc, và app không vẽ thêm gì lên các hình này. Có hai hình:
+   - Hình 1105 (`full-body-muscles-openstax.jpg`) trùng SHA-1 với file trên Commons, giấy phép CC BY 4.0. Hình có nửa nông và nửa sâu, ghi nhãn cho pec minor, serratus anterior, iliopsoas, levator scapulae, teres minor, soleus…
+   - Hình 1122 (`glute-deep-openstax.jpg`, hồ sơ nguồn đã có từ trước) ghi nhãn cho QL, psoas major, iliacus, TFL, vastus lateralis, glute medius/minimus và piriformis.
+
+   Mỗi khung ghi rõ nhãn cần tìm. Riêng levator scapulae: nguồn văn bản đã đọc không mô tả lớp, nên app chỉ ghi rằng hình 1105 gắn nhãn nó ở nửa lớp sâu.
+2. **Tách các mục gộp (đã làm ở mức thành phần).** Mỗi mục nay liệt kê từng cơ thành phần với hai thông tin: lớp/vị trí (trích OpenStax §11.4–11.6, đọc ngày 2026-10-20) và việc nghiên cứu trigger point đã đọc có khảo sát cơ đó hay không. Đọc lại abstract ngày 2026-10-20 cho ba điểm chỉnh sau:
+   - Hidalgo-Lozano 2010 có khảo sát levator scapulae và pectoralis major, nên đã bổ sung nguồn này vào hai bản ghi tương ứng.
+   - Iglesias-González 2013 khảo sát psoas nhưng không khảo sát iliacus.
+   - Teres minor, pec minor, latissimus, serratus anterior, TFL, vastus lateralis, gastrocnemius, soleus và tibialis anterior không được nghiên cứu trigger point nào đã đọc khảo sát.
+
+   Phần nội dung thực hành (sờ, bài tập, chống chỉ định) chưa được viết riêng cho từng cơ. Viết riêng cần nguồn lâm sàng theo từng cơ, nên chưa làm để tránh tạo nội dung không có căn cứ.
+3. **Vùng/điểm không có hồ sơ nguồn riêng (đã đổi cách hiển thị).** Không vùng lan hay điểm nào có bản đồ nguồn riêng, vì Delphi 2018 nêu rằng không kỳ vọng vị trí hoặc vùng lan cố định. Vì vậy cách vẽ đã đổi để không còn giống bản đồ chuẩn:
+   - Dấu X kiểu Travell được thay bằng vòng đứt nét, chú giải “Vùng minh họa, chưa xác minh vị trí”.
+   - Vùng lan chuyển từ màu đỏ sang xám đứt nét, nhãn đổi thành “Lan đau?”, chú giải “Chưa có bản đồ nguồn riêng”.
+4. **Kiểm tra.** `check-trigger-evidence.mjs` nay kiểm tra thêm:
+   - mỗi mục có ít nhất một thành phần;
+   - mỗi thành phần có lớp/vị trí trích OpenStax hoặc ghi rõ nguồn không mô tả lớp;
+   - mỗi thành phần ghi nghiên cứu đã khảo sát kèm trích dẫn, hoặc ghi rõ chưa có;
+   - mỗi khung hình nằm trong kích thước ảnh nguồn và có nhãn cần tìm.
+
 **Còn mở:**
-- Hình lớp sâu có nguồn cho các cơ sâu, và tách các mục đang gộp nhiều cơ.
-- Chỉ vẽ vùng/điểm có hồ sơ nguồn riêng.
-- Duyệt độc lập của chuyên gia giải phẫu/lâm sàng.
+- Duyệt độc lập của chuyên gia giải phẫu/lâm sàng cho nội dung, bản dịch và ánh xạ không gian. Việc này không thể làm bằng phần mềm.
+- Nếu muốn có bản đồ vùng lan thật, cần nguồn mô tả vị trí cụ thể (đọc toàn văn) cho từng cơ trước khi vẽ lại.
+- Viết nội dung thực hành riêng cho từng cơ thành phần, có nguồn theo từng phát biểu.

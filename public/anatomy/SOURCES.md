@@ -19,7 +19,7 @@ Plate 294 shows intact gluteus maximus, the superior medius region/gluteal fasci
 
 The older, resized `hip-gluteal.jpg` (1280 × 1625) remains unchanged for the other muscle groups. The Mông deep view now uses the full-resolution asset above.
 
-This manifest covers these gluteal plates only; the remaining atlas assets still require their own provenance records.
+The records above cover the gluteal plates. Whole-body plates are documented below; other assets not listed here still require their own provenance records.
 
 ## Whole-body muscle plates (checked 2026-10-20)
 
@@ -43,9 +43,26 @@ That rendering is not byte-identical to the local file, but its content is the s
 - 889,212 of 889,245 visible pixels differ by less than 8/255 in every channel.
 - The remaining 33 pixels are isolated anti-aliased edge pixels, consistent with a re-run of the SVG rasterizer.
 
-The local file is therefore an unmodified rendering of that SVG. The crops are adaptations under CC BY-SA 4.0, and both screens that use them (Trigger Point and `BodyMapExplorer`) show the attribution through `src/components/MusclePlateCredit.tsx`.
+The pixel comparison supports identifying the local file as a rendering of that SVG; it does not establish the exact historical SVG revision or rasterizer. The crops are adaptations under CC BY-SA 4.0, and both screens that use them (Trigger Point symptom-region navigation and `BodyMapExplorer`) show the attribution through `src/components/MusclePlateCredit.tsx`.
 
 These consequences follow:
 - **Not an OpenStax original.** The plates are a simplified redraw, not the OpenStax original, and the posterior view was modified by the redrawer. They have not been compared with the OpenStax original or a current anatomy text, so their muscle borders and layers are unreviewed.
 - **Superficial layers only.** The plates show superficial layers. Deep muscles such as pectoralis minor, iliopsoas, quadratus lumborum, piriformis, gluteus minimus, teres minor and soleus (under gastrocnemius) are not exposed. Overlays placed on these plates are orientation regions, not muscle footprints.
 - **Overlays are not validated.** Trigger-point overlays, referred-pain zones and lookup regions drawn by the app are not part of the source. A valid source for the background does not validate them.
+
+## Labeled deep/superficial plate (checked 2026-10-20)
+
+`full-body-muscles-openstax.jpg` is unmodified from [1105 Anterior and Posterior Views of Muscles.jpg](https://commons.wikimedia.org/wiki/File:1105_Anterior_and_Posterior_Views_of_Muscles.jpg). Its local SHA-1 `8a3b1231f319214a74cffda6b70ff2c166e55a81` matches the SHA-1 that the Commons API reports for the current file, which is 1304 × 3033. The Commons record gives:
+- Artist: OpenStax.
+- Source: *Anatomy and Physiology* textbook, version 8.25.
+- Publication date: 2016-05-18.
+- License: CC BY 4.0.
+- First upload: 2013.
+
+The figure's own caption reads "Right side: superficial; left side: deep". The Trigger Point tab shows framed crops of this plate and of `glute-deep-openstax.jpg`, with their original labels. The app adds no overlays to either plate. Crops are framing only: they do not validate trigger-point locations or referral zones.
+
+## Trigger Point display follow-up (2026-10-22)
+
+The primary muscle illustrations now use only the two labeled OpenStax source plates above. Both local SHA-1 digests were compared again with Commons `imageinfo` API metadata on 2026-10-22: `8a3b1231f319214a74cffda6b70ff2c166e55a81` (1304 × 3033) and `48a26b0c6351a2052a16c4fcd338bc092505e492` (1713 × 2175), exact matches. Author/license/source records were accessed again on Commons. No image pixels were edited; framing and links to each full image retain the original labels and attribution.
+
+The simplified redraw remains only a symptom-region locator in this tab, with authored navigation regions explicitly identified. Unconfirmed trigger points, referral zones and muscle-territory overlays are withheld from runtime. The old coordinates remain legacy data for compatibility; being within a silhouette is not anatomical validation. Independent anatomical/clinical review remains pending.

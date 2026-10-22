@@ -1,19 +1,35 @@
 import { HANDBOOK } from "./movement-handbook";
 import { ROM_MOVEMENTS } from "./rom-norms";
+import { MOVEMENT_SOURCES } from "./movement-sources";
 import type { EvidenceRecord, EvidenceSource } from "./evidence-types";
 const source = (title: string, url: string, access: string): EvidenceSource => ({title,url,access,checkedAt:"2026-10-19"});
-const record = (sources: EvidenceSource[], supportedClaims: string[], limitations: string[] = []): EvidenceRecord => ({sources,supportedClaims,limitations:[...limitations,"Chưa được chuyên gia độc lập duyệt; đối chiếu nguồn không là xác nhận lâm sàng."],reviewedBy:null,status:"limited"});
-export const HANDBOOK_EVIDENCE: Record<string,EvidenceRecord> = Object.fromEntries(HANDBOOK.map(t=>[t.id,record(t.sources.map(s=>source(s.label,s.url,
-  s.label.startsWith("CDC") ? "Bảng 11 động tác theo tuổi/giới và mô tả mẫu" :
-  s.label.startsWith("JTSS") ? "Toàn văn: abstract, methods và results" :
-  s.label.startsWith("Parkinson") ? "Toàn văn: công thức, giới hạn ngưỡng và kết luận" :
-  s.label.startsWith("Keogh") ? "Toàn văn: abstract, methods và kết luận; không xác nhận mọi app" :
-  s.label.startsWith("Cochrane") ? "Bản tóm tắt công khai và kết luận tổng quan" : "Hồ sơ thư mục và abstract; không suy chi tiết ngoài abstract")),
-  ["Các nhận định trong bài ghi tên nguồn trong ngoặc vuông; nguồn chỉ hỗ trợ phạm vi được mô tả.","Các cue và cách ghi chép được đánh dấu ví dụ/quy ước của app; không là test hoặc phác đồ điều trị đã thẩm định."],
-  ["Không dùng điểm test, bất đối xứng hoặc trung bình ROM làm công cụ chẩn đoán/cấp phép tập."])]));
-export const ROM_EVIDENCE: Record<string,EvidenceRecord> = Object.fromEntries(ROM_MOVEMENTS.map(m=>[m.id,record([source(typeof m.means === "number" ? "JTSS 2023 · 300 người khỏe 18–29 tuổi" : "CDC/Soucie · 11 động tác, tuổi 2–69",m.source,typeof m.means === "number" ? "Toàn văn: mẫu, quy trình đo chủ động và kết quả" : "Bảng tham chiếu theo tuổi và giới")],
-  [typeof m.means === "number" ? "Giá trị là trung bình gộp của mẫu 18–29 tuổi; hai hướng nghiêng/xoay cổ hiển thị trung bình làm tròn, không là số riêng từng bên." : "Giá trị chép từ bảng CDC cho đúng động tác, nhóm tuổi và giới.","App chỉ hiển thị mức thay đổi thô; không suy cải thiện hoặc độ tin cậy từ danh mục dụng cụ."],
-  ["Trung bình không là ranh giới bệnh hoặc mục tiêu điều trị. Cần khớp quy trình đo và quần thể.","MDC của nghiên cứu gối i-Goni v1.1 (OA/sau thay khớp) không áp dụng tự động cho form hiện tại."])]));
+const record = (sources: EvidenceSource[], supportedClaims: string[], limitations: string[] = []): EvidenceRecord => ({sources,supportedClaims,limitations:[...limitations,"Nguồn hỗ trợ phạm vi được ghi trong từng mục; ví dụ của app không tự trở thành phép đo, chẩn đoán hoặc phác đồ cá nhân."],reviewedBy:null,status:"limited"});
+export const HANDBOOK_EVIDENCE: Record<string, EvidenceRecord> = Object.fromEntries(HANDBOOK.map(topic => [topic.id, {
+  sources: topic.sources.map(({title,url,access,checkedAt}) => ({title,url,access,checkedAt})),
+  supportedClaims: topic.keyPoints.map(point => {
+    const refs = (point.sourceIds ?? []).map(id => topic.sources.findIndex(s => s.id === id) + 1);
+    return `${refs.length ? `[${refs.join(',')}]` : '[Quy ước của app]'} ${point.title}: ${point.text}`;
+  }),
+  limitations: [
+    'Nguồn chỉ hỗ trợ nội dung và quần thể được chỉ rõ; xem phạm vi đọc và ngày kiểm tra của từng nguồn.',
+    'Ví dụ/cue và cách ghi chép của app không tự trở thành test chẩn đoán, dự báo nguy cơ hay phác đồ điều trị cá nhân.',
+    ...(topic.id === 'rom' ? ['CDC là ROM thụ động, JTSS là chủ động. Số trung bình và CI của trung bình không phải ngưỡng chẩn đoán. Không chuyển sai số của một app/quy trình sang form nhập số.'] : []),
+    ...(topic.id === 'control' ? ['Ưu thế hướng chú ý ngoài còn tranh luận về thiên lệch công bố. Cochrane 2016 tìm kiếm đến 04/2015; WHO quick guide không xác nhận từng cue của app.'] : []),
+    ...(topic.id === 'symmetry' ? ['TUG đo di chuyển chức năng; không phải chỉ số bất đối xứng. Không dùng LSI hay một tỷ lệ chung để cấp phép trở lại thể thao.'] : []),
+    ...(topic.id === 'patterns' ? ['Các nhóm mẫu là quy ước huấn luyện. Hình nghiên cứu là điều kiện đo ở người khỏe, không phải tư thế an toàn phổ quát.'] : []),
+  ],
+  reviewedBy: null,
+  status: 'limited',
+}]));
+export const ROM_EVIDENCE: Record<string, EvidenceRecord> = Object.fromEntries(ROM_MOVEMENTS.map(m => [m.id, record(
+  (typeof m.means === 'number' ? [MOVEMENT_SOURCES.jtss] : [MOVEMENT_SOURCES.cdc, MOVEMENT_SOURCES.soucie, MOVEMENT_SOURCES.cdcProtocol]).map(({title,url,access,checkedAt}) => ({title,url,access,checkedAt})),
+  [typeof m.means === 'number'
+    ? 'Giá trị tham chiếu ROM chủ động của mẫu 18–29 tuổi. Nghiêng/xoay cổ dùng số đại diện làm tròn từ số hai bên, không phải trung bình gộp do tác giả báo cáo.'
+    : 'Giá trị chép từ bảng ROM thụ động CDC cho đúng động tác, tuổi và giới; CI của trung bình không phải khoảng bình thường cá nhân.',
+   'App hiển thị mức thay đổi thô; không suy cải thiện hay độ tin cậy từ danh mục dụng cụ.'],
+  ['Trung bình không là ranh giới bệnh hoặc mục tiêu điều trị. Cần khớp loại đo chủ động/thụ động, quy trình và quần thể.',
+   'MDC của nghiên cứu gối i-Goni v1.1 (OA/sau thay khớp) không áp dụng tự động cho form hiện tại.']
+)]));
 export const SCREENING_EVIDENCE = record([
   source("CSEP · Pre-screening / Get Active Questionnaire","https://csep.ca/2021/01/20/pre-screening-for-physical-activity/","Hướng dẫn công khai; liên kết công cụ chính thức, không sao chép bản dịch"),
   source("NHS · Chest pain","https://www.nhs.uk/symptoms/chest-pain/","Dấu hiệu cần trợ giúp khẩn"),

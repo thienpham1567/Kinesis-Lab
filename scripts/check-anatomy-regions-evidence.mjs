@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
-import { ANATOMY_REGIONS, matchClientIssuesToRegions } from "../src/lib/clinical/anatomy-atlas.ts";
+import { readFileSync } from "node:fs";
+import vm from "node:vm";
+import ts from "typescript";
+import { ANATOMY_REGIONS, REGION_FOUNDATIONS, matchClientIssuesToRegions } from "../src/lib/clinical/anatomy-atlas.ts";
 import { ANATOMY_REGION_EVIDENCE } from "../src/lib/clinical/evidence-anatomy.ts";
 
 // Data and regression consistency only; this cannot establish medical accuracy.
@@ -10,14 +13,14 @@ let structures = 0;
 let sourceLinks = 0;
 for (const region of ANATOMY_REGIONS) {
   const evidence = ANATOMY_REGION_EVIDENCE[region.id];
-  assert.equal(evidence.reviewedBy, null, `${region.id}: expert review must remain pending`);
+  assert.equal(evidence.reviewedBy, null, `${region.id}: do not invent a reviewer`);
   assert.ok(["limited", "literature-reviewed"].includes(evidence.status));
   assert.ok(evidence.sources.length >= 5, `${region.id}: regional sources required`);
   assert.ok(evidence.supportedClaims.length >= 4, `${region.id}: field-level mappings required`);
   assert.ok(evidence.limitations.length >= 4, `${region.id}: explicit limits required`);
   for (const entry of evidence.sources) {
     assert.equal(new URL(entry.url).protocol, "https:");
-    assert.equal(entry.checkedAt, "2026-10-19");
+    assert.match(entry.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(entry.title.length > 10 && entry.access.length > 40);
   }
   for (const claim of evidence.supportedClaims) {
@@ -27,6 +30,19 @@ for (const region of ANATOMY_REGIONS) {
   }
   assert.equal(region.structures.length, 3);
   assert.equal(region.protocols.length, 2);
+  const foundations = REGION_FOUNDATIONS[region.id];
+  assert.equal(foundations.length, 3, `${region.id}: 3 foundation notes required`);
+  assert.ok(
+    evidence.supportedClaims.some((claim) => claim.includes("Kiến thức nền")),
+    `${region.id}: foundation claim mapping required`,
+  );
+  for (const item of foundations) {
+    assert.ok(item.text.length > 40, `${region.id}: foundation text required`);
+    assert.ok(item.sourceRefs.length > 0, `${region.id}: foundation source required`);
+    for (const index of item.sourceRefs) {
+      assert.ok(evidence.sources[index - 1], `${region.id}: invalid foundation source ${index}`);
+    }
+  }
   assert.ok(region.redFlags.length > 0);
   structures += region.structures.length;
   sourceLinks += evidence.sources.length;
@@ -40,4 +56,32 @@ const alert = matchClientIssuesToRegions({
   medical_conditions: [{ name: "đau gối", notes: "" }],
 });
 assert.equal(alert.knee.severity, "caution", "keyword overlap must not escalate urgency");
-console.log(`Region evidence consistency passed: ${ids.length}/8 regions, ${structures} structure summaries, ${sourceLinks} regional source links; expert review pending in all 8.`);
+
+// Extract the actual plate data without rendering its client hooks or replacing
+// sourceRefs with fixtures. Every visible note must resolve to regional sources.
+const diagramPath = new URL("../src/components/JointDiagramSvg.tsx", import.meta.url);
+const diagramSource = ts.createSourceFile(diagramPath.pathname, readFileSync(diagramPath, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+let platesInitializer;
+for (const statement of diagramSource.statements) {
+  if (!ts.isVariableStatement(statement)) continue;
+  for (const declaration of statement.declarationList.declarations) {
+    if (declaration.name.getText(diagramSource) === "REGION_PLATES") platesInitializer = declaration.initializer;
+  }
+}
+assert.ok(platesInitializer, "Actual regional plate data required");
+const plates = vm.runInNewContext(`(${platesInitializer.getText(diagramSource)})`);
+let plateCount = 0, noteCount = 0;
+assert.deepEqual(Object.keys(plates).sort(), [...ids].sort());
+for (const [regionId, regionalPlates] of Object.entries(plates)) {
+  for (const plate of regionalPlates) {
+    plateCount++;
+    for (const note of plate.landmarks) {
+      noteCount++;
+      assert.ok(note.sourceRefs.length, `${plate.id}/${note.code}: no source attached`);
+      for (const index of note.sourceRefs) assert.ok(Number.isInteger(index) && ANATOMY_REGION_EVIDENCE[regionId].sources[index - 1], `${plate.id}/${note.code}: invalid source ${index}`);
+    }
+  }
+}
+assert.equal(plateCount, 13);
+assert.equal(noteCount, 42);
+console.log(`Region evidence consistency passed: ${ids.length}/8 regions, ${structures} structure summaries, ${sourceLinks} regional source links, ${noteCount} notes across ${plateCount} plates; truthful source scopes and reviewer metadata.`);

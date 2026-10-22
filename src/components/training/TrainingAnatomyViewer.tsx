@@ -15,10 +15,7 @@ import {
   trainingHref,
 } from "@/lib/clinical/training-atlas";
 import type { CameraCommand } from "../atlas3d/types";
-import type {
-  AtlasPresentation,
-  RenderQuality,
-} from "../atlas3d/render-policy";
+import type { RenderQuality } from "../atlas3d/render-policy";
 import {
   preferredTrainingView,
   sourceStructureLabel,
@@ -49,7 +46,6 @@ export function TrainingAnatomyViewer({
   const [bones, setBones] = useState(true);
   const [allMuscles, setAllMuscles] = useState(false);
   const [quality, setQuality] = useState<RenderQuality>("auto");
-  const [presentation, setPresentation] = useState<AtlasPresentation>("dark");
   const [storedObservation, setObservation] = useState(() =>
     initialObservation("", "front-oblique"),
   );
@@ -213,17 +209,9 @@ export function TrainingAnatomyViewer({
       aria-label="Giải phẫu 3D liên quan bài tập"
     >
       <div className="space-y-3 p-4 sm:p-5">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <p className="eyebrow">Anatomy study · Z-Anatomy</p>
-            <h4 className="mt-1 text-lg font-semibold text-ink">
-              Cấu trúc cơ–xương của bài tập
-            </h4>
-          </div>
-          <span className="badge bg-surface text-slate">
-            Mô hình giải phẫu tĩnh
-          </span>
-        </div>
+        <h4 className="text-lg font-semibold text-ink">
+          Cấu trúc cơ–xương của bài tập
+        </h4>
         <label className="field-label">
           Nhóm cơ quan sát
           <select
@@ -241,29 +229,12 @@ export function TrainingAnatomyViewer({
           </select>
         </label>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-rule bg-surface/50 px-4 py-3">
+      <div className="border-t border-rule bg-surface/50 px-4 py-3">
         <p className="text-[11px] text-slate" aria-live="polite">
           {isolatedId
             ? "Đang tách riêng cấu trúc"
             : `${sourceOptions.length} cấu trúc cơ trong nhóm quan sát`}
         </p>
-        <div
-          role="group"
-          aria-label="Nền quan sát"
-          className="flex gap-1 rounded-lg border border-rule bg-white p-1"
-        >
-          {(["dark", "light"] as const).map((tone) => (
-            <button
-              key={tone}
-              type="button"
-              aria-pressed={presentation === tone}
-              onClick={() => setPresentation(tone)}
-              className={`min-h-9 rounded-md px-3 text-xs font-medium ${presentation === tone ? "bg-ink text-white" : "text-slate hover:bg-surface"}`}
-            >
-              {tone === "dark" ? "Nền tối" : "Nền sáng"}
-            </button>
-          ))}
-        </div>
       </div>
       <div
         className="relative h-[440px] min-w-0 bg-surface sm:h-[560px]"
@@ -284,7 +255,7 @@ export function TrainingAnatomyViewer({
           onStudyStatus={() => {}}
           muscleOpacity={1}
           quality={quality}
-          presentation={presentation}
+          presentation="dark"
           command={canvasCommand}
           onSelect={choose}
         />
@@ -426,8 +397,8 @@ export function TrainingAnatomyViewer({
         )}
         <p className="text-[11px] leading-5 text-slate">
           Kéo để xoay · Cuộn/chụm để phóng to · Nhấp cơ để tra cứu. Các mesh
-          được liên kết theo nhóm giáo dục, không phải bản đồ hoạt hóa. Chưa có
-          rig vận động hoặc ánh xạ điểm bám được chuyên gia duyệt.
+          được liên kết theo nhóm giáo dục. Màu nhóm không đo hoạt động cơ;
+          mô hình tĩnh không thể hiện lực cơ hoặc chuyển động bài tập.
         </p>
       </div>
     </section>

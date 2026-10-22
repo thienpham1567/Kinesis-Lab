@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
-import { MusclePlateCredit } from "./MusclePlateCredit";
+import { TriggerSourceAnatomy } from "./TriggerSourceAnatomy";
+import { TriggerPainLocator } from "./TriggerPainLocator";
 import { TRIGGER_POINT_EVIDENCE, TRIGGER_GENERAL_EVIDENCE } from "@/lib/clinical/evidence-trigger";
-import { useMemo, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import {
   CATEGORY_LABELS,
   PALPATION_FUNDAMENTALS,
@@ -18,223 +19,7 @@ import {
   type TriggerPointMuscle,
   type TriggerPointMuscleId,
 } from "@/lib/clinical/trigger-point-atlas";
-import type { ScientificReference } from "@/lib/clinical/muscle-hypertrophy-atlas";
-
 type LookupMode = "muscle_to_pain" | "pain_to_muscle" | "handbook";
-
-interface BodyHitZone {
-  id: string;
-  muscleId: TriggerPointMuscleId;
-  view: "anterior" | "posterior";
-  d: string;
-}
-
-/**
- * Coarse lookup regions on the 900×1620 body plates shared with Atlas (provenance unverified,
- * see public/anatomy/SOURCES.md). Regions are on-body orientation targets, not muscle borders.
- */
-const BODY_HIT_ZONES: BodyHitZone[] = [
-  {
-    id: "ant-pec",
-    muscleId: "pec_minor",
-    view: "anterior",
-    d: "M 332 315 C 390 305, 510 305, 568 315 L 592 482 C 520 498, 380 498, 308 482 Z",
-  },
-  {
-    id: "ant-serratus-l",
-    muscleId: "lats_serratus",
-    view: "anterior",
-    d: "M 286 432 L 335 445 L 338 525 L 300 548 L 290 490 Z",
-  },
-  {
-    id: "ant-serratus-r",
-    muscleId: "lats_serratus",
-    view: "anterior",
-    d: "M 614 432 L 565 445 L 562 525 L 600 548 L 610 490 Z",
-  },
-  {
-    id: "ant-psoas-l",
-    muscleId: "iliopsoas",
-    view: "anterior",
-    d: "M 320 600 L 442 610 L 430 780 L 305 760 Z",
-  },
-  {
-    id: "ant-psoas-r",
-    muscleId: "iliopsoas",
-    view: "anterior",
-    d: "M 458 610 L 580 600 L 595 760 L 470 780 Z",
-  },
-  {
-    id: "ant-tfl-l",
-    muscleId: "tfl_vastus_lateralis",
-    view: "anterior",
-    d: "M 285 775 L 442 785 L 432 1145 L 315 1145 Z",
-  },
-  {
-    id: "ant-tfl-r",
-    muscleId: "tfl_vastus_lateralis",
-    view: "anterior",
-    d: "M 458 785 L 615 775 L 585 1145 L 468 1145 Z",
-  },
-  {
-    id: "ant-shin-l",
-    muscleId: "soleus_gastroc",
-    view: "anterior",
-    d: "M 320 1190 L 426 1190 L 420 1330 L 402 1400 L 352 1400 L 335 1330 Z",
-  },
-  {
-    id: "ant-shin-r",
-    muscleId: "soleus_gastroc",
-    view: "anterior",
-    d: "M 580 1190 L 474 1190 L 480 1330 L 498 1400 L 548 1400 L 565 1330 Z",
-  },
-  {
-    id: "post-traps",
-    muscleId: "upper_trapezius",
-    view: "posterior",
-    d: "M 355 215 L 545 215 L 555 430 L 495 430 L 450 320 L 405 430 L 345 430 Z",
-  },
-  {
-    id: "post-levator-l",
-    muscleId: "levator_scapulae",
-    view: "posterior",
-    d: "M 345 300 C 385 270, 430 290, 445 340 L 430 400 L 350 400 Z",
-  },
-  {
-    id: "post-levator-r",
-    muscleId: "levator_scapulae",
-    view: "posterior",
-    d: "M 555 300 C 515 270, 470 290, 455 340 L 470 400 L 550 400 Z",
-  },
-  {
-    id: "post-infra-l",
-    muscleId: "infraspinatus",
-    view: "posterior",
-    d: "M 360 380 L 364 465 L 302 445 Z",
-  },
-  {
-    id: "post-infra-r",
-    muscleId: "infraspinatus",
-    view: "posterior",
-    d: "M 540 380 L 536 465 L 598 445 Z",
-  },
-  {
-    id: "post-lats-l",
-    muscleId: "lats_serratus",
-    view: "posterior",
-    d: "M 312 455 L 402 485 L 408 715 L 315 695 Z",
-  },
-  {
-    id: "post-lats-r",
-    muscleId: "lats_serratus",
-    view: "posterior",
-    d: "M 498 485 L 588 455 L 585 695 L 492 715 Z",
-  },
-  {
-    id: "post-ql",
-    muscleId: "quadratus_lumborum",
-    view: "posterior",
-    d: "M 345 600 L 555 600 L 530 750 L 370 750 Z",
-  },
-  {
-    id: "post-glute",
-    muscleId: "glute_med_piriformis",
-    view: "posterior",
-    d: "M 305 735 L 595 735 L 592 920 L 308 920 Z",
-  },
-  {
-    id: "post-calf-l",
-    muscleId: "soleus_gastroc",
-    view: "posterior",
-    d: "M 332 1100 L 440 1100 L 422 1400 L 418 1500 L 385 1500 L 352 1400 Z",
-  },
-  {
-    id: "post-calf-r",
-    muscleId: "soleus_gastroc",
-    view: "posterior",
-    d: "M 568 1100 L 460 1100 L 478 1400 L 482 1500 L 515 1500 L 548 1400 Z",
-  },
-];
-
-function ReferenceChips({ references }: { references: ScientificReference[] }) {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      {references.map((ref) => (
-        <a
-          key={ref.url}
-          href={ref.url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded border border-cobalt/30 bg-sheet px-2 py-0.5 text-[11px] font-medium text-ink transition-colors hover:border-cobalt hover:text-cobalt"
-        >
-          {ref.pmid && (
-            <span className="font-mono font-bold text-cobalt">
-              PMID:{ref.pmid}
-            </span>
-          )}
-          <span className="min-w-0 max-w-[320px] truncate">{ref.title}</span>
-          <span className="text-cobalt">↗</span>
-        </a>
-      ))}
-    </div>
-  );
-}
-
-function TravellX({
-  x,
-  y,
-  active,
-  dimmed,
-}: {
-  x: number;
-  y: number;
-  active: boolean;
-  dimmed?: boolean;
-}) {
-  const size = active ? 16 : 11;
-  const color = dimmed ? "#94a3b8" : active ? "#b42318" : "#8f4308";
-  return (
-    <g>
-      {active && (
-        <circle
-          cx={x}
-          cy={y}
-          r={28}
-          fill="#b42318"
-          fillOpacity="0.14"
-          stroke="#b42318"
-          strokeWidth="2"
-        />
-      )}
-      <line
-        x1={x - size}
-        y1={y - size}
-        x2={x + size}
-        y2={y + size}
-        stroke={color}
-        strokeWidth={active ? 5 : 3.5}
-        strokeLinecap="round"
-      />
-      <line
-        x1={x + size}
-        y1={y - size}
-        x2={x - size}
-        y2={y + size}
-        stroke={color}
-        strokeWidth={active ? 5 : 3.5}
-        strokeLinecap="round"
-      />
-      <circle
-        cx={x}
-        cy={y}
-        r={active ? 5 : 3.5}
-        fill="#ffffff"
-        stroke={color}
-        strokeWidth="2"
-      />
-    </g>
-  );
-}
 
 export function TriggerPointExplorer({
   initialMode = "muscle_to_pain",
@@ -252,31 +37,11 @@ export function TriggerPointExplorer({
   const [bodySide, setBodySide] = useState<"both" | "anterior" | "posterior">(
     "both",
   );
-  const [hoveredMuscleId, setHoveredMuscleId] =
-    useState<TriggerPointMuscleId | null>(null);
-  const [hoveredPainSiteId, setHoveredPainSiteId] = useState<PainSiteId | null>(
-    null,
-  );
-  const [hoveredNodeLabel, setHoveredNodeLabel] = useState<string | null>(null);
-
   const activeMuscle = getTriggerPointMuscle(selectedMuscleId);
-  const hoveredMuscle = hoveredMuscleId
-    ? getTriggerPointMuscle(hoveredMuscleId)
-    : null;
-  const hoveredPainSite = hoveredPainSiteId
-    ? getPainSite(hoveredPainSiteId)
-    : null;
-  const activePainSite = getPainSite(selectedPainSiteId);
-  const painCulprits = useMemo(
-    () => culpritMusclesForSite(activePainSite),
-    [activePainSite],
-  );
 
   const filteredMuscles = TRIGGER_POINT_MUSCLES.filter(
     (m) => categoryFilter === "all" || m.category === categoryFilter,
   );
-
-  const culpritIds = new Set(painCulprits.map((m) => m.id));
 
   function selectMuscle(id: TriggerPointMuscleId) {
     const muscle = getTriggerPointMuscle(id);
@@ -287,162 +52,9 @@ export function TriggerPointExplorer({
     }
   }
 
-  function renderFigure(side: "anterior" | "posterior", title: string, imageSrc: string) {
-    const muscleZones = activeMuscle.referredPain.filter((z) => z.view === side);
-    const hitZones = BODY_HIT_ZONES.filter((z) => z.view === side);
-    const allNodesOnSide = TRIGGER_POINT_MUSCLES.flatMap((m) =>
-      m.nodes
-        .filter((n) => n.view === side)
-        .map((n) => ({ node: n, muscle: m })),
-    );
-    const painSitesOnSide = PAIN_SITE_CULPRIT_MAP.filter((p) => p.view === side);
-
-    return (
-      <div className="flex flex-col items-center">
-        <span className="mb-1.5 font-mono text-[10px] font-bold tracking-wider text-slate">
-          {title}
-        </span>
-        <div className="relative w-full overflow-hidden rounded-md border border-rule bg-white">
-          <svg
-            viewBox="0 0 900 1620"
-            className={`w-full select-none ${bodySide === "both" ? "max-h-[340px]" : "max-h-[520px]"}`}
-            role="img"
-            aria-label={title}
-          >
-            <image
-              href={imageSrc}
-              x="0"
-              y="0"
-              width="900"
-              height="1620"
-              preserveAspectRatio="xMidYMid meet"
-            />
-
-            {lookupMode === "muscle_to_pain" &&
-              hitZones.map((z) => {
-                const isSelected = selectedMuscleId === z.muscleId;
-                const isHovered = hoveredMuscleId === z.muscleId;
-                let fill = "rgba(180, 35, 24, 0.0)";
-                let stroke = "rgba(180, 35, 24, 0.0)";
-                let strokeWidth = 0;
-                if (isSelected) {
-                  fill = isHovered
-                    ? "rgba(180, 35, 24, 0.22)"
-                    : "rgba(180, 35, 24, 0.12)";
-                  stroke = "#b42318";
-                  strokeWidth = 5;
-                } else if (isHovered) {
-                  fill = "rgba(180, 35, 24, 0.12)";
-                  stroke = "#e11d48";
-                  strokeWidth = 3;
-                }
-                return (
-                  <path
-                    key={z.id}
-                    d={z.d}
-                    fill={fill}
-                    stroke={stroke}
-                    strokeWidth={strokeWidth}
-                    strokeLinejoin="round"
-                    className="cursor-pointer"
-                    onMouseEnter={() => {
-                      setHoveredMuscleId(z.muscleId);
-                      setHoveredNodeLabel(null);
-                    }}
-                    onMouseLeave={() => setHoveredMuscleId(null)}
-                    onClick={() => selectMuscle(z.muscleId)}
-                  />
-                );
-              })}
-
-            {lookupMode === "pain_to_muscle" &&
-              painSitesOnSide.map((site) => {
-                const isSelected = site.id === selectedPainSiteId;
-                const isHovered = hoveredPainSiteId === site.id;
-                return (
-                  <path
-                    key={site.id}
-                    d={site.zoneD}
-                    fill={
-                      isSelected
-                        ? "rgba(180, 83, 9, 0.28)"
-                        : isHovered
-                          ? "rgba(180, 83, 9, 0.16)"
-                          : "rgba(180, 83, 9, 0.08)"
-                    }
-                    stroke={isSelected ? "#8f4308" : "#d97706"}
-                    strokeWidth={isSelected ? 5 : 3}
-                    strokeLinejoin="round"
-                    className="cursor-pointer"
-                    onMouseEnter={() => setHoveredPainSiteId(site.id)}
-                    onMouseLeave={() => setHoveredPainSiteId(null)}
-                    onClick={() => setSelectedPainSiteId(site.id)}
-                  aria-pressed={selectedPainSiteId === site.id}
-                  />
-                );
-              })}
-
-            {lookupMode === "muscle_to_pain" &&
-              muscleZones.map((zone, i) => (
-                <path
-                  key={`${side}-ref-${i}`}
-                  d={zone.d}
-                  fill="rgba(180, 35, 24, 0.18)"
-                  stroke="#b42318"
-                  strokeWidth="3"
-                  strokeDasharray="10 7"
-                  strokeLinejoin="round"
-                  pointerEvents="none"
-                />
-              ))}
-
-            {lookupMode === "muscle_to_pain" &&
-              muscleZones.map((zone, i) => (
-                <text
-                  key={`${side}-lab-${i}`}
-                  x={zone.labelX}
-                  y={zone.labelY}
-                  fontSize="22"
-                  fontWeight="800"
-                  fill="#b42318"
-                  pointerEvents="none"
-                >
-                  Lan đau
-                </text>
-              ))}
-
-            {allNodesOnSide.map(({ node, muscle }) => {
-              const isCulprit =
-                lookupMode === "pain_to_muscle" && culpritIds.has(muscle.id);
-              const isSelectedMuscle =
-                lookupMode === "muscle_to_pain" &&
-                muscle.id === selectedMuscleId;
-              const isHovered = hoveredMuscleId === muscle.id;
-              const active = isCulprit || isSelectedMuscle || isHovered;
-              const dimmed =
-                lookupMode === "pain_to_muscle" ? !isCulprit : !isSelectedMuscle;
-              return (
-                <g
-                  key={node.id}
-                  className="cursor-pointer"
-                  onMouseEnter={() => {
-                    setHoveredMuscleId(muscle.id);
-                    setHoveredNodeLabel(`${node.code} · ${node.locationLabel}`);
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredMuscleId(null);
-                    setHoveredNodeLabel(null);
-                  }}
-                  onClick={() => selectMuscle(muscle.id)}
-                >
-                  <TravellX x={node.x} y={node.y} active={active} dimmed={dimmed && !isHovered} />
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-      </div>
-    );
+  function selectPainSite(id: PainSiteId) {
+    setSelectedPainSiteId(id);
+    setBodySide(getPainSite(id).view);
   }
 
   return (
@@ -451,15 +63,15 @@ export function TriggerPointExplorer({
         <div className="grid w-full grid-cols-3 gap-1 rounded-lg border border-rule bg-canvas p-1 sm:inline-flex sm:w-auto">
           {(
             [
-              { id: "muscle_to_pain", label: "Cơ → vùng đau" },
-              { id: "pain_to_muscle", label: "Vùng đau → cơ" },
+              { id: "muscle_to_pain", label: "Tra cứu theo cơ" },
+              { id: "pain_to_muscle", label: "Tra cứu vùng đau" },
               { id: "handbook", label: "Cẩm nang sờ nắn" },
             ] as const
           ).map((mode) => (
             <button
               key={mode.id}
               type="button"
-              onClick={() => setLookupMode(mode.id)}
+              onClick={() => { setLookupMode(mode.id); setBodySide("both"); }}
                   aria-pressed={lookupMode === mode.id}
               className={`rounded px-3 py-1.5 text-xs font-bold transition-colors ${
                 lookupMode === mode.id
@@ -505,7 +117,8 @@ export function TriggerPointExplorer({
             <button
               key={m.id}
               type="button"
-              onClick={() => setSelectedMuscleId(m.id)}
+              onClick={() => selectMuscle(m.id)}
+              aria-pressed={m.id === selectedMuscleId}
               className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                 m.id === selectedMuscleId
                   ? "border-crimson bg-crimson text-white"
@@ -524,7 +137,7 @@ export function TriggerPointExplorer({
             <button
               key={site.id}
               type="button"
-              onClick={() => setSelectedPainSiteId(site.id)}
+              onClick={() => selectPainSite(site.id)}
                   aria-pressed={selectedPainSiteId === site.id}
               className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                 site.id === selectedPainSiteId
@@ -543,131 +156,10 @@ export function TriggerPointExplorer({
       ) : (
         <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
           <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-6.5rem)] lg:overflow-y-auto">
-            <div className="flex items-start justify-between gap-2 border-b border-rule pb-2.5">
-              <div className="min-w-0">
-                <h2 className="font-display text-sm font-bold text-ink">
-                  {lookupMode === "pain_to_muscle"
-                    ? "Vùng đau → Nội dung tham khảo"
-                    : "Vùng minh họa & đau lan (chưa xác minh)"}
-                </h2>
-                <p className="truncate text-[11px] text-slate">
-                  {lookupMode === "pain_to_muscle"
-                    ? "Nhấn vùng khách than đau trên hình"
-                    : "Nhấn vùng tra cứu hoặc dấu X trên hình"}
-                </p>
-              </div>
-              <div className="inline-flex shrink-0 rounded-md border border-rule bg-canvas p-0.5 text-[11px]">
-                {(
-                  [
-                    { id: "both", label: "2 mặt" },
-                    { id: "anterior", label: "Trước" },
-                    { id: "posterior", label: "Sau" },
-                  ] as const
-                ).map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => setBodySide(v.id)}
-                  aria-pressed={bodySide === v.id}
-                    className={`rounded px-2 py-0.5 font-semibold ${
-                      bodySide === v.id
-                        ? "bg-sheet text-ink shadow-2xs"
-                        : "text-slate"
-                    }`}
-                  >
-                    {v.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-2.5 flex min-h-[42px] flex-col justify-center rounded-md bg-surface/80 px-2.5 py-1.5 text-xs">
-              {lookupMode === "pain_to_muscle" ? (
-                <>
-                  <span className="font-display font-bold text-caution">
-                    {(hoveredPainSite ?? activePainSite).name}
-                  </span>
-                  <span className="text-[11px] text-slate">
-                    {culpritMusclesForSite(hoveredPainSite ?? activePainSite)
-                      .map((m) => m.shortName)
-                      .join(" · ")}{" "}
-                    là các nhóm cơ để tham khảo, chưa xác định nguồn đau
-                  </span>
-                </>
-              ) : hoveredMuscle ? (
-                <>
-                  <span className="font-display font-bold text-crimson">
-                    {hoveredMuscle.name}
-                  </span>
-                  <span className="font-mono text-[11px] text-slate">
-                    {hoveredNodeLabel ?? hoveredMuscle.latinName}
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="font-display font-bold text-crimson">
-                    {activeMuscle.name}
-                  </span>
-                  <span className="font-mono text-[11px] text-slate">
-                    {activeMuscle.latinName}
-                  </span>
-                </>
-              )}
-            </div>
-
-            <div className="my-2.5 rounded-md border border-rule bg-white p-2">
-              <div
-                className={`grid gap-2 ${bodySide === "both" ? "grid-cols-2" : "grid-cols-1"}`}
-              >
-                {(bodySide === "both" || bodySide === "anterior") &&
-                  renderFigure(
-                    "anterior",
-                    "Mặt trước",
-                    "/anatomy/muscles-anterior.png",
-                  )}
-                {(bodySide === "both" || bodySide === "posterior") &&
-                  renderFigure(
-                    "posterior",
-                    "Mặt sau",
-                    "/anatomy/muscles-posterior.png",
-                  )}
-              </div>
-
-              <div className="mt-2 flex flex-wrap items-center gap-3 border-t border-rule pt-2 text-[11px] text-slate">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-crimson">
-                  <span className="h-2 w-2 rounded-full bg-crimson" />
-                  Vùng tra cứu (không phải ranh giới cơ)
-                </span>
-                <span className="inline-flex items-center gap-1.5 font-semibold text-crimson">
-                  <span className="font-display text-sm leading-none">✕</span>
-                  Vùng minh họa, chưa xác minh vị trí
-                </span>
-                <span className="inline-flex items-center gap-1.5 font-semibold text-crimson">
-                  <span className="h-2 w-4 rounded-sm border border-dashed border-crimson bg-crimson/20" />
-                  Đau lan minh họa
-                </span>
-                {lookupMode === "pain_to_muscle" && (
-                  <span className="inline-flex items-center gap-1.5 font-semibold text-caution">
-                    <span className="h-2 w-2 rounded-full bg-caution" />
-                    Chỗ khách than đau
-                  </span>
-                )}
-                <span>Rê chuột / nhấn trên hình</span>
-              </div>
-              <MusclePlateCredit note="Dấu X, vùng tra cứu và vùng lan đau do app vẽ, chưa được chuyên gia duyệt." />
-            </div>
-
-            {lookupMode === "muscle_to_pain" && (
-              <div className="space-y-1">
-                {activeMuscle.nodes.map((n) => (
-                  <p key={n.id} className="text-[11px] leading-5 text-slate">
-                    <span className="font-mono font-bold text-crimson">
-                      {n.code}
-                    </span>{" "}
-                    · {n.locationLabel} ({n.view === "anterior" ? "trước" : "sau"})
-                  </p>
-                ))}
-              </div>
+            {lookupMode === "muscle_to_pain" ? (
+              <TriggerSourceAnatomy muscle={activeMuscle}/>
+            ) : (
+              <TriggerPainLocator selectedId={selectedPainSiteId} side={bodySide} onSide={setBodySide} onSelect={selectPainSite}/>
             )}
           </div>
 
@@ -676,7 +168,7 @@ export function TriggerPointExplorer({
               <MuscleClinicalPanel
                 muscle={activeMuscle}
                 onJumpToPainSite={(id) => {
-                  setSelectedPainSiteId(id);
+                  selectPainSite(id);
                   setLookupMode("pain_to_muscle");
                 }}
               />
@@ -734,15 +226,31 @@ function MuscleClinicalPanel({
           </span>
           {muscle.mechanism}
         </div>
-        {muscle.references.length > 0 && (
-          <div className="border-t border-crimson/15 pt-2">
-            <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase text-crimson">
-              Nguồn tham khảo (xem phạm vi ở trên):
-            </span>
-            <ReferenceChips references={muscle.references} />
-          </div>
-        )}
       </div>
+
+      <section className="space-y-2">
+        <h3 className="font-display text-base font-bold text-ink">
+          Thành phần, lớp giải phẫu và phạm vi nghiên cứu
+        </h3>
+        <div className="grid gap-2 md:grid-cols-2">
+          {muscle.components.map((c) => (
+            <div key={c.latin} className="rounded-md border border-rule bg-canvas/60 p-3 text-xs leading-5">
+              <p className="font-display font-bold text-ink">
+                {c.name} <span className="font-mono text-[11px] font-normal text-slate">{c.latin}</span>
+              </p>
+              <p className="mt-1 text-ink">
+                <strong>Lớp/vị trí: </strong>
+                {c.layer}
+              </p>
+              <p className="mt-1 text-slate">
+                <strong>Nghiên cứu trigger point: </strong>
+                {c.trpStudy}
+              </p>
+            </div>
+          ))}
+        </div>
+
+      </section>
 
       {relatedSites.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -764,18 +272,18 @@ function MuscleClinicalPanel({
 
       <section className="space-y-2">
         <h3 className="font-display text-base font-bold text-ink">
-          1. Cách PT sờ nắn &amp; cảm nhận
+          1. Trao đổi triệu chứng &amp; giới hạn tiếp xúc
         </h3>
         <div className="grid gap-2 text-xs md:grid-cols-2">
           <PalpationCard label="Tư thế học viên" value={muscle.palpation.clientPosition} />
           <PalpationCard
-            label="Kỹ thuật"
+            label="Thuật ngữ kỹ thuật"
             value={muscle.palpation.technique}
             accent
           />
-          <PalpationCard label="Mốc xương" value={muscle.palpation.bonyLandmarks} />
+          <PalpationCard label="Mô tả vùng, không phải tọa độ ấn" value={muscle.palpation.bonyLandmarks} />
           <PalpationCard
-            label="Cảm giác dưới ngón"
+            label="Giới hạn tiếp xúc"
             value={muscle.palpation.underFingerFeel}
           />
         </div>
@@ -830,6 +338,7 @@ function MuscleClinicalPanel({
         <h3 className="font-display text-base font-bold text-ink">
           3. Các lựa chọn và giới hạn thực hành
         </h3>
+        <p className="text-xs leading-6 text-slate">Các mục dưới là ví dụ thực hành do ứng dụng biên soạn để chọn theo triệu chứng và khả năng. Chúng không phải trình tự điều trị đã được nghiên cứu cho từng cơ; có thể bỏ qua mục mô mềm.</p>
         <ol className="grid gap-2.5">
           <ProtocolStep
             n={1}
@@ -952,7 +461,7 @@ function PainSitePanel({
 
       <div className="rounded-md border border-rule bg-surface/70 p-3.5 text-xs leading-6 text-ink">
         <strong>Giới hạn tra cứu: </strong>
-        Bản đồ là sơ đồ giáo dục chưa được thẩm định vị trí. Đau tái hiện khi sờ không xác nhận một cơ là nguồn đau duy nhất; không dùng dấu X để tự ấn sâu hoặc loại trừ bệnh khớp, thần kinh, mạch máu hay nội tạng.{" "}
+        Vùng chọn triệu chứng chỉ giúp điều hướng; chưa có nguồn ánh xạ các tọa độ trigger point hoặc vùng đau lan cũ. Đau tái hiện khi sờ không xác nhận một cơ là nguồn đau duy nhất; không dùng hình minh họa để tự ấn sâu hoặc loại trừ bệnh khớp, thần kinh, mạch máu hay nội tạng.{" "}
         {culprits[0] && (
           <Link
             href={`/?prompt=${encodeURIComponent(culprits[0].sampleAiPrompt)}`}
@@ -1035,7 +544,7 @@ function HandbookPanel() {
 
       <section>
         <h3 className="font-display text-base font-bold text-ink">
-          Thang lực ấn an toàn
+          Giới hạn tiếp xúc và dấu hiệu cần dừng
         </h3>
         <div className="mt-2 grid gap-2 md:grid-cols-3">
           {f.pressureScale.map((p) => (
@@ -1071,17 +580,11 @@ function HandbookPanel() {
 
       <div className="rounded-md border border-cleared/30 bg-cleared-soft/50 p-3.5 text-xs leading-6 text-ink">
         <span className="font-display font-bold text-cleared">
-          Foam roll không nghiền mô sẹo:{" "}
+          Foam roll: bằng chứng và giới hạn cơ chế:{" "}
         </span>
         {f.smrMechanism}
       </div>
 
-      <div className="border-t border-rule pt-3">
-        <span className="mb-1.5 block font-mono text-[10px] font-bold uppercase text-cobalt">
-          Nguồn cẩm nang
-        </span>
-        <ReferenceChips references={f.references} />
-      </div>
     </div>
   );
 }

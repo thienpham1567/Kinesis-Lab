@@ -28,11 +28,11 @@ export function MuscleStudyCard({
       <p className="text-sm leading-6 text-ink">{muscle.summary}</p>
       <ClinicalEvidencePanel evidence={MUSCLE_GROUP_EVIDENCE[muscle.id]} />
       <div className="divide-y divide-rule">
-        {muscle.subdivisions.map((s) => (
+        {muscle.subdivisions.map((s, index) => (
           <details
             key={s.id}
             className="py-3"
-            open={compact ? undefined : true}
+            open={compact ? undefined : index === 0}
           >
             <summary className="cursor-pointer text-sm font-semibold text-ink">
               {s.name}
@@ -58,8 +58,8 @@ export function MuscleStudyCard({
         ))}
       </div>
       <p className="border-t border-rule pt-3 text-[11px] leading-5 text-slate">
-        Mô tả theo nhóm cơ và tài liệu được liệt kê. Vị trí bám chưa được ánh xạ
-        và chuyên gia duyệt trên từng mesh 3D.
+        Mô tả theo nhóm cơ và tài liệu được liệt kê. Mesh 3D minh họa cấu trúc từ
+        mô hình nguồn; không thể hiện điểm bám hoặc đường sợi đo trên từng người.
       </p>
     </section>
   );

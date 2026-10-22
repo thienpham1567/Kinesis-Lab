@@ -14,6 +14,7 @@
     "check:atlas-detail": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-tissue-detail.mjs",
     "check:atlas-evidence": "node scripts/check-atlas-evidence.mjs",
     "rea": "bash scripts/rea.sh",
+    "check:ncsf-quiz": "node scripts/check-ncsf-quiz.mjs && node scripts/ncsf-coverage.mjs",
     "check:training-observation": "node --experimental-transform-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --disable-warning=ExperimentalWarning scripts/check-training-observation.mjs"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "next": "16.4.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-pdf": "^11.0.0",
     "three": "^0.186.1",
     "unpdf": "^1.8.1"
   },

@@ -399,31 +399,6 @@ select:focus {
 .workspace-footer {
   padding-bottom: 86px;
 }
-.consultation-grid {
-  display: grid;
-  gap: 20px;
-  min-width: 0;
-}
-.consultation-reference {
-  min-width: 0;
-}
-.consultation-chat {
-  min-width: 0;
-}
-.consultation-case {
-  border: 1px solid var(--rule);
-  border-radius: 12px;
-  padding: 16px;
-  text-align: left;
-  background: var(--sheet);
-  transition:
-    border-color 150ms,
-    background 150ms;
-}
-.consultation-case:hover {
-  border-color: var(--cobalt);
-  background: var(--cobalt-soft);
-}
 .chat-composer:focus-within {
   border-color: var(--cobalt);
   box-shadow: 0 0 0 3px var(--cobalt-soft);
@@ -461,20 +436,6 @@ select:focus {
 @media (min-width: 640px) {
   .workspace-main {
     padding: 32px 28px 40px;
-  }
-}
-@media (min-width: 1024px) {
-  .consultation-grid {
-    grid-template-columns: minmax(0, 1fr) 260px;
-    align-items: start;
-  }
-  .consultation-reference {
-    grid-column: 2;
-    grid-row: 1;
-  }
-  .consultation-chat {
-    grid-column: 1;
-    grid-row: 1;
   }
 }
 @media (min-width: 1280px) {

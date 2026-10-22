@@ -20,11 +20,11 @@ export function ClinicalEvidencePanel({
             ? "Dữ liệu nguồn"
             : evidence.status === "limited"
               ? "Đối chiếu có giới hạn"
-              : "Đã đối chiếu tài liệu"}{" "}
-          · Chờ chuyên gia duyệt
+              : "Đã đối chiếu tài liệu"}
         </span>
       </summary>
       <div className="mt-3 space-y-3">
+        <p className="text-slate">Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.</p>
         <ul className="list-disc space-y-1 pl-4">
           {evidence.supportedClaims.map((c) => (
             <li key={c}>{c}</li>

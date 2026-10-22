@@ -90,7 +90,7 @@ export interface HypertrophyExercise {
   targets: ExerciseMuscleTarget[];
 }
 
-/** Educational source comparison; every item still awaits qualified expert review.
+/** Educational source comparison with per-claim scope and simulation limits.
  * Claim scope and source access dates: evidence-muscle.ts.
  * Exercise examples/cues are coaching options, not validated prescriptions.
  * Legacy lengthened/shortened field names do not establish a measured resistance profile.
@@ -305,8 +305,8 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
   },
   {
     "id": "deltoids",
-    "name": "Cơ Delta & Nhóm Chóp Xoay",
-    "latinName": "M. Deltoideus (Clavicularis, Acromialis, Spinalis) & Rotator Cuff",
+    "name": "Cơ Delta",
+    "latinName": "M. Deltoideus (Clavicularis, Acromialis, Spinalis)",
     "category": "upper_push",
     "views": [
       "anterior",
@@ -373,7 +373,7 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
         "ptCorrection": "Thử giảm tải và điều chỉnh đường nâng, biên độ; không cố giữ bả vai bất động."
       }
     ],
-    "sampleAiPrompt": "Giải thích giải phẫu và các lựa chọn tập Cơ Delta & Nhóm Chóp Xoay, dẫn nguồn cho từng nhận định; phân biệt kết quả nghiên cứu với gợi ý thực hành, không chẩn đoán từ cảm giác mỏi và không khẳng định một bài tối ưu cho mọi người."
+    "sampleAiPrompt": "Giải thích giải phẫu và các lựa chọn tập Cơ Delta, dẫn nguồn cho từng nhận định; phân biệt kết quả nghiên cứu với gợi ý thực hành, không chẩn đoán từ cảm giác mỏi và không khẳng định một bài tối ưu cho mọi người."
   },
   {
     "id": "biceps_forearm",
@@ -384,7 +384,7 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
       "anterior"
     ],
     "summary": "Cơ nhị đầu cánh tay có đầu dài và đầu ngắn, cùng góp phần gập khuỷu và ngửa cẳng tay. Cơ cánh tay và cánh tay–quay cũng gập khuỷu.",
-    "hypertrophyScience": "Vị trí vai, khuỷu và tay cầm thay đổi yêu cầu cơ học của bài cuốn. Các nguồn giải phẫu được kiểm tra không xác lập bài nào cô lập một đầu hoặc thay đổi riêng đỉnh bắp tay; cần nghiên cứu tập luyện trực tiếp cho từng biến thể.",
+    "hypertrophyScience": "Attarieh et al. (2025) và Larsen et al. (2026) không thấy ưu thế kích thước rõ giữa các tư thế vai trong giao thức cuốn cáp ghép đường lực. Kobayashi et al. (2026): incline/preacher tạ đơn cho khác biệt theo cơ, nhưng tổng cơ gập khuỷu không khác rõ. Các kết quả này không chứng minh cô lập đầu dài/ngắn hoặc thay đổi riêng đỉnh bắp tay.",
     "plateSrc": "/anatomy/biceps-triceps-forearm-openstax.jpg",
     "plateTitle": "OpenStax — Giải phẫu Biceps Brachii (Đầu Dài/Ngắn), Brachialis, Brachioradialis & Cẳng Tay",
     "plateCredit": "OpenStax Anatomy & Physiology 2e (Rice University, CC BY 4.0)",
@@ -398,6 +398,23 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
         "title": "OpenStax Anatomy and Physiology 2e — 11.5 Muscles of the Pectoral Girdle and Upper Limbs",
         "source": "OpenStax / Rice University",
         "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs"
+      },
+      {
+        "title": "Comparison Between Shoulder Flexed and Extended Positions in Elbow Flexion Resistance Training on Regional Hypertrophy and Maximum Strength: Preacher versus Bayesian Cable Curls",
+        "source": "Attarieh et al. (2025), European Journal of Sport Science; abstract",
+        "pmid": "40082069",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40082069/"
+      },
+      {
+        "title": "The effects of shoulder extension angle on elbow flexor hypertrophy in the cable curl exercise",
+        "source": "Larsen et al. (2026), Frontiers in Physiology; publisher text",
+        "url": "https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2026.1750722/full"
+      },
+      {
+        "title": "Exercise-specific preferential hypertrophy of individual elbow flexor muscles after incline versus preacher dumbbell curl training",
+        "source": "Kobayashi et al. (2026), Journal of Sports Sciences; abstract only",
+        "pmid": "42829982",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/42829982/"
       }
     ],
     "subdivisions": [
@@ -456,9 +473,9 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
     "plateCredit": "OpenStax Anatomy & Physiology 2e (Rice University, CC BY 4.0)",
     "references": [
       {
-        "title": "Texas Tech University Health Sciences Center El Paso — Anatomy Tables: Pectoral Region & Breast",
+        "title": "Texas Tech University Health Sciences Center El Paso — Anatomy Tables: Muscles",
         "source": "University anatomy teaching tables",
-        "url": "https://anatomy.ttuhscep.edu/musculoskeletal_system/pectoral_tables.html"
+        "url": "https://anatomy.ttuhscep.edu/anatomytables/muscles_alpha.html"
       },
       {
         "title": "Triceps brachii hypertrophy is substantially greater after elbow extension training performed in the overhead versus neutral arm position",
@@ -642,7 +659,7 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
       "anterior"
     ],
     "summary": "Tứ đầu đùi gồm cơ thẳng đùi và ba cơ rộng, đều duỗi gối; cơ thẳng đùi còn đi qua háng. Nhóm cơ khép gồm nhiều cơ, có điểm bám và chức năng khác nhau.",
-    "hypertrophyScience": "Kubo et al. ghi nhận tăng thể tích cơ duỗi gối sau squat 10 tuần, nhưng cơ thẳng đùi không tăng rõ. Pedrosa et al. khảo sát các biên độ duỗi gối và thấy khác biệt tại một số vùng đo. Chưa thể suy ra một bài bắt buộc hoặc tối ưu cho mọi người.",
+    "hypertrophyScience": "Kubo et al.: squat 10 tuần làm tăng nhóm duỗi gối, nhưng thẳng đùi không tăng rõ. Pedrosa et al. ghi nhận đáp ứng theo vùng với các biên độ duỗi gối. Larsen et al. (2025): duỗi gối ở 40° gập háng làm tăng độ dày thẳng đùi nhiều hơn 90° trong thử nghiệm 10 tuần ở nam chưa tập; không khác rõ cơ rộng ngoài. Góc gập háng không đồng nghĩa góc lưng ghế.",
     "plateSrc": "/anatomy/hip-gluteal.jpg",
     "plateTitle": "OpenStax — Giải phẫu 4 Đầu Cơ Tứ Đầu Đùi (Quadriceps) & Nhóm Cơ Khép Đùi (Adductors)",
     "plateCredit": "OpenStax Anatomy & Physiology 2e (Rice University, CC BY 4.0)",
@@ -663,6 +680,12 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
         "source": "Pedrosa et al. (2022; online 2021), European Journal of Sport Science",
         "pmid": "33977835",
         "url": "https://pubmed.ncbi.nlm.nih.gov/33977835/"
+      },
+      {
+        "title": "The effects of hip flexion angle on quadriceps femoris muscle hypertrophy in the leg extension exercise",
+        "source": "Larsen et al. (2025; online 2024), Journal of Sports Sciences; abstract",
+        "pmid": "39699974",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/39699974/"
       }
     ],
     "subdivisions": [

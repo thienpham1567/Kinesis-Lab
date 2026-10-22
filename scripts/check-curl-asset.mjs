@@ -5,7 +5,7 @@ const base=new URL('../public/anatomy/3d/motion/',import.meta.url);
 assert(existsSync(new URL('cable-curl-left.glb',base)),'source-anatomy curl asset must exist');
 const info=JSON.parse(readFileSync(new URL('cable-curl-left.json',base)));
 assert.equal(info.reviewedBy,null);assert.equal(info.status,'experimental-simulation');assert(info.limitations.length>=4);
-assert(info.sources.some(s=>s.url.includes('openstax.org')&&s.checkedAt==='2026-10-20'));
+assert(info.sources.some(s=>s.url.includes('openstax.org')&&/^\d{4}-\d{2}-\d{2}$/.test(s.checkedAt)));
 assert.equal(info.motion.durationSeconds,6);assert.equal(info.motion.variant,'single-arm-low-cable-curl-study');
 assert(info.rig.weighting.includes('authored'));
 assert.deepEqual(info.structures.filter(s=>s.role==='elbow-flexor').map(s=>s.english).sort(), ['Brachialis muscle','Brachioradialis muscle','Long head of biceps brachii','Short head of biceps brachii'].sort());
@@ -18,7 +18,7 @@ for(const mesh of gltf.meshes)for(const p of mesh.primitives){assert(p.attribute
 const ids=info.structures.map(s=>s.id);assert.equal(new Set(ids).size,ids.length);
 const catalog=JSON.parse(readFileSync(new URL('../public/anatomy/3d/manifest.json',import.meta.url)));
 for(const id of ids)assert(catalog.structures.some(s=>s.id===id),'derived geometry must retain known source ID');
-console.log('Curl asset: source identity, pending review, authored rig limits, skinning, animation and byte budget passed.');
+console.log('Curl asset: source identity, truthful reviewer metadata, authored rig limits, skinning, animation and byte budget passed.');
 const THREE=await import('three');
 const {GLTFLoader}=await import('three/addons/loaders/GLTFLoader.js');
 const array=bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength);

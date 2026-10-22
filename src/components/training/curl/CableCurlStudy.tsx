@@ -151,13 +151,13 @@ export function CableCurlStudy() {
   return (
     <section className="panel overflow-hidden" aria-labelledby={`${controlId}-title`}>
       <header className="space-y-3 border-b border-rule p-4 sm:p-5">
-        <p className="eyebrow">Bản mẫu chuyển động · Chờ chuyên gia duyệt</p>
+        <p className="eyebrow">Mô phỏng gập khuỷu · Chuyển động được dựng</p>
         <h3 id={`${controlId}-title`} className="text-lg font-semibold text-ink sm:text-xl">
           Gập khuỷu — tham chiếu cuốn cáp một tay
         </h3>
         <p className="max-w-3xl text-sm leading-6 text-slate">
           Khám phá mô hình giải phẫu tay trái từ Z-Anatomy. Chuyển động và trọng số biến dạng
-          được dựng cho bản mẫu; chưa được chuyên gia xác nhận.
+          được dựng để minh họa; không phải chuyển động hay biến dạng mô đo từ người tập.
         </p>
       </header>
 

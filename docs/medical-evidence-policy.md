@@ -12,7 +12,9 @@ User requirement recorded 2026-10-19: anatomical and medical accuracy takes prec
 
 ## Review status
 
-“Literature checked” records a source comparison only. A named qualified clinician/anatomist must independently review content and its spatial 3D mapping before that mapping is described as clinically/anatomically validated. Store reviewer identity/date explicitly; keep them null until review occurs. Automated tests check software/data consistency, not medical truth. Do not label the app “medical standard”, certified, fully verified or clinically validated without the corresponding review/authorization.
+User decision recorded **2026-10-22**: reputable-source comparison is the acceptance criterion for Atlas educational knowledge. Independent expert signoff is optional, not a product or release prerequisite. Do not attach a universal “waiting for expert approval” badge or defer supported educational content for lack of a reviewer.
+
+“Literature checked” records the specific source comparison and access scope. Reviewer identity/date, where retained, are factual metadata and stay null if no such review occurred; they do not block use of the content. Automated tests check software/data consistency, not medical truth. Do not invent certification, professional approval, measured anatomy or diagnostic accuracy. Source-only geometry and authored simulations must remain distinguishable from sourced anatomical facts.
 
 ## Current coverage (integration 2026-10-20)
 
@@ -22,7 +24,11 @@ All 1,031 catalog structure IDs resolve to a separate `source-only` record. The 
 
 The existing bilateral gluteus medius detailed record remains in `src/lib/clinical/anatomy-evidence.mjs`. Broader source/claim records live in `evidence-anatomy.ts`, `evidence-muscle.ts`, `evidence-trigger.ts` and `evidence-assessment.ts` under `src/lib/clinical/`; catalog bookkeeping is in `catalog-evidence.json`. The integrated inventory and lookup are in `evidence-registry.ts`; the knowledge library provides search by record, domain, status and source. Source checked dates and access scopes remain those of the actual domain research, not the integration date.
 
-Every record keeps `reviewedBy: null`. Independent clinician/anatomist review of content, translations and spatial mapping remains pending. Mesh regions are Z-Anatomy classifications; material maps and procedural movement studies are display simulations, not measured anatomy or validated muscle deformation. There is no validated source-to-mesh fascicle map; the geometry-inferred fan prototype remains withheld from runtime.
+Records keep `reviewedBy: null` because no independent review has occurred, not because expert signoff is required. Mesh regions are Z-Anatomy classifications; material maps and procedural movement studies are display simulations, not measured anatomy or validated muscle deformation. There is no source-supported fascicle-to-mesh map; the geometry-inferred fan prototype remains withheld for that evidentiary gap.
+
+Movement source update 2026-10-22: the four handbook lessons now share an explicit catalog (`movement-sources.ts`) with 18 sources, 20 core points, adjacent claim links and actual reading scopes/dates. Original licensed figures have separate provenance under `public/movement/SOURCES.md`. CDC limb ROM is labeled passive and JTSS spine ROM active; rounded neck side representatives are not a reported pooled mean. Details and verification limits are recorded in `docs/superpowers/reviews/2026-10-22-movement-sourced-core.md`.
+
+Foundations update 2026-10-22: each of the 8 regions now carries 3 short gross-anatomy foundation notes paraphrased in Vietnamese from OpenStax *Anatomy and Physiology 2e* sections already in that region's source list (§7.3 vertebral column, §8.3 pelvic girdle, §9.6 selected synovial joints, §11.6 lower limb; re-read 2026-10-22). `REGION_FOUNDATIONS` in `anatomy-atlas.ts` stores claim-level source indices; each region record has a matching “Kiến thức nền” supported-claim line. The previously recorded `commonPathologies` and `painTriggers` fields are now displayed with an explicit non-diagnostic note. This adds textbook gross anatomy only; it does not upgrade the 1,031 `source-only` catalog structures, which still have no per-structure sourced knowledge. Details in `docs/superpowers/reviews/2026-10-22-atlas-foundations.md`.
 
 ## Assistant context and search
 
@@ -32,4 +38,4 @@ Public literature searches use only a fixed topic vocabulary selected from the c
 
 ## Regression checks
 
-`scripts/check-evidence-coverage.mjs` checks the exact finite ID inventory, no silent coverage gaps, record/source metadata, pending reviewer state, catalog provenance, unknown/prototype IDs, retrieval relevance, bounded context and route integration. Domain-specific scripts retain their narrower checks. These checks establish software/data consistency only; they cannot establish medical truth or clinical validation. Research and integration limits are recorded in `docs/superpowers/reviews/2026-10-20-evidence-integration.md` and the earlier domain review notes.
+`scripts/check-evidence-coverage.mjs` checks the exact finite ID inventory, no silent coverage gaps, record/source metadata, truthful reviewer fields, catalog provenance, unknown/prototype IDs, retrieval relevance, bounded context and route integration. Domain-specific scripts retain their narrower checks. These checks establish software/data consistency only; they cannot establish medical truth or clinical validation. Research and integration limits are recorded in `docs/superpowers/reviews/2026-10-20-evidence-integration.md` and the later domain review notes.

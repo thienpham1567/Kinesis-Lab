@@ -141,7 +141,8 @@ export default function HipMaterialStudyControls({
           >
             khớp háng
           </a>
-          . Chưa có đánh giá chuyên gia cho độ chính xác của bản mẫu.
+          . Các tài liệu này không cung cấp texture chụp mô hay độ dày mô được đo
+          cho mô hình đang hiển thị.
         </p>
       </details>
     </section>

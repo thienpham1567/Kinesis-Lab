@@ -23,10 +23,10 @@ for (const [items, evidence, count] of [
   assert.deepEqual(Object.keys(evidence).sort(), items.map(item => item.id).sort(), "Evidence must cover exactly the live IDs");
   for (const item of items) {
     const entry = evidence[item.id];
-    assert.equal(entry.reviewedBy, null, `${item.id}: expert review must stay pending`);
+    assert.equal(entry.reviewedBy, null, `${item.id}: do not invent a reviewer`);
     assert.ok(["limited", "literature-reviewed"].includes(entry.status));
     assert.ok(entry.sources.length && entry.supportedClaims.length && entry.limitations.length);
-    assert.ok(entry.limitations.some(limit => limit.includes("reviewedBy = null")));
+    assert.ok(entry.limitations.some(limit => /nguồn|phạm vi|mô phỏng|sơ đồ|EMG|mesh|cá nhân/.test(limit)), `${item.id}: retain specific source/application limits`);
     for (const source of entry.sources) {
       assert.match(source.url, /^https:\/\//);
       assert.match(source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
@@ -58,5 +58,5 @@ assert.equal(MUSCLE_GROUP_ATLAS.flatMap(group => group.subdivisions).length, 27)
 assert.equal(HYPERTROPHY_EXERCISES.flatMap(exercise => exercise.targets).length, 32);
 assert.equal(MUSCLE_EVIDENCE_REVIEW.reviewedBy, null);
 assert.equal(MUSCLE_EVIDENCE_REVIEW.reviewedAt, null);
-assert.equal(MUSCLE_EVIDENCE_REVIEW.spatialMappingStatus, "pending-qualified-expert-review");
-console.log("Muscle evidence integrity: 11 groups, 27 subdivisions, 13 exercises, 32 qualitative targets covered; expert review pending.");
+assert.equal(MUSCLE_EVIDENCE_REVIEW.spatialMappingStatus, "source-model-unverified");
+console.log("Muscle evidence integrity: 11 groups, 27 subdivisions, 13 exercises, 32 qualitative targets covered; source scope and truthful reviewer metadata checked.");

@@ -106,12 +106,7 @@ function AtlasPageInner() {
         eyebrow="Cấu trúc · Chuyển động · Ứng dụng"
         title="Atlas giải phẫu"
         description={TAB_COPY[atlasTab].subtitle}
-      >
-        <span className="badge hidden bg-sheet text-cleared sm:inline-flex">
-          <Icon name="target" className="size-3.5" />
-          Tra cứu tương tác
-        </span>
-      </PageHeading>
+      />
       <div
         className="tab-bar grid grid-cols-2 sm:grid-cols-4"
         aria-label="Nội dung Atlas"

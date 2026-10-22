@@ -667,7 +667,7 @@
     {
       "title": "OpenStax Anatomy and Physiology 2e §11.5 — Muscles That Move the Forearm",
       "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
-      "checkedAt": "2026-10-20",
+      "checkedAt": "2026-10-22",
       "access": "Full section text, forearm-flexor paragraphs; supports biceps brachii, brachialis and brachioradialis elbow-flexion function only."
     },
     {
@@ -686,6 +686,6 @@
     "Highlight identifies teaching structures, not EMG, force, percentage activation or phase-dependent recruitment.",
     "Range and timing are display choices, not individualized exercise instructions.",
     "Single arm only; grip, shoulder/scapular stabilization and cable/hand contact are not biomechanically validated.",
-    "Independent clinician/anatomist review of geometry, movement and mapping remains pending."
+    "Source-mesh geometry and authored movement illustrate a teaching model; no measured patient-specific attachments, fascicles, forces or tissue deformation."
   ]
 }

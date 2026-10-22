@@ -41,12 +41,12 @@ for (const record of records) {
   assert.equal(record.reviewedBy, null);
   assert.ok(["limited", "literature-reviewed"].includes(record.status));
   assert.ok(record.supportedClaims.length > 0 && record.limitations.length > 0);
-  assert.ok(record.limitations.some((text) => text.includes("chuyên môn") || text.includes("chuyên gia")));
+  assert.ok(record.limitations.some((text) => /nguồn|phạm vi|mô phỏng|đối chiếu|Đối chiếu|sơ đồ/.test(text)), 'specific source/application limits required');
   assert.ok(record.sources.length > 0);
   for (const source of record.sources) {
     assert.ok(source.title && source.access);
     assert.match(source.url, /^https:\/\//);
-    assert.equal(source.checkedAt, "2026-10-19");
+    assert.match(source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
   }
 }
 for (const muscle of atlas.TRIGGER_POINT_MUSCLES) {
@@ -57,7 +57,19 @@ for (const muscle of atlas.TRIGGER_POINT_MUSCLES) {
     assert.ok(node.id && node.locationLabel.includes("không"));
     assert.ok(Number.isFinite(node.x) && Number.isFinite(node.y));
   }
-  assert.ok(muscle.referredPain.every((zone) => zone.description.includes("minh họa")));
+  assert.ok(muscle.referredPain.every((zone) => zone.description.includes("minh họa") && zone.description.includes("chưa xác minh")));
+  assert.ok(muscle.components.length > 0, `${muscle.id}: components`);
+  for (const component of muscle.components) {
+    assert.ok(component.name && component.latin && component.trpStudy, `${muscle.id}: component fields`);
+    assert.match(component.layer, /\[OpenStax §11\.[456]\]|không mô tả lớp/, `${muscle.id}/${component.latin}: layer must cite OpenStax or say it is undescribed`);
+    assert.match(component.trpStudy, /\[[^\]]+\]|^Chưa có nghiên cứu/, `${muscle.id}/${component.latin}: study coverage must cite or state no checked study`);
+  }
+  assert.ok(muscle.plateViews.length > 0, `${muscle.id}: sourced plate views`);
+  for (const view of muscle.plateViews) {
+    const plate = atlas.SOURCE_PLATES[view.plate];
+    const [x, y, w, h] = view.crop;
+    assert.ok(plate && view.labels.length > 0 && x >= 0 && y >= 0 && x + w <= plate.width && y + h <= plate.height, `${muscle.id}: plate crop within ${view.plate}`);
+  }
   assert.ok(muscle.protocol.step1Release.tool && muscle.protocol.step2Mobility && muscle.protocol.step3Activation && muscle.protocol.step4LoadCue);
 }
 for (const site of atlas.PAIN_SITE_CULPRIT_MAP) {
@@ -120,12 +132,9 @@ function offBodyShare(onBody, d) {
   return off / inside;
 }
 const plates = { anterior: pngAlpha("public/anatomy/muscles-anterior.png"), posterior: pngAlpha("public/anatomy/muscles-posterior.png") };
-const explorer = readFileSync(path.resolve(root, "src/components/TriggerPointExplorer.tsx"), "utf8");
-const lookupRegions = [...explorer.matchAll(/id: "([^"]+)",\s*muscleId: "[^"]+",\s*view: "(anterior|posterior)",\s*d: "([^"]+)"/g)];
-assert.ok(lookupRegions.length >= 19, "lookup regions parsed");
 const MAX_OFF_BODY = 0.15;
 const zones = [
-  ...lookupRegions.map(([, id, view, d]) => [`lookup ${id}`, view, d]),
+  // Legacy point/referral data is retained for compatibility but withheld from the UI.
   ...atlas.TRIGGER_POINT_MUSCLES.flatMap((m) => m.referredPain.map((z, i) => [`referral ${m.id}[${i}]`, z.view, z.d])),
   ...atlas.PAIN_SITE_CULPRIT_MAP.map((s) => [`pain site ${s.id}`, s.view, s.zoneD]),
 ];
@@ -146,4 +155,4 @@ for (const muscle of atlas.TRIGGER_POINT_MUSCLES) {
 const runtimeText =JSON.stringify([atlas.PALPATION_FUNDAMENTALS, atlas.TRIGGER_POINT_MUSCLES, atlas.PAIN_SITE_CULPRIT_MAP]);
 assert.doesNotMatch(runtimeText, /28973518|18164338|30756327|21946988|17197231|20038718|16089175|23993790|20598206|27583147/);
 assert.doesNotMatch(runtimeText, /VAS 5|VAS 4|45–90s|60–90s|trong 24 giờ|trong 5 phút|≤10%/);
-console.log(`Trigger evidence bookkeeping: ${ids.length} muscles, ${atlas.PAIN_SITE_CULPRIT_MAP.length} pain sites, ${records.length} evidence records; all pending independent clinical/spatial review.`);
+console.log(`Trigger evidence bookkeeping: ${ids.length} groups, ${atlas.PAIN_SITE_CULPRIT_MAP.length} symptom sites, ${records.length} source-scope records; no invented reviewer.`);

@@ -108,16 +108,7 @@ export function TrainingAtlasExplorer({
   const related = exercisesForMuscle(HYPERTROPHY_EXERCISES, muscle.id);
   return (
     <section className="min-w-0 space-y-4" aria-label="Atlas dành cho PT">
-      <div className="panel flex flex-wrap items-center justify-between gap-4 p-4 sm:p-5">
-        <div>
-          <p className="eyebrow">PT · Cơ — Khớp — Bài tập</p>
-          <h2 className="mt-1 text-xl font-semibold tracking-tight text-ink">
-            Hiểu chuyển động. Dạy rõ hơn.
-          </h2>
-          <p className="mt-1 text-xs leading-5 text-slate">
-            13 mục bài tập · 11 nhóm cơ · thông tin có nguồn và giới hạn áp dụng
-          </p>
-        </div>
+      <div className="flex flex-wrap items-center justify-end gap-4">
         <div
           className="grid w-full grid-cols-2 gap-1 rounded-lg border border-rule bg-canvas p-1 sm:w-auto"
           role="group"
@@ -376,13 +367,7 @@ export function TrainingAtlasExplorer({
                         <p className="mt-1 text-xs leading-5 text-slate">
                           {t.targetedHeads}
                         </p>
-                        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-                          <button
-                            className="text-xs font-semibold text-cobalt underline"
-                            onClick={() => goMuscle(m.id)}
-                          >
-                            Giải phẫu & bài liên quan
-                          </button>
+                        <div className="mt-2">
                           <Link
                             className="text-xs font-semibold text-cobalt underline"
                             href={atlasGroupHref(m.id)}
@@ -420,12 +405,6 @@ export function TrainingAtlasExplorer({
                     </p>
                   </div>
                 </div>
-                <p className="mt-4 border-t border-rule pt-3 text-[11px] leading-5 text-slate">
-                  Gợi ý huấn luyện để điều chỉnh theo khả năng và đáp ứng, chưa
-                  là phác đồ điều trị được chuyên gia duyệt. {exercise.id === "bayesian-incline-curl"
-                    ? "Bản mẫu chuyển động chỉ minh họa gập khuỷu, chưa xác thực kỹ thuật cuốn cáp toàn thân hoặc chỉ định tải/biên độ cho học viên."
-                    : "Mô hình giải phẫu hiện tại là tĩnh, không mô phỏng bài tập hoặc chỉ định tải/biên độ cho học viên."}
-                </p>
               </section>
             </>
           ) : (

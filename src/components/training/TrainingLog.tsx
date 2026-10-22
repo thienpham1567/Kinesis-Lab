@@ -110,7 +110,7 @@ function TrainingLogWorkspace({ clientId, initialExerciseId }: TrainingLogProps)
       <div className="panel min-w-0 p-4 sm:p-6">
         <p className="eyebrow">Theo dõi buổi tập</p>
         <h2 className="mt-2 font-display text-xl font-semibold text-ink">Nhật ký tập luyện</h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate">Ghi lại bài đã tập, tải, số hiệp và phản hồi. Các số liệu do người dùng nhập; nhật ký không tự xác định mức tải phù hợp hoặc cấp phép tập luyện.</p>
+        <p className="mt-2 text-sm leading-relaxed text-slate">Ghi lại bài đã tập, tải, số hiệp và phản hồi.</p>
         <form onSubmit={save} className="mt-5 min-w-0 space-y-4" aria-busy={saving}>
           <div className="grid min-w-0 gap-4 sm:grid-cols-2">
             <label htmlFor={`${fieldId}-date`} className="min-w-0 text-sm font-medium text-ink">Ngày tập

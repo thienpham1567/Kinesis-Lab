@@ -25,6 +25,13 @@ for(const english of ['Oblique head of adductor hallucis','Oblique head of adduc
  const s=manifest.structures.find(s=>s.english===english);assert(s);
  assert.equal(trainingGroupForStructure(s),null,english+' must not inherit an unsupported training group');
 }
+for (const [name, group] of [['pectineus','quads_adductors'],['tibialis anterior','calves']]) {
+ const matches=manifest.structures.filter(s=>s.layer==='muscle'&&s.english.toLowerCase().includes(name));
+ assert(matches.length>0, `${name}: actual source meshes required`);
+ for(const structure of matches)assert.equal(trainingGroupForStructure(structure),group,`${name}: teaching membership must match its card`);
+ assert.equal(trainingGroupForStructure({english:matches[0].english,layer:'bone'}),null,'membership requires a muscle-layer structure');
+}
+assert.equal(muscles.find(m=>m.id==='deltoids').name,'Cơ Delta','card title must match its actual three deltoid subdivisions');
 for(const m of muscles)assert(matchingGroupStructures(manifest.structures,m.id).length>0,m.id);
 
 for (const exercise of exercises) {

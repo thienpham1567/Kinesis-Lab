@@ -13,7 +13,8 @@ export type RomMovement = {
   region: string;
   label: string;
   sides: RomSide[];
-  // CDC: age bands [2–8, 9–19, 20–44, 45–69]; spine: pooled mean, ages 18–29 only.
+  // CDC passive ROM: age bands [2–8, 9–19, 20–44, 45–69]. Spine: active ROM,
+  // ages 18–29; lateral flexion/rotation use rounded representative side values.
   means: Record<Sex, number[]> | number;
   sem?: Partial<Record<RomInstrument, number>>;
   source: string;
@@ -91,14 +92,15 @@ export function normFor(movementId: string, age: number | null, sex: string | nu
   if (!m) return { reason: "Động tác chưa có chuẩn tham chiếu" };
   if (typeof m.means === "number") {
     if (age == null || !Number.isFinite(age) || age < 18 || age > 29) return { reason: "JTSS chỉ khảo sát người khỏe 18–29 tuổi; không ngoại suy" };
-    return { mean: m.means, population: "Trung bình gộp người khỏe 18–29 tuổi, goniometer kỹ thuật số (JTSS 2023); không là mục tiêu điều trị" };
+    const representative = ["cervical_lateral_flexion", "cervical_rotation"].includes(m.id);
+    return { mean: m.means, population: `${representative ? "Số đại diện làm tròn từ số hai bên" : "Trung bình mẫu"} người khỏe 18–29 tuổi, ROM chủ động, goniometer kỹ thuật số (JTSS 2023); không là mục tiêu điều trị` };
   }
   const s = parseSex(sex);
   if (age == null || s == null) return { reason: "Cần tuổi và giới trong hồ sơ để so chuẩn" };
   if (!Number.isFinite(age) || age < 2 || age > 69) return { reason: "Dữ liệu CDC chỉ trong khoảng 2–69 tuổi; không ngoại suy" };
   const band = BANDS.findIndex((b) => age <= b.max);
   const sexLabel = s === "F" ? "Nữ" : "Nam";
-  const population = `${sexLabel} ${BANDS[band].label} (CDC; trung bình mẫu, không là ngưỡng chẩn đoán)`;
+  const population = `${sexLabel} ${BANDS[band].label} (CDC; ROM thụ động / PROM, trung bình mẫu, không là ngưỡng chẩn đoán)`;
   return { mean: m.means[s][band], population };
 }
 

@@ -41,8 +41,8 @@ export interface AnatomyRegion {
   sampleAiPrompt: string;
 }
 
-// Educational text and field-level source mappings were compared on 2026-10-19.
-// See evidence-anatomy.ts; clinician/anatomist review and spatial validation remain pending.
+// Educational region text and joint annotation sources rechecked 2026-10-22.
+// See evidence-anatomy.ts for claim scope; source anatomy does not establish mesh mapping.
 export const ANATOMY_REGIONS: AnatomyRegion[] = [
   {
     "id": "cervical",
@@ -160,7 +160,7 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
       }
     ],
     "redFlags": [
-      "Đau vai kèm đau/tức ngực lan tay, cổ hoặc lưng, khó thở hay vã mồ hôi: ngừng tập và gọi cấp cứu ngay.",
+      "Đau/tức ngực đột ngột không giảm; đau ngực lan tay, cổ hoặc lưng; hoặc đau ngực kèm khó thở, vã mồ hôi hay choáng: ngừng tập và gọi cấp cứu ngay.",
       "Đau vai đột ngột dữ dội, không cử động được tay, biến dạng/sưng lớn hoặc đau sau ngã/chấn thương: cần đánh giá y tế khẩn; không tự kết luận đứt chóp xoay."
     ],
     "protocols": [
@@ -228,7 +228,7 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
       }
     ],
     "redFlags": [
-      "Đau/tức ngực mới, kéo dài hoặc lan tay/cổ/lưng, kèm khó thở, vã mồ hôi hay choáng: ngừng tập và gọi cấp cứu ngay."
+      "Đau/tức ngực đột ngột không giảm; đau ngực lan tay/cổ/lưng; hoặc đau ngực kèm khó thở, vã mồ hôi hay choáng: ngừng tập và gọi cấp cứu ngay."
     ],
     "protocols": [
       {
@@ -295,7 +295,7 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
       }
     ],
     "redFlags": [
-      "Tê mới vùng yên ngựa, khó bắt đầu tiểu/bí tiểu hoặc mất kiểm soát tiểu tiện/đại tiện, đặc biệt cùng đau lưng/đau chân: đi cấp cứu ngay để loại trừ chùm đuôi ngựa.",
+      "Tê mới vùng yên ngựa, khó bắt đầu tiểu/bí tiểu, mất kiểm soát tiểu tiện/đại tiện hoặc tê/yếu nặng hay tăng dần ở cả hai chân, đặc biệt cùng đau lưng/đau chân: đi cấp cứu ngay để loại trừ chùm đuôi ngựa.",
       "Yếu chân mới xuất hiện hoặc tăng dần, đau lưng kèm sốt, sụt cân không rõ nguyên nhân hoặc chấn thương: cần được đánh giá y tế sớm/khẩn theo biểu hiện."
     ],
     "protocols": [
@@ -528,7 +528,7 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
       "posterior"
     ],
     "summary": "Cổ chân và bàn chân tham gia chịu lực và vận động. Cơ bụng chân và cơ dép truyền lực qua gân Achilles tới xương gót; một giá trị gập mu chân không đủ giải thích mọi thay đổi squat hoặc chẩn đoán bệnh.",
-    "biomechanicsKey": "Cơ bụng chân đi qua gối và cổ chân; cơ dép không đi qua gối. Với bệnh gân Achilles đoạn giữa đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân theo khả năng và giáo dục; không áp trực tiếp cho đứt gân hoặc mọi đau gót.",
+    "biomechanicsKey": "Cơ bụng chân đi qua gối và cổ chân; cơ dép không đi qua gối. Với bệnh gân Achilles đoạn giữa đã được đánh giá, hướng dẫn 2024 ưu tiên tải gân theo khả năng và giáo dục khi không nghi suy yếu cấu trúc gân; không áp trực tiếp cho đứt gân hoặc mọi đau gót.",
     "structures": [
       {
         "name": "Cơ bụng chân & cơ dép",
@@ -587,6 +587,130 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
     "sampleAiPrompt": "Giải thích khác biệt cơ bụng chân–cơ dép và phạm vi hướng dẫn Achilles đoạn giữa 2024. Nêu cách theo dõi triệu chứng, giới hạn knee-to-wall và dấu hiệu cần khám khẩn; không tự đặt chẩn đoán từ số đo."
   }
 ];
+
+/**
+ * Kiến thức nền theo vùng, diễn đạt lại tiếng Việt từ nguồn giải phẫu đã ghi
+ * trong evidence-anatomy.ts (OpenStax Anatomy and Physiology 2e, CC BY 4.0;
+ * đọc lại 2026-10-22). sourceRefs là số thứ tự nguồn trong hồ sơ của vùng.
+ * Đây là giải phẫu đại thể, không phải đo lường trên mô hình 3D hay chẩn đoán.
+ */
+export const REGION_FOUNDATIONS: Record<
+  AnatomyRegionId,
+  { text: string; sourceRefs: number[] }[]
+> = {
+  cervical: [
+    {
+      text: "Đốt đội C1 không có thân đốt hay mỏm gai; khớp đội–chẩm cho đầu gập và duỗi, như động tác gật đầu.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Đốt trục C2 có mấu răng làm trục xoay; khớp đội–trục cho đầu xoay sang hai bên, như động tác lắc đầu.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Mặt khớp đốt cổ tương đối phẳng và hướng lên/xuống, nên vùng cổ vận động được nhiều ở gập, duỗi, nghiêng và xoay.",
+      sourceRefs: [1],
+    },
+  ],
+  shoulder: [
+    {
+      text: "Khớp vai (glenohumeral) là khớp chỏm–ổ giữa chỏm xương cánh tay và ổ chảo xương bả vai; đây là khớp có biên độ vận động lớn nhất cơ thể.",
+      sourceRefs: [10],
+    },
+    {
+      text: "Độ linh hoạt đó đổi lấy độ ổn định thấp hơn: bao khớp tương đối lỏng, khớp dựa nhiều vào dây chằng và nhóm cơ chóp xoay để giữ vững.",
+      sourceRefs: [10, 12],
+    },
+    {
+      text: "Sụn viền ổ chảo, bao khớp và màng hoạt dịch cùng tham gia cấu trúc khớp hoạt dịch của vai.",
+      sourceRefs: [10, 12],
+    },
+  ],
+  thoracic_core: [
+    {
+      text: "Đốt ngực có diện khớp với đầu xương sườn và củ sườn; lồng ngực gắn vào cột sống ngực nên vùng này vận động ít hơn cổ và thắt lưng.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Mỏm gai đốt ngực dài và chúc xuống chồng lên đốt dưới, góp phần hạn chế duỗi và nghiêng ở vùng ngực.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Đường cong ngực là đường cong nguyên phát, lồi ra sau; đường cong cổ và thắt lưng là cong thứ phát, lõm ra sau, hình thành khi trẻ tập giữ đầu, đứng và đi.",
+      sourceRefs: [1],
+    },
+  ],
+  lumbar: [
+    {
+      text: "Thân đốt thắt lưng lớn và dày vì vùng này chịu phần trọng lượng cơ thể lớn nhất trong các vùng đốt sống.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Hướng mặt khớp thắt lưng cho phép gập, duỗi và nghiêng khá nhiều, nhưng hạn chế xoay rõ rệt.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Giữa các thân đốt là đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy dạng gel ở giữa; đĩa vừa đệm vừa cho phép vận động giữa các đốt.",
+      sourceRefs: [1],
+    },
+  ],
+  hip_pelvis: [
+    {
+      text: "Khớp háng là khớp chỏm–ổ đa trục giữa chỏm xương đùi và ổ cối; khớp cần vừa ổn định để đứng và đi, vừa đủ biên độ vận động.",
+      sourceRefs: [8],
+    },
+    {
+      text: "Dây chằng quanh khớp háng khỏe và căng khi đứng thẳng, kéo chỏm xương đùi vào ổ cối; vì vậy biên độ háng hẹp hơn vai nhưng ổn định hơn.",
+      sourceRefs: [8],
+    },
+    {
+      text: "Vòng chậu nối với cột sống qua khớp cùng–chậu và nối hai bên qua khớp mu; đai chậu vận động rất ít vì phải nâng đỡ và ổn định thân.",
+      sourceRefs: [10],
+    },
+  ],
+  thigh_hamstring: [
+    {
+      text: "Mạc sâu chia đùi thành ba khoang: khoang trong khép đùi tại háng, khoang trước gập đùi và duỗi cẳng chân, khoang sau gập cẳng chân và duỗi đùi.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Nhóm tứ đầu gồm bốn cơ dùng chung gân tứ đầu qua bánh chè, tiếp nối thành dây chằng bánh chè bám vào lồi củ chày.",
+      sourceRefs: [1],
+    },
+    {
+      text: "Nhóm gân kheo ở mặt sau đùi gồm cơ nhị đầu đùi, cơ bán gân và cơ bán màng; gân của chúng tạo nên hố khoeo sau gối.",
+      sourceRefs: [1],
+    },
+  ],
+  knee: [
+    {
+      text: "Khớp gối gồm ba khớp trong một bao khớp: khớp chè–đùi và hai khớp đùi–chày trong, ngoài.",
+      sourceRefs: [6],
+    },
+    {
+      text: "Gối vận động chủ yếu như khớp bản lề cho gập và duỗi, kết hợp lăn và trượt của lồi cầu đùi trên mâm chày; gối gập thì xoay được ít, duỗi thẳng thì không.",
+      sourceRefs: [6],
+    },
+    {
+      text: "Khi duỗi hết, xương đùi xoay trong nhẹ so với xương chày để khóa gối ở tư thế ổn định nhất; bắt đầu gập, cơ khoeo xoay ngược lại để mở khóa.",
+      sourceRefs: [6],
+    },
+  ],
+  ankle_foot: [
+    {
+      text: "Khớp sên–cẳng chân (talocrural) giữa xương sên với đầu dưới xương chày và xương mác là khớp bản lề một trục, chỉ cho gập mu và gập lòng bàn chân.",
+      sourceRefs: [8],
+    },
+    {
+      text: "Lật trong và lật ngoài bàn chân đến từ khớp dưới sên và các khớp giữa các xương cổ chân, không phải từ khớp sên–cẳng chân.",
+      sourceRefs: [8],
+    },
+    {
+      text: "Dây chằng bên ngoài, gồm sên–mác trước và mác–gót, chống lật trong quá mức; phức hợp dây chằng delta bên trong chống lật ngoài quá mức.",
+      sourceRefs: [8],
+    },
+  ],
+};
 
 export interface ClientRegionAlert {
   regionId: AnatomyRegionId;

@@ -42,10 +42,10 @@ const NAV: {
   },
   {
     href: "/knowledge",
-    label: "Thư viện y văn",
-    short: "Y văn",
+    label: "Giáo trình NCSF",
+    short: "NCSF",
     icon: "book",
-    description: "Giáo trình & PubMed",
+    description: "Đọc giáo trình & làm đề",
   },
 ];
 
@@ -100,16 +100,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Link>
           ))}
         </nav>
-        <div className="mx-4 mb-5 mt-auto rounded-xl border border-cleared/15 bg-cleared-soft/50 p-4">
-          <Icon name="shield" className="mb-3 size-5 text-cleared" />
-          <p className="text-xs font-semibold text-ink">Vận động có cơ sở.</p>
-          <p className="mt-2 text-[11px] leading-5 text-slate">
-            Đối chiếu hồ sơ, sàng lọc nguy cơ trước khi thiết kế bài tập.
-          </p>
-          <div className="mt-4 border-t border-cleared/15 pt-3 font-mono text-[9px] tracking-wider text-cleared">
-            PERSONAL TRAINER WORKSPACE
-          </div>
-        </div>
       </aside>
       <div className="workspace-content flex min-h-dvh flex-col">
         <header className="sticky top-0 z-30 border-b border-rule bg-sheet/95 backdrop-blur-md">
@@ -151,15 +141,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Kinesis Lab <span className="mx-1.5 text-rule-strong">/</span>{" "}
               Giải phẫu · Cơ sinh học · Lâm sàng
             </span>
-            <span className="inline-flex items-center gap-1.5 font-medium text-crimson">
-              <Icon name="shield" className="size-3.5" /> Cờ đỏ → dừng tập,
-              chuyển khám
+            <span>
+              Phạm vi PT: sàng lọc vận động, điều chỉnh tải & bài tập — không
+              chẩn đoán, không kê đơn.
             </span>
           </div>
-          <p className="mt-1">
-            Phạm vi PT: sàng lọc vận động, điều chỉnh tải & bài tập — không chẩn
-            đoán, không kê đơn.
-          </p>
         </footer>
       </div>
       <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">

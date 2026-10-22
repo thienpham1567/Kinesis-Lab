@@ -243,7 +243,10 @@ function ClientDetailPageInner() {
         </p>
       ) : null}
 
-      <div className="tab-bar" aria-label="Các phần hồ sơ học viên">
+      <div
+        className="tab-bar flex-nowrap overflow-x-auto"
+        aria-label="Các phần hồ sơ học viên"
+      >
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -251,7 +254,7 @@ function ClientDetailPageInner() {
             onClick={() => setTab(t.id)}
             aria-pressed={tab === t.id}
             disabled={saving}
-            className="tab-button"
+            className="tab-button shrink-0 whitespace-nowrap"
           >
             <span>{t.label}</span>
             {t.badge != null && t.badge > 0 && (
