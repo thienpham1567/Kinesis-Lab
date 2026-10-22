@@ -627,7 +627,7 @@ export function BodyMapExplorer({
                 <h2 className="font-display text-sm font-bold text-ink">
                   Bản đồ cơ – gân – khớp
                 </h2>
-                <p className="text-[11px] text-slate">
+                <p className="text-xs text-slate">
                   Nhấn vào vùng trên hình để mở giải phẫu
                 </p>
               </div>
@@ -748,7 +748,7 @@ export function BodyMapExplorer({
 
               {/* Color Legend */}
               {Object.keys(clientAlerts).length > 0 && (
-                <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3 border-t border-rule pt-2 text-[11px] text-slate">
+                <div className="mt-2.5 flex flex-wrap items-center justify-center gap-3 border-t border-rule pt-2 text-xs text-slate">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-cobalt" />
                     Đang xem giải phẫu
@@ -1011,7 +1011,7 @@ export function BodyMapExplorer({
                     <p className="mt-1.5 font-display font-bold text-ink">
                       {p.rehabAlternative}
                     </p>
-                    <p className="mt-1 font-mono text-[11px] text-cleared">
+                    <p className="mt-1 font-mono text-xs text-cleared">
                       {p.cuesAndTempo}
                     </p>
                   </div>

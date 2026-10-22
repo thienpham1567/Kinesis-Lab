@@ -25,7 +25,7 @@ function SourcePlateCrop({view}: {view: SourcePlateView}) {
       <svg viewBox={`${x} ${y} ${w} ${h}`} className="block w-full" role="img" aria-label={`${plate.title}: ${view.labels.join(', ')}`}>
         <image href={plate.src} x="0" y="0" width={plate.width} height={plate.height}/>
       </svg>
-      <figcaption className="space-y-2 border-t border-rule p-3 text-[11px] leading-5 text-slate">
+      <figcaption className="space-y-2 border-t border-rule p-3 text-xs leading-5 text-slate">
         <p className="font-semibold text-ink">Tìm nhãn: {view.labels.join(' · ')}</p>
         <p>{plate.title}. Khung ảnh được cắt từ hình có nhãn gốc; không vẽ thêm ranh giới hay điểm đau.</p>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

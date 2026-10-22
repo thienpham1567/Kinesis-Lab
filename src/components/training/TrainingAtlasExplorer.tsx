@@ -177,7 +177,7 @@ export function TrainingAtlasExplorer({
                   </select>
                 </label>
               )}
-              <p className="text-[11px] text-slate" role="status">
+              <p className="text-xs text-slate" role="status">
                 {mode === "exercise" ? filtered.length : matchingMuscles.length}{" "}
                 kết quả
               </p>
@@ -204,7 +204,7 @@ export function TrainingAtlasExplorer({
                         ? item.vietnameseName
                         : item.name}
                     </span>
-                    <span className="mt-1 block text-[11px] leading-5 text-slate">
+                    <span className="mt-1 block text-xs leading-5 text-slate">
                       {"equipment" in item
                         ? `${item.name} · ${item.equipment}`
                         : item.latinName}
@@ -339,7 +339,7 @@ export function TrainingAtlasExplorer({
                     <h4 className="font-semibold text-ink">
                       Các nhóm cơ tham gia
                     </h4>
-                    <p className="mt-1 text-[11px] leading-5 text-slate">
+                    <p className="mt-1 text-xs leading-5 text-slate">
                       Vai trò định tính theo thiết lập ví dụ. Không phải số đo
                       EMG hoặc tỷ lệ hoạt hóa; các biến thể có thể khác nhau.
                     </p>
@@ -419,7 +419,7 @@ export function TrainingAtlasExplorer({
                   <h3 className="mt-1 text-lg font-semibold text-ink">
                     Bài tập liên quan
                   </h3>
-                  <p className="mt-1 text-[11px] text-slate">
+                  <p className="mt-1 text-xs text-slate">
                     Sắp theo vai trò định tính, không xếp hạng hiệu quả hoặc mức
                     hoạt hóa.
                   </p>

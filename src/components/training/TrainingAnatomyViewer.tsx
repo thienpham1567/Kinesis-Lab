@@ -230,7 +230,7 @@ export function TrainingAnatomyViewer({
         </label>
       </div>
       <div className="border-t border-rule bg-surface/50 px-4 py-3">
-        <p className="text-[11px] text-slate" aria-live="polite">
+        <p className="text-xs text-slate" aria-live="polite">
           {isolatedId
             ? "Đang tách riêng cấu trúc"
             : `${sourceOptions.length} cấu trúc cơ trong nhóm quan sát`}
@@ -377,7 +377,7 @@ export function TrainingAnatomyViewer({
             <p className="text-xs font-semibold text-ink">
               Đang chọn: {selected.label}
             </p>
-            <p className="mt-1 text-[11px] text-slate">
+            <p className="mt-1 text-xs text-slate">
               {selected.english}
               {selected.side === "left"
                 ? " · trái"
@@ -395,7 +395,7 @@ export function TrainingAnatomyViewer({
             )}
           </div>
         )}
-        <p className="text-[11px] leading-5 text-slate">
+        <p className="text-xs leading-5 text-slate">
           Kéo để xoay · Cuộn/chụm để phóng to · Nhấp cơ để tra cứu. Các mesh
           được liên kết theo nhóm giáo dục. Màu nhóm không đo hoạt động cơ;
           mô hình tĩnh không thể hiện lực cơ hoặc chuyển động bài tập.

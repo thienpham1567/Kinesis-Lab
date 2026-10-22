@@ -22,7 +22,7 @@ export function TriggerPainLocator({selectedId,side,onSide,onSelect}: {
       <div className={`grid gap-2 ${side==='both'?'grid-cols-2':'grid-cols-1'}`}>
         {(['anterior','posterior'] as const).filter(view=>side==='both'||side===view).map(view=>(
           <figure key={view} className="rounded-md border border-rule bg-white">
-            <figcaption className="p-2 text-center text-[11px] font-semibold text-slate">{view==='anterior'?'Mặt trước':'Mặt sau'}</figcaption>
+            <figcaption className="p-2 text-center text-xs font-semibold text-slate">{view==='anterior'?'Mặt trước':'Mặt sau'}</figcaption>
             <svg viewBox="0 0 900 1620" className={`w-full ${side==='both'?'max-h-[340px]':'max-h-[520px]'}`} role="group" aria-label={`Vùng triệu chứng — ${view==='anterior'?'trước':'sau'}`}>
               <image href={`/anatomy/muscles-${view}.png`} x="0" y="0" width="900" height="1620"/>
               {PAIN_SITE_CULPRIT_MAP.filter(site=>site.view===view).map(site=>(

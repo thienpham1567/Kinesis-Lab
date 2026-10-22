@@ -187,7 +187,7 @@ export function ChatPanel({
               <h2 className="text-sm font-semibold text-ink">
                 {lockedClientId ? "Tư vấn theo hồ sơ" : "Phiên tư vấn"}
               </h2>
-              <p className="mt-0.5 text-[10px] text-slate">
+              <p className="mt-0.5 text-xs text-slate">
                 Nguồn theo chủ đề · Cần kiểm tra từng câu trả lời
               </p>
             </div>
@@ -485,7 +485,7 @@ export function ChatPanel({
             </button>
           </div>
         </div>
-        <p className="mt-2.5 flex flex-wrap items-center justify-between gap-1 text-[10px] leading-5 text-slate">
+        <p className="mt-2.5 flex flex-wrap items-center justify-between gap-1 text-xs leading-5 text-slate">
           <span>Luôn đối chiếu kết quả với đánh giá trực tiếp học viên.</span>
           {model && (
             <span className="max-w-full truncate font-mono" title={model}>

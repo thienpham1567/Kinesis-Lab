@@ -57,7 +57,7 @@ export function MuscleStudyCard({
           </details>
         ))}
       </div>
-      <p className="border-t border-rule pt-3 text-[11px] leading-5 text-slate">
+      <p className="border-t border-rule pt-3 text-xs leading-5 text-slate">
         Mô tả theo nhóm cơ và tài liệu được liệt kê. Mesh 3D minh họa cấu trúc từ
         mô hình nguồn; không thể hiện điểm bám hoặc đường sợi đo trên từng người.
       </p>

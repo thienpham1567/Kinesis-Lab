@@ -383,7 +383,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
                   [{index + 1}]
                 </span>
                 <div className="min-w-0">
-                  <p className="mb-1 text-[11px] font-medium text-slate">
+                  <p className="mb-1 text-xs font-medium text-slate">
                     {s.kind} · Kiểm tra {s.checkedAt}
                   </p>
                   <a

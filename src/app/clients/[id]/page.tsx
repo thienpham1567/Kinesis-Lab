@@ -785,7 +785,7 @@ function Labs({
                     <dd className="mt-0.5 font-mono text-sm font-semibold">
                       {String(metric.value)} {metric.unit ?? ""}
                     </dd>
-                    <p className="mt-1 text-[10px]">
+                    <p className="mt-1 text-xs">
                       Khoảng trên phiếu: {metric.reference_range || "chưa có"} ·{" "}
                       {metric.flag === "unknown" || !metric.flag
                         ? "Chưa có cờ"

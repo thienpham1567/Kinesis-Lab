@@ -573,7 +573,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
               onClick={() => setZoomOpen(true)}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between border-t border-rule pt-2 text-[11px] text-slate">
+          <div className="mt-2 flex items-center justify-between border-t border-rule pt-2 text-xs text-slate">
             <span>{activePlate.subtitle}</span>
             <button
               type="button"
@@ -590,7 +590,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
           <p className="font-display text-xs font-bold uppercase tracking-wide text-slate">
             Chú giải Thuật ngữ trên Hình
           </p>
-          <p className="text-[11px] leading-4 text-slate">
+          <p className="text-xs leading-5 text-slate">
             Chú giải tóm tắt theo các nguồn được liên kết dưới từng mục. Các số là khóa chú giải, không xác nhận tọa độ điểm bám, kích thước mô hay nguồn đau của một người.
           </p>
           <div className="space-y-2">

@@ -482,7 +482,7 @@ export default function Atlas3DExplorer({
                   <span>50 mm</span>
                   <span>100+ mm</span>
                 </div>
-                <p className="mt-1 text-[10px] text-slate">
+                <p className="mt-1 text-xs text-slate">
                   Thang màu định tính · Xám: chưa tính được
                 </p>
               </div>
@@ -503,7 +503,7 @@ export default function Atlas3DExplorer({
               </div>
             )}
           </div>
-          <div className="border-t border-rule px-4 py-3 text-[11px] leading-5 text-slate">
+          <div className="border-t border-rule px-4 py-3 text-xs leading-5 text-slate">
             <p>
               Kéo để xoay · Cuộn / chụm để thu phóng · Nhấp đúp để xem sát bề
               mặt
@@ -598,7 +598,7 @@ export default function Atlas3DExplorer({
                 />
               </div>
               <p
-                className="mt-2 text-[11px] leading-5 text-slate"
+                className="mt-2 text-xs leading-5 text-slate"
                 aria-live="polite"
               >
                 {results.length} kết quả trong vùng · Chọn tên để hiện cấu trúc
@@ -631,7 +631,7 @@ export default function Atlas3DExplorer({
                         <span className="block text-xs font-semibold leading-5">
                           {structure.label}
                         </span>
-                        <span className="block text-[10px] leading-5 text-slate">
+                        <span className="block text-xs leading-5 text-slate">
                           {sideLabel(structure)}
                         </span>
                       </span>
@@ -745,7 +745,7 @@ export default function Atlas3DExplorer({
                           ? "Tắt bản đồ độ dày"
                           : "Xem bản đồ độ dày"}
                       </button>
-                      <p className="mt-2 text-[11px] leading-5 text-slate">
+                      <p className="mt-2 text-xs leading-5 text-slate">
                         Ước lượng khoảng cách đến mặt đối diện của lưới 3D.
                         Không phải số đo mô thật; không thể hiện bề dày lớp sụn
                         hay gân riêng.
@@ -765,7 +765,7 @@ export default function Atlas3DExplorer({
                     <p className="mt-2 text-xs leading-6 text-slate">
                       {region.biomechanicsKey}
                     </p>
-                    <p className="mt-2 text-[10px] leading-5 text-slate">
+                    <p className="mt-2 text-xs leading-5 text-slate">
                       Ngữ cảnh theo vùng từ thư viện phục hồi khớp.
                     </p>
                   </details>
@@ -807,7 +807,7 @@ export default function Atlas3DExplorer({
                   href={manifest.source.repository}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-h-9 items-center gap-1.5 text-[11px] text-cobalt"
+                  className="inline-flex min-h-9 items-center gap-1.5 text-xs text-cobalt"
                 >
                   Nguồn mô hình Z-Anatomy
                   <Icon name="external" className="size-3" />
@@ -828,7 +828,7 @@ export default function Atlas3DExplorer({
           </div>
         </aside>
       </div>
-      <p className="px-1 text-[11px] leading-6 text-slate">
+      <p className="px-1 text-xs leading-6 text-slate">
         Mô hình: Z-Anatomy / BodyParts3D · CC BY-SA 4.0. Tên tiếng Việt được bổ
         sung cho một số cấu trúc; các tên còn lại giữ theo nguồn.{" "}
         <a

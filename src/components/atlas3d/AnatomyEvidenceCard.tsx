@@ -15,7 +15,7 @@ export default function AnatomyEvidenceCard({
       aria-label="Giải phẫu có nguồn của cơ mông nhỡ"
     >
       <p className="eyebrow">Giải phẫu có nguồn</p>
-      <p className="mt-2 text-[11px] leading-5 text-slate">
+      <p className="mt-2 text-xs leading-5 text-slate">
         Đối chiếu tài liệu:{" "}
         {record.review.literatureCheckedAt.split("-").reverse().join("/")}. Các nguồn
         mô tả giải phẫu đại thể; không xác nhận tọa độ điểm bám hoặc hướng sợi trên mesh.
@@ -46,7 +46,7 @@ export default function AnatomyEvidenceCard({
         <summary className="min-h-9 text-xs font-semibold text-ink">
           Nguồn & phạm vi đối chiếu
         </summary>
-        <ol className="mt-2 space-y-2 text-[11px] leading-5">
+        <ol className="mt-2 space-y-2 text-xs leading-5">
           {entries.map(([id, source]) => (
             <li key={id}>
               <a
@@ -63,7 +63,7 @@ export default function AnatomyEvidenceCard({
             </li>
           ))}
         </ol>
-        <p className="mt-3 text-[11px] leading-6 text-slate">
+        <p className="mt-3 text-xs leading-6 text-slate">
           {record.architectureNote}{" "}
           {record.architectureSources.map((id) => (
             <a
@@ -78,7 +78,7 @@ export default function AnatomyEvidenceCard({
             </a>
           ))}
         </p>
-        <p className="mt-2 text-[11px] leading-6 text-slate">
+        <p className="mt-2 text-xs leading-6 text-slate">
           {record.fiberMapping.reason} Nhãn 3D chỉ chỉ vùng vật liệu của mô hình
           nguồn, không xác nhận điểm nguyên ủy, bám tận hay độ dày mô thật.
         </p>

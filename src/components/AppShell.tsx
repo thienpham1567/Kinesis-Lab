@@ -135,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           {children}
         </main>
-        <footer className="workspace-footer mx-5 border-t border-rule pt-5 text-[11px] leading-5 text-slate sm:mx-7 xl:mx-8">
+        <footer className="workspace-footer mx-5 border-t border-rule pt-5 text-xs leading-5 text-slate sm:mx-7 xl:mx-8">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span>
               Kinesis Lab <span className="mx-1.5 text-rule-strong">/</span>{" "}

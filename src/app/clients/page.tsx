@@ -181,7 +181,7 @@ export default function ClientsPage() {
               <Icon name={item.icon} />
             </span>
             <div className="min-w-0">
-              <dt className="min-h-10 text-[10px] leading-4 text-slate sm:min-h-0 sm:text-xs sm:leading-5">
+              <dt className="min-h-10 text-xs leading-5 text-slate sm:min-h-0">
                 {item.label}
               </dt>
               <dd className="mt-0.5 font-mono text-xl font-medium text-ink sm:text-2xl">

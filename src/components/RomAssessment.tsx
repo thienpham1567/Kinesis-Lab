@@ -299,7 +299,7 @@ function LatestSession({ client, records }: { client: Client; records: Biomarker
         </table>
       </div>
 
-      <p className="text-[11px] leading-5 text-slate">
+      <p className="text-xs leading-5 text-slate">
         Trung bình tham chiếu là giá trị trung bình của người khỏe, không phải ngưỡng chẩn đoán; nhiều
         người khỏe vẫn thấp hơn trung bình. Nguồn:{" "}
         <a className="underline" href={ROM_MOVEMENTS[0].source} target="_blank" rel="noreferrer">
