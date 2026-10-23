@@ -575,7 +575,7 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
       "posterior"
     ],
     "summary": "Cơ mông lớn góp phần duỗi và xoay ngoài háng. Cơ mông nhỡ và mông bé nằm ở mặt ngoài chậu, góp phần dạng háng và kiểm soát khung chậu.",
-    "hypertrophyScience": "Plotkin et al. theo dõi 34 người chưa tập trong 9 tuần: squat và hip thrust tạo thay đổi kích thước cơ mông lớn tương tự, trong khi mông nhỡ–bé thay đổi ít. Điện cơ ban đầu cao hơn ở hip thrust không dự báo nhất quán mức tăng kích thước.",
+    "hypertrophyScience": "Plotkin et al. theo dõi 34 người chưa tập trong 9 tuần: squat và hip thrust tạo thay đổi kích thước cơ mông lớn tương tự, trong khi mông nhỡ–bé thay đổi ít. Điện cơ ban đầu cao hơn ở hip thrust không dự báo nhất quán mức tăng kích thước. Kubo et al. (17 nam, 10 tuần): full squat tăng thể tích mông lớn 6,7% so với 2,2% ở half squat, chênh lệch có ý nghĩa thống kê; mẫu nhỏ.",
     "plateSrc": "/anatomy/glute-superficial-sobotta-1909.png",
     "plateTitle": "Sobotta 1909 — Cơ mông lớn nguyên vẹn và cân vùng mông",
     "plateCredit": "Johannes Sobotta, Atlas and Text-book of Human Anatomy (1909), hình 294 — Public domain",
@@ -659,7 +659,7 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
       "anterior"
     ],
     "summary": "Tứ đầu đùi gồm cơ thẳng đùi và ba cơ rộng, đều duỗi gối; cơ thẳng đùi còn đi qua háng. Nhóm cơ khép gồm nhiều cơ, có điểm bám và chức năng khác nhau.",
-    "hypertrophyScience": "Kubo et al.: squat 10 tuần làm tăng nhóm duỗi gối, nhưng thẳng đùi không tăng rõ. Pedrosa et al. ghi nhận đáp ứng theo vùng với các biên độ duỗi gối. Larsen et al. (2025): duỗi gối ở 40° gập háng làm tăng độ dày thẳng đùi nhiều hơn 90° trong thử nghiệm 10 tuần ở nam chưa tập; không khác rõ cơ rộng ngoài. Góc gập háng không đồng nghĩa góc lưng ghế.",
+    "hypertrophyScience": "Kubo et al. (17 nam): squat 10 tuần làm tăng nhóm duỗi gối, nhưng thẳng đùi không tăng rõ; nhóm khép tăng 6,2% ở full squat so với 2,7% ở half squat, chênh lệch có ý nghĩa thống kê. Pedrosa et al. ghi nhận đáp ứng theo vùng với các biên độ duỗi gối. Larsen et al. (2025): duỗi gối ở 40° gập háng làm tăng độ dày thẳng đùi nhiều hơn 90° trong thử nghiệm 10 tuần ở nam chưa tập; không khác rõ cơ rộng ngoài. Góc gập háng không đồng nghĩa góc lưng ghế.",
     "plateSrc": "/anatomy/hip-gluteal.jpg",
     "plateTitle": "OpenStax — Giải phẫu 4 Đầu Cơ Tứ Đầu Đùi (Quadriceps) & Nhóm Cơ Khép Đùi (Adductors)",
     "plateCredit": "OpenStax Anatomy & Physiology 2e (Rice University, CC BY 4.0)",

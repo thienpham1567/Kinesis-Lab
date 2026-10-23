@@ -7,7 +7,10 @@ import {
   MUSCLE_GROUP_ATLAS,
   type MuscleGroupId,
 } from "@/lib/clinical/muscle-hypertrophy-atlas";
-import { EXERCISE_EVIDENCE } from "@/lib/clinical/evidence-muscle";
+import {
+  EXERCISE_EVIDENCE,
+  TRAINING_GENERAL_GUIDANCE,
+} from "@/lib/clinical/evidence-muscle";
 import {
   TRAINING_ROLE_LABELS,
   filterTrainingExercises,
@@ -20,6 +23,7 @@ import { ClinicalEvidencePanel } from "../ClinicalEvidencePanel";
 import { EmptyState, Icon } from "../WorkspaceUI";
 import { MuscleStudyCard } from "./MuscleStudyCard";
 import { TrainingAnatomyViewer } from "./TrainingAnatomyViewer";
+import { TrainingGuidancePanel } from "./TrainingGuidancePanel";
 import { CurlExercisePreview } from "./curl/CurlExercisePreview";
 import type { Client } from "@/lib/types";
 const ROLE_STYLE = {
@@ -108,6 +112,7 @@ export function TrainingAtlasExplorer({
   const related = exercisesForMuscle(HYPERTROPHY_EXERCISES, muscle.id);
   return (
     <section className="min-w-0 space-y-4" aria-label="Atlas dành cho PT">
+      <TrainingGuidancePanel guidance={TRAINING_GENERAL_GUIDANCE} />
       <div className="flex flex-wrap items-center justify-end gap-4">
         <div
           className="grid w-full grid-cols-2 gap-1 rounded-lg border border-rule bg-canvas p-1 sm:w-auto"

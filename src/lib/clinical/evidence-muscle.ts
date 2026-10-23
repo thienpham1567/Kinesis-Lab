@@ -19,6 +19,8 @@ export interface MuscleEvidenceRecord {
 }
 
 const checkedAt = "2026-10-22";
+/** Date a source was re-read in full or in part for the ACSM/Kubo updates (P0 Task 4). */
+const rereadAt = "2026-10-23";
 const source = (title: string, url: string, access: string, date = checkedAt): MuscleEvidenceSource =>
   ({ title, url, checkedAt: date, access });
 
@@ -104,7 +106,8 @@ export const MUSCLE_EVIDENCE_SOURCES = {
   kubo: source(
     "Effects of squat training with different depths on lower limb muscle volumes",
     "https://pubmed.ncbi.nlm.nih.gov/31230110/",
-    "Abstract read via Europe PMC MED record; DOI 10.1007/s00421-019-04181-y. 17 men, full versus half squat, 10 weeks twice weekly; MRI volumes. Not a hack squat, heel-elevation, RDL or split-squat comparison.",
+    "Abstract re-read via Europe PMC 2026-10-23; DOI 10.1007/s00421-019-04181-y. 17 men (full squat n = 8, half squat n = 9), 10 weeks twice weekly; MRI volumes. Percent changes and between-group p values are quoted from the abstract; full text not read. Small male sample; not a hack squat, heel-elevation, RDL or split-squat comparison.",
+    rereadAt,
   ),
   pedrosa: source(
     "Partial range of motion training elicits favorable improvements in muscular adaptations when carried out at long muscle lengths",
@@ -134,7 +137,8 @@ export const MUSCLE_EVIDENCE_SOURCES = {
   acsm2026: source(
     "ACSM Position Stand (2026): Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults: An Overview of Reviews",
     "https://pubmed.ncbi.nlm.nih.gov/41843416/",
-    "PubMed indexed abstract; indexed PMC discussion/Table 6 excerpts and official ACSM 2026 infographic read. 137 systematic reviews, healthy adults, search through October 2024. Direct PMC full-text fetch returned CAPTCHA; no complete full-text appraisal. General programming only, not rehabilitation or exact exercise validation.",
+    "Europe PMC open-access full text (PMC12965823) read 2026-10-23: abstract, the primary recommendation, Results on strength and hypertrophy, Table 6 and the definitions of prescription variables. Supplemental appendices and the remaining sections were not read; no complete critical appraisal. Overview of 137 systematic reviews in healthy adults (searches through October 2024). General programming only, not rehabilitation, clinical populations or exact exercise validation.",
+    rereadAt,
   ),
   bayesianCurl: source(
     "Comparison Between Shoulder Flexed and Extended Positions in Elbow Flexion Resistance Training on Regional Hypertrophy and Maximum Strength: Preacher versus Bayesian Cable Curls",
@@ -198,11 +202,11 @@ export const MUSCLE_GROUP_EVIDENCE: Record<string, MuscleEvidenceRecord> = {
   glutes: record(["hip", "plotkin", "kubo"], [
     "Tổng quan; Điểm bám (glute-maximus/glute-medius-minimus) và hành động: [1] mông lớn duỗi/xoay ngoài háng, mông nhỡ/bé góp phần dạng háng; các cơ có điểm bám khác nhau.",
     "Nghiên cứu tăng kích thước cơ: [2] thay đổi mông lớn tương tự sau squat/hip thrust 9 tuần; mông nhỡ–bé thay đổi ít; điện cơ ban đầu không dự báo nhất quán kết quả tăng kích thước.",
-    "[3] chỉ bổ sung so sánh squat sâu/nửa squat 10 tuần; không phải bằng chứng trực tiếp cho split squat hoặc RDL.",
+    "Nghiên cứu tăng kích thước cơ: [3] 17 nam tập full squat hoặc half squat 10 tuần (2 buổi/tuần), đo MRI: thể tích mông lớn tăng 6,7 ± 3,5% ở full squat so với 2,2 ± 2,6% ở half squat; mức tăng ở full squat lớn hơn có ý nghĩa thống kê (p = 0,008). Mẫu nhỏ, chỉ nam; không phải bằng chứng trực tiếp cho split squat hoặc RDL.",
   ], [coaching, symptoms, "Chưa xác nhận đường sợi, phân vùng cơ hoặc ánh xạ điểm bám lên mesh. Không có góc mũi chân loại bỏ TFL được xác nhận trong các nguồn này."]),
   quads_adductors: record(["thigh", "kubo", "pedrosa", "legExtensionHip"], [
     "Tổng quan; Điểm bám (quad-vastus/quad-rectus-femoris/adductors-inner-thigh) và chức năng: [1] bốn cơ tứ đầu, ba cơ rộng, thẳng đùi hai khớp, cơ thon bám chày và các cơ khép khác bám đùi.",
-    "Nghiên cứu tăng kích thước cơ: [2] thể tích duỗi gối tăng nhưng thẳng đùi không thay đổi rõ sau squat; [3] biên độ duỗi gối cho đáp ứng theo vùng trong giao thức ở nữ chưa tập.",
+    "Nghiên cứu tăng kích thước cơ: [2] sau 10 tuần squat ở 17 nam, thể tích duỗi gối tăng ở cả full squat (4,9%) và half squat (4,6%) còn thẳng đùi không thay đổi; thể tích nhóm khép tăng 6,2 ± 2,6% ở full squat so với 2,7 ± 3,1% ở half squat, mức tăng ở full squat lớn hơn có ý nghĩa (p = 0,026); [3] biên độ duỗi gối cho đáp ứng theo vùng trong giao thức ở nữ chưa tập.",
     "Nghiên cứu tăng kích thước cơ: [4] duỗi gối với 40° gập háng cho tăng độ dày thẳng đùi lớn hơn 90° trong thử nghiệm 10 tuần; không khác rõ ở cơ rộng ngoài.",
   ], [coaching, symptoms, "[2–4] không xác nhận kê gót/hack squat tối ưu, cô lập VMO, góc lưng ghế ngả 30 độ, hoặc bắt buộc reverse Nordic. Góc gập háng không đồng nghĩa góc lưng ghế. VMO không được trình bày như đầu cơ độc lập."]),
   hamstrings: record(["hip", "hamstrings"], [
@@ -226,10 +230,29 @@ const exerciseRecord = (keys: SourceKey[], claims: string[], limits: string[], s
     `Cách đọc hoạt động cơ: [${keys.length + 2}] biên độ điện cơ bề mặt không tự chứng minh lực cơ hoặc mức phì đại lâu dài; màu/vai trò trong ứng dụng không phải dữ liệu EMG.`,
   ], [...limits, ...exerciseLimits], status);
 
-export const TRAINING_GENERAL_GUIDANCE = {
-  text: "ACSM 2026: người lớn khỏe mạnh nên tập kháng lực tăng dần, có nỗ lực, cho các nhóm cơ lớn ít nhất hai ngày mỗi tuần. Chọn bài, tải và khối lượng theo mục tiêu và khả năng; đây là hướng dẫn chung.",
-  source: MUSCLE_EVIDENCE_SOURCES.acsm2026,
-} as const;
+/**
+ * General programming guidance from one overview of reviews (ACSM 2026). Every claim cites source [1].
+ * Thresholds are the values reported by the position stand for healthy adults, not individual prescriptions.
+ */
+export const TRAINING_GENERAL_GUIDANCE: MuscleEvidenceRecord & { text: string } = {
+  text: "ACSM 2026 là tổng quan của 137 tổng quan hệ thống ở người lớn khỏe mạnh. Phần dưới tóm tắt kết luận chung về tần suất, khối lượng và tải; đây là hướng dẫn chung, không thay thế việc xây dựng chương trình cho từng học viên.",
+  sources: [MUSCLE_EVIDENCE_SOURCES.acsm2026],
+  supportedClaims: [
+    "Khuyến nghị chính: [1] người lớn khỏe mạnh nên tập kháng lực tăng dần với nỗ lực cao ít nhất hai buổi mỗi tuần, huy động các nhóm cơ lớn; nỗ lực có thể đạt bằng nhiều tổ hợp tải và số hiệp khác nhau.",
+    "Khối lượng cho phì đại: [1] phì đại tăng thêm khi khối lượng cao hơn, ở mức ≥10 hiệp/nhóm cơ/tuần (quan hệ liều–đáp ứng).",
+    "Loại co cơ cho phì đại: [1] tập chỉ với co cơ ly tâm cho phì đại nhiều hơn tập chỉ với co cơ hướng tâm; ACSM mô tả ly tâm quá tải là tăng tải hoặc thời gian chịu lực ở pha ly tâm.",
+    "Tải cho sức mạnh: [1] sức mạnh tăng nhiều hơn khi dùng tải nặng hơn, từ ≥80% 1RM (quan hệ liều–đáp ứng); các biến số đi cùng là biên độ đầy đủ, 2–3 hiệp mỗi buổi, đặt bài đầu buổi và ≥2 buổi/tuần.",
+    "Biến số không tạo khác biệt nhất quán: [1] với phì đại, tải từ thấp (30% 1RM) đến cao (100% 1RM), tập tới thất bại cơ, tốc độ lặp nhanh (0,5 giây) hay chậm (8 giây), hạn chế lưu lượng máu, kiểu chu kỳ hóa và thứ tự bài trong buổi không cho khác biệt nhất quán.",
+  ],
+  limitations: [
+    "Đây là tổng quan các tổng quan hệ thống trên người lớn khỏe mạnh (≥18 tuổi) tập ít nhất 6 tuần; không áp dụng trực tiếp cho người đang phục hồi chấn thương, có bệnh lý hoặc cần chương trình riêng.",
+    "≥10 hiệp/nhóm cơ/tuần và ≥80% 1RM là ngưỡng được báo cáo khi so sánh các chương trình, không phải mục tiêu cá nhân hóa hay mức tối ưu cho từng người; chưa xác định được giới hạn trên của tần suất.",
+    "Kết luận về ly tâm dựa trên so sánh chỉ ly tâm với chỉ hướng tâm; không chứng minh cách tăng tải ly tâm cho một bài cụ thể trong Atlas. Với sức mạnh, khác biệt giữa ly tâm và hướng tâm không được ghi nhận.",
+    "Chỉ đọc bản full text mở trên Europe PMC (phần tóm tắt, khuyến nghị chính, kết quả sức mạnh/phì đại, Bảng 6 và định nghĩa biến số); phụ lục bổ sung chưa đọc. Nội dung mang tính giáo dục, không phải chẩn đoán hay đơn tập cá nhân; đau hoặc triệu chứng bất thường cần được đánh giá bởi nhân viên y tế.",
+  ],
+  reviewedBy: null,
+  status: "literature-reviewed",
+};
 
 export const EXERCISE_EVIDENCE: Record<string, MuscleEvidenceRecord> = {
   "incline-db-press": exerciseRecord(["upper", "chaves"], [

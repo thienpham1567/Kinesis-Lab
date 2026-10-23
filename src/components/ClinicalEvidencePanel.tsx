@@ -2,15 +2,18 @@ import type { EvidenceRecord } from "@/lib/clinical/evidence-types";
 export function ClinicalEvidencePanel({
   evidence,
   title = "Nguồn và giới hạn áp dụng",
+  defaultOpen,
 }: {
   evidence: EvidenceRecord | undefined;
   title?: string;
+  defaultOpen?: boolean;
 }) {
   if (!evidence) return null;
   return (
     <details
       className="rounded-lg border border-cobalt/20 bg-cobalt-soft/30 p-3 text-xs leading-5 text-ink"
       data-evidence-status={evidence.status}
+      open={defaultOpen}
     >
       <summary className="cursor-pointer font-semibold text-cobalt">
         {title}{" "}
