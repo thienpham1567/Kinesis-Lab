@@ -102,12 +102,15 @@ for (const context of [
   ...Array.from(ANATOMY_REGIONS, ({ id }) => ({ kind: 'region', id })),
 ]) {
   const selected = contextStructures(structures, context);
-  const candidates = Object.entries(manifest.bundles).filter(([area]) => selected.every(s => s.areas.includes(area))).sort((a, b) => a[1].bytes - b[1].bytes);
+  const candidates = Object.entries(manifest.bundles).filter(([area]) => selected.every(s => area === 'full' || s.areas.includes(area))).sort((a, b) => a[1].bytes - b[1].bytes);
   assert(candidates.length > 0, `${context.kind}/${context.id}: complete bundle exists`);
   assert.equal(completeContextBundle(manifest, selected), candidates[0][0], `${context.kind}/${context.id}: smallest complete bundle`);
 }
 assert.equal(completeContextBundle(manifest, []), null, 'empty matches must not choose an unrelated bundle');
 assert.equal(completeContextBundle(manifest, [{ ...structures[0], id: 'unknown' }]), null, 'unknown catalog ID cannot prove complete coverage');
+const mixedRegions = ['upper', 'hip'].map(area => structures.find(s => s.areas.length === 1 && s.areas[0] === area));
+assert(mixedRegions.every(Boolean), 'actual disjoint regional structures exist');
+assert.equal(completeContextBundle(manifest, mixedRegions), 'full', 'full bundle covers canonical structures even though their area lists omit full');
 const fixture = {
   bundles: { full: { bytes: 100 }, hip: { bytes: 20 }, lower: { bytes: 10 } },
   structures: [

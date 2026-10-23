@@ -104,7 +104,10 @@ export function completeContextBundle(
     [AtlasArea, AtlasManifest["bundles"][AtlasArea]]
   >;
   return candidates
-    .filter(([area]) => structures.every(s => catalog.get(s.id)?.areas.includes(area)))
+    .filter(([area]) => structures.every(s => {
+      const source = catalog.get(s.id);
+      return source !== undefined && (area === "full" || source.areas.includes(area));
+    }))
     .sort((a, b) => a[1].bytes - b[1].bytes)[0]?.[0] ?? null;
 }
 
