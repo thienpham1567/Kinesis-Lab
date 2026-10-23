@@ -268,11 +268,11 @@ const REGION_PLATES: Record<AnatomyRegionId, MedicalPlate[]> = {
       landmarks: [
         {
           code: "01",
-          sourceRefs: [9],
+          sourceRefs: [9, 11],
           enLabel: "Sternocleidomastoid & Scalenes (Hình trên)",
           vnLabel: "Cơ ức – đòn – chũm & Nhóm cơ bậc thang (Scalenes)",
           clinicalNote:
-            "Nằm ở mặt bên cổ, tham gia gập, nghiêng và xoay cổ; cơ bậc thang bám vào xương sườn 1–2 và có thể hỗ trợ hít vào gắng sức. Tư thế đầu nhô ra trước không đủ để kết luận cơ co rút hay hoạt động bù trừ.",
+            "Nằm ở mặt bên cổ, tham gia gập, nghiêng và xoay cổ; cơ bậc thang trước và giữa bám xương sườn 1, cơ bậc thang sau bám xương sườn 2 (có biến thể), và có thể hỗ trợ hít vào gắng sức. Tư thế đầu nhô ra trước không đủ để kết luận cơ co rút hay hoạt động bù trừ.",
         },
         {
           code: "02",

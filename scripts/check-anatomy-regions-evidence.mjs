@@ -82,6 +82,48 @@ for (const [regionId, regionalPlates] of Object.entries(plates)) {
     }
   }
 }
+
+// Citation-accuracy pins (P0 task 1, read 2026-10-23). These foundation and plate notes make
+// claims OpenStax §7.3 does not state, so each must cite the specific StatPearls article read.
+const sourceIndex = (regionId, fragment) => {
+  const index = ANATOMY_REGION_EVIDENCE[regionId].sources.findIndex((entry) => entry.url.includes(fragment)) + 1;
+  assert.ok(index > 0, `${regionId}: source ${fragment} missing`);
+  const entry = ANATOMY_REGION_EVIDENCE[regionId].sources[index - 1];
+  assert.equal(entry.checkedAt, "2026-10-23", `${fragment}: newly read source keeps its real read date`);
+  assert.match(entry.access, /Full/, `${fragment}: access scope must be stated`);
+  return index;
+};
+const foundationWith = (regionId, pattern) => {
+  const matches = REGION_FOUNDATIONS[regionId].filter((item) => pattern.test(item.text));
+  assert.equal(matches.length, 1, `${regionId}: expected one foundation matching ${pattern}`);
+  return matches[0];
+};
+const cervicalPass = sourceIndex("cervical", "NBK459200");
+assert.ok(foundationWith("cervical", /đội–chẩm/).sourceRefs.includes(cervicalPass), "atlanto-occipital motion needs the cervical vertebrae source");
+assert.ok(foundationWith("cervical", /biên độ/).sourceRefs.includes(cervicalPass), "cervical mobility needs the cervical vertebrae source");
+const thoracicPass = sourceIndex("thoracic_core", "NBK459153");
+assert.ok(foundationWith("thoracic_core", /Mỏm gai/).sourceRefs.includes(thoracicPass), "thoracic spinous/rib limits need the thoracic vertebrae source");
+const lumbarPass = sourceIndex("lumbar", "NBK459278");
+assert.ok(foundationWith("lumbar", /xoay/).sourceRefs.includes(lumbarPass), "lumbar facet/rotation limit needs the lumbar vertebrae source");
+for (const [regionId, fragment] of [["cervical", "NBK459200"], ["thoracic_core", "NBK459153"], ["lumbar", "NBK459278"]]) {
+  const index = sourceIndex(regionId, fragment);
+  const mapping = ANATOMY_REGION_EVIDENCE[regionId].supportedClaims.find((claim) => claim.includes("Kiến thức nền"));
+  assert.ok(mapping.match(/^\[([^\]]+)\]/)[1].split(",").map(Number).includes(index), `${regionId}: foundation claim mapping lists the new source`);
+}
+assert.ok(!/gật đầu|đội–chẩm/.test(JSON.stringify(REGION_FOUNDATIONS.thoracic_core)), "no stray cervical claim in thoracic foundations");
+const anklePass = sourceIndex("ankle_foot", "NBK545158");
+const ligaments = foundationWith("ankle_foot", /dây chằng/);
+assert.match(ligaments.text, /sên–mác sau/, "posterior talofibular ligament must be listed");
+assert.match(ligaments.text, /PTFL/);
+assert.match(ligaments.text, /sên–mác trước/);
+assert.match(ligaments.text, /mác–gót/);
+assert.ok(ligaments.sourceRefs.includes(anklePass), "ankle ligament list needs the ankle joint source");
+const scalenePass = sourceIndex("cervical", "NBK519058");
+const scaleneNote = plates.cervical.flatMap((plate) => plate.landmarks).find((note) => /Scalene/.test(note.enLabel));
+assert.ok(scaleneNote, "scalene plate note present");
+assert.ok(scaleneNote.sourceRefs.includes(scalenePass), "scalene rib attachment needs the scalenus source");
+assert.match(scaleneNote.clinicalNote, /xương sườn 1/);
+assert.match(scaleneNote.clinicalNote, /xương sườn 2/);
 assert.equal(plateCount, 13);
 assert.equal(noteCount, 42);
 console.log(`Region evidence consistency passed: ${ids.length}/8 regions, ${structures} structure summaries, ${sourceLinks} regional source links, ${noteCount} notes across ${plateCount} plates; truthful source scopes and reviewer metadata.`);

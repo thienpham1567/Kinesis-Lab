@@ -54,6 +54,16 @@ for (const [items, evidence, count] of [
     }
   }
 }
+// Lehman 2004 (PMID 15228624) abstract, read 2026-10-23: no biceps difference; highest lats:biceps ratio in wide-grip pulldown
+// and seated row; highest middle trapezius/rhomboid in seated row. "Small changes" is the authors' conclusion, not a finding.
+const lehmanClaim = MUSCLE_GROUP_EVIDENCE.lats_teres.supportedClaims.find(claim => claim.includes("[3]"));
+assert.ok(lehmanClaim, "lats_teres keeps a Lehman claim");
+assert.equal(MUSCLE_GROUP_EVIDENCE.lats_teres.sources.find(entry => entry.url.includes("15228624")).checkedAt, "2026-10-23", "Lehman abstract was re-read 2026-10-23");
+for (const required of [/wide-grip pulldown/i, /seated row/i, /lats:biceps/i, /biceps[^.;]*không khác/i, /thang giữa\/trám/i]) {
+  assert.match(lehmanClaim, required, `Lehman claim must state the reported result: ${required}`);
+}
+assert.ok(!/khác biệt điện cơ nhỏ/.test(lehmanClaim), "do not assert 'small differences' as a study finding");
+assert.ok(!/nhỏ/.test(lehmanClaim) || /tác giả[^.;]*nhỏ/i.test(lehmanClaim), "any 'small' wording must be attributed to the authors' conclusion");
 assert.equal(MUSCLE_GROUP_ATLAS.flatMap(group => group.subdivisions).length, 27);
 assert.equal(HYPERTROPHY_EXERCISES.flatMap(exercise => exercise.targets).length, 32);
 assert.equal(MUSCLE_EVIDENCE_REVIEW.reviewedBy, null);

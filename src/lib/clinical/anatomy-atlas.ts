@@ -590,8 +590,9 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
 
 /**
  * Kiến thức nền theo vùng, diễn đạt lại tiếng Việt từ nguồn giải phẫu đã ghi
- * trong evidence-anatomy.ts (OpenStax Anatomy and Physiology 2e, CC BY 4.0;
- * đọc lại 2026-10-22). sourceRefs là số thứ tự nguồn trong hồ sơ của vùng.
+ * trong evidence-anatomy.ts (OpenStax Anatomy and Physiology 2e, CC BY 4.0, đọc
+ * lại 2026-10-22; các ý về biên độ vận động cổ/ngực/thắt lưng và dây chằng cổ
+ * chân sau còn dựa trên StatPearls, đọc 2026-10-23). sourceRefs là số thứ tự nguồn trong hồ sơ của vùng.
  * Đây là giải phẫu đại thể, không phải đo lường trên mô hình 3D hay chẩn đoán.
  */
 export const REGION_FOUNDATIONS: Record<
@@ -600,16 +601,16 @@ export const REGION_FOUNDATIONS: Record<
 > = {
   cervical: [
     {
-      text: "Đốt đội C1 không có thân đốt hay mỏm gai; khớp đội–chẩm cho đầu gập và duỗi, như động tác gật đầu.",
-      sourceRefs: [1],
+      text: "Đốt đội C1 không có thân đốt hay mỏm gai và khớp với lồi cầu xương chẩm; khớp đội–chẩm chủ yếu cho đầu gập và duỗi, còn xoay đầu chủ yếu nhờ khớp đội–trục bên dưới.",
+      sourceRefs: [1, 10],
     },
     {
       text: "Đốt trục C2 có mấu răng làm trục xoay; khớp đội–trục cho đầu xoay sang hai bên, như động tác lắc đầu.",
       sourceRefs: [1],
     },
     {
-      text: "Mặt khớp đốt cổ tương đối phẳng và hướng lên/xuống, nên vùng cổ vận động được nhiều ở gập, duỗi, nghiêng và xoay.",
-      sourceRefs: [1],
+      text: "Mặt khớp đốt cổ phẳng, chủ yếu hướng lên/xuống; đĩa đệm cổ cao tương đối so với thân đốt và bao khớp mặt khớp mỏng, góp phần cho vùng cổ có biên độ vận động lớn.",
+      sourceRefs: [1, 10],
     },
   ],
   shoulder: [
@@ -632,8 +633,8 @@ export const REGION_FOUNDATIONS: Record<
       sourceRefs: [1],
     },
     {
-      text: "Mỏm gai đốt ngực dài và chúc xuống chồng lên đốt dưới, góp phần hạn chế duỗi và nghiêng ở vùng ngực.",
-      sourceRefs: [1],
+      text: "Mỏm gai đốt ngực dài và chúc xuống chồng lên đốt dưới; cùng với hướng của xương sườn, chúng hạn chế đáng kể gập và duỗi ở vùng ngực, còn xoay tương đối được nhiều nhất ở T5–T8.",
+      sourceRefs: [1, 11],
     },
     {
       text: "Đường cong ngực là đường cong nguyên phát, lồi ra sau; đường cong cổ và thắt lưng là cong thứ phát, lõm ra sau, hình thành khi trẻ tập giữ đầu, đứng và đi.",
@@ -646,8 +647,8 @@ export const REGION_FOUNDATIONS: Record<
       sourceRefs: [1],
     },
     {
-      text: "Hướng mặt khớp thắt lưng cho phép gập, duỗi và nghiêng khá nhiều, nhưng hạn chế xoay rõ rệt.",
-      sourceRefs: [1],
+      text: "Mặt khớp trên của đốt thắt lưng gần thẳng đứng nên cho phép gập, duỗi và nghiêng bên, nhưng hạn chế xoay quanh trục thân.",
+      sourceRefs: [11],
     },
     {
       text: "Giữa các thân đốt là đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy dạng gel ở giữa; đĩa vừa đệm vừa cho phép vận động giữa các đốt.",
@@ -706,8 +707,8 @@ export const REGION_FOUNDATIONS: Record<
       sourceRefs: [8],
     },
     {
-      text: "Dây chằng bên ngoài, gồm sên–mác trước và mác–gót, chống lật trong quá mức; phức hợp dây chằng delta bên trong chống lật ngoài quá mức.",
-      sourceRefs: [8],
+      text: "Bên ngoài có ba dây chằng: sên–mác trước (ATFL), sên–mác sau (PTFL) và mác–gót (CFL), cùng chống lật trong quá mức, trong đó ATFL yếu nhất; dây chằng delta bên trong chống lật ngoài quá mức.",
+      sourceRefs: [8, 9],
     },
   ],
 };

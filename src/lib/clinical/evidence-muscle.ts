@@ -78,7 +78,8 @@ export const MUSCLE_EVIDENCE_SOURCES = {
   lehman: source(
     "Variations in muscle activation levels during traditional latissimus dorsi weight training exercises: An experimental study",
     "https://pubmed.ncbi.nlm.nih.gov/15228624/",
-    "Abstract read on PubMed and Europe PMC MED record. Four pull/row tasks, two 10-second isometric portions per task; surface EMG, no longitudinal hypertrophy.",
+    "Abstract re-read 2026-10-23 on the Europe PMC MED record (earlier read on PubMed). Four pull/row tasks, two 10-second isometric portions per task; surface EMG, no longitudinal hypertrophy. Full text not read.",
+    "2026-10-23",
   ),
   cools: source(
     "Rehabilitation of scapular muscle balance: which exercises to prescribe?",
@@ -173,7 +174,7 @@ export const MUSCLE_GROUP_EVIDENCE: Record<string, MuscleEvidenceRecord> = {
   ], [coaching, symptoms, "Ba vùng ngực là cách trình bày; không phải ba cơ độc lập. Chưa kiểm tra góc sợi từng cá thể hoặc nguồn ảnh/mesh."]),
   lats_teres: record(["upper", "lat", "lehman", "muscles"], [
     "Tổng quan; Điểm bám (lat-thoracic-teres/lat-iliac-lumbar) và mô tả chức năng: [1,4] lưng rộng/tròn lớn là hai cơ, góp phần khép/duỗi/xoay trong vai, điểm bám đại thể; [2] chỉ dùng bổ sung ngữ cảnh cơ lưng rộng.",
-    "Nghiên cứu tăng kích thước cơ: [3] các biến thể kéo/row tạo khác biệt điện cơ nhỏ trong phần giữ đẳng trường được đo.",
+    "Nghiên cứu tăng kích thước cơ: [3] EMG bề mặt ở hai đoạn giữ đẳng trường 10 giây của bốn bài (wide-grip pulldown, reverse-grip pulldown, seated row co/không co bả vai): hoạt động biceps không khác theo bài; tỉ lệ hoạt hóa lats:biceps cao nhất ở wide-grip pulldown và seated row; nhóm thang giữa/trám cao nhất ở seated row. Tác giả kết luận các biến thể tạo thay đổi nhỏ về hoạt động điện cơ của cơ chính; đây không phải kết quả phì đại.",
   ], [coaching, symptoms, "Không đo vùng xô trên/dưới hoặc so sánh phì đại theo tay cầm trung tính. Bản đồ vùng và các đường sợi chưa có xác nhận giải phẫu."], "limited"),
   upper_back_traps: record(["upper", "muscles", "cools"], [
     "Tổng quan; Điểm bám (trap-middle-rhomboid/trap-lower/erector-spinae) và chức năng: [1,2] bả vai được vận động bởi thang/trám; dựng sống là nhóm riêng, gồm ba cột.",
