@@ -14,6 +14,7 @@ import {
 } from "@/lib/clinical/anatomy-atlas";
 import type { Client } from "@/lib/types";
 import { JointDiagramSvg } from "./JointDiagramSvg";
+import { ContextualAnatomyViewer } from "./atlas3d/ContextualAnatomyViewer";
 
 const GROUP_LABELS: Record<"all" | AnatomyRegion["group"], string> = {
   all: "Tất cả vùng (8)",
@@ -376,12 +377,14 @@ export function BodyMapExplorer({
   onSelectClient,
   mode = "full",
   onAskRegion,
+  showAnatomy3D = false,
 }: {
   client?: Client | null;
   clients?: Client[];
   onSelectClient?: (clientId: string) => void;
   mode?: "full" | "client";
   onAskRegion?: (prompt: string, region: AnatomyRegion) => void;
+  showAnatomy3D?: boolean;
 }) {
   const clientAlerts = matchClientIssuesToRegions(client);
   const firstAlertRegion =
@@ -391,6 +394,8 @@ export function BodyMapExplorer({
   const [hoveredZone, setHoveredZone] = useState<InteractiveZone | null>(null);
   const [groupFilter, setGroupFilter] = useState<"all" | AnatomyRegion["group"]>("all");
   const [bodySide, setBodySide] = useState<"both" | "anterior" | "posterior" | "openstax">("both");
+  const [figureMode, setFigureMode] = useState<"3d" | "2d">("3d");
+  const threeD = showAnatomy3D && figureMode === "3d";
 
   const activeRegion =
     ANATOMY_REGIONS.find((r) => r.id === selectedId) ?? ANATOMY_REGIONS[3];
@@ -399,6 +404,37 @@ export function BodyMapExplorer({
   const filteredRegions = ANATOMY_REGIONS.filter(
     (r) => groupFilter === "all" || r.group === groupFilter,
   );
+
+  function renderRegionPicker() {
+    return (
+      <div className={`grid grid-cols-2 gap-1.5 ${threeD ? "mb-3" : ""}`} role="group" aria-label="Chọn vùng giải phẫu">
+        {filteredRegions.map((r) => {
+          const alert = clientAlerts[r.id];
+          const isSelected = r.id === selectedId;
+          return (
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => setSelectedId(r.id)}
+              aria-pressed={isSelected}
+              className={`flex items-center justify-between rounded border px-2.5 py-2 text-left text-xs transition-colors ${
+                isSelected
+                  ? "border-cobalt bg-cobalt-soft font-semibold text-cobalt"
+                  : alert
+                    ? "border-caution/40 bg-caution-soft/60 font-medium text-ink"
+                    : "border-rule bg-canvas/60 text-slate hover:text-ink"
+              }`}
+            >
+              <span className="line-clamp-2">{r.name}</span>
+              {alert && (
+                <span className="ml-1.5 h-2 w-2 shrink-0 rounded-full bg-crimson" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   function renderAnatomicalFigure(
     side: "anterior" | "posterior",
@@ -592,7 +628,7 @@ export function BodyMapExplorer({
               </label>
             )}
 
-            <div className="inline-flex flex-wrap rounded-md border border-rule bg-canvas p-0.5 text-xs">
+            {!threeD && (<div className="inline-flex flex-wrap rounded-md border border-rule bg-canvas p-0.5 text-xs">
               {(
                 [
                   { id: "both", label: "2 Mặt" },
@@ -613,7 +649,7 @@ export function BodyMapExplorer({
                   {v.label}
                 </button>
               ))}
-            </div>
+            </div>)}
           </div>
         </div>
       )}
@@ -621,7 +657,27 @@ export function BodyMapExplorer({
       <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
         {/* Left column: Authentic Anatomical Muscular System Explorer */}
         <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-10.75rem)] lg:overflow-y-auto xl:max-h-[calc(100dvh-6.25rem)]">
-          <div>
+          <div className="flex flex-col">
+            {threeD && renderRegionPicker()}
+            {showAnatomy3D && (
+              <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label="Cách xem giải phẫu vùng">
+                <button type="button" className="button-secondary min-h-10 text-xs" aria-pressed={threeD} onClick={() => setFigureMode("3d")}>Mô hình 3D</button>
+                <button type="button" className="button-secondary min-h-10 text-xs" aria-pressed={!threeD} onClick={() => setFigureMode("2d")}>Hình đối chiếu 2D</button>
+              </div>
+            )}
+            {threeD ? (
+              <ContextualAnatomyViewer
+                context={{ kind: "region", id: activeRegion.id }}
+                title={activeRegion.name}
+                onNavigate={(id) => {
+                  const region = ANATOMY_REGIONS.find((r) => r.id === id);
+                  if (region) {
+                    setSelectedId(region.id);
+                    if (groupFilter !== "all" && groupFilter !== region.group) setGroupFilter("all");
+                  }
+                }}
+              />
+            ) : (<>
             <div className="flex items-center justify-between border-b border-rule pb-3">
               <div>
                 <h2 className="font-display text-sm font-bold text-ink">
@@ -765,32 +821,9 @@ export function BodyMapExplorer({
               )}
             </div>
 
-            {/* Clickable Region List */}
-            <div className="grid grid-cols-2 gap-1.5">
-              {filteredRegions.map((r) => {
-                const alert = clientAlerts[r.id];
-                const isSelected = r.id === selectedId;
-                return (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setSelectedId(r.id)}
-                    className={`flex items-center justify-between rounded border px-2.5 py-2 text-left text-xs transition-colors ${
-                      isSelected
-                        ? "border-cobalt bg-cobalt-soft font-semibold text-cobalt"
-                        : alert
-                          ? "border-caution/40 bg-caution-soft/60 font-medium text-ink"
-                          : "border-rule bg-canvas/60 text-slate hover:text-ink"
-                    }`}
-                  >
-                    <span className="line-clamp-2">{r.name}</span>
-                    {alert && (
-                      <span className="ml-1.5 h-2 w-2 shrink-0 rounded-full bg-crimson" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            </>)}
+
+            {!threeD && renderRegionPicker()}
           </div>
         </div>
 
