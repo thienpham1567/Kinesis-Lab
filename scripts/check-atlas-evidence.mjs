@@ -59,7 +59,7 @@ for (const m of [cube, front]) {
   m.material.dispose();
 }
 // 3D clinical-region resolution: shoulder-girdle structures must not inherit the
-// trunk-height "thoracic_core"/"lumbar" tag, and laryngeal/pharyngeal muscles
+// trunk-height "thoracic_core"/"lumbar" tag, and laryngeal/pharyngeal structures
 // must not carry the cervical spine note.
 const { readFileSync } = await import("node:fs");
 const { resolveClinicalRegion } = await import(
@@ -89,7 +89,7 @@ for (const english of shoulderMuscles) {
     assert.equal(resolveClinicalRegion(s), "shoulder", `${english} -> shoulder`);
   }
 }
-const nonSpinalNeckMuscles = [
+const laryngealPharyngealStructures = [
   "Inferior pharyngeal constrictor",
   "Middle pharyngeal constrictor",
   "Superior pharyngeal constrictor",
@@ -103,17 +103,52 @@ const nonSpinalNeckMuscles = [
   "Ary-epiglottic part of oblique arytenoid muscle",
   "External part of thyro-arytenoid muscle",
   "Thyro-epiglottic part of thyro-arytenoid muscle",
+  "Thyroid cartilage",
+  "Cricoid cartilage",
+  "Arytenoid cartilage",
+  "Corniculate cartilage",
+  "Median cricothyroid ligament",
+  "Median thyrohyoid ligament",
+  "Lateral thyrohyoid ligament",
+  "Cricopharyngeal ligament",
+  "Quadrangular membrane",
 ];
-for (const english of nonSpinalNeckMuscles) {
+// Hyoid muscles are deliberately left on their manifest region.
+const hyoidMuscles = [
+  "Sternohyoid muscle",
+  "Thyrohyoid muscle",
+  "Omohyoid muscle",
+  "Geniohyoid muscle",
+  "Mylohyoid muscle",
+  "Stylohyoid muscle",
+];
+for (const english of hyoidMuscles) {
+  const found = byEnglish(english);
+  assert.ok(found.length >= 1, `${english}: missing from manifest`);
+  for (const s of found) {
+    assert.equal(resolveClinicalRegion(s), "cervical", `${english} stays cervical`);
+  }
+}
+for (const english of laryngealPharyngealStructures) {
   const found = byEnglish(english);
   assert.ok(found.length >= 1, `${english}: missing from manifest`);
   for (const s of found) {
     assert.equal(resolveClinicalRegion(s), null, `${english} -> null`);
   }
 }
-// Same wrong trunk-height tag, same shoulder-girdle rule: teres major, scapula,
-// clavicle and the sternoclavicular/costoclavicular/interclavicular tissue.
+// Same shoulder rule: scapulothoracic/clavicular muscles (trapezius as a whole),
+// scapula, clavicle, sternoclavicular tissue and glenohumeral soft tissue.
 const alsoShoulder = [
+  "Rhomboid major muscle",
+  "Rhomboid minor muscle",
+  "Descending part of trapezius muscle",
+  "Transverse part of trapezius muscle",
+  "Ascending part of trapezius muscle",
+  "Subclavius muscle",
+  "Glenoid labrum",
+  "Coracohumeral ligament",
+  "Transverse humeral ligament",
+  "Coracobrachialis muscle",
   "Teres major muscle",
   "Scapula",
   "Clavicle",
@@ -135,7 +170,7 @@ for (const english of alsoShoulder) {
 // is pinned so a rule change cannot silently move unrelated structures.
 const expectedChanged = new Set([
   ...shoulderMuscles,
-  ...nonSpinalNeckMuscles,
+  ...laryngealPharyngealStructures,
   ...alsoShoulder,
 ]);
 const changed = atlasManifest.structures.filter(
@@ -150,12 +185,14 @@ for (const s of changed) {
   tally[key] = (tally[key] ?? 0) + 1;
 }
 assert.deepEqual(tally, {
-  "thoracic_core->shoulder": 34,
+  "thoracic_core->shoulder": 44,
   "lumbar->shoulder": 2,
-  "cervical->null": 25,
+  "cervical->shoulder": 2,
+  "null->shoulder": 8,
+  "cervical->null": 39,
 });
 // The exporter must carry the same name rules so a future export agrees.
-const { SHOULDER_GIRDLE_NAME_PATTERN, LARYNX_PHARYNX_MUSCLE_NAME_PATTERN } =
+const { SHOULDER_GIRDLE_NAME_PATTERN, LARYNX_PHARYNX_NAME_PATTERN } =
   await import("../src/lib/clinical/atlas-3d.ts");
 const exporter = readFileSync(
   new URL("./export_z_anatomy.py", import.meta.url),
@@ -163,7 +200,7 @@ const exporter = readFileSync(
 );
 for (const [name, pattern] of [
   ["SHOULDER_GIRDLE_NAME", SHOULDER_GIRDLE_NAME_PATTERN],
-  ["LARYNX_PHARYNX_MUSCLE_NAME", LARYNX_PHARYNX_MUSCLE_NAME_PATTERN],
+  ["LARYNX_PHARYNX_NAME", LARYNX_PHARYNX_NAME_PATTERN],
 ]) {
   assert.ok(
     exporter.includes(`${name} = r'${pattern.source}'`),

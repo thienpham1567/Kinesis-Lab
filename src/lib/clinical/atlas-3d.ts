@@ -71,20 +71,26 @@ const ATLAS_REGION_IDS: readonly AnatomyRegionId[] = [
   "ankle_foot",
 ];
 /**
- * Shoulder-girdle structures by English mesh name. The exporter's trunk-height
- * rule tags these "thoracic_core" (or "lumbar" for latissimus dorsi) because they
- * lie on the trunk, so this rule must run first. Keep in sync with
+ * Shoulder region by English mesh name: muscles that move or stabilise the
+ * scapula/clavicle (trapezius included as a whole even though its upper fibres
+ * also relate to the neck), the scapula, clavicle and sternoclavicular tissue,
+ * and the glenohumeral soft tissue the exporter's name filter missed. The
+ * exporter's trunk-height rule tags the trunk-lying ones "thoracic_core" (or
+ * "lumbar" for latissimus dorsi), so this rule must run first. Keep in sync with
  * SHOULDER_GIRDLE_NAME in scripts/export_z_anatomy.py.
  */
 export const SHOULDER_GIRDLE_NAME_PATTERN =
-  /spinatus|subscapular|teres (major|minor)|serratus anterior|pectoralis|latissimus dorsi|scapul|clavic/i;
+  /spinatus|subscapular|teres (major|minor)|serratus anterior|pectoralis|latissimus dorsi|scapul|clavic|rhomboid|trapezius|subclavius|glenoid labrum|coraco|transverse humeral/i;
 /**
- * Intrinsic laryngeal and pharyngeal muscles: not part of the cervical spine
- * region, so they carry no region note. Keep in sync with
- * LARYNX_PHARYNX_MUSCLE_NAME in scripts/export_z_anatomy.py.
+ * Laryngeal and pharyngeal structures (intrinsic laryngeal and pharyngeal
+ * muscles, laryngeal cartilages, laryngeal/pharyngeal ligaments and membranes):
+ * not part of the cervical spine region, so they carry no region note. Hyoid
+ * muscles (sternohyoid, thyrohyoid, omohyoid, geniohyoid, mylohyoid, stylohyoid)
+ * deliberately stay "cervical". Keep in sync with LARYNX_PHARYNX_NAME in
+ * scripts/export_z_anatomy.py.
  */
-export const LARYNX_PHARYNX_MUSCLE_NAME_PATTERN =
-  /(arytenoid|cricothyroid) muscle|pharyngeal constrictor|palatopharyngeus|stylopharyngeus|salpingopharyngeus/i;
+export const LARYNX_PHARYNX_NAME_PATTERN =
+  /(arytenoid|cricothyroid) muscle|pharyngeal constrictor|palatopharyngeus|stylopharyngeus|salpingopharyngeus|(thyroid|cricoid|arytenoid|corniculate|cuneiform|epiglottic) cartilage|cricopharyngeal ligament|(cricothyroid|thyrohyoid) ligament|quadrangular membrane/i;
 /**
  * Clinical region used by the 3D explorer. The manifest value comes from a
  * geometric heuristic; name-based overrides take precedence over it.
@@ -93,7 +99,7 @@ export function resolveClinicalRegion(
   structure: Pick<AtlasStructure, "english" | "clinicalRegion" | "areas">,
 ): AnatomyRegionId | null {
   if (SHOULDER_GIRDLE_NAME_PATTERN.test(structure.english)) return "shoulder";
-  if (LARYNX_PHARYNX_MUSCLE_NAME_PATTERN.test(structure.english)) return null;
+  if (LARYNX_PHARYNX_NAME_PATTERN.test(structure.english)) return null;
   return ATLAS_REGION_IDS.find((id) => id === structure.clinicalRegion) ?? null;
 }
 export function searchStructures(

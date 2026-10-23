@@ -50,10 +50,13 @@ TRANSLATIONS = [
 ]
 
 # Name-based clinicalRegion overrides (matched against the lower-cased English name).
-# Keep in sync with SHOULDER_GIRDLE_NAME_PATTERN / LARYNX_PHARYNX_MUSCLE_NAME_PATTERN
+# Shoulder: muscles that move or stabilise the scapula/clavicle (trapezius included as a whole
+# even though its upper fibres also relate to the neck) plus scapula/clavicle/glenohumeral tissue.
+# Larynx/pharynx: no region; hyoid muscles deliberately stay with the geometric result.
+# Keep in sync with SHOULDER_GIRDLE_NAME_PATTERN / LARYNX_PHARYNX_NAME_PATTERN
 # in src/lib/clinical/atlas-3d.ts.
-SHOULDER_GIRDLE_NAME = r'spinatus|subscapular|teres (major|minor)|serratus anterior|pectoralis|latissimus dorsi|scapul|clavic'
-LARYNX_PHARYNX_MUSCLE_NAME = r'(arytenoid|cricothyroid) muscle|pharyngeal constrictor|palatopharyngeus|stylopharyngeus|salpingopharyngeus'
+SHOULDER_GIRDLE_NAME = r'spinatus|subscapular|teres (major|minor)|serratus anterior|pectoralis|latissimus dorsi|scapul|clavic|rhomboid|trapezius|subclavius|glenoid labrum|coraco|transverse humeral'
+LARYNX_PHARYNX_NAME = r'(arytenoid|cricothyroid) muscle|pharyngeal constrictor|palatopharyngeus|stylopharyngeus|salpingopharyngeus|(thyroid|cricoid|arytenoid|corniculate|cuneiform|epiglottic) cartilage|cricopharyngeal ligament|(cricothyroid|thyrohyoid) ligament|quadrangular membrane'
 
 GROUPS = [
     (r"gluteus|piriformis|obturator|gemellus|quadratus femoris", "glutes"),
@@ -123,7 +126,7 @@ for source in sorted(originals, key=lambda o: o.name):
     # Name-based overrides take precedence over the geometric trunk-height rule above.
     # Keep in sync with resolveClinicalRegion() in src/lib/clinical/atlas-3d.ts.
     if re.search(SHOULDER_GIRDLE_NAME, lower): region = 'shoulder'
-    elif re.search(LARYNX_PHARYNX_MUSCLE_NAME, lower): region = None
+    elif re.search(LARYNX_PHARYNX_NAME, lower): region = None
     label = next((vi for en, vi in TRANSLATIONS if en == lower or (layer == 'muscle' and vi.startswith('Cơ ') and en in lower)), english)
     identity = 'za-' + hashlib.sha256(source.name.encode()).hexdigest()[:12]
     obj = bpy.data.objects.new(identity, source.data.copy())
