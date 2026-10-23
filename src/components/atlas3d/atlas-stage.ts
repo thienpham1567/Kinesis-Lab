@@ -4,6 +4,18 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { SurfaceLabels } from "./surface-labels.mjs";
 import { StudioRenderer } from "./studio-renderer";
+import { StructureCallouts } from "./structure-callouts";
+import {
+  prepareSourceAcceleration,
+  releaseSourceAcceleration,
+} from "./raycast-acceleration.mjs";
+import {
+  ATLAS_FOV,
+  ATLAS_HALF_FOV,
+  CameraTransition,
+  setOrthographicSpan,
+  type AtlasCamera,
+} from "./atlas-camera";
 import {
   createTissueMaterial,
   setTissueSelection,
@@ -23,6 +35,7 @@ type Mesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshPhysicalMaterial>;
 function release(root: THREE.Object3D) {
   root.traverse((object) => {
     if (object instanceof THREE.Mesh) {
+      releaseSourceAcceleration(object);
       object.geometry.dispose();
       const materials = Array.isArray(object.material)
         ? object.material
@@ -35,9 +48,19 @@ function release(root: THREE.Object3D) {
 /** Owns GPU resources and DOM events. React owns the workspace state. */
 export class AtlasStage {
   private scene = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(35, 1, 0.001, 100);
+  private camera: AtlasCamera = new THREE.PerspectiveCamera(
+    ATLAS_FOV,
+    1,
+    0.001,
+    100,
+  );
+  private aspect = 1;
+  private transition = new CameraTransition();
+  private reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  private framed = false;
   private renderer: THREE.WebGLRenderer;
   private labels: SurfaceLabels;
+  private callouts: StructureCallouts;
   private controls: OrbitControls;
   private studio: StudioRenderer;
   private coarsePointer = window.matchMedia("(pointer: coarse)");
@@ -55,6 +78,8 @@ export class AtlasStage {
   private pointer: { x: number; y: number; id: number } | null = null;
   private dragged = false;
   private studyRetry = 0;
+  private frameTimings: number[] = [];
+  private renderCount = 0;
   private study = new TissueStudyResources((status) => {
     if (this.disposed) return;
     this.props.onStudyStatus(status);
@@ -66,6 +91,8 @@ export class AtlasStage {
     props: AtlasCanvasProps,
   ) {
     this.props = props;
+    if (props.projection === "orthographic")
+      this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.001, 100);
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     this.studio = new StudioRenderer(this.renderer, this.scene, this.camera);
     const canvas = this.renderer.domElement;
@@ -88,8 +115,18 @@ export class AtlasStage {
     this.controls.enableDamping = false;
     this.controls.minDistance = 0.02;
     this.controls.maxDistance = 12;
+    this.controls.minZoom = 0.05;
+    this.controls.maxZoom = 100;
     this.controls.listenToKeyEvents(canvas);
     this.controls.addEventListener("change", this.render);
+    this.controls.addEventListener("start", this.transition.cancel);
+    this.callouts = new StructureCallouts(this.host, (id) =>
+      this.props.onSelect(id),
+    );
+    // Capture before OrbitControls handles input, including keyboard pan and zoom.
+    canvas.addEventListener("pointerdown", this.transition.cancel, true);
+    canvas.addEventListener("wheel", this.transition.cancel, true);
+    canvas.addEventListener("keydown", this.transition.cancel, true);
     canvas.addEventListener("pointerdown", this.pointerDown);
     canvas.addEventListener("pointermove", this.pointerMove);
     canvas.addEventListener("pointerup", this.pointerUp);
@@ -98,28 +135,52 @@ export class AtlasStage {
     this.observer = new ResizeObserver(this.resize);
     this.observer.observe(host);
     this.coarsePointer.addEventListener("change", this.resize);
+    this.reducedMotion.addEventListener("change", this.motionChanged);
     this.resize();
   }
 
   private resize = () => {
     const { width, height } = this.host.getBoundingClientRect();
     if (!width || !height || this.disposed) return;
-    const halfFov = THREE.MathUtils.degToRad(this.camera.fov) / 2;
+    this.transition.cancel();
+    const halfFov = ATLAS_HALF_FOV;
     const previousAngle = Math.min(
       halfFov,
-      Math.atan(Math.tan(halfFov) * this.camera.aspect),
+      Math.atan(Math.tan(halfFov) * this.aspect),
     );
-    this.camera.aspect = width / height;
+    const previousAspect = this.aspect;
+    this.aspect = width / height;
+    if (this.camera instanceof THREE.PerspectiveCamera)
+      this.camera.aspect = this.aspect;
     if (this.root) {
       const nextAngle = Math.min(
         halfFov,
-        Math.atan(Math.tan(halfFov) * this.camera.aspect),
+        Math.atan(Math.tan(halfFov) * this.aspect),
       );
-      const offset = this.camera.position.clone().sub(this.controls.target);
-      this.camera.position
-        .copy(this.controls.target)
-        .addScaledVector(offset, Math.sin(previousAngle) / Math.sin(nextAngle));
+      if (this.camera instanceof THREE.PerspectiveCamera) {
+        const offset = this.camera.position.clone().sub(this.controls.target);
+        this.camera.position
+          .copy(this.controls.target)
+          .addScaledVector(
+            offset,
+            Math.sin(previousAngle) / Math.sin(nextAngle),
+          );
+        const distance = this.camera.position.distanceTo(this.controls.target);
+        this.camera.near = Math.min(
+          this.camera.near,
+          Math.max(0.00005, distance / 1000),
+        );
+        this.camera.far = Math.max(this.camera.far, distance * 20, 10);
+      }
       this.controls.update();
+    }
+    if (this.camera instanceof THREE.OrthographicCamera) {
+      const halfHeight = this.camera.top / this.camera.zoom;
+      setOrthographicSpan(
+        this.camera,
+        (halfHeight * Math.min(1, previousAspect)) / Math.min(1, this.aspect),
+        this.aspect,
+      );
     }
     this.camera.updateProjectionMatrix();
     this.updateQuality();
@@ -128,7 +189,9 @@ export class AtlasStage {
   };
   private render = () => {
     if (!this.disposed) {
+      const started = performance.now();
       this.studio.render();
+      const labelsStarted = performance.now();
       const bounds = this.host.getBoundingClientRect();
       this.labels.update(
         this.props.selectedId,
@@ -138,6 +201,33 @@ export class AtlasStage {
         bounds.width,
         bounds.height,
       );
+      this.callouts.update(
+        !!this.props.learningMode && !!this.props.showStructureLabels,
+        this.props.selectedId,
+        this.props.structures,
+        this.meshes,
+        this.camera,
+        bounds.width,
+        bounds.height,
+        this.labels.occupiedBounds,
+      );
+      const finished = performance.now();
+      this.frameTimings.push(finished - started);
+      if (this.frameTimings.length > 32) this.frameTimings.shift();
+      const sorted = [...this.frameTimings].sort((a, b) => a - b);
+      const stats = this.renderer.domElement.dataset;
+      // Main-thread elapsed work, including label raycasts/layout. Not GPU time/FPS.
+      stats.frameCpuMsMedian = sorted[Math.floor(sorted.length / 2)].toFixed(2);
+      stats.frameCpuMsP95 =
+        sorted[
+          Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))
+        ].toFixed(2);
+      stats.labelsCpuMs = (finished - labelsStarted).toFixed(2);
+      stats.frameCount = String(++this.renderCount);
+      this.renderer.domElement.dataset.projection =
+        this.camera instanceof THREE.OrthographicCamera
+          ? "orthographic"
+          : "perspective";
       this.renderer.domElement.dataset.view = [
         ...this.camera.position.toArray(),
         ...this.controls.target.toArray(),
@@ -146,6 +236,107 @@ export class AtlasStage {
         .join(",");
     }
   };
+  private motionChanged = () => {
+    if (this.reducedMotion.matches) this.transition.cancel();
+  };
+
+  private setProjection(projection: AtlasCanvasProps["projection"]) {
+    const orthographic = projection === "orthographic";
+    if (orthographic === this.camera instanceof THREE.OrthographicCamera)
+      return;
+    this.transition.cancel();
+    const previous = this.camera;
+    const offset = previous.position.clone().sub(this.controls.target);
+    const halfHeight = Math.max(
+      0.0001,
+      previous instanceof THREE.OrthographicCamera
+        ? previous.top / previous.zoom
+        : (offset.length() * Math.tan(ATLAS_HALF_FOV)) / previous.zoom,
+    );
+    const camera: AtlasCamera = orthographic
+      ? new THREE.OrthographicCamera(-1, 1, 1, -1, previous.near, previous.far)
+      : new THREE.PerspectiveCamera(
+          ATLAS_FOV,
+          this.aspect,
+          previous.near,
+          previous.far,
+        );
+    camera.position.copy(previous.position);
+    camera.quaternion.copy(previous.quaternion);
+    camera.up.copy(previous.up);
+    if (camera instanceof THREE.OrthographicCamera)
+      setOrthographicSpan(camera, halfHeight, this.aspect);
+    else {
+      const distance = Math.max(0.0001, halfHeight / Math.tan(ATLAS_HALF_FOV));
+      if (offset.lengthSq() < 1e-12) offset.set(0, 0, 1);
+      camera.position
+        .copy(this.controls.target)
+        .addScaledVector(offset.normalize(), distance);
+    }
+    // Keep clipping valid after orthographic zoom is converted to eye distance.
+    const distance = camera.position.distanceTo(this.controls.target);
+    this.controls.minDistance = Math.min(this.controls.minDistance, distance);
+    this.controls.maxDistance = Math.max(this.controls.maxDistance, distance);
+    camera.near = Math.min(previous.near, Math.max(0.00005, distance / 1000));
+    camera.far = Math.max(previous.far, distance * 20, 10);
+    camera.updateProjectionMatrix();
+    this.camera = camera;
+    this.controls.object = camera;
+    this.studio.setCamera(camera);
+    this.controls.update();
+  }
+
+  private moveCamera(
+    target: THREE.Vector3,
+    position: THREE.Vector3,
+    near: number,
+    far: number,
+    immediate = false,
+  ) {
+    const camera = this.camera;
+    const fromPosition = camera.position.clone();
+    const fromTarget = this.controls.target.clone();
+    const fromOffset = fromPosition.sub(fromTarget);
+    const toOffset = position.clone().sub(target);
+    const fromRadius = fromOffset.length();
+    const toRadius = toOffset.length();
+    if (fromRadius < 1e-12) fromOffset.set(0, 0, 1);
+    fromOffset.normalize();
+    const rotation = new THREE.Quaternion().setFromUnitVectors(
+      fromOffset,
+      toOffset.clone().normalize(),
+    );
+    const interpolatedRotation = new THREE.Quaternion();
+    const fromSpan =
+      camera instanceof THREE.OrthographicCamera ? camera.top / camera.zoom : 0;
+    const toSpan = position.distanceTo(target) * Math.tan(ATLAS_HALF_FOV);
+    camera.near = Math.min(camera.near, near);
+    camera.far = Math.max(camera.far, far);
+    this.transition.run(
+      (progress) => {
+        this.controls.target.lerpVectors(fromTarget, target, progress);
+        interpolatedRotation.identity().slerp(rotation, progress);
+        camera.position
+          .copy(fromOffset)
+          .applyQuaternion(interpolatedRotation)
+          .multiplyScalar(THREE.MathUtils.lerp(fromRadius, toRadius, progress))
+          .add(this.controls.target);
+        if (camera instanceof THREE.OrthographicCamera)
+          setOrthographicSpan(
+            camera,
+            THREE.MathUtils.lerp(fromSpan, toSpan, progress),
+            this.aspect,
+          );
+        if (progress === 1) {
+          camera.near = near;
+          camera.far = far;
+        }
+        camera.updateProjectionMatrix();
+        if (!this.controls.update()) this.render();
+      },
+      immediate || !this.props.learningMode || this.reducedMotion.matches,
+    );
+  }
   private pointerDown = (event: PointerEvent) => {
     if (!event.isPrimary || event.button !== 0) {
       this.dragged = true;
@@ -177,6 +368,7 @@ export class AtlasStage {
   private hitAt(clientX: number, clientY: number) {
     const bounds = this.renderer.domElement.getBoundingClientRect();
     const ray = new THREE.Raycaster();
+    ray.firstHitOnly = true;
     ray.setFromCamera(
       new THREE.Vector2(
         ((clientX - bounds.left) / bounds.width) * 2 - 1,
@@ -207,14 +399,8 @@ export class AtlasStage {
     target: THREE.Vector3;
     position: THREE.Vector3;
   }) {
-    this.controls.target.copy(pose.target);
-    this.camera.position.copy(pose.position);
     this.controls.minDistance = 0.005;
-    this.camera.near = 0.00005;
-    this.camera.far = 10;
-    this.camera.updateProjectionMatrix();
-    this.controls.update();
-    this.render();
+    this.moveCamera(pose.target, pose.position, 0.00005, 10);
   }
 
   private updateQuality() {
@@ -241,6 +427,7 @@ export class AtlasStage {
 
   update(props: AtlasCanvasProps) {
     this.props = props;
+    this.setProjection(props.projection);
     this.studio.setPresentation(props.presentation);
     this.study.setEnabled(
       props.materialStudy &&
@@ -301,6 +488,12 @@ export class AtlasStage {
         setThicknessView(mesh.material, id === props.thicknessId);
       }
     }
+    this.studio.setSelection(
+      (this.meshes.get(props.selectedId ?? "") ?? []).filter(
+        (mesh) => mesh.visible,
+      ),
+      !!props.learningMode,
+    );
     this.updateQuality();
     if (shadowsChanged) this.studio.invalidateShadows();
     this.render();
@@ -313,6 +506,9 @@ export class AtlasStage {
   ) {
     if (url === this.url && !force) return;
     this.url = url;
+    this.transition.cancel();
+    this.framed = false;
+    this.studio.setSelection([], !!this.props.learningMode);
     const generation = ++this.generation;
     if (this.root) {
       this.scene.remove(this.root);
@@ -331,7 +527,6 @@ export class AtlasStage {
       release(gltf.scene);
       return;
     }
-    this.root = gltf.scene;
     const metadata = new Map(
       this.props.structures.map((structure) => [structure.id, structure]),
     );
@@ -360,6 +555,20 @@ export class AtlasStage {
       this.meshes.set(id, [...(this.meshes.get(id) ?? []), mesh]);
     });
     sourceMaterials.forEach((material) => material.dispose());
+    try {
+      const ready = await prepareSourceAcceleration(
+        [...this.meshes.values()].flat(),
+        () => this.disposed || generation !== this.generation,
+      );
+      if (!ready) {
+        release(gltf.scene);
+        return;
+      }
+    } catch (error) {
+      release(gltf.scene);
+      throw error;
+    }
+    this.root = gltf.scene;
     this.scene.add(gltf.scene);
     gltf.scene.updateMatrixWorld(true);
     this.studio.setBounds(new THREE.Box3().setFromObject(gltf.scene));
@@ -368,6 +577,7 @@ export class AtlasStage {
   }
 
   command(command: CameraCommand) {
+    this.transition.cancel();
     if (!this.root) return;
     if (command.type === "detail") {
       const pose = findSurfaceFocus(
@@ -403,16 +613,15 @@ export class AtlasStage {
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
     const radius = Math.max(size.length() / 2, 0.015);
-    const vfov = THREE.MathUtils.degToRad(this.camera.fov) / 2;
-    const angle = Math.min(
-      vfov,
-      Math.atan(Math.tan(vfov) * this.camera.aspect),
-    );
-    const distance = (radius / Math.sin(angle)) * 1.08;
+    const vfov = ATLAS_HALF_FOV;
+    const angle = Math.min(vfov, Math.atan(Math.tan(vfov) * this.aspect));
+    let distance = (radius / Math.sin(angle)) * 1.08;
     const direction = new THREE.Vector3(0, 0, 1);
     if (command.type === "back") direction.set(0, 0, -1);
-    if (command.type === "front-oblique") direction.set(0.65, 0.12, 1).normalize();
-    if (command.type === "back-oblique") direction.set(-0.65, 0.12, -1).normalize();
+    if (command.type === "front-oblique")
+      direction.set(0.65, 0.12, 1).normalize();
+    if (command.type === "back-oblique")
+      direction.set(-0.65, 0.12, -1).normalize();
     if (command.type === "left") direction.set(1, 0, 0);
     if (command.type === "right") direction.set(-1, 0, 0);
     if (command.type === "hip") direction.set(1, 0.15, -0.15).normalize();
@@ -422,25 +631,52 @@ export class AtlasStage {
         .sub(this.controls.target)
         .normalize();
     if (direction.lengthSq() < 0.001) direction.set(0, 0, 1);
-    this.controls.target.copy(center);
-    this.camera.position.copy(center).addScaledVector(direction, distance);
-    this.camera.near = Math.max(distance / 1000, 0.0001);
-    this.camera.far = Math.max(distance * 20, 10);
-    this.camera.updateProjectionMatrix();
-    this.controls.update();
-    this.render();
+    if (
+      this.props.learningMode &&
+      this.camera instanceof THREE.OrthographicCamera
+    ) {
+      // Fit the projected box rather than its enclosing sphere: tall regional
+      // bundles otherwise leave most of a narrow teaching stage empty.
+      const right = new THREE.Vector3().crossVectors(this.camera.up, direction);
+      if (right.lengthSq() < 0.001) right.set(1, 0, 0);
+      right.normalize();
+      const up = new THREE.Vector3().crossVectors(direction, right).normalize();
+      const extent = (axis: THREE.Vector3) =>
+        (Math.abs(axis.x) * size.x +
+          Math.abs(axis.y) * size.y +
+          Math.abs(axis.z) * size.z) /
+        2;
+      const halfHeight =
+        Math.max(extent(up), extent(right) / this.aspect, 0.015) * 1.15;
+      distance = halfHeight / Math.tan(ATLAS_HALF_FOV);
+    }
+    this.moveCamera(
+      center,
+      center.clone().addScaledVector(direction, distance),
+      Math.max(distance / 1000, 0.0001),
+      Math.max(distance * 20, 10),
+      !this.framed,
+    );
+    this.framed = true;
   }
 
   dispose() {
     this.disposed = true;
+    this.transition.cancel();
     this.generation++;
     this.observer.disconnect();
     this.coarsePointer.removeEventListener("change", this.resize);
+    this.reducedMotion.removeEventListener("change", this.motionChanged);
     this.labels.dispose();
+    this.callouts.dispose();
+    this.controls.removeEventListener("start", this.transition.cancel);
     this.controls.dispose();
     this.decoder.dispose();
     this.study.dispose();
     const canvas = this.renderer.domElement;
+    canvas.removeEventListener("pointerdown", this.transition.cancel, true);
+    canvas.removeEventListener("wheel", this.transition.cancel, true);
+    canvas.removeEventListener("keydown", this.transition.cancel, true);
     canvas.removeEventListener("pointerdown", this.pointerDown);
     canvas.removeEventListener("pointermove", this.pointerMove);
     canvas.removeEventListener("pointerup", this.pointerUp);
