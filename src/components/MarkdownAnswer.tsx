@@ -6,6 +6,8 @@ import remarkGfm from "remark-gfm";
 // and links always open in a new tab without referrer. remark-breaks keeps
 // single newlines (e.g. one source per line) as line breaks, like a chat.
 const components: Components = {
+  // Model-controlled image URLs must never trigger requests with private data.
+  img: ({ alt }) => <span>{alt}</span>,
   a: ({ href, children }) => (
     <a href={href} target="_blank" rel="noreferrer noopener">
       {children}
