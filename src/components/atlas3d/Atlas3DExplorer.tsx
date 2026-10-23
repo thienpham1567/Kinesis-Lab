@@ -20,6 +20,7 @@ import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import type { RenderQuality } from "./render-policy";
 import type { CameraCommand } from "./types";
 import AnatomyEvidenceCard from "./AnatomyEvidenceCard";
+import { RegionKnowledgePanel } from "./RegionKnowledgePanel";
 import { MuscleStudyCard } from "@/components/training/MuscleStudyCard";
 import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
 import { getCatalogEvidence } from "@/lib/clinical/evidence-registry";
@@ -770,6 +771,13 @@ export default function Atlas3DExplorer({
                       Ngữ cảnh theo vùng từ thư viện phục hồi khớp.
                     </p>
                   </details>
+                )}
+                {region && selected && (
+                  <RegionKnowledgePanel
+                    regionId={region.id}
+                    meshEnglish={selected.english}
+                    meshLatin={selected.latin}
+                  />
                 )}
                 <div className="space-y-2 border-t border-rule pt-3">
                   <Link

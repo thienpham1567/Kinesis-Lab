@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
 import { MusclePlateCredit } from "./MusclePlateCredit";
+import { RegionFoundations } from "./RegionFoundations";
 import { ANATOMY_REGION_EVIDENCE } from "@/lib/clinical/evidence-anatomy";
 import { useState } from "react";
 import {
   ANATOMY_REGIONS,
-  REGION_FOUNDATIONS,
   matchClientIssuesToRegions,
   type AnatomyRegion,
   type AnatomyRegionId,
@@ -877,33 +877,7 @@ export function BodyMapExplorer({
           </div>
 
           {/* Kiến thức nền giải phẫu, diễn đạt lại từ nguồn trong hồ sơ vùng */}
-          <div className="space-y-2">
-            <h3 className="font-display text-sm font-bold text-ink">Kiến thức nền</h3>
-            <ul className="space-y-1.5 rounded-md border border-rule bg-canvas/60 p-3.5 text-xs leading-6 text-slate">
-              {REGION_FOUNDATIONS[activeRegion.id].map((item) => (
-                <li key={item.text}>
-                  • {item.text}{" "}
-                  {item.sourceRefs.map((number) => {
-                    const source =
-                      ANATOMY_REGION_EVIDENCE[activeRegion.id].sources[number - 1];
-                    return (
-                      <a
-                        key={number}
-                        href={source.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        title={`${source.title} · Đối chiếu ${source.checkedAt}`}
-                        className="ml-1 font-mono text-cobalt underline underline-offset-2"
-                        aria-label={`Nguồn ${number} cho kiến thức nền vùng ${activeRegion.name}`}
-                      >
-                        [{number}]
-                      </a>
-                    );
-                  })}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <RegionFoundations regionId={activeRegion.id} regionName={activeRegion.name} />
 
           {/* 2. Anatomical Structures (Origin - Insertion - Action) */}
           <div className="space-y-2">
