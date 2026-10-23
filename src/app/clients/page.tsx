@@ -35,7 +35,13 @@ export default function ClientsPage() {
   const [listError, setListError] = useState("");
   const [formError, setFormError] = useState("");
   const [message, setMessage] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
   const nameInput = useRef<HTMLInputElement>(null);
+
+  const openForm = () => {
+    setFormOpen(true);
+    window.setTimeout(() => nameInput.current?.focus(), 60);
+  };
 
   useEffect(() => {
     let ignore = false;
@@ -143,13 +149,34 @@ export default function ClientsPage() {
         <button
           type="button"
           className="button-primary"
-          onClick={() => nameInput.current?.focus()}
+          aria-expanded={formOpen}
+          onClick={() => (formOpen ? setFormOpen(false) : openForm())}
         >
           <Icon name="plus" className="size-4" />
           Thêm học viên
         </button>
       </PageHeading>
 
+      {loading ? (
+        <dl
+          className="grid grid-cols-3 gap-2 sm:gap-3"
+          aria-label="Đang tải chỉ số học viên"
+          aria-busy="true"
+        >
+          {[
+            "Hồ sơ học viên",
+            "Cần điều chỉnh tập luyện",
+            "Cần chuyển khám bác sĩ",
+          ].map((label) => (
+            <div key={label} className="panel p-3 sm:p-5">
+              <dt className="min-h-10 text-xs leading-5 text-slate sm:min-h-0">
+                {label}
+              </dt>
+              <dd className="mt-2 h-7 w-12 animate-pulse rounded-md bg-surface" />
+            </div>
+          ))}
+        </dl>
+      ) : !listError && clients.length > 0 ? (
       <dl className="grid grid-cols-3 gap-2 sm:gap-3">
         {[
           {
@@ -185,14 +212,17 @@ export default function ClientsPage() {
                 {item.label}
               </dt>
               <dd className="mt-0.5 font-mono text-xl font-medium text-ink sm:text-2xl">
-                {loading || listError ? "—" : item.value}
+                {item.value}
               </dd>
             </div>
           </div>
         ))}
       </dl>
+      ) : null}
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div
+        className={`grid items-start gap-6 ${formOpen ? "xl:grid-cols-[minmax(0,1fr)_340px]" : ""}`}
+      >
         <section
           aria-labelledby="client-list-heading"
           className="min-w-0 space-y-4"
@@ -246,7 +276,7 @@ export default function ClientsPage() {
                     <button
                       type="button"
                       className="button-secondary"
-                      onClick={() => nameInput.current?.focus()}
+                      onClick={openForm}
                     >
                       <Icon name="plus" className="size-4" />
                       Tạo học viên đầu tiên
@@ -284,6 +314,7 @@ export default function ClientsPage() {
           </div>
         </section>
 
+        {formOpen && (
         <section
           className="panel min-w-0 p-5 sm:p-6 xl:sticky xl:top-24"
           aria-label="Tạo hồ sơ học viên"
@@ -364,6 +395,7 @@ export default function ClientsPage() {
             trước khi thiết kế chương trình tập.
           </p>
         </section>
+        )}
       </div>
     </div>
   );

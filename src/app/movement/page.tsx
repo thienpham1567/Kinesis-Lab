@@ -12,16 +12,40 @@ import {
 
 export default function MovementHandbookPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
-          <Icon name="spinner" className="size-5 animate-spin" />
-          Đang mở sổ tay…
-        </div>
-      }
-    >
+    <Suspense fallback={<HandbookFallback />}>
       <HandbookInner />
     </Suspense>
+  );
+}
+
+/* Khi tải, giữ nguyên tiêu đề và hàng tab để trang không nhảy hình. */
+function HandbookFallback() {
+  return (
+    <div className="mx-auto max-w-6xl space-y-5" aria-busy="true">
+      <PageHeading
+        eyebrow="Hiểu · Quan sát · Áp dụng"
+        title="Sổ tay vận động"
+        description="Bốn nền tảng cho PT, với kiến thức trọng tâm, ví dụ thực hành và đường dẫn về tài liệu gốc ngay cạnh nhận định."
+      />
+      <div
+        className="tab-bar grid grid-cols-2 sm:grid-cols-4"
+        aria-hidden="true"
+      >
+        {HANDBOOK.map((t, i) => (
+          <span
+            key={t.id}
+            className="tab-button px-1.5 text-center sm:px-3.5"
+            aria-pressed={i === 0}
+          >
+            {t.tab}
+          </span>
+        ))}
+      </div>
+      <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
+        <Icon name="spinner" className="size-5 animate-spin" />
+        Đang mở sổ tay…
+      </div>
+    </div>
   );
 }
 function HandbookInner() {

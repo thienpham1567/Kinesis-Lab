@@ -1,5 +1,8 @@
 import * as THREE from "three";
-import { atlasStructureName } from "@/lib/clinical/atlas-names";
+import {
+  atlasStructureName,
+  atlasVietnameseName,
+} from "@/lib/clinical/atlas-names";
 import type { AtlasStructure } from "@/lib/clinical/atlas-3d";
 import type { AtlasCamera } from "./atlas-camera";
 import { surfaceLabelPoint } from "./surface-label-layout.mjs";
@@ -34,9 +37,9 @@ export class StructureCallouts {
       button.type = "button";
       button.hidden = line.hidden = true;
       button.className =
-        "absolute pointer-events-auto rounded-lg border border-rule bg-sheet px-3 py-2 text-xs font-semibold text-ink shadow-sm focus-visible:outline-2 focus-visible:outline-cobalt";
+        "absolute pointer-events-auto rounded-full border border-rule bg-sheet/95 px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm backdrop-blur-sm focus-visible:outline-2 focus-visible:outline-cobalt";
       button.style.cssText =
-        "max-width:min(220px,60%);overflow-wrap:anywhere;line-height:1.35;text-align:left;";
+        "max-width:min(180px,55%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;text-align:left;";
       button.title =
         "Tên cấu trúc từ danh mục mô hình nguồn. Điểm nối chỉ dùng đặt nhãn; không phải mốc bám giải phẫu đã đo.";
       line.style.cssText =
@@ -121,7 +124,9 @@ export class StructureCallouts {
           : structure.side === "right"
             ? " · Phải"
             : "";
-      item.button.textContent = atlasStructureName(structure) + side;
+      item.button.textContent =
+        (atlasVietnameseName(structure) ?? structure.english) + side;
+      item.button.title = `${atlasStructureName(structure)}${side} — tên cấu trúc từ danh mục mô hình nguồn. Điểm nối chỉ dùng đặt nhãn; không phải mốc bám giải phẫu đã đo.`;
       item.button.setAttribute(
         "aria-label",
         `${atlasStructureName(structure)}${side} — cấu trúc mô hình nguồn`,
@@ -147,7 +152,7 @@ export class StructureCallouts {
         continue;
       }
       bounds.push(rect);
-      item.button.style.cssText = `max-width:min(220px,60%);overflow-wrap:anywhere;line-height:1.35;text-align:left;left:${x}px;top:${y}px;border-color:${structure.id === selectedId ? "var(--cobalt)" : "var(--rule)"};`;
+      item.button.style.cssText = `max-width:min(180px,55%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;text-align:left;left:${x}px;top:${y}px;border-color:${structure.id === selectedId ? "var(--cobalt)" : "var(--rule)"};`;
       const endX = labelSide > 0 ? x : x + w;
       const endY = y + h / 2;
       item.line.hidden = false;
