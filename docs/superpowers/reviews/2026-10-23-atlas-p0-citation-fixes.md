@@ -27,6 +27,11 @@ Phạm vi: sửa các trích dẫn không khớp nguồn do rà soát phát hi�
 - **Bậc thang (JointDiagramSvg, cervical plate #01):** trước/giữa bám xương sườn 1, sau bám xương sườn 2 (có biến thể) và nâng xương sườn khi hít vào gắng sức ← StatPearls Scalenus; §11.3 chỉ còn dùng cho chức năng chung cơ ức–đòn–chũm.
 - **Lehman 2004 (lats_teres):** abstract nêu bốn bài (wide-grip pulldown, reverse-grip pulldown, seated row co/không co bả vai), hai đoạn giữ đẳng trường 10 giây; biceps không khác theo bài; tỉ lệ lats:biceps cao nhất ở wide-grip pulldown và seated row; thang giữa/trám cao nhất ở seated row. **Lưu ý:** phần Kết luận của abstract có câu “capable of producing small changes in the myoelectric activity of the primary movers”, nên chữ “nhỏ” được giữ nhưng quy cho tác giả, không còn là kết quả; thêm kết quả định lượng thực tế.
 
+### Sửa sau rà soát cuối nhánh (2026-10-23)
+
+- **Thoracic #1** từng nói "lồng ngực gắn vào cột sống ngực nên vùng này vận động ít hơn cổ và thắt lưng" và trích dẫn chỉ [1] (§7.3). §7.3 chỉ nêu diện khớp xương sườn trên thân đốt và mỏm ngang, không so sánh mức vận động. Đọc lại StatPearls Thoracic Vertebrae NBK459153 (đường `/sites/books/`, toàn văn): có "functional rigidity", mặt khớp hạn chế gập/duỗi/nghiêng bên, khung sườn "optimized for stability and respiration rather than maximal flexion-extension", nhưng **không** so sánh trực tiếp với cổ hay thắt lưng. Vì vậy chọn cách (b): câu chỉ còn ý §7.3 ("diện khớp với đầu xương sườn trên thân đốt và với củ sườn trên mỏm ngang"), giữ [1]; ý hạn chế vận động nằm ở foundation #2 đã trích [1, 11]. Dòng "Kiến thức nền" của hồ sơ vùng ghi rõ cả hai nguồn không so sánh mức vận động giữa các vùng.
+- **3D panel:** tiêu đề bảng nguồn vùng là "Nguồn kiến thức vùng · {tên vùng}", nhãn thẻ được chọn là "Thẻ chứa cấu trúc đang chọn" (thẻ là cấu trúc của vùng trùng tên Latin với mesh, không phải xác nhận mesh); lời dẫn cho `source-only` nói "Bản ghi mesh này chỉ là dữ liệu tên gọi và nguồn mesh"; lời dẫn `limited` nêu lý do dưới dạng ví dụ vì một số bản ghi giới hạn do phạm vi (ví dụ thoracic_core).
+
 ## Chỉ mục nguồn (không làm lệch chỉ mục cũ)
 
 Nguồn mới chỉ được **thêm vào cuối** danh sách từng vùng: cervical 10 (Cervical Vertebrae), 11 (Scalenus); thoracic_core 11; lumbar 11; ankle_foot 9. Mọi `sourceRefs` cũ giữ nguyên số.

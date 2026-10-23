@@ -57,7 +57,8 @@ assert.ok(!/Thang lực ấn an toàn|Foam roll không nghiền mô sẹo/.test(
 // P0 task 6: the general red-flag card must be visible on load, not behind a closed disclosure.
 // The evidence panel is a closed <details>; strip every closed disclosure and require the card in what remains.
 const visibleHandbook=handbook.replace(/<details(?![^>]*\bopen\b)[^>]*>[\s\S]*?<\/details>/g,'');
-assert.match(visibleHandbook,/Đau về đêm hoặc nặng hơn về đêm/,'red-flag card visible without expanding anything');
+assert.match(visibleHandbook,/Khám khẩn trong ngày \(NHS: hẹn khám khẩn hoặc gọi 111\)/,'urgent tier of the red-flag card visible without expanding anything');
+assert.match(visibleHandbook,/Nên đi khám \(NHS:[^)]*\): đau về đêm hoặc nặng hơn về đêm/,'routine tier of the red-flag card visible without expanding anything');
 for(const pattern of [/không đỡ khi nghỉ/,/sụt cân không chủ ý/,/tiền sử ung thư/,/sốt/,/suy giảm miễn dịch/]) assert.match(visibleHandbook,pattern,`visible red-flag card: ${pattern}`);
 assert.ok(!/<[^>]+\bhidden\b[^>]*>[^<]*sụt cân không chủ ý/.test(visibleHandbook),'red-flag card must not be hidden');
 console.log('Trigger presentation: attributed primary anatomy, withheld unverified point/referral overlays, neutral symptom navigation and handbook passed.');

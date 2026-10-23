@@ -190,6 +190,21 @@ for (const [label, pattern] of [
 assert.match(redFlagCard.vs, /dừng/, "card must say to stop loading/SMR");
 assert.match(redFlagCard.vs, /đánh giá y tế|khám/, "card must direct to medical assessment");
 assert.match(redFlagCard.vs, /không (là|phải) chẩn đoán/, "single sign is not a diagnosis");
+// NHS Back pain has two tiers: "See a GP" (non-urgent: weight loss, no easing with rest/worse at night) and
+// "urgent GP appointment or 111" (hot/cold/shivery/generally unwell). Cancer history (Downie) and immunosuppression
+// (Yusuf) are not NHS items.
+const urgentIdx = redFlagCard.vs.indexOf("Khám khẩn trong ngày"), routineIdx = redFlagCard.vs.indexOf("Nên đi khám"), endIdx = redFlagCard.vs.indexOf("Các dấu hiệu này");
+assert.ok(urgentIdx >= 0 && routineIdx > urgentIdx && endIdx > routineIdx, "card has urgent tier, then routine tier, then caveats");
+assert.match(redFlagCard.vs.slice(0, urgentIdx), /Với đau lưng\/cột sống/, "back/spine qualifier opens the whole list");
+const urgentTier = redFlagCard.vs.slice(urgentIdx, routineIdx), routineTier = redFlagCard.vs.slice(routineIdx, endIdx);
+assert.match(urgentTier, /hẹn khám khẩn hoặc gọi 111/, "urgent tier carries NHS urgent wording");
+assert.match(urgentTier, /sốt, ớn lạnh hoặc khó chịu toàn thân/);
+assert.match(urgentTier, /suy giảm miễn dịch/);
+assert.match(urgentTier, /Yusuf 2019/, "immunosuppression is attributed to Yusuf, not NHS");
+assert.doesNotMatch(urgentTier, /sụt cân|về đêm|không đỡ khi nghỉ|ung thư/, "non-urgent items must not sit in the urgent tier");
+for (const pattern of [/về đêm/, /không đỡ khi nghỉ/, /sụt cân không chủ ý/, /tiền sử ung thư/]) assert.match(routineTier, pattern, `routine tier: ${pattern}`);
+assert.doesNotMatch(routineTier, /khẩn|111|trong ngày/, "weight-loss/night-pain/cancer-history items carry no urgent wording");
+assert.doesNotMatch(redFlagCard.vs, /\bhay\b đang suy giảm|hay đang suy giảm/, "use 'hoặc', not 'hay'");
 for (const tag of ["NHS Back pain", "NICE NG59", "Downie 2013", "Yusuf 2019", "Finucane 2020"]) assert.ok(redFlagCard.vs.includes(tag), `red-flag card cites ${tag}`);
 for (const key of ["downie", "spinalInfection", "finucane", "backSafety", "lowBackGuidance"]) {
   assert.ok(general.supportedClaims.some((claim) => new RegExp(`^\\[[^\\]]*\\b${key}\\b`).test(claim) && /đêm|sụt cân|ung thư|sốt|miễn dịch/.test(claim)), `general claim mapping for ${key}`);

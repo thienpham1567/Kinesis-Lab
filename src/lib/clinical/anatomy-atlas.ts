@@ -94,7 +94,7 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
     ],
     "redFlags": [
       "Đau cổ sau chấn thương, đau dữ dội kéo dài hoặc kèm đau đầu và tê/yếu tay chân: ngừng tập và được đánh giá y tế ngay.",
-      "Dấu hiệu gợi ý bệnh tủy cổ: dáng đi loạng choạng hoặc hay vấp/ngã, tay vụng về (khó cài cúc, cầm chìa khóa, viết), tê hoặc yếu tay/chân tăng dần, hoặc thay đổi tiểu tiện/đại tiện kèm đau hoặc cứng cổ: ngừng tập và được đánh giá y tế; không tự thử nghiệm pháp cổ. Đây là dấu hiệu cần khám, không là chẩn đoán."
+      "Dấu hiệu gợi ý bệnh tủy cổ, dù có hay không đau/cứng cổ (không phải lúc nào cũng có đủ triệu chứng): dáng đi loạng choạng hoặc hay vấp/ngã, tay vụng về (khó cài cúc, cầm chìa khóa, viết), tê hoặc yếu tay/chân tăng dần, hoặc thay đổi tiểu tiện/đại tiện: ngừng tập và được đánh giá y tế sớm; không tự thử nghiệm pháp cổ. Đây là dấu hiệu cần khám, không là chẩn đoán."
     ],
     "protocols": [
       {
@@ -630,7 +630,7 @@ export const REGION_FOUNDATIONS: Record<
   ],
   thoracic_core: [
     {
-      text: "Đốt ngực có diện khớp với đầu xương sườn và củ sườn; lồng ngực gắn vào cột sống ngực nên vùng này vận động ít hơn cổ và thắt lưng.",
+      text: "Đốt ngực có diện khớp với đầu xương sườn trên thân đốt và với củ sườn trên mỏm ngang, nên mỗi đốt ngực tạo khớp với xương sườn.",
       sourceRefs: [1],
     },
     {

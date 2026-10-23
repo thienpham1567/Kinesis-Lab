@@ -103,6 +103,13 @@ assert.ok(foundationWith("cervical", /đội–chẩm/).sourceRefs.includes(cerv
 assert.ok(foundationWith("cervical", /biên độ/).sourceRefs.includes(cervicalPass), "cervical mobility needs the cervical vertebrae source");
 const thoracicPass = sourceIndex("thoracic_core", "NBK459153");
 assert.ok(foundationWith("thoracic_core", /Mỏm gai/).sourceRefs.includes(thoracicPass), "thoracic spinous/rib limits need the thoracic vertebrae source");
+// OpenStax 7.3 states costal facets on the thoracic body and transverse process, not that the thoracic region is less
+// mobile than the neck/lumbar regions. StatPearls NBK459153 (read 2026-10-23) has no explicit regional comparison either.
+const ribFoundation = foundationWith("thoracic_core", /diện khớp với đầu xương sườn/);
+assert.deepEqual(ribFoundation.sourceRefs, [1], "costal-facet claim stays on OpenStax 7.3 only");
+assert.doesNotMatch(ribFoundation.text, /vận động ít hơn|ít hơn cổ|hơn cổ và thắt lưng/, "no comparative mobility claim from OpenStax 7.3");
+const thoracicClaims = ANATOMY_REGION_EVIDENCE.thoracic_core.supportedClaims.join(" ");
+assert.doesNotMatch(thoracicClaims, /vận động ít hơn cổ/, "region claim mapping must not promise the comparative mobility statement");
 const lumbarPass = sourceIndex("lumbar", "NBK459278");
 assert.ok(foundationWith("lumbar", /xoay/).sourceRefs.includes(lumbarPass), "lumbar facet/rotation limit needs the lumbar vertebrae source");
 for (const [regionId, fragment] of [["cervical", "NBK459200"], ["thoracic_core", "NBK459153"], ["lumbar", "NBK459278"]]) {
@@ -135,6 +142,11 @@ assert.match(myelopathyFlag, /ngừng tập/, "must say to stop training");
 assert.match(myelopathyFlag, /đánh giá y tế/, "must direct to medical assessment");
 assert.match(myelopathyFlag, /tiểu tiện|đại tiện/, "bladder/bowel change");
 assert.doesNotMatch(myelopathyFlag, /chắc chắn|chẩn đoán là/, "no diagnosis");
+// Davies BMJ 2018: "Frequently not all symptoms are present. For example, pain might be absent" and refer promptly,
+// so neck pain/stiffness must not be a precondition for the red flag.
+assert.doesNotMatch(myelopathyFlag, /kèm đau hoặc cứng cổ/, "neck pain/stiffness must not be a precondition");
+assert.match(myelopathyFlag, /dù có hay không đau\/cứng cổ/, "signs apply whether or not neck pain/stiffness is present");
+assert.match(myelopathyFlag, /đánh giá y tế sớm/, "prompt assessment wording");
 const cervicalEvidence = ANATOMY_REGION_EVIDENCE.cervical;
 assert.match(cervicalEvidence.sources[5].url, /Neck%20Pain%20CPG/, "existing Blanpied source index 6 must not shift");
 assert.match(cervicalEvidence.sources[10].url, /NBK519058/, "existing scalenus source index 11 must not shift");

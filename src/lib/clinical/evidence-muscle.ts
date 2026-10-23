@@ -137,7 +137,7 @@ export const MUSCLE_EVIDENCE_SOURCES = {
   acsm2026: source(
     "ACSM Position Stand (2026): Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults: An Overview of Reviews",
     "https://pubmed.ncbi.nlm.nih.gov/41843416/",
-    "Europe PMC open-access full text (PMC12965823) read 2026-10-23: abstract, the primary recommendation, Results on strength and hypertrophy, Table 6 and the definitions of prescription variables. Supplemental appendices and the remaining sections were not read; no complete critical appraisal. Overview of 137 systematic reviews in healthy adults (searches through October 2024). General programming only, not rehabilitation, clinical populations or exact exercise validation.",
+    "Europe PMC open-access full text (PMC12965823) read 2026-10-23: abstract, Methods eligibility criteria (healthy adults >=18 yr with no defined disease; interventions of at least 6 wk), the primary recommendation, Results on strength and hypertrophy, Table 6 and the definitions of prescription variables. Supplemental appendices and the remaining sections were not read; no complete critical appraisal. Overview of 137 systematic reviews in healthy adults (searches through October 2024). General programming only, not rehabilitation, clinical populations or exact exercise validation.",
     rereadAt,
   ),
   bayesianCurl: source(

@@ -6,7 +6,7 @@ Phạm vi: hiển thị khối "Nguyên tắc chung (ACSM 2026)" ở đầu tab 
 
 | Nguồn | Phạm vi đọc thực tế |
 | --- | --- |
-| Currier BS et al., ACSM Position Stand 2026, Med Sci Sports Exerc 58(4), PMID 41843416, PMC12965823 (open access) | Bản full text mở qua Europe PMC (`/PMC12965823/fullTextXML`), đọc 2026-10-23: abstract, câu khuyến nghị chính ở phần thảo luận, phần Results về sức mạnh và phì đại, Bảng 6, bảng định nghĩa biến số (eccentric overload...). **Chưa đọc:** các phụ lục bổ sung (Supplemental Appendices), các phần còn lại của bài; không thẩm định phê phán toàn bộ. |
+| Currier BS et al., ACSM Position Stand 2026, Med Sci Sports Exerc 58(4), PMID 41843416, PMC12965823 (open access) | Bản full text mở qua Europe PMC (`/PMC12965823/fullTextXML`), đọc 2026-10-23: abstract, phần Methods (Eligibility Criteria, Bảng 1 Inclusion Criteria), câu khuyến nghị chính ở phần thảo luận, phần Results về sức mạnh và phì đại, Bảng 6, bảng định nghĩa biến số (eccentric overload...). **Chưa đọc:** các phụ lục bổ sung (Supplemental Appendices), các phần còn lại của bài; không thẩm định phê phán toàn bộ. |
 | Kubo K et al. 2019, PMID 31230110 | Abstract qua Europe PMC (bản ghi MED), đọc lại 2026-10-23. Không đọc full text; các con số là của abstract. |
 
 ## Mệnh đề ↔ đoạn nguồn
@@ -20,6 +20,16 @@ Tất cả mệnh đề của `TRAINING_GENERAL_GUIDANCE` mang [1] = ACSM 2026.
 | Chỉ ly tâm cho phì đại nhiều hơn chỉ hướng tâm; ly tâm quá tải = tăng tải hoặc thời gian chịu lực ở pha ly tâm | Results: "hypertrophy was enhanced by RT performed with eccentric-only contractions (versus concentric-only)"; Bảng 6: "Type: Eccentric contractions/overload"; bảng định nghĩa: "Eccentric overload: Increased load or time under tension during eccentric movement." |
 | Sức mạnh tăng nhiều hơn với tải nặng hơn, ≥80% 1RM (liều–đáp ứng); biên độ đầy đủ, 2–3 hiệp/buổi, đầu buổi, ≥2 buổi/tuần | Bảng 6, hàng Strength: "Frequency: ≥2 sessions/wk; Intensity: ≥80% 1RM (dose-response); Technique: Full range of motion; Volume: 2–3 sets/session; Exercise order: Beginning of training session". Abstract: "lifting heavier loads (≥80% one-repetition maximum), through a complete range of motion, for 2–3 sets, at the beginning of training sessions, and ≥2 sessions/wk". |
 | Với phì đại, các biến số sau không cho khác biệt nhất quán: tải 30%–100% 1RM, tập tới thất bại, nhịp 0,5 s so 8 s, hạn chế lưu lượng máu, chu kỳ hóa, thứ tự bài | Results: "RT did not influence hypertrophy performed with ... low (30% 1RM) to high (100% 1RM) loads; contractions to muscle failure/fatigue; blood flow restriction; ... fast (0.5 s) versus slow (8 s) repetitions; ... periodization ...; or exercise order within training sessions." |
+
+### Phạm vi áp dụng (limitation "≥18 tuổi ... ít nhất 6 tuần")
+
+| Phát biểu trong ứng dụng | Đoạn nguồn (Methods, đọc 2026-10-23) |
+| --- | --- |
+| Người lớn khỏe mạnh, ≥18 tuổi, không bệnh lý xác định | Eligibility Criteria: "Healthy adults" được định nghĩa là con người ≥18 tuổi không có bệnh xác định (gồm cả người béo phì, thiếu cơ, suy yếu thể chất). Abstract: "healthy adults (≥18 yr)". |
+| Tập ít nhất 6 tuần | Eligibility Criteria: các tổng quan hệ thống thử nghiệm ngẫu nhiên được đưa vào khi người lớn khỏe mạnh hoàn thành chương trình RT ít nhất 6 tuần; Bảng 1 (Intervention): "at least 6 wk with a minimum of 12 exposures". |
+| Không áp dụng trực tiếp cho người phục hồi/bệnh lý | Hệ quả của định nghĩa "no defined disease(s)"; nguồn không bàn đến người đang phục hồi. Đây là diễn giải thận trọng của ứng dụng. |
+
+Ngoài ra Methods nêu các tổng quan không tách theo tuổi nên khuyến nghị được tác giả mô tả là "evidence-based across all ages"; ứng dụng không dùng ý này để mở rộng phạm vi. Kiểm thử `check-muscle-evidence.mjs` ghim cả "≥18 tuổi", "ít nhất 6 tuần" và ghi chú access có "Methods".
 
 Lưu ý diễn giải: abstract viết "eccentric overload"; bản full text cho thấy so sánh thực tế là chỉ ly tâm với chỉ hướng tâm. Ứng dụng nêu đúng so sánh đó và ghi giới hạn. Với sức mạnh, nguồn ghi "not affected by ... contraction type", nên không có khuyến nghị ly tâm cho sức mạnh. Ngưỡng ≥10 hiệp và ≥80% 1RM là ngưỡng báo cáo khi so sánh chương trình; ACSM không xác định giới hạn trên của tần suất ("upper limit cannot ... be determined").
 

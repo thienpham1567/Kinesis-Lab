@@ -89,7 +89,7 @@ export function RegionKnowledgePanel({
               className="rounded-md border border-rule bg-canvas/60 p-3 text-xs leading-5"
             >
               {structure === matched && (
-                <p className="mb-1 font-semibold text-cobalt">Cấu trúc đang chọn</p>
+                <p className="mb-1 font-semibold text-cobalt">Thẻ chứa cấu trúc đang chọn</p>
               )}
               <p className="font-display font-bold text-ink">{structure.name}</p>
               <p className="font-mono text-cobalt">{structure.latin}</p>
@@ -104,7 +104,10 @@ export function RegionKnowledgePanel({
           ))}
         </div>
       </div>
-      <ClinicalEvidencePanel evidence={ANATOMY_REGION_EVIDENCE[region.id]} />
+      <ClinicalEvidencePanel
+        evidence={ANATOMY_REGION_EVIDENCE[region.id]}
+        title={`Nguồn kiến thức vùng · ${region.name}`}
+      />
     </div>
   );
 }

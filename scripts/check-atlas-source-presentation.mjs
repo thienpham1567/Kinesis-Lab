@@ -21,7 +21,7 @@ for(const [status,label] of Object.entries(labels)) {
   assert.ok(!/Chờ chuyên gia|chờ chuyên gia|độc lập duyệt/.test(html),'null reviewer must not impose an expert approval gate');
   for(const text of ['Claim with bounded scope','Specific measurement is not supported.','https://example.org/source','2026-10-22','Abstract only'])assert.ok(html.includes(text),`Preserve source/claim scope: ${text}`);
 }
-const statusIntro={'literature-reviewed':'Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.',limited:'Phạm vi đối chiếu bị giới hạn (quyền truy cập hạn chế, quy ước minh họa hoặc chính sách quy trình); đọc giới hạn trước khi áp dụng.','source-only':'Chỉ là dữ liệu tên gọi và nguồn mesh, chưa có kiến thức theo từng cấu trúc; không phải phát biểu y khoa.'};
+const statusIntro={'literature-reviewed':'Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.',limited:'Phạm vi đối chiếu bị giới hạn (ví dụ: quyền truy cập hạn chế, quy ước minh họa, chính sách quy trình hoặc phạm vi nguồn đã đọc); đọc giới hạn trước khi áp dụng.','source-only':'Bản ghi mesh này chỉ là dữ liệu tên gọi và nguồn mesh, chưa có kiến thức theo từng cấu trúc; không phải phát biểu y khoa.'};
 const introHtml={};
 for(const status of Object.keys(statusIntro)) {
   const html=renderToStaticMarkup(createElement(ClinicalEvidencePanel,{evidence:{status,reviewedBy:null,sources:[{title:'Source fixture',url:'https://example.org/source',checkedAt:'2026-10-22',access:'Abstract only'}],supportedClaims:['Claim with bounded scope'],limitations:['Specific measurement is not supported.']}}));
@@ -31,6 +31,9 @@ for(const status of Object.keys(statusIntro)) {
 }
 assert.ok(!introHtml['source-only'].includes('Phát biểu được đối chiếu'),'source-only: no comparison claim in the intro');
 assert.ok(introHtml['source-only'].includes('dữ liệu tên gọi và nguồn mesh'),'source-only: provenance wording');
+assert.ok(introHtml['source-only'].includes('Bản ghi mesh này'),'source-only: intro is scoped to the mesh record');
+assert.ok(!/quyền truy cập hạn chế, quy ước minh họa hoặc chính sách quy trình/.test(introHtml.limited),'limited: reasons are examples, not a closed set');
+assert.ok(introHtml.limited.includes('ví dụ:'),'limited: reasons framed as examples');
 assert.equal(renderToStaticMarkup(createElement(ClinicalEvidencePanel,{evidence:undefined})), '');
 for (const file of ['BodyMapExplorer.tsx','JointDiagramSvg.tsx','TriggerPointExplorer.tsx','atlas3d/AnatomyEvidenceCard.tsx','atlas3d/HipMaterialStudyControls.tsx','training/TrainingAtlasExplorer.tsx','training/MuscleStudyCard.tsx','training/TrainingAnatomyViewer.tsx','training/curl/CableCurlStudy.tsx']) {
   const content=readFileSync(new URL(`../src/components/${file}`,import.meta.url),'utf8');
@@ -64,7 +67,8 @@ for(const item of REGION_FOUNDATIONS.knee) {
 }
 assert.equal((kneeHtml.match(/>\[6\]<\/a>/g)??[]).length,3,'knee: one [n] link per foundation');
 for(const st of knee.structures)for(const text of [st.name,st.latin,st.originInsertion,st.action])assert.ok(kneeHtml.includes(text.replaceAll('&','&amp;')),`knee: structure card ${st.name}`);
-assert.ok(kneeHtml.includes('data-evidence-status="literature-reviewed"')&&kneeHtml.includes('Nguồn và giới hạn áp dụng'),'knee: region ClinicalEvidencePanel');
+assert.ok(kneeHtml.includes('data-evidence-status="literature-reviewed"')&&kneeHtml.includes('Nguồn kiến thức vùng'),'knee: region ClinicalEvidencePanel');
+assert.ok(kneeHtml.includes(`Nguồn kiến thức vùng · ${knee.name.replaceAll('&','&amp;')}`),'knee: region evidence panel has a distinct title');
 assert.ok(!/Chờ chuyên gia|chờ chuyên gia/.test(kneeHtml)&&!kneeHtml.includes('text-[11px]'),'knee: no expert gate, text floor 12px');
 const order=html=>knee.structures.map(st=>[html.indexOf(st.name.replaceAll('&','&amp;')),st.name]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
 const defaultOrder=order(kneeHtml);
@@ -74,8 +78,8 @@ const acl=knee.structures.find(st=>st.latin.startsWith('Ligamentum cruciatum')).
 assert.equal(order(panel({regionId:'knee',meshEnglish:'Anterior cruciate ligament',meshLatin:'Ligamentum cruciatum anterius'}))[0],acl,'knee: ACL mesh promotes its structure card');
 assert.equal(order(panel({regionId:'knee',meshEnglish:'Medial meniscus',meshLatin:'Meniscus medialis'}))[0],knee.structures.find(st=>st.latin.startsWith('Meniscus')).name,'knee: meniscus mesh promotes its structure card');
 for(const mesh of [{meshEnglish:'Patella',meshLatin:'Patella'},{meshEnglish:'Gluteus maximus muscle',meshLatin:'Musculus gluteus maximus'},{meshEnglish:'Medial patellar retinaculum',meshLatin:'Retinaculum mediale patellae'},{meshEnglish:'Adductor longus muscle',meshLatin:'Musculus adductor longus'}])assert.deepEqual(order(panel({regionId:'knee',...mesh})),defaultOrder,`knee: no promotion for ${mesh.meshEnglish}`);
-assert.ok(panel({regionId:'knee',meshEnglish:'Anterior cruciate ligament',meshLatin:'Ligamentum cruciatum anterius'}).includes('Cấu trúc đang chọn'),'knee: promoted card is labelled');
-assert.ok(!kneeHtml.includes('Cấu trúc đang chọn'),'knee: no label without a match');
+assert.ok(panel({regionId:'knee',meshEnglish:'Anterior cruciate ligament',meshLatin:'Ligamentum cruciatum anterius'}).includes('Thẻ chứa cấu trúc đang chọn'),'knee: promoted card is labelled');
+assert.ok(!kneeHtml.includes('cấu trúc đang chọn'),'knee: no label without a match');
 const hip=ANATOMY_REGIONS.find(r=>r.id==='hip_pelvis'),hipFirst=html=>hip.structures.map(st=>[html.indexOf(st.name.replaceAll('&','&amp;')),st.name]).sort((x,y)=>x[0]-y[0])[0][1];
 assert.equal(hipFirst(panel({regionId:'hip_pelvis',meshEnglish:'Gluteus minimus muscle',meshLatin:'Musculus gluteus minimus'})),hip.structures.find(st=>st.latin.startsWith('Gluteus medius')).name,'hip: gluteus minimus mesh promotes the gluteus medius & minimus card');
 for(const region of ANATOMY_REGIONS) {

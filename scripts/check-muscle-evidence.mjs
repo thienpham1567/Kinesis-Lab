@@ -95,6 +95,10 @@ for (const claim of guidance.supportedClaims) {
   assert.ok(!/chờ chuyên gia/i.test(claim));
 }
 assert.ok(guidance.limitations.some(limit => /không phải[^.;]*cá nhân|cá nhân hóa|chưa cá nhân/i.test(limit)), "general guidance keeps the personal-prescription limit");
+// ACSM 2026 Methods, Eligibility Criteria / Table 1: healthy adults are humans >=18 yr with no defined disease; RT interventions
+// of at least 6 wk (minimum 12 exposures). The scope limitation must keep both, and the access note must say Methods was read.
+assert.ok(guidance.limitations.some(limit => /≥18 tuổi/.test(limit) && /ít nhất 6 tuần/.test(limit)), "ACSM scope limitation states the adult >=18 and >=6-week eligibility");
+assert.match(guidance.sources[0].access, /Methods|Eligibility/i, "ACSM access note says the eligibility passage was read");
 const explorer = readFileSync(new URL("../src/components/training/TrainingAtlasExplorer.tsx", import.meta.url), "utf8");
 assert.match(explorer, /import\s*\{[^}]*\bTRAINING_GENERAL_GUIDANCE\b[^}]*\}\s*from\s*"@\/lib\/clinical\/evidence-muscle"/, "TrainingAtlasExplorer imports TRAINING_GENERAL_GUIDANCE");
 const guidanceAt = explorer.indexOf("<TrainingGuidancePanel");

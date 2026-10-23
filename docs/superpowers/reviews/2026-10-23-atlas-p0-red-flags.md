@@ -21,10 +21,10 @@ Phạm vi: (1) thẻ "Dấu hiệu toàn thân và đau về đêm cần khám" 
 | Dấu hiệu trong thẻ | Nguồn |
 | --- | --- |
 | Đau về đêm / nặng hơn về đêm, đau không đỡ khi nghỉ | NHS Back pain, mục See a GP |
-| Sụt cân không chủ ý | NHS Back pain, mục See a GP. Downie 2013 cho thấy riêng dấu hiệu này có xác suất sau xét nghiệm dưới 3% nên thẻ nói rõ độ chính xác từng dấu hiệu đơn lẻ còn hạn chế |
+| Sụt cân không chủ ý | NHS Back pain, mục See a GP (không khẩn). Downie 2013 cho thấy riêng dấu hiệu này có xác suất sau xét nghiệm dưới 3% nên thẻ nói rõ độ chính xác từng dấu hiệu đơn lẻ còn hạn chế |
 | Tiền sử ung thư kèm đau mới hoặc thay đổi | Downie 2013 (tiền sử ung thư làm tăng xác suất cao nhất); NICE NG59 1.1.1 (triệu chứng mới/thay đổi, loại trừ ung thư). Không nói "cấm vận động" |
-| Sốt, ớn lạnh, khó chịu toàn thân | NHS Back pain, mục urgent (nóng, lạnh, run rét, khó chịu); Yusuf 2019 (sốt gặp ở 55% ca nhiễm trùng cột sống) |
-| Suy giảm miễn dịch (bệnh nền, thuốc ức chế miễn dịch, corticosteroid kéo dài) | Yusuf 2019 (nhiễm trùng cột sống thường gặp ở điều kiện suy giảm miễn dịch; corticosteroid/thuốc ức chế miễn dịch là yếu tố được dùng). Không có trong NHS Back pain |
+| Sốt, ớn lạnh, khó chịu toàn thân | NHS Back pain, mục urgent (nóng, lạnh, run rét, khó chịu → hẹn khám khẩn hoặc gọi 111); Yusuf 2019 (sốt gặp ở 55% ca nhiễm trùng cột sống) |
+| Suy giảm miễn dịch (bệnh nền, thuốc ức chế miễn dịch, corticosteroid kéo dài) | Yusuf 2019 (nhiễm trùng cột sống thường gặp ở điều kiện suy giảm miễn dịch; corticosteroid/thuốc ức chế miễn dịch là yếu tố được dùng). Không có trong NHS Back pain. Yusuf không dùng chữ "urgent"/"same day"; chỉ nói cần hạ ngưỡng nghi ngờ, làm xét nghiệm loại trừ và chữa kịp thời. Mốc "khám trong ngày" cho nhóm này là lựa chọn thận trọng của app, đã ghi trong thẻ |
 | "Không là chẩn đoán", "chỉ nhắc loại trừ nguyên nhân nghiêm trọng" | Finucane 2020 abstract (thiếu bằng chứng độ chính xác, là lộ trình suy luận); Downie 2013; Yusuf 2019 |
 
 Hai điểm là lựa chọn thận trọng của ứng dụng, đã ghi trong thẻ và `limitations`: (a) "dừng tăng tải, không dùng SMR để thử" (nguồn chỉ nói cần đi khám/đánh giá); (b) áp dụng cho vùng khác ngoài lưng/cột sống (nguồn nói về đau lưng/cột sống).
@@ -42,6 +42,11 @@ Hai điểm là lựa chọn thận trọng của ứng dụng, đã ghi trong t
 
 Ghi chú: gait và vụng tay **không** nằm trong Blanpied 2017 như brief giả định; chúng được đối chiếu với Davies 2018 (nguồn thêm). Blanpied vẫn là căn cứ cho yêu cầu sàng lọc và cho các thiếu hụt thần kinh/bàng quang–ruột.
 
+### Sửa sau rà soát cuối nhánh (2026-10-23)
+
+- **Hai mức khẩn của NHS (thẻ handbook).** NHS Back pain (đọc lại) có mục "See a GP" (không khẩn: sụt cân không chủ ý, không đỡ khi nghỉ hoặc nặng hơn về đêm...) tách khỏi "urgent GP appointment or 111" (nóng, lạnh, run rét hoặc khó chịu toàn thân; đau dữ dội khởi phát đột ngột hoặc nặng nhanh). Thẻ trước đó gộp mọi dấu hiệu vào một hành động. Thẻ nay có hai nhóm: "Khám khẩn trong ngày (NHS: hẹn khám khẩn hoặc gọi 111)" gồm sốt/ớn lạnh/khó chịu toàn thân và suy giảm miễn dịch kèm đau mới; "Nên đi khám (NHS: hẹn khám bác sĩ thường quy)" gồm đau đêm/không đỡ khi nghỉ, sụt cân, tiền sử ung thư. Cụm "Với đau lưng/cột sống" mở đầu áp dụng cho cả danh sách; dùng "hoặc", không dùng "hay". Tiền sử ung thư (Downie 2013, NICE 1.1.1) không phải mục của NHS và thẻ ghi rõ điều đó. `supportedClaims` của `TRIGGER_GENERAL_EVIDENCE` mô tả đúng hai mức này.
+- **Bệnh tủy cổ không đòi hỏi đau cổ.** Davies 2018 (PMC6074604, đọc lại): "Frequently not all symptoms are present. For example, pain might be absent" và "Refer patients with suspected DCM promptly to a specialist". Mục `redFlags` cervical bỏ cụm "kèm đau hoặc cứng cổ", thay bằng "dù có hay không đau/cứng cổ" và "đánh giá y tế sớm".
+
 ## Chỉ mục nguồn (không làm lệch chỉ mục cũ)
 
 - `TRIGGER_GENERAL_EVIDENCE.sources`: thêm vào cuối `finucane` (20), `downie` (21), `spinalInfection` (22). Mục 19 (`heelSafety`) và mọi khóa `[tag]` cũ giữ nguyên.
@@ -51,9 +56,9 @@ Ghi chú: gait và vụng tay **không** nằm trong Blanpied 2017 như brief gi
 
 ## Kiểm thử ghim các mệnh đề
 
-- `scripts/check-trigger-evidence.mjs`: thẻ có đủ bảy ý, câu "dừng", chuyển khám, "không là chẩn đoán", năm thẻ trích dẫn; nguồn mới đúng ngày đọc và access nói rõ phạm vi (Finucane: chỉ abstract, chưa đọc bảng); các nguồn mới nằm cuối; claim ánh xạ từng nguồn; limitations ghi Finucane chưa đọc toàn văn.
+- `scripts/check-trigger-evidence.mjs`: thẻ có hai nhóm (khẩn trong ngày rồi nên đi khám); nhóm khẩn chứa sốt/ớn lạnh/khó chịu toàn thân, suy giảm miễn dịch + Yusuf 2019 và chữ "gọi 111"; nhóm thường quy chứa đau đêm, sụt cân, tiền sử ung thư và không có chữ khẩn/111/trong ngày; thẻ có đủ bảy ý, câu "dừng", chuyển khám, "không là chẩn đoán", năm thẻ trích dẫn; nguồn mới đúng ngày đọc và access nói rõ phạm vi (Finucane: chỉ abstract, chưa đọc bảng); các nguồn mới nằm cuối; claim ánh xạ từng nguồn; limitations ghi Finucane chưa đọc toàn văn.
 - `scripts/check-trigger-presentation.mjs`: render server-side handbook, loại bỏ mọi `<details>` đóng và yêu cầu thẻ còn nguyên (hiển thị không cần mở), không có thuộc tính `hidden`.
-- `scripts/check-anatomy-regions-evidence.mjs`: cervical có mục bệnh tủy cổ với dáng đi, tay vụng, ngừng tập, đánh giá y tế, đổi tiểu/đại tiện, không chẩn đoán; chỉ mục cũ không lệch; claim ánh xạ nguồn 6, Davies, Finucane; limitations ghi Finucane chưa đọc toàn văn.
+- `scripts/check-anatomy-regions-evidence.mjs`: cervical có mục bệnh tủy cổ không đòi hỏi đau/cứng cổ (không còn "kèm đau hoặc cứng cổ", có "dù có hay không đau/cứng cổ" và "đánh giá y tế sớm"), với dáng đi, tay vụng, ngừng tập, đánh giá y tế, đổi tiểu/đại tiện, không chẩn đoán; chỉ mục cũ không lệch; claim ánh xạ nguồn 6, Davies, Finucane; limitations ghi Finucane chưa đọc toàn văn.
 
 ## Giới hạn còn lại
 

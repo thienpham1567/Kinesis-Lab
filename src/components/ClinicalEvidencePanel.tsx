@@ -1,8 +1,8 @@
 import type { EvidenceRecord } from "@/lib/clinical/evidence-types";
 const STATUS_INTRO: Record<EvidenceRecord["status"], string> = {
   "literature-reviewed": "Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.",
-  limited: "Phạm vi đối chiếu bị giới hạn (quyền truy cập hạn chế, quy ước minh họa hoặc chính sách quy trình); đọc giới hạn trước khi áp dụng.",
-  "source-only": "Chỉ là dữ liệu tên gọi và nguồn mesh, chưa có kiến thức theo từng cấu trúc; không phải phát biểu y khoa.",
+  limited: "Phạm vi đối chiếu bị giới hạn (ví dụ: quyền truy cập hạn chế, quy ước minh họa, chính sách quy trình hoặc phạm vi nguồn đã đọc); đọc giới hạn trước khi áp dụng.",
+  "source-only": "Bản ghi mesh này chỉ là dữ liệu tên gọi và nguồn mesh, chưa có kiến thức theo từng cấu trúc; không phải phát biểu y khoa.",
 };
 export function ClinicalEvidencePanel({
   evidence,
