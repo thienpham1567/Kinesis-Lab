@@ -1,0 +1,1596 @@
+{
+  "checkedAt": "2026-10-23",
+  "note": "Public GET responses; prices and availability can change. Empty endpoints/pricing are preserved.",
+  "sources": {
+    "black-forest-labs/flux-3-image-klein": "https://openrouter.ai/api/v1/images/models/black-forest-labs/flux-3-image-klein/endpoints",
+    "black-forest-labs/flux-3-image": "https://openrouter.ai/api/v1/images/models/black-forest-labs/flux-3-image/endpoints",
+    "google/gemini-nano-banana-2.1": "https://openrouter.ai/api/v1/images/models/google/gemini-nano-banana-2.1/endpoints",
+    "bytedance-seed/seedream-5-0-flash": "https://openrouter.ai/api/v1/images/models/bytedance-seed/seedream-5-0-flash/endpoints",
+    "bytedance-seed/seedream-5-0-lite": "https://openrouter.ai/api/v1/images/models/bytedance-seed/seedream-5-0-lite/endpoints",
+    "qwen/qwen-image-2.1-turbo": "https://openrouter.ai/api/v1/images/models/qwen/qwen-image-2.1-turbo/endpoints",
+    "qwen/qwen-image-2.1-pro": "https://openrouter.ai/api/v1/images/models/qwen/qwen-image-2.1-pro/endpoints",
+    "openai/gpt-image-2.5-flare": "https://openrouter.ai/api/v1/images/models/openai/gpt-image-2.5-flare/endpoints",
+    "openai/gpt-image-2.5-sunburst": "https://openrouter.ai/api/v1/images/models/openai/gpt-image-2.5-sunburst/endpoints",
+    "openai/gpt-image-2": "https://openrouter.ai/api/v1/images/models/openai/gpt-image-2/endpoints",
+    "openai/gpt-image-1-mini": "https://openrouter.ai/api/v1/images/models/openai/gpt-image-1-mini/endpoints",
+    "google/gemini-3.1-flash-lite-image": "https://openrouter.ai/api/v1/images/models/google/gemini-3.1-flash-lite-image/endpoints",
+    "google/gemini-3.1-flash-image": "https://openrouter.ai/api/v1/images/models/google/gemini-3.1-flash-image/endpoints",
+    "google/gemini-3-pro-image": "https://openrouter.ai/api/v1/images/models/google/gemini-3-pro-image/endpoints",
+    "recraft/recraft-v4.1-vector": "https://openrouter.ai/api/v1/images/models/recraft/recraft-v4.1-vector/endpoints",
+    "recraft/recraft-v4.1-flash": "https://openrouter.ai/api/v1/images/models/recraft/recraft-v4.1-flash/endpoints",
+    "meta/muse-image": "https://openrouter.ai/api/v1/images/models/meta/muse-image/endpoints",
+    "microsoft/mai-image-2.6-flash": "https://openrouter.ai/api/v1/images/models/microsoft/mai-image-2.6-flash/endpoints",
+    "tencent/hy-image-v3.5-preview": "https://openrouter.ai/api/v1/images/models/tencent/hy-image-v3.5-preview/endpoints",
+    "sourceful/riverflow-v2.5-fast": "https://openrouter.ai/api/v1/images/models/sourceful/riverflow-v2.5-fast/endpoints",
+    "krea/k3-edit": "https://openrouter.ai/api/v1/images/models/krea/k3-edit/endpoints"
+  },
+  "data": {
+    "black-forest-labs/flux-3-image-klein": {
+      "id": "black-forest-labs/flux-3-image-klein",
+      "endpoints": [
+        {
+          "provider_name": "Black Forest Labs",
+          "provider_slug": "black-forest-labs",
+          "provider_tag": "black-forest-labs",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "768",
+                "1K",
+                "1.5K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "21:9",
+                "2:1",
+                "16:9",
+                "3:2",
+                "7:5",
+                "4:3",
+                "5:4",
+                "1:1",
+                "4:5",
+                "3:4",
+                "5:7",
+                "2:3",
+                "9:16",
+                "1:2",
+                "9:21",
+                "auto"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 10
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "safety_tolerance"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.008,
+              "variant": "768"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.009,
+              "variant": "1k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.011,
+              "variant": "1.5k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.014,
+              "variant": "2k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.036,
+              "variant": "4k"
+            }
+          ]
+        }
+      ]
+    },
+    "black-forest-labs/flux-3-image": {
+      "id": "black-forest-labs/flux-3-image",
+      "endpoints": [
+        {
+          "provider_name": "Black Forest Labs",
+          "provider_slug": "black-forest-labs",
+          "provider_tag": "black-forest-labs",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "768",
+                "1K",
+                "1.5K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "21:9",
+                "2:1",
+                "16:9",
+                "3:2",
+                "7:5",
+                "4:3",
+                "5:4",
+                "1:1",
+                "4:5",
+                "3:4",
+                "5:7",
+                "2:3",
+                "9:16",
+                "1:2",
+                "9:21",
+                "auto"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 10
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "safety_tolerance"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.041,
+              "variant": "768"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.048,
+              "variant": "1k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.07,
+              "variant": "1.5k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.1,
+              "variant": "2k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.607,
+              "variant": "4k"
+            }
+          ]
+        }
+      ]
+    },
+    "google/gemini-nano-banana-2.1": {
+      "id": "google/gemini-nano-banana-2.1",
+      "endpoints": [
+        {
+          "provider_name": "Google AI Studio",
+          "provider_slug": "google-ai-studio",
+          "provider_tag": "google-ai-studio",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:4",
+                "1:8",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "8:1",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 3e-05
+            }
+          ]
+        }
+      ]
+    },
+    "bytedance-seed/seedream-5-0-flash": {
+      "id": "bytedance-seed/seedream-5-0-flash",
+      "endpoints": [
+        {
+          "provider_name": "Seed",
+          "provider_slug": "seed",
+          "provider_tag": "seed",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:2",
+                "2:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9",
+                "9:19.5",
+                "19.5:9",
+                "9:20",
+                "20:9",
+                "9:21",
+                "21:9",
+                "auto"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            },
+            "seed": {
+              "type": "boolean"
+            }
+          },
+          "allowed_passthrough_parameters": [],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.018
+            },
+            {
+              "billable": "input_image",
+              "unit": "image",
+              "cost_usd": 0
+            }
+          ]
+        }
+      ]
+    },
+    "bytedance-seed/seedream-5-0-lite": {
+      "id": "bytedance-seed/seedream-5-0-lite",
+      "endpoints": [
+        {
+          "provider_name": "Seed",
+          "provider_slug": "seed",
+          "provider_tag": "seed",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:2",
+                "2:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9",
+                "9:19.5",
+                "19.5:9",
+                "9:20",
+                "20:9",
+                "9:21",
+                "21:9",
+                "auto"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 4
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            },
+            "seed": {
+              "type": "boolean"
+            }
+          },
+          "allowed_passthrough_parameters": [],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.035
+            },
+            {
+              "billable": "input_image",
+              "unit": "image",
+              "cost_usd": 0
+            }
+          ]
+        }
+      ]
+    },
+    "qwen/qwen-image-2.1-turbo": {
+      "id": "qwen/qwen-image-2.1-turbo",
+      "endpoints": [
+        {
+          "provider_name": "Alibaba Cloud Int.",
+          "provider_slug": "alibaba",
+          "provider_tag": "alibaba",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:2",
+                "1:4",
+                "2:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 6
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 4
+            },
+            "seed": {
+              "type": "boolean"
+            }
+          },
+          "allowed_passthrough_parameters": [],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "image",
+              "cost_usd": 0
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.0184,
+              "variant": "1k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.0184,
+              "variant": "2k"
+            }
+          ]
+        }
+      ]
+    },
+    "qwen/qwen-image-2.1-pro": {
+      "id": "qwen/qwen-image-2.1-pro",
+      "endpoints": [
+        {
+          "provider_name": "Alibaba Cloud Int.",
+          "provider_slug": "alibaba",
+          "provider_tag": "alibaba",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:2",
+                "1:4",
+                "2:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 6
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 4
+            },
+            "seed": {
+              "type": "boolean"
+            }
+          },
+          "allowed_passthrough_parameters": [],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "image",
+              "cost_usd": 0
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.046,
+              "variant": "1k"
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.046,
+              "variant": "2k"
+            }
+          ]
+        }
+      ]
+    },
+    "openai/gpt-image-2.5-flare": {
+      "id": "openai/gpt-image-2.5-flare",
+      "endpoints": [
+        {
+          "provider_name": "OpenAI",
+          "provider_slug": "openai",
+          "provider_tag": "openai",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "3:2",
+                "2:3",
+                "4:3",
+                "3:4",
+                "16:9",
+                "9:16",
+                "21:9",
+                "auto"
+              ]
+            },
+            "quality": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max"
+              ]
+            },
+            "background": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "transparent",
+                "opaque"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 10
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 16
+            },
+            "output_compression": {
+              "type": "range",
+              "min": 0,
+              "max": 100
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "moderation"
+          ],
+          "supports_streaming": true,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 8e-06
+            },
+            {
+              "billable": "input_text",
+              "unit": "token",
+              "cost_usd": 5e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 3e-05
+            }
+          ]
+        }
+      ]
+    },
+    "openai/gpt-image-2.5-sunburst": {
+      "id": "openai/gpt-image-2.5-sunburst",
+      "endpoints": [
+        {
+          "provider_name": "OpenAI",
+          "provider_slug": "openai",
+          "provider_tag": "openai",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "3:2",
+                "2:3",
+                "4:3",
+                "3:4",
+                "16:9",
+                "9:16",
+                "21:9",
+                "auto"
+              ]
+            },
+            "quality": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max"
+              ]
+            },
+            "background": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "transparent",
+                "opaque"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 10
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 16
+            },
+            "output_compression": {
+              "type": "range",
+              "min": 0,
+              "max": 100
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "moderation"
+          ],
+          "supports_streaming": true,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 8e-06
+            },
+            {
+              "billable": "input_text",
+              "unit": "token",
+              "cost_usd": 5e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 3e-05
+            }
+          ]
+        }
+      ]
+    },
+    "openai/gpt-image-2": {
+      "id": "openai/gpt-image-2",
+      "endpoints": [
+        {
+          "provider_name": "OpenAI",
+          "provider_slug": "openai",
+          "provider_tag": "openai",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "3:2",
+                "2:3",
+                "4:3",
+                "3:4",
+                "16:9",
+                "9:16",
+                "21:9",
+                "auto"
+              ]
+            },
+            "quality": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "background": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "opaque"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 10
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 16
+            },
+            "output_compression": {
+              "type": "range",
+              "min": 0,
+              "max": 100
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "moderation"
+          ],
+          "supports_streaming": true,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 8e-06
+            },
+            {
+              "billable": "input_text",
+              "unit": "token",
+              "cost_usd": 5e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 3e-05
+            }
+          ]
+        }
+      ]
+    },
+    "openai/gpt-image-1-mini": {
+      "id": "openai/gpt-image-1-mini",
+      "endpoints": [
+        {
+          "provider_name": "OpenAI",
+          "provider_slug": "openai",
+          "provider_tag": "openai",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "3:2",
+                "2:3",
+                "auto"
+              ]
+            },
+            "quality": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "background": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "transparent",
+                "opaque"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 10
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 16
+            },
+            "output_compression": {
+              "type": "range",
+              "min": 0,
+              "max": 100
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "moderation"
+          ],
+          "supports_streaming": true,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 2.5e-06
+            },
+            {
+              "billable": "input_text",
+              "unit": "token",
+              "cost_usd": 2e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 8e-06
+            }
+          ]
+        }
+      ]
+    },
+    "google/gemini-3.1-flash-lite-image": {
+      "id": "google/gemini-3.1-flash-lite-image",
+      "endpoints": [
+        {
+          "provider_name": "Google Vertex",
+          "provider_slug": "google-vertex/global",
+          "provider_tag": "google-vertex/global",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:4",
+                "1:8",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "8:1",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 3e-05
+            }
+          ]
+        },
+        {
+          "provider_name": "Google AI Studio",
+          "provider_slug": "google-ai-studio",
+          "provider_tag": "google-ai-studio",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:4",
+                "1:8",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "8:1",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 3e-05
+            }
+          ]
+        }
+      ]
+    },
+    "google/gemini-3.1-flash-image": {
+      "id": "google/gemini-3.1-flash-image",
+      "endpoints": [
+        {
+          "provider_name": "Google Vertex",
+          "provider_slug": "google-vertex/us",
+          "provider_tag": "google-vertex/us",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "512",
+                "1K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:4",
+                "1:8",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "8:1",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 6.6e-05
+            }
+          ]
+        },
+        {
+          "provider_name": "Google AI Studio",
+          "provider_slug": "google-ai-studio",
+          "provider_tag": "google-ai-studio",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "512",
+                "1K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:4",
+                "1:8",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "8:1",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 6e-05
+            }
+          ]
+        },
+        {
+          "provider_name": "Google Vertex",
+          "provider_slug": "google-vertex/global",
+          "provider_tag": "google-vertex/global",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "512",
+                "1K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:4",
+                "1:8",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "8:1",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 6e-05
+            }
+          ]
+        }
+      ]
+    },
+    "google/gemini-3-pro-image": {
+      "id": "google/gemini-3-pro-image",
+      "endpoints": [
+        {
+          "provider_name": "Google AI Studio",
+          "provider_slug": "google-ai-studio/global",
+          "provider_tag": "google-ai-studio/global",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 2e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 0.00012
+            }
+          ]
+        },
+        {
+          "provider_name": "Google Vertex",
+          "provider_slug": "google-vertex/global",
+          "provider_tag": "google-vertex/global",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9",
+                "21:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 14
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "cachedContent"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 2e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 0.00012
+            }
+          ]
+        }
+      ]
+    },
+    "recraft/recraft-v4.1-vector": {
+      "id": "recraft/recraft-v4.1-vector",
+      "endpoints": [
+        {
+          "provider_name": "Recraft",
+          "provider_slug": "recraft",
+          "provider_tag": "recraft",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "4:3",
+                "3:4",
+                "16:9",
+                "9:16",
+                "auto"
+              ]
+            },
+            "output_format": {
+              "type": "enum",
+              "values": [
+                "svg"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 6
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 1
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "style",
+            "controls",
+            "text_layout"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.08
+            }
+          ]
+        }
+      ]
+    },
+    "recraft/recraft-v4.1-flash": {
+      "id": "recraft/recraft-v4.1-flash",
+      "endpoints": [
+        {
+          "provider_name": "Recraft",
+          "provider_slug": "recraft",
+          "provider_tag": "recraft",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "4:3",
+                "3:4",
+                "16:9",
+                "9:16",
+                "auto"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 6
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "controls"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.007
+            }
+          ]
+        }
+      ]
+    },
+    "meta/muse-image": {
+      "id": "meta/muse-image",
+      "endpoints": []
+    },
+    "microsoft/mai-image-2.6-flash": {
+      "id": "microsoft/mai-image-2.6-flash",
+      "endpoints": [
+        {
+          "provider_name": "Azure",
+          "provider_slug": "azure",
+          "provider_tag": "azure",
+          "supported_parameters": {
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "4:3",
+                "3:4",
+                "16:9",
+                "9:16",
+                "3:2",
+                "2:3",
+                "auto"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 5
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "web_grounding"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "input_text",
+              "unit": "token",
+              "cost_usd": 1.75e-06
+            },
+            {
+              "billable": "input_image",
+              "unit": "token",
+              "cost_usd": 2.5e-06
+            },
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 1.9e-05
+            }
+          ]
+        }
+      ]
+    },
+    "tencent/hy-image-v3.5-preview": {
+      "id": "tencent/hy-image-v3.5-preview",
+      "endpoints": [
+        {
+          "provider_name": "Tencent Cloud",
+          "provider_slug": "tencent",
+          "provider_tag": "tencent",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "1.5K",
+                "2K",
+                "4K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "1:2",
+                "1:4",
+                "2:1",
+                "2:3",
+                "3:2",
+                "3:4",
+                "4:1",
+                "4:3",
+                "4:5",
+                "5:4",
+                "9:16",
+                "16:9"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 20
+            },
+            "seed": {
+              "type": "boolean"
+            },
+            "size": {
+              "type": "boolean"
+            }
+          },
+          "allowed_passthrough_parameters": [],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "token",
+              "cost_usd": 1.6e-06
+            }
+          ]
+        }
+      ]
+    },
+    "sourceful/riverflow-v2.5-fast": {
+      "id": "sourceful/riverflow-v2.5-fast",
+      "endpoints": [
+        {
+          "provider_name": "Sourceful",
+          "provider_slug": "sourceful",
+          "provider_tag": "sourceful",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "4:3",
+                "3:4",
+                "3:2",
+                "2:3",
+                "16:9",
+                "9:16",
+                "21:9",
+                "auto"
+              ]
+            },
+            "output_format": {
+              "type": "enum",
+              "values": [
+                "jpeg"
+              ]
+            },
+            "background": {
+              "type": "enum",
+              "values": [
+                "auto",
+                "transparent",
+                "opaque"
+              ]
+            },
+            "n": {
+              "type": "range",
+              "min": 1,
+              "max": 1
+            },
+            "input_references": {
+              "type": "range",
+              "min": 0,
+              "max": 4
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "font_inputs"
+          ],
+          "supports_streaming": false,
+          "pricing": [
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.019
+            },
+            {
+              "billable": "output_image",
+              "unit": "image",
+              "cost_usd": 0.021,
+              "variant": "2k"
+            }
+          ]
+        }
+      ]
+    },
+    "krea/k3-edit": {
+      "id": "krea/k3-edit",
+      "endpoints": [
+        {
+          "provider_name": "Krea",
+          "provider_slug": "krea",
+          "provider_tag": "krea",
+          "supported_parameters": {
+            "resolution": {
+              "type": "enum",
+              "values": [
+                "1K",
+                "2K"
+              ]
+            },
+            "aspect_ratio": {
+              "type": "enum",
+              "values": [
+                "1:1",
+                "4:3",
+                "3:2",
+                "16:9",
+                "4:5",
+                "2:3",
+                "9:16"
+              ]
+            },
+            "input_references": {
+              "type": "range",
+              "min": 1,
+              "max": 8
+            },
+            "seed": {
+              "type": "boolean"
+            }
+          },
+          "allowed_passthrough_parameters": [
+            "preserve_references",
+            "skip_prompt_expansion",
+            "thinking_mode"
+          ],
+          "supports_streaming": false,
+          "pricing": []
+        }
+      ]
+    }
+  }
+}
