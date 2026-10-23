@@ -62,6 +62,18 @@ const headNeck = source(
   "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
   "Full HTML; head/neck and posterior neck/back prose and table 11.5 checked. General group functions only; not a detailed atlas of suboccipital attachments or proof of postural pain mechanisms.",
 );
+const daviesMyelopathy = sourceOn(
+  "2026-10-23",
+  "Davies et al. (2018). Easily missed? Degenerative cervical myelopathy. BMJ 360:k186",
+  "https://pmc.ncbi.nlm.nih.gov/articles/PMC6074604/",
+  "Full text read via Europe PMC (open access, CC BY 4.0): Box 2 symptoms and examination findings, clinical-features and investigation paragraphs checked (loss of dexterity, gait disturbance, imbalance/falls, bladder/bowel symptoms, progression over months). Practice review for clinicians; examination findings are not self-test instructions and the management sections are not used as guidance.",
+);
+const finucaneFramework = sourceOn(
+  "2026-10-23",
+  "Finucane et al. (2020). International Framework for Red Flags for Potential Serious Spinal Pathologies. JOSPT 50(7):350-372",
+  "https://pubmed.ncbi.nlm.nih.gov/32438853/",
+  "Europe PMC indexed record and abstract/synopsis only: IFOMPT framework purpose, rarity and severity of serious spinal pathology, absence of high-quality diagnostic-accuracy evidence for most red flags, clinical-reasoning pathway. JOSPT full text returned a bot-verification page (not bypassed) and has no Europe PMC open-access copy; the framework's red-flag tables were not read and are not used.",
+);
 const abdominalWall = source(
   "OpenStax, Anatomy and Physiology 2e §11.4: Axial Muscles of the Abdominal Wall, and Thorax",
   "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
@@ -135,6 +147,8 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       headNeck,
       cervicalVertebrae,
       scalenusMuscle,
+      daviesMyelopathy,
+      finucaneFramework,
     ],
     supportedClaims: [
       "[1] Giải phẫu vùng: cột sống cổ nâng đỡ và vận động đầu; nguồn là §7.3 về cấu trúc và vận động cột sống.",
@@ -146,8 +160,9 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       "[4,5,9] Chú giải hình cơ cổ: chức năng chung ức–đòn–chũm/bậc thang và cơ sau cổ; bỏ mô tả gộp mọi cơ sâu đều nối xương chẩm với C1/C2.",
       "[9,11] Chú giải hình cơ cổ, bậc thang: bậc thang trước/giữa bám xương sườn 1, bậc thang sau bám xương sườn 2 (có biến thể), nâng xương sườn 1–2 khi hít vào gắng sức (StatPearls Scalenus Muscle, đọc 2026-10-23); §11.3 không nêu điểm bám xương sườn nên không dùng cho phần này.",
       "[1,10] Kiến thức nền: C1 không thân/mỏm gai, khớp với lồi cầu chẩm; mỏm răng C2 làm trục xoay đầu; mặt khớp cổ phẳng (OpenStax §7.3, đọc lại 2026-10-22). Khớp đội–chẩm chủ yếu gập/duỗi đầu; tỉ lệ chiều cao đĩa/thân đốt lớn nhất và bao khớp mặt khớp mỏng góp phần biên độ cổ (StatPearls Cervical Vertebrae, đọc 2026-10-23). §7.3 không nêu động tác gật đầu hay biên độ theo mặt khớp, nên các ý đó không dùng §7.3.",
+      "[6,12,13] Dấu hiệu bệnh tủy cổ (Dấu hiệu cần trợ giúp y tế): hướng dẫn đau cổ 2017 yêu cầu sàng lọc bệnh tủy cổ; tổn thương chiếm chỗ có thể gây dấu hiệu ở chi trên/chi dưới, rối loạn tiểu/đại tiện hoặc thiếu hụt thần kinh, và các test lâm sàng cho bệnh tủy cổ nhìn chung có độ nhạy thấp nên không dùng để sàng lọc [6]. Tổng quan BMJ 2018 liệt kê tay vụng/mất khéo léo (cài cúc, dùng chìa khóa, viết), rối loạn dáng đi, mất thăng bằng hoặc ngã, tê/yếu chi, rối loạn tiểu/đại tiện và triệu chứng tăng dần qua nhiều tháng [12]. Khung cảnh báo cột sống 2020 coi red flag là gợi ý để suy luận lâm sàng; bằng chứng độ chính xác của đa số dấu hiệu còn hạn chế (chỉ đọc abstract) [13]. Nguồn không cho phép tự chẩn đoán từ một dấu hiệu.",
     ],
-    limitations: [...commonLimitations, "Hướng dẫn cổ được kiểm tra là bản 2017; không khẳng định đã rà soát toàn bộ chứng cứ cổ công bố sau đó. Không có mô hình lực cá nhân để định lượng tải từ tư thế đầu."],
+    limitations: [...commonLimitations, "Hướng dẫn cổ được kiểm tra là bản 2017; không khẳng định đã rà soát toàn bộ chứng cứ cổ công bố sau đó. Không có mô hình lực cá nhân để định lượng tải từ tư thế đầu.", "Toàn văn khung Finucane 2020 chưa được đọc (chỉ abstract); danh sách dấu hiệu bệnh tủy cổ dựa vào hướng dẫn 2017 và tổng quan BMJ 2018, không dựa vào bảng dấu hiệu của khung này. Dấu hiệu bệnh tủy cổ không đủ để chẩn đoán và không thay cho thăm khám thần kinh."],
     reviewedBy: null,
     status: "literature-reviewed",
   },

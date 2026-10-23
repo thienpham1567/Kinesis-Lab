@@ -155,4 +155,45 @@ for (const muscle of atlas.TRIGGER_POINT_MUSCLES) {
 const runtimeText =JSON.stringify([atlas.PALPATION_FUNDAMENTALS, atlas.TRIGGER_POINT_MUSCLES, atlas.PAIN_SITE_CULPRIT_MAP]);
 assert.doesNotMatch(runtimeText, /28973518|18164338|30756327|21946988|17197231|20038718|16089175|23993790|20598206|27583147/);
 assert.doesNotMatch(runtimeText, /VAS 5|VAS 4|45–90s|60–90s|trong 24 giờ|trong 5 phút|≤10%/);
+// General red flags beyond the emergency list (P0 task 6, sources read 2026-10-23). The card names
+// reasons to stop and get assessed; sources do not give a diagnostic rule for any single sign.
+const general = evidence.TRIGGER_GENERAL_EVIDENCE;
+const generalSource = (fragment) => {
+  const index = general.sources.findIndex((entry) => entry.url.includes(fragment));
+  assert.ok(index >= 0, `general record: source ${fragment} missing`);
+  const entry = general.sources[index];
+  assert.equal(entry.checkedAt, "2026-10-23", `${fragment}: newly read source keeps its real read date`);
+  return [index, entry];
+};
+assert.ok(general.sources.length >= 22, "new sources are appended, not inserted");
+assert.match(general.sources[18].url, /111\.wales\.nhs\.uk/, "existing source order (heelSafety at index 18) must not shift");
+const [, finucane] = generalSource("32438853");
+assert.match(finucane.access, /abstract/i);
+assert.match(finucane.access, /not read/i, "Finucane access must say the full framework was not read");
+const [, downie] = generalSource("PMC3898572");
+assert.match(downie.access, /Full text/);
+const [, infection] = generalSource("PMC6911279");
+assert.match(infection.access, /Full text/);
+const [, nhsBack] = generalSource("nhs.uk/conditions/back-pain");
+assert.match(nhsBack.access, /night/i, "NHS back pain access must mention the non-urgent list that was read");
+const redFlagCard = atlas.PALPATION_FUNDAMENTALS.differentials.find((card) => /toàn thân|đêm/.test(card.name));
+assert.ok(redFlagCard, "handbook needs a general red-flag card");
+for (const [label, pattern] of [
+  ["night/rest pain", /đau về đêm|nặng hơn về đêm/],
+  ["pain not easing with rest", /không đỡ khi nghỉ/],
+  ["unexplained weight loss", /sụt cân không chủ ý/],
+  ["history of cancer", /tiền sử ung thư/],
+  ["fever or systemic illness", /sốt/],
+  ["feeling generally unwell", /khó chịu toàn thân|ớn lạnh/],
+  ["immunosuppression", /suy giảm miễn dịch/],
+]) assert.match(redFlagCard.vs, pattern, `red-flag card: ${label}`);
+assert.match(redFlagCard.vs, /dừng/, "card must say to stop loading/SMR");
+assert.match(redFlagCard.vs, /đánh giá y tế|khám/, "card must direct to medical assessment");
+assert.match(redFlagCard.vs, /không (là|phải) chẩn đoán/, "single sign is not a diagnosis");
+for (const tag of ["NHS Back pain", "NICE NG59", "Downie 2013", "Yusuf 2019", "Finucane 2020"]) assert.ok(redFlagCard.vs.includes(tag), `red-flag card cites ${tag}`);
+for (const key of ["downie", "spinalInfection", "finucane", "backSafety", "lowBackGuidance"]) {
+  assert.ok(general.supportedClaims.some((claim) => new RegExp(`^\\[[^\\]]*\\b${key}\\b`).test(claim) && /đêm|sụt cân|ung thư|sốt|miễn dịch/.test(claim)), `general claim mapping for ${key}`);
+}
+assert.ok(general.limitations.some((text) => /độ chính xác/.test(text) && /Finucane/.test(text)), "limitations must say red-flag accuracy evidence is limited and the Finucane full text was not read");
+
 console.log(`Trigger evidence bookkeeping: ${ids.length} groups, ${atlas.PAIN_SITE_CULPRIT_MAP.length} symptom sites, ${records.length} source-scope records; no invented reviewer.`);

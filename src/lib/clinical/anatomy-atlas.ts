@@ -93,7 +93,8 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
       }
     ],
     "redFlags": [
-      "Đau cổ sau chấn thương, đau dữ dội kéo dài hoặc kèm đau đầu và tê/yếu tay chân: ngừng tập và được đánh giá y tế ngay."
+      "Đau cổ sau chấn thương, đau dữ dội kéo dài hoặc kèm đau đầu và tê/yếu tay chân: ngừng tập và được đánh giá y tế ngay.",
+      "Dấu hiệu gợi ý bệnh tủy cổ: dáng đi loạng choạng hoặc hay vấp/ngã, tay vụng về (khó cài cúc, cầm chìa khóa, viết), tê hoặc yếu tay/chân tăng dần, hoặc thay đổi tiểu tiện/đại tiện kèm đau hoặc cứng cổ: ngừng tập và được đánh giá y tế; không tự thử nghiệm pháp cổ. Đây là dấu hiệu cần khám, không là chẩn đoán."
     ],
     "protocols": [
       {

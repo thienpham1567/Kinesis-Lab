@@ -271,6 +271,10 @@ export const PALPATION_FUNDAMENTALS = {
     {
       "name": "Dấu hiệu cần chuyển khám/cấp cứu",
       "vs": "Đau ngực mới kèm khó thở/toát mồ hôi: cấp cứu. Đau/sưng một chân: khám khẩn; kèm khó thở/đau ngực: cấp cứu. Đau lưng kèm thay đổi cảm giác vùng yên ngựa, bí tiểu mới hoặc rối loạn đại tiểu tiện: đánh giá cấp cứu. Yếu tiến triển, sốt hoặc chấn thương đáng kể cần khám, không chờ hết một đợt SMR. [NHS Chest pain; NHS DVT; NHS Back pain; North Bristol NHS CES]"
+    },
+    {
+      "name": "Dấu hiệu toàn thân và đau về đêm cần khám",
+      "vs": "Đau về đêm hoặc nặng hơn về đêm, đau không đỡ khi nghỉ; sụt cân không chủ ý; tiền sử ung thư kèm đau mới hoặc thay đổi; sốt, ớn lạnh hoặc khó chịu toàn thân; hay đang suy giảm miễn dịch (bệnh nền, thuốc ức chế miễn dịch hoặc corticosteroid kéo dài) kèm đau lưng/cột sống: dừng tăng tải, không dùng SMR để thử và nên được đánh giá y tế. Các dấu hiệu này không là chẩn đoán; chúng chỉ nhắc cần loại trừ nguyên nhân nghiêm trọng, và độ chính xác của từng dấu hiệu đơn lẻ còn hạn chế. Nhóm dấu hiệu lấy từ hướng dẫn đau lưng/cột sống; ở vùng khác, app vẫn chọn dừng tăng tải và hỏi chuyên viên y tế. [NHS Back pain; NICE NG59; Downie 2013; Yusuf 2019; Finucane 2020]"
     }
   ],
   "smrMechanism": "Foam rolling có thể cải thiện ROM và đau mỏi ngắn hạn. Cơ chế điều biến cảm giác và cơ học vẫn đang được nghiên cứu; không chứng minh bóng phá sẹo hoặc loại bỏ nút. Các tổng quan không xác lập quy tắc tái phát trong một ngày, cửa sổ kích hoạt hoặc phác đồ bốn bước bắt buộc. [Behm & Wilke 2019; Cheatham 2015]",
