@@ -58,6 +58,118 @@ for (const m of [cube, front]) {
   m.geometry.dispose();
   m.material.dispose();
 }
+// 3D clinical-region resolution: shoulder-girdle structures must not inherit the
+// trunk-height "thoracic_core"/"lumbar" tag, and laryngeal/pharyngeal muscles
+// must not carry the cervical spine note.
+const { readFileSync } = await import("node:fs");
+const { resolveClinicalRegion } = await import(
+  "../src/lib/clinical/atlas-3d.ts"
+);
+const atlasManifest = JSON.parse(
+  readFileSync(new URL("../public/anatomy/3d/manifest.json", import.meta.url)),
+);
+const byEnglish = (english) =>
+  atlasManifest.structures.filter((s) => s.english === english);
+const shoulderMuscles = [
+  "Supraspinatus muscle",
+  "Infraspinatus muscle",
+  "Subscapularis muscle",
+  "Teres minor muscle",
+  "Serratus anterior muscle",
+  "Pectoralis minor muscle",
+  "Latissimus dorsi muscle",
+  "Clavicular head of pectoralis major muscle",
+  "Sternocostal head of pectoralis major muscle",
+  "Abdominal part of pectoralis major muscle",
+];
+for (const english of shoulderMuscles) {
+  const found = byEnglish(english);
+  assert.equal(found.length, 2, `${english}: expected left+right meshes`);
+  for (const s of found) {
+    assert.equal(resolveClinicalRegion(s), "shoulder", `${english} -> shoulder`);
+  }
+}
+const nonSpinalNeckMuscles = [
+  "Inferior pharyngeal constrictor",
+  "Middle pharyngeal constrictor",
+  "Superior pharyngeal constrictor",
+  "Palatopharyngeus muscle",
+  "Stylopharyngeus muscle",
+  "Straight part of cricothyroid muscle",
+  "Oblique part of cricothyroid muscle",
+  "Posterior crico-arytenoid muscle",
+  "Lateral crico-arytenoid muscle",
+  "Transverse arytenoid muscle",
+  "Ary-epiglottic part of oblique arytenoid muscle",
+  "External part of thyro-arytenoid muscle",
+  "Thyro-epiglottic part of thyro-arytenoid muscle",
+];
+for (const english of nonSpinalNeckMuscles) {
+  const found = byEnglish(english);
+  assert.ok(found.length >= 1, `${english}: missing from manifest`);
+  for (const s of found) {
+    assert.equal(resolveClinicalRegion(s), null, `${english} -> null`);
+  }
+}
+// Same wrong trunk-height tag, same shoulder-girdle rule: teres major, scapula,
+// clavicle and the sternoclavicular/costoclavicular/interclavicular tissue.
+const alsoShoulder = [
+  "Teres major muscle",
+  "Scapula",
+  "Clavicle",
+  "Anterior sternoclavicular ligament",
+  "Posterior sternoclavicular ligament",
+  "Articular capsule of sternoclavicular joint",
+  "Articular disc of sternoclavicular joint",
+  "Costoclavicular ligament",
+  "Interclavicular ligament",
+];
+for (const english of alsoShoulder) {
+  const found = byEnglish(english);
+  assert.ok(found.length >= 1, `${english}: missing from manifest`);
+  for (const s of found) {
+    assert.equal(resolveClinicalRegion(s), "shoulder", `${english} -> shoulder`);
+  }
+}
+// Every other mesh keeps its manifest region; the exact set of corrected meshes
+// is pinned so a rule change cannot silently move unrelated structures.
+const expectedChanged = new Set([
+  ...shoulderMuscles,
+  ...nonSpinalNeckMuscles,
+  ...alsoShoulder,
+]);
+const changed = atlasManifest.structures.filter(
+  (s) => resolveClinicalRegion(s) !== s.clinicalRegion,
+);
+for (const s of changed) {
+  assert.ok(expectedChanged.has(s.english), `unexpected change: ${s.english}`);
+}
+const tally = {};
+for (const s of changed) {
+  const key = `${s.clinicalRegion}->${resolveClinicalRegion(s)}`;
+  tally[key] = (tally[key] ?? 0) + 1;
+}
+assert.deepEqual(tally, {
+  "thoracic_core->shoulder": 34,
+  "lumbar->shoulder": 2,
+  "cervical->null": 25,
+});
+// The exporter must carry the same name rules so a future export agrees.
+const { SHOULDER_GIRDLE_NAME_PATTERN, LARYNX_PHARYNX_MUSCLE_NAME_PATTERN } =
+  await import("../src/lib/clinical/atlas-3d.ts");
+const exporter = readFileSync(
+  new URL("./export_z_anatomy.py", import.meta.url),
+  "utf8",
+);
+for (const [name, pattern] of [
+  ["SHOULDER_GIRDLE_NAME", SHOULDER_GIRDLE_NAME_PATTERN],
+  ["LARYNX_PHARYNX_MUSCLE_NAME", LARYNX_PHARYNX_MUSCLE_NAME_PATTERN],
+]) {
+  assert.ok(
+    exporter.includes(`${name} = r'${pattern.source}'`),
+    `export_z_anatomy.py ${name} must match atlas-3d.ts`,
+  );
+}
 console.log(
   "Evidence scope, source links, honest review/fiber status and surface-label visibility/occlusion checks passed.",
 );

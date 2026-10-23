@@ -9,6 +9,7 @@ import {
   ATLAS_AREAS,
   ATLAS_LAYERS,
   isStructureVisible,
+  resolveClinicalRegion,
   searchStructures,
   type AtlasArea,
   type AtlasLayer,
@@ -182,7 +183,7 @@ export default function Atlas3DExplorer({
     (structure) => structure.id === selectedId,
   );
   const region = ANATOMY_REGIONS.find(
-    (entry) => entry.id === selected?.clinicalRegion,
+    (entry) => selected && entry.id === resolveClinicalRegion(selected),
   );
   const muscleGroup = MUSCLE_GROUP_ATLAS.find(
     (entry) => selected && entry.id === trainingGroupForStructure(selected),

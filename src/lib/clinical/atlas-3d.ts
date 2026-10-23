@@ -1,3 +1,5 @@
+import type { AnatomyRegionId } from "./anatomy-atlas";
+
 export type AtlasLayer = "bone" | "muscle" | "joint";
 export type TissueKind = AtlasLayer | "cartilage" | "tendon" | "ligament" | "fat";
 export const TISSUE_LABELS: Record<TissueKind, string> = {
@@ -57,6 +59,42 @@ export function normalizeAnatomyText(value: string) {
     .replace(/Đ/g, "D")
     .toLowerCase()
     .trim();
+}
+const ATLAS_REGION_IDS: readonly AnatomyRegionId[] = [
+  "cervical",
+  "shoulder",
+  "thoracic_core",
+  "lumbar",
+  "hip_pelvis",
+  "thigh_hamstring",
+  "knee",
+  "ankle_foot",
+];
+/**
+ * Shoulder-girdle structures by English mesh name. The exporter's trunk-height
+ * rule tags these "thoracic_core" (or "lumbar" for latissimus dorsi) because they
+ * lie on the trunk, so this rule must run first. Keep in sync with
+ * SHOULDER_GIRDLE_NAME in scripts/export_z_anatomy.py.
+ */
+export const SHOULDER_GIRDLE_NAME_PATTERN =
+  /spinatus|subscapular|teres (major|minor)|serratus anterior|pectoralis|latissimus dorsi|scapul|clavic/i;
+/**
+ * Intrinsic laryngeal and pharyngeal muscles: not part of the cervical spine
+ * region, so they carry no region note. Keep in sync with
+ * LARYNX_PHARYNX_MUSCLE_NAME in scripts/export_z_anatomy.py.
+ */
+export const LARYNX_PHARYNX_MUSCLE_NAME_PATTERN =
+  /(arytenoid|cricothyroid) muscle|pharyngeal constrictor|palatopharyngeus|stylopharyngeus|salpingopharyngeus/i;
+/**
+ * Clinical region used by the 3D explorer. The manifest value comes from a
+ * geometric heuristic; name-based overrides take precedence over it.
+ */
+export function resolveClinicalRegion(
+  structure: Pick<AtlasStructure, "english" | "clinicalRegion" | "areas">,
+): AnatomyRegionId | null {
+  if (SHOULDER_GIRDLE_NAME_PATTERN.test(structure.english)) return "shoulder";
+  if (LARYNX_PHARYNX_MUSCLE_NAME_PATTERN.test(structure.english)) return null;
+  return ATLAS_REGION_IDS.find((id) => id === structure.clinicalRegion) ?? null;
 }
 export function searchStructures(
   structures: AtlasStructure[],

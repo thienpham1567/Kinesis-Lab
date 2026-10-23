@@ -49,6 +49,12 @@ TRANSLATIONS = [
     ("sacrum", "Xương cùng"), ("coccyx", "Xương cụt"), ("calcaneus", "Xương gót"), ("talus", "Xương sên"), ("vertebra", "Đốt sống"),
 ]
 
+# Name-based clinicalRegion overrides (matched against the lower-cased English name).
+# Keep in sync with SHOULDER_GIRDLE_NAME_PATTERN / LARYNX_PHARYNX_MUSCLE_NAME_PATTERN
+# in src/lib/clinical/atlas-3d.ts.
+SHOULDER_GIRDLE_NAME = r'spinatus|subscapular|teres (major|minor)|serratus anterior|pectoralis|latissimus dorsi|scapul|clavic'
+LARYNX_PHARYNX_MUSCLE_NAME = r'(arytenoid|cricothyroid) muscle|pharyngeal constrictor|palatopharyngeus|stylopharyngeus|salpingopharyngeus'
+
 GROUPS = [
     (r"gluteus|piriformis|obturator|gemellus|quadratus femoris", "glutes"),
     (r"pectoralis|serratus anterior", "chest"), (r"deltoid|supraspinatus|infraspinatus|subscapularis|teres minor", "deltoids"),
@@ -114,6 +120,10 @@ for source in sorted(originals, key=lambda o: o.name):
     if 'lower' in areas and 'hip' not in areas:
         region = 'ankle_foot' if center < .42 else 'knee' if center < .6 else 'thigh_hamstring'
     if 'trunk' in areas and 'neck' not in areas and 'hip' not in areas and center > 1.15: region = 'thoracic_core'
+    # Name-based overrides take precedence over the geometric trunk-height rule above.
+    # Keep in sync with resolveClinicalRegion() in src/lib/clinical/atlas-3d.ts.
+    if re.search(SHOULDER_GIRDLE_NAME, lower): region = 'shoulder'
+    elif re.search(LARYNX_PHARYNX_MUSCLE_NAME, lower): region = None
     label = next((vi for en, vi in TRANSLATIONS if en == lower or (layer == 'muscle' and vi.startswith('Cơ ') and en in lower)), english)
     identity = 'za-' + hashlib.sha256(source.name.encode()).hexdigest()[:12]
     obj = bpy.data.objects.new(identity, source.data.copy())
