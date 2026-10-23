@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Separate checkout with its own dependencies and generated output.
+    ".claude/worktrees/**",
     // Unmodified third-party Draco runtime; notices are shipped beside it.
     "public/anatomy/3d/draco/*.js",
   ]),
