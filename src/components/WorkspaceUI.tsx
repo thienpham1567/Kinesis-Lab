@@ -22,7 +22,8 @@ export type IconName =
   | "external"
   | "spinner"
   | "target"
-  | "clock";
+  | "clock"
+  | "expand";
 
 const paths: Record<IconName, ReactNode> = {
   message: (
@@ -111,6 +112,9 @@ const paths: Record<IconName, ReactNode> = {
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" />
     </>
+  ),
+  expand: (
+    <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
   ),
 };
 

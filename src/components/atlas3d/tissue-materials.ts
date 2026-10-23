@@ -190,15 +190,19 @@ export function createTissueMaterial(
   return material;
 }
 
+/** UI highlight (app cobalt), strong enough to read as blue on red muscle. */
+export const SELECTION_COLOR = 0x2454cb;
+
 export function setTissueSelection(
   material: THREE.MeshPhysicalMaterial,
   layer: TissueKind,
   selected: boolean,
 ) {
   material.color.set(TISSUE_COLORS[layer]);
-  if (selected) material.color.lerp(new THREE.Color(0x466cb5), 0.12);
-  material.emissive.set(selected ? 0x14264f : 0);
-  material.emissiveIntensity = selected ? 0.15 : 0;
+  // Keep a trace of the tissue colour so tendon vs muscle stays readable.
+  if (selected) material.color.lerp(new THREE.Color(SELECTION_COLOR), 0.65);
+  material.emissive.set(selected ? SELECTION_COLOR : 0);
+  material.emissiveIntensity = selected ? 0.3 : 0;
 }
 
 export function setTissueOpacity(

@@ -1,3 +1,5 @@
+import { atlasVietnameseName } from "./atlas-names";
+
 export type AtlasLayer = "bone" | "muscle" | "joint";
 export type TissueKind = AtlasLayer | "cartilage" | "tendon" | "ligament" | "fat";
 export const TISSUE_LABELS: Record<TissueKind, string> = {
@@ -69,7 +71,7 @@ export function searchStructures(
       (area === "full" || s.areas.includes(area)) &&
       terms.every((term) =>
         normalizeAnatomyText(
-          `${s.label} ${s.english} ${s.latin} ${s.side === "left" ? "trái left" : s.side === "right" ? "phải right" : ""}`,
+          `${atlasVietnameseName(s) ?? ""} ${s.label} ${s.english} ${s.latin} ${s.side === "left" ? "trái left" : s.side === "right" ? "phải right" : ""}`,
         ).includes(term),
       ),
   );

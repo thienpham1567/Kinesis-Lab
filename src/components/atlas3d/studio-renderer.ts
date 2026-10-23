@@ -4,6 +4,8 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
+import type { AtlasCamera } from "./atlas-camera";
 import {
   presentationBackground,
   type AtlasPresentation,
@@ -20,6 +22,9 @@ export class StudioRenderer {
   private composer: EffectComposer | null = null;
   private ao: GTAOPass | null = null;
   private output: OutputPass | null = null;
+  private outline: OutlinePass | null = null;
+  private selected: THREE.Object3D[] = [];
+  private teaching = false;
   private quality: ResolvedRenderQuality = "fast";
   private width = 1;
   private height = 1;
@@ -29,7 +34,7 @@ export class StudioRenderer {
   constructor(
     private renderer: THREE.WebGLRenderer,
     private scene: THREE.Scene,
-    private camera: THREE.PerspectiveCamera,
+    private camera: AtlasCamera,
   ) {
     renderer.setClearColor(0xeeefeb);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -63,7 +68,51 @@ export class StudioRenderer {
   setPresentation(presentation?: AtlasPresentation) {
     // A scene background clears in the active render target color space.
     // A renderer clear color can be copied as sRGB into the linear composer buffer.
-    this.scene.background = new THREE.Color(presentationBackground(presentation));
+    this.scene.background = new THREE.Color(
+      presentationBackground(presentation),
+    );
+  }
+
+  setCamera(camera: AtlasCamera) {
+    if (camera === this.camera) return;
+    this.camera = camera;
+    // OutlinePass embeds perspective/orthographic depth conversion at construction.
+    // Rebuild both passes so their shaders and every camera reference agree.
+    this.disposePostprocessing();
+    this.configure(this.quality, this.allowAO);
+  }
+
+  setSelection(objects: THREE.Object3D[], teaching: boolean) {
+    this.selected = objects;
+    this.teaching = teaching;
+    this.syncOutline();
+    if (this.outline) {
+      this.outline.selectedObjects = objects;
+      this.outline.enabled = teaching && objects.length > 0;
+    }
+  }
+
+  private syncOutline() {
+    if (this.outline && !this.teaching) {
+      this.composer?.removePass(this.outline);
+      this.outline.dispose();
+      this.outline = null;
+    }
+    if (!this.teaching || !this.composer || this.outline) return;
+    this.outline = new OutlinePass(
+      new THREE.Vector2(1, 1),
+      this.scene,
+      this.camera,
+    );
+    this.outline.visibleEdgeColor.set(0x365cca);
+    this.outline.hiddenEdgeColor.set(0x000000);
+    this.outline.edgeStrength = 1.8;
+    this.outline.edgeThickness = 1;
+    this.outline.edgeGlow = 0;
+    this.outline.pulsePeriod = 0;
+    this.outline.selectedObjects = this.selected;
+    this.outline.enabled = this.selected.length > 0;
+    this.composer.insertPass(this.outline, this.composer.passes.length - 1);
   }
 
   setBounds(box: THREE.Box3) {
@@ -116,6 +165,8 @@ export class StudioRenderer {
       this.composer.addPass(this.ao);
       this.output = new OutputPass();
       this.composer.addPass(this.output);
+      this.syncOutline();
+      this.resize(this.width, this.height);
     }
     if (quality === "fast" && this.composer) {
       this.disposePostprocessing();
@@ -183,9 +234,11 @@ export class StudioRenderer {
     this.ao?.gtaoMaterial.dispose();
     this.ao?.blendMaterial.dispose();
     this.output?.dispose();
+    this.outline?.dispose();
     this.composer = null;
     this.ao = null;
     this.output = null;
+    this.outline = null;
   }
 
   dispose() {

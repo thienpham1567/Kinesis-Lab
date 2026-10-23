@@ -1,0 +1,49 @@
+{
+  "model": "bytedance-seed/seedream-5-0-flash",
+  "provider": "seed",
+  "startedAt": "2026-10-23T03:02:58.118Z",
+  "request": {
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "prompt": "Create one original educational human anatomy illustration for Kinesis Lab. This is a simulated anatomical teaching model, not a cadaver photograph, patient scan or diagnostic image.\n\nSubject: a single adult right upper limb, anterior view with the palm facing forward. Frame from the shoulder girdle through the elbow and complete hand; include the scapula, humerus, radius and ulna. Neutral anatomical position. No exercise, no sports equipment, no clothing, no action pose.\n\nShow a clean non-bloody anatomical model with skin omitted. Focus on biceps brachii in muted red, with two distinguishable proximal heads and a common distal tendon. Show brachialis deep to biceps only where naturally visible; do not put it on top of biceps. Render tendons ivory and bones warm off-white. Keep the thumb on the lateral, radial side. Preserve coherent bone and muscle relationships.\n\nStyle: polished three-dimensional medical teaching illustration, restrained realistic material shading, fine but not exaggerated muscle texture, soft studio lighting, plain light gray background. Keep the entire requested anatomy inside frame. Clarity of structures matters more than dramatic visual effects.\n\nNo lettering, numbers, arrows, measurement lines, watermarks, cutaneous pain maps, activation heatmaps or claims of verified fiber directions. Do not copy a specific published atlas image. Do not include an extra limb or duplicate bones. Labels and source links will be added separately by the app.",
+    "n": 1,
+    "resolution": "1K",
+    "aspect_ratio": "4:3",
+    "provider": {
+      "only": [
+        "seed"
+      ],
+      "allow_fallbacks": false
+    }
+  },
+  "status": 200,
+  "elapsedMs": 16833,
+  "id": null,
+  "created": 1792724594,
+  "usage": {
+    "prompt_tokens": 374,
+    "completion_tokens": 3607,
+    "total_tokens": 3981,
+    "cost": 0.018,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.018,
+      "upstream_inference_prompt_cost": 0,
+      "upstream_inference_completions_cost": 0.018
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 3607
+    }
+  },
+  "imagePath": "/Users/thienpham/Documents/pt-medical-agent/docs/research/assets/2026-10-23-anatomy-model-comparison/seedream-5.0-flash.jpg",
+  "mediaType": "image/jpeg",
+  "byteLength": 97179,
+  "sha256": "83f08f40174097b4b871c86fd371dd2aad334264fdb7cdf4648d8958e3c74385",
+  "dimensions": {
+    "width": 1110,
+    "height": 832
+  }
+}

@@ -11,6 +11,7 @@ import type {
   MovementSourceId,
 } from "@/lib/clinical/movement-sources";
 import { ROM_MOVEMENTS } from "@/lib/clinical/rom-norms";
+import { ReadingProgress } from "./ReadingProgress";
 
 export function MovementSourceLinks({
   ids,
@@ -55,9 +56,17 @@ function Attribution({ block, topic }: { block: Cited; topic: HandbookTopic }) {
     </>
   );
 }
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({
+  title,
+  id,
+  children,
+}: {
+  title: string;
+  id?: string;
+  children: ReactNode;
+}) {
   return (
-    <section className="space-y-3">
+    <section id={id} className="scroll-mt-36 space-y-3">
       <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
       {children}
     </section>
@@ -94,6 +103,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
       : null;
   return (
     <article
+      id={`movement-article-${topic.id}`}
       aria-labelledby={`movement-${topic.id}-title`}
       className="space-y-7"
     >
@@ -122,6 +132,8 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         </a>
       </header>
 
+      <ReadingProgress topicId={topic.id} />
+
       <div
         className={
           figure
@@ -129,7 +141,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
             : ""
         }
       >
-        <section aria-label="Kiến thức trọng tâm" className="min-w-0 space-y-3">
+        <section id={`movement-${topic.id}-key`} aria-label="Kiến thức trọng tâm" className="min-w-0 scroll-mt-36 space-y-3">
           <p className="eyebrow">Nắm chắc trước khi áp dụng</p>
           <div className="divide-y divide-rule rounded-xl border border-rule bg-sheet px-4 sm:px-5">
             {topic.keyPoints.map((point, index) => (
@@ -328,8 +340,9 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         </div>
       </Section>
       <section
+        id={`movement-${topic.id}-apply`}
         aria-label="Áp dụng trong buổi tập"
-        className="space-y-3 rounded-xl border border-cobalt/20 bg-cobalt-soft/50 p-5"
+        className="scroll-mt-36 space-y-3 rounded-xl border border-cobalt/20 bg-cobalt-soft/50 p-5"
       >
         <h3 className="font-display text-lg font-semibold text-ink">
           Áp dụng trong buổi tập
@@ -341,7 +354,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
           </Link>
         ) : null}
       </section>
-      <Section title="Tự kiểm tra">
+      <Section title="Tự kiểm tra" id={`movement-${topic.id}-quiz`}>
         <div className="space-y-2">
           {topic.quiz.map((q) => (
             <details
@@ -362,7 +375,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
       <section
         id={`movement-${topic.id}-sources`}
         aria-label="Nguồn và phạm vi đã đọc"
-        className="panel scroll-mt-24 space-y-4 p-5 sm:p-6"
+        className="panel scroll-mt-36 space-y-4 p-5 sm:p-6"
       >
         <div>
           <p className="eyebrow text-cobalt">Đọc từ nguồn gốc</p>

@@ -85,6 +85,33 @@ h3 {
   color: #ffffff;
 }
 
+/* Thanh cuộn mảnh và lặng: chỉ hiện rõ khi người dùng chạm vào vùng cuộn. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(86 104 122 / 0.35) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(86 104 122 / 0.32);
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(36 84 203 / 0.55);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 input,
 textarea,
 select,
@@ -649,6 +676,20 @@ select:focus {
 .atlas-workspace canvas:focus-visible {
   outline: 3px solid var(--cobalt);
   outline-offset: -3px;
+}
+
+/* Trình đọc PDF khi mở toàn màn hình: khung đọc lấp đầy chiều cao còn lại. */
+.pdf-reader-wrap:fullscreen {
+  padding: 14px;
+  overflow: hidden;
+}
+.pdf-reader-wrap:fullscreen .pdf-scroll-box {
+  flex: 1;
+  height: auto !important;
+  min-height: 0;
+}
+.pdf-reader-wrap:fullscreen > .sticky {
+  top: 0;
 }
 
 /* ============================ Trang giới thiệu ============================ */
