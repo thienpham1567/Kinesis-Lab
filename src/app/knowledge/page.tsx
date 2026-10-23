@@ -113,7 +113,7 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
   };
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-7 [&_.page-description]:max-sm:hidden">
       {heading}
       <div className="tab-bar" aria-label="Chế độ học">
         <button type="button" aria-pressed={view === "read"} className="tab-button" onClick={() => setView("read")}>

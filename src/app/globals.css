@@ -478,6 +478,20 @@ select:focus {
   outline-offset: -3px;
 }
 
+/* Trình đọc PDF khi mở toàn màn hình: khung đọc lấp đầy chiều cao còn lại. */
+.pdf-reader-wrap:fullscreen {
+  padding: 14px;
+  overflow: hidden;
+}
+.pdf-reader-wrap:fullscreen .pdf-scroll-box {
+  flex: 1;
+  height: auto !important;
+  min-height: 0;
+}
+.pdf-reader-wrap:fullscreen > .sticky {
+  top: 0;
+}
+
 /* ============================ Trang giới thiệu ============================ */
 
 html {
