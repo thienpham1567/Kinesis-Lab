@@ -21,6 +21,16 @@ for(const [status,label] of Object.entries(labels)) {
   assert.ok(!/Chờ chuyên gia|chờ chuyên gia|độc lập duyệt/.test(html),'null reviewer must not impose an expert approval gate');
   for(const text of ['Claim with bounded scope','Specific measurement is not supported.','https://example.org/source','2026-10-22','Abstract only'])assert.ok(html.includes(text),`Preserve source/claim scope: ${text}`);
 }
+const statusIntro={'literature-reviewed':'Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.',limited:'Phạm vi đối chiếu bị giới hạn (quyền truy cập hạn chế, quy ước minh họa hoặc chính sách quy trình); đọc giới hạn trước khi áp dụng.','source-only':'Chỉ là dữ liệu tên gọi và nguồn mesh, chưa có kiến thức theo từng cấu trúc; không phải phát biểu y khoa.'};
+const introHtml={};
+for(const status of Object.keys(statusIntro)) {
+  const html=renderToStaticMarkup(createElement(ClinicalEvidencePanel,{evidence:{status,reviewedBy:null,sources:[{title:'Source fixture',url:'https://example.org/source',checkedAt:'2026-10-22',access:'Abstract only'}],supportedClaims:['Claim with bounded scope'],limitations:['Specific measurement is not supported.']}}));
+  introHtml[status]=html;
+  assert.ok(html.includes(statusIntro[status]),`${status}: status-specific intro sentence`);
+  for(const other of Object.keys(statusIntro))if(other!==status)assert.ok(!html.includes(statusIntro[other]),`${status}: must not show the ${other} intro`);
+}
+assert.ok(!introHtml['source-only'].includes('Phát biểu được đối chiếu'),'source-only: no comparison claim in the intro');
+assert.ok(introHtml['source-only'].includes('dữ liệu tên gọi và nguồn mesh'),'source-only: provenance wording');
 assert.equal(renderToStaticMarkup(createElement(ClinicalEvidencePanel,{evidence:undefined})), '');
 for (const file of ['BodyMapExplorer.tsx','JointDiagramSvg.tsx','TriggerPointExplorer.tsx','atlas3d/AnatomyEvidenceCard.tsx','atlas3d/HipMaterialStudyControls.tsx','training/TrainingAtlasExplorer.tsx','training/MuscleStudyCard.tsx','training/TrainingAnatomyViewer.tsx','training/curl/CableCurlStudy.tsx']) {
   const content=readFileSync(new URL(`../src/components/${file}`,import.meta.url),'utf8');

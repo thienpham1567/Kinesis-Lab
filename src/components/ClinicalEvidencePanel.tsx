@@ -1,4 +1,9 @@
 import type { EvidenceRecord } from "@/lib/clinical/evidence-types";
+const STATUS_INTRO: Record<EvidenceRecord["status"], string> = {
+  "literature-reviewed": "Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.",
+  limited: "Phạm vi đối chiếu bị giới hạn (quyền truy cập hạn chế, quy ước minh họa hoặc chính sách quy trình); đọc giới hạn trước khi áp dụng.",
+  "source-only": "Chỉ là dữ liệu tên gọi và nguồn mesh, chưa có kiến thức theo từng cấu trúc; không phải phát biểu y khoa.",
+};
 export function ClinicalEvidencePanel({
   evidence,
   title = "Nguồn và giới hạn áp dụng",
@@ -27,7 +32,7 @@ export function ClinicalEvidencePanel({
         </span>
       </summary>
       <div className="mt-3 space-y-3">
-        <p className="text-slate">Phát biểu được đối chiếu với các nguồn bên dưới; xem phạm vi đọc và giới hạn áp dụng của từng mục.</p>
+        <p className="text-slate">{STATUS_INTRO[evidence.status]}</p>
         <ul className="list-disc space-y-1 pl-4">
           {evidence.supportedClaims.map((c) => (
             <li key={c}>{c}</li>
