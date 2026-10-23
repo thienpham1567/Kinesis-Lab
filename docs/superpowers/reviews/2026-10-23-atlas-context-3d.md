@@ -31,7 +31,7 @@ Production preview on port 3102, tested with the in-app browser. Real WebGL canv
 - Rehab region selection works with Enter. Native select ArrowDown/Enter selects an actual structure and enables focus/isolation. Region selector precedes the viewer in the final DOM as well as visually.
 - Trigger symptom lookup keeps the symptom locator and a neutral regional model; choosing lateral-knee symptoms opens region/knee without asserting a painful muscle. No coordinate/referral overlays were added. Handbook remains available.
 - Original anatomy tab still loads one orthographic WebGL canvas with no observed model error. Switching contexts/tabs leaves one canvas, rather than accumulating visible canvases.
-- Final mobile rehab default was rechecked with muscle layer off, region picker before the viewer, and x-ray-style overlays absent. Mobile training source labels wrap below the native select.
+- Final mobile rehab default was rechecked with muscle layer off, region picker before the viewer, and no diagnostic overlays. Mobile training source labels wrap below the native select.
 
 Screenshots in `assets/2026-10-23-atlas-context-3d/`: trigger desktop/mobile, rehab mobile, training mobile. They show actual source models, not generated illustrations.
 
@@ -41,4 +41,4 @@ Separate spec and code-quality reviews completed with no remaining actionable fi
 
 Existing educational claims, citations, access/check dates, referral guidance and reviewedBy fields are unchanged. No source was newly represented as read. No trigger coordinates, referral heatmaps, measured fiber paths, tissue measurements or personal treatment recommendations were introduced.
 
-Not tested: actual screen-reader software, other browser engines, GPU performance, slow-network/WebGL failure injection in the browser. Deadline settlement was tested in Node, while successful real model loading/retry controls were inspected in the browser. Preview uses no copied AI/cloud credentials; no AI submissions, client writes, paid image calls, deployment or remote merge occurred. NCSF textbook-data validation is outside this feature and still requires its absent ignored local dataset.
+Not tested: actual screen-reader software, other browser engines, GPU performance, slow-network/WebGL failure injection in the browser. Deadline settlement was tested in Node. Successful real model loading was exercised in the browser; stalled-load/error recovery was not exercised end to end there. Preview uses no copied AI/cloud credentials; no AI submissions, client writes, paid image calls, deployment or remote merge occurred. NCSF textbook-data validation is outside this feature and still requires its absent ignored local dataset.
