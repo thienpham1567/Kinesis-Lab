@@ -88,5 +88,5 @@ for(const region of ANATOMY_REGIONS) {
   for(const item of REGION_FOUNDATIONS[region.id])assert.ok(html.includes(item.text),`${region.id}: foundation rendered`);
 }
 const explorer=readFileSync(path.join(root,'src/components/atlas3d/Atlas3DExplorer.tsx'),'utf8');
-assert.ok(/<RegionKnowledgePanel[^>]*regionId=\{region\.id\}/.test(explorer)&&explorer.indexOf('<RegionKnowledgePanel')>explorer.indexOf('Ghi chú PT'),'3D explorer renders the panel below Ghi chú PT');
+assert.ok(/<RegionKnowledgePanel[^>]*regionId=\{region\.id\}/.test(explorer)&&explorer.indexOf('<RegionKnowledgePanel')>explorer.indexOf('<AnatomyEvidenceCard'),'3D explorer renders the panel below the structure evidence card');
 console.log('Atlas source presentation: comparison states, readable claims/scope/date/links, no fabricated reviewer or mandatory expert gate passed.');

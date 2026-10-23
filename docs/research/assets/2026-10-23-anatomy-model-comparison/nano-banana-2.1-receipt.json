@@ -1,0 +1,30 @@
+{
+  "model": "google/gemini-nano-banana-2.1",
+  "provider": "google-ai-studio",
+  "startedAt": "2026-10-23T03:02:58.097Z",
+  "request": {
+    "model": "google/gemini-nano-banana-2.1",
+    "prompt": "Create one original educational human anatomy illustration for Kinesis Lab. This is a simulated anatomical teaching model, not a cadaver photograph, patient scan or diagnostic image.\n\nSubject: a single adult right upper limb, anterior view with the palm facing forward. Frame from the shoulder girdle through the elbow and complete hand; include the scapula, humerus, radius and ulna. Neutral anatomical position. No exercise, no sports equipment, no clothing, no action pose.\n\nShow a clean non-bloody anatomical model with skin omitted. Focus on biceps brachii in muted red, with two distinguishable proximal heads and a common distal tendon. Show brachialis deep to biceps only where naturally visible; do not put it on top of biceps. Render tendons ivory and bones warm off-white. Keep the thumb on the lateral, radial side. Preserve coherent bone and muscle relationships.\n\nStyle: polished three-dimensional medical teaching illustration, restrained realistic material shading, fine but not exaggerated muscle texture, soft studio lighting, plain light gray background. Keep the entire requested anatomy inside frame. Clarity of structures matters more than dramatic visual effects.\n\nNo lettering, numbers, arrows, measurement lines, watermarks, cutaneous pain maps, activation heatmaps or claims of verified fiber directions. Do not copy a specific published atlas image. Do not include an extra limb or duplicate bones. Labels and source links will be added separately by the app.",
+    "n": 1,
+    "resolution": "1K",
+    "aspect_ratio": "4:3",
+    "provider": {
+      "only": [
+        "google-ai-studio"
+      ],
+      "allow_fallbacks": false
+    }
+  },
+  "status": 429,
+  "elapsedMs": 1058,
+  "id": null,
+  "created": null,
+  "usage": null,
+  "error": {
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current us…",
+    "code": 429,
+    "metadata": {
+      "provider_name": "Google AI Studio"
+    }
+  }
+}

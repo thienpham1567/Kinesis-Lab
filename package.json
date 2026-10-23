@@ -10,6 +10,7 @@
     "check:safety": "node --experimental-strip-types src/lib/clinical/safety.check.ts",
     "check:rom": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/lib/clinical/rom-norms.check.ts",
     "check:atlas-render": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-atlas-render-policy.mjs",
+    "check:atlas-learning": "node --test scripts/check-atlas-learning-studio.mjs",
     "check:atlas-study": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-hip-material-study.mjs",
     "check:atlas-detail": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-tissue-detail.mjs",
     "check:atlas-evidence": "node scripts/check-atlas-evidence.mjs",
@@ -27,6 +28,7 @@
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "three": "^0.186.1",
+    "three-mesh-bvh": "0.9.16",
     "unpdf": "^1.8.1"
   },
   "devDependencies": {

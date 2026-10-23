@@ -33,6 +33,9 @@ export type AtlasCanvasProps = {
   muscleOpacity: number;
   quality: RenderQuality;
   presentation?: AtlasPresentation;
+  projection?: "perspective" | "orthographic";
+  learningMode?: boolean;
+  showStructureLabels?: boolean;
   command: CameraCommand;
   onSelect: (id: string) => void;
 };

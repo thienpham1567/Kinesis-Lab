@@ -62,6 +62,22 @@ for (const m of [cube, front]) {
 // trunk-height "thoracic_core"/"lumbar" tag, and laryngeal/pharyngeal structures
 // must not carry the cervical spine note.
 const { readFileSync } = await import("node:fs");
+// atlas-3d.ts imports sibling modules without the ".ts" extension (bundler
+// style); resolve those for Node's type-stripping loader.
+const { register } = await import("node:module");
+register(
+  "data:text/javascript," +
+    encodeURIComponent(`
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+export async function resolve(specifier, context, next) {
+  if (/^\\.\\.?\\//.test(specifier) && context.parentURL?.endsWith(".ts") && !/\\.(m?js|ts|json)$/.test(specifier)) {
+    const candidate = new URL(specifier + ".ts", context.parentURL);
+    if (existsSync(fileURLToPath(candidate))) return next(candidate.href, context);
+  }
+  return next(specifier, context);
+}`),
+);
 const { resolveClinicalRegion } = await import(
   "../src/lib/clinical/atlas-3d.ts"
 );

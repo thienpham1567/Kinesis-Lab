@@ -1,0 +1,45 @@
+{
+  "model": "bytedance-seed/seedream-5-0-flash",
+  "provider": "seed",
+  "startedAt": "2026-10-23T03:01:09.926Z",
+  "request": {
+    "model": "bytedance-seed/seedream-5-0-flash",
+    "prompt": "Create one educational fitness illustration for Kinesis Lab. This is a simulated task demonstration, not an anatomical atlas or clinical measurement.\n\nOne adult demonstrating a hip hinge with a light kettlebell, full body visible in side view, equipment and both feet clearly visible.\n\nVisual style: restrained editorial fitness photography, soft daylight, plain light neutral studio, cobalt accent, adult in modest athletic clothing. Keep the entire body inside frame with breathing room.\n\nDo not add lettering, labels, numbers, angle arcs, arrows, muscle overlays, exposed anatomy, injury maps or diagnostic claims. The app adds captions outside the image. Do not depict an ideal or universally safe posture. No before/after treatment claims.\n\nUse a fictional adult subject.\n\nUser visual instructions (not verified medical facts): Một người trưởng thành mặc áo xanh, nền phòng tập sáng. Minh họa hip hinge với tạ nhẹ, góc nhìn nghiêng, không chữ và không mũi tên.\n\nEducational context — Mẫu chuyển động: Bắt đầu bằng việc người tập cần làm gì, cách thiết lập và điều thực sự quan sát được. Tên mẫu giúp tổ chức bài tập; không thay thế phép đo hay chẩn đoán.\n\nThe accompanying lesson has its own source links. Those sources do not clinically validate the generated image.",
+    "n": 1,
+    "resolution": "1K",
+    "aspect_ratio": "4:3",
+    "provider": {
+      "only": [
+        "seed"
+      ],
+      "allow_fallbacks": false
+    }
+  },
+  "status": 200,
+  "elapsedMs": 16181,
+  "id": null,
+  "created": 1792724485,
+  "usage": {
+    "prompt_tokens": 356,
+    "completion_tokens": 3607,
+    "total_tokens": 3963,
+    "cost": 0.018,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "cost_details": {
+      "upstream_inference_cost": 0.018,
+      "upstream_inference_prompt_cost": 0,
+      "upstream_inference_completions_cost": 0.018
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 3607
+    }
+  },
+  "imagePath": "/Users/thienpham/Documents/pt-medical-agent/docs/research/assets/2026-10-23-nano-seedream-comparison/seedream-5.0-flash.jpg",
+  "mediaType": "image/jpeg",
+  "byteLength": 126217,
+  "sha256": "6dc4fabb2afe43aa1482c9ae77b782c0012e415f5ed174ffa1536a864132e04e"
+}

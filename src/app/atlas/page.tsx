@@ -57,16 +57,45 @@ const TAB_COPY: Record<AtlasTab, { title: string; subtitle: string }> = {
 
 export default function AtlasPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
-          <Icon name="spinner" className="size-5 animate-spin" />
-          Đang mở Atlas…
-        </div>
-      }
-    >
+    <Suspense fallback={<AtlasFallback />}>
       <AtlasPageInner />
     </Suspense>
+  );
+}
+
+/* Khi tải, giữ nguyên tiêu đề và hàng tab để trang không nhảy hình. */
+function AtlasFallback() {
+  return (
+    <div className="atlas-workspace space-y-5" aria-busy="true">
+      <PageHeading
+        eyebrow="Cấu trúc · Chuyển động · Ứng dụng"
+        title="Atlas giải phẫu"
+        description={TAB_COPY["3d"].subtitle}
+      />
+      <div className="tab-bar grid grid-cols-2 sm:grid-cols-4" aria-hidden="true">
+        {(
+          [
+            { id: "3d", label: "Giải phẫu 3D", icon: "atlas" },
+            { id: "hypertrophy", label: "Huấn luyện PT", icon: "activity" },
+            { id: "trigger_points", label: "Trigger Point", icon: "target" },
+            { id: "clinical_rehab", label: "Phục hồi khớp", icon: "shield" },
+          ] as const
+        ).map((tab) => (
+          <span
+            key={tab.id}
+            className="tab-button flex-col gap-1.5 px-1.5 text-center sm:flex-row sm:gap-2 sm:px-3.5"
+            aria-pressed={tab.id === "3d"}
+          >
+            <Icon name={tab.icon as IconName} className="size-4" />
+            {tab.label}
+          </span>
+        ))}
+      </div>
+      <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
+        <Icon name="spinner" className="size-5 animate-spin" />
+        Đang mở Atlas…
+      </div>
+    </div>
   );
 }
 

@@ -5,6 +5,8 @@ import { GLUTEUS_MEDIUS_IDS } from "../../lib/clinical/anatomy-evidence.mjs";
 export class SurfaceLabels {
   /** @param {HTMLElement} host @param {(kind:string)=>void} focus */
   constructor(host, focus) {
+    /** @type {{x:number,y:number,width:number,height:number}[]} */
+    this.occupiedBounds = [];
     this.root = document.createElement("div");
     this.root.className = "absolute inset-0 pointer-events-none";
     this.root.setAttribute("role", "group");
@@ -33,8 +35,9 @@ export class SurfaceLabels {
       return { kind, button, click };
     });
   }
-  /** @param {string|null} id @param {boolean} enabled @param {Map<string,import('three').Mesh[]>} map @param {import('three').PerspectiveCamera} camera @param {number} width @param {number} height */
+  /** @param {string|null} id @param {boolean} enabled @param {Map<string,import('three').Mesh[]>} map @param {import('three').PerspectiveCamera | import('three').OrthographicCamera} camera @param {number} width @param {number} height */
   update(id, enabled, map, camera, width, height) {
+    this.occupiedBounds = [];
     const active = enabled && id !== null && GLUTEUS_MEDIUS_IDS.includes(id);
     let previous = null;
     for (const item of this.items) {
@@ -61,6 +64,12 @@ export class SurfaceLabels {
         }
         item.button.style.left = point.x + "px";
         item.button.style.top = y + "px";
+        this.occupiedBounds.push({
+          x: point.x - 70,
+          y: y - 22,
+          width: 140,
+          height: 44,
+        });
         previous = { x: point.x, y };
       }
     }
