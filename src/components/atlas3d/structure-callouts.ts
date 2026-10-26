@@ -138,7 +138,7 @@ export class StructureCallouts {
             ? " · Phải"
             : "";
       const names = atlasDisplayNames(structure);
-      const primary = (names.vietnamese ?? names.english) + side;
+      const primary = names.vietnamese ?? names.english;
       if (item.primary.textContent !== primary)
         item.primary.textContent = primary;
       item.primary.lang = names.vietnamese ? "vi" : "en";

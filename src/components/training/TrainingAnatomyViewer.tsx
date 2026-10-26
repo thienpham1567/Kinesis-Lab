@@ -376,7 +376,7 @@ export function TrainingAnatomyViewer({
         {selected && (
           <div className="rounded-lg border border-cobalt/20 bg-cobalt-soft/40 p-3">
             <p className="mb-1 text-xs text-slate">Đang chọn</p>
-            <AtlasStructureName structure={selected} withSide className="text-sm font-semibold text-ink" />
+            <AtlasStructureName structure={selected} className="text-sm font-semibold text-ink" />
             <AtlasSourceNames structure={selected} />
             {selectedGroup && (
               <Link

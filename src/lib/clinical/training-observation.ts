@@ -16,13 +16,7 @@ export function preferredTrainingView(group: MuscleGroupId) {
 }
 
 export function sourceStructureLabel(structure: AtlasStructure) {
-  const side =
-    structure.side === "left"
-      ? "trái"
-      : structure.side === "right"
-        ? "phải"
-        : "không phân bên";
-  return `${atlasStructureName(structure)} · ${side}`;
+  return atlasStructureName(structure);
 }
 
 export function visibleObservationSelection(

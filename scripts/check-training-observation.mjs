@@ -20,7 +20,7 @@ for (const group of ['chest','quads_adductors','abs_obliques','deltoids','biceps
 const manifest = JSON.parse(readFileSync(new URL('../public/anatomy/3d/manifest.json',import.meta.url)));
 const hip = manifest.structures.find(s=>s.english==='Gluteus maximus muscle' && s.side==='left');
 assert(hip);
-assert.match(observation.sourceStructureLabel(hip), /trái/);
+assert.doesNotMatch(observation.sourceStructureLabel(hip), /trái|phải/i);
 const input={area:'hip',hiddenIds:new Set(),bones:true,selectedId:hip.id,isolatedId:null};
 assert.equal(observation.visibleObservationSelection(manifest.structures,input)?.id,hip.id);
 assert.equal(observation.visibleObservationSelection(manifest.structures,{...input,area:'upper'}),undefined);
@@ -31,7 +31,7 @@ assert(bone);
 assert.equal(observation.visibleObservationSelection(manifest.structures,{...input,selectedId:bone.id,bones:false}),undefined);
 assert.equal(observation.visibleObservationSelection(manifest.structures,{...input,selectedId:'invalid'}),undefined);
 const heads=manifest.structures.filter(s=>/biceps femoris/i.test(s.english));
-assert.equal(new Set(heads.map(observation.sourceStructureLabel)).size,heads.length,'source labels distinguish long/short heads');
+assert.equal(new Set(heads.map(observation.sourceStructureLabel)).size,new Set(heads.map(s=>s.english)).size,'source labels distinguish long/short heads while omitting bilateral suffixes');
 console.log('Training observation: backgrounds, preferred views, source labels, region/layer/isolation selection passed.');
 
 const {StudioRenderer}=await import('../src/components/atlas3d/studio-renderer.ts');

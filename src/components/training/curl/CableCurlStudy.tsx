@@ -268,7 +268,7 @@ export function CableCurlStudy() {
           </div>
         </fieldset>
 
-        {selectedStructure && <div className="space-y-1"><AtlasStructureName structure={selectedStructure} withSide className="text-sm font-semibold text-ink" /><AtlasSourceNames structure={selectedStructure} /></div>}
+        {selectedStructure && <div className="space-y-1"><AtlasStructureName structure={selectedStructure} className="text-sm font-semibold text-ink" /><AtlasSourceNames structure={selectedStructure} /></div>}
 
         {info && (
           <div className="space-y-3 text-xs leading-5 text-slate">

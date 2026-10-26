@@ -143,8 +143,9 @@ const { AtlasStructureName, AtlasSourceNames } = load(
   "src/components/atlas3d/AtlasStructureName.tsx",
 );
 const paired = renderToStaticMarkup(
-  createElement(AtlasStructureName, { structure: pec, withSide: true }),
+  createElement(AtlasStructureName, { structure: pec }),
 );
+assert.doesNotMatch(paired, /Trái|Phải/);
 assert.match(paired, /lang="vi"/);
 assert.match(paired, /lang="en"/);
 assert.match(paired, /Pectoralis major · sternocostal head/);

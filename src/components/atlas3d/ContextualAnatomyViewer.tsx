@@ -314,14 +314,13 @@ function ContextualAnatomyPanel({
             {options.map((s) => (
               <option key={s.id} value={s.id}>
                 {atlasStructureName(s)}
-                {s.side ? ` · ${s.side === "left" ? "trái" : "phải"}` : ""}
               </option>
             ))}
           </select>
         </label>
         <div className="text-xs leading-5 text-slate" aria-live="polite">
           {selected
-            ? <AtlasStructureName structure={selected} withSide className="font-semibold text-ink" />
+            ? <AtlasStructureName structure={selected} className="font-semibold text-ink" />
             : `${options.length} cấu trúc có thể chọn`}
         </div>
         {selected && <AtlasSourceNames structure={selected} />}

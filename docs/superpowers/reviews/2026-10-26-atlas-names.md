@@ -6,7 +6,7 @@ Date: 2026-10-26 (Asia/Ho_Chi_Minh).
 
 The shared name formatter and paired display cover Anatomy 3D, contextual viewers for Trigger Point/rehabilitation/training, the exercise anatomy viewer and cable-curl study. Vietnamese is primary where a recorded translation exists; compact English is secondary. Untranslated structures retain English only. Original English/Latin remain accessible in details/tooltips. Manifest identities, translations and medical reviewer metadata are unchanged.
 
-English compaction removes redundant terminal singular “muscle” and reorders explicit head/part/belly-of phrases. Unknown grammar stays unchanged. Qualifiers and side are retained. This is a display change, not clinical validation or a claim that all structures have Vietnamese translations.
+English compaction removes redundant terminal singular “muscle” and reorders explicit head/part/belly-of phrases. Unknown grammar stays unchanged. Anatomical head/part qualifiers are retained. The user subsequently requested removing side suffixes from displayed names; laterality remains in source data, filters and source tooltips. This is a display change, not clinical validation or a claim that all structures have Vietnamese translations.
 
 Source comparison and access scopes: [research record](../../research/2026-10-25-anatomy-display-names.md).
 
@@ -40,4 +40,12 @@ Production preview: localhost:3102.
 
 ## Delivery
 
-Local branch `codex/atlas-concise-names`. No deployment or master push was performed for this naming change.
+Implementation branch: `codex/atlas-concise-names`. The user authorized push and merge into `master` on 2026-10-26. This report records local code/build/browser verification; hosted deployment is not part of this verification.
+
+## Follow-up: remove side suffixes
+
+On 2026-10-26 the user requested removal of Vietnamese Trái/Phải from 3D names and authorized push/merge to master. Removed the suffix from model callouts, shared paired readouts and contextual/training structure options. Camera direction controls and explicit laterality metadata/filters remain available. Bilateral IDs and source data are unchanged.
+
+Fresh naming, training-observation, learning-studio, contextual/load checks, lint and production build passed. Updated the existing training check to compare distinct canonical head names rather than bilateral counts, matching the requested display behavior. Browser inspection confirmed the visible pectoralis and brachioradialis callouts and their accessible names omit side suffixes.
+
+![Names without side suffixes](assets/2026-10-25-atlas-names/no-side-suffix.jpg)

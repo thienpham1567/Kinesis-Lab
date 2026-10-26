@@ -7,20 +7,12 @@ import {
 /** Shared readable pair for headings/readouts; native options use the text helper. */
 export function AtlasStructureName({
   structure,
-  withSide = false,
   className = "",
 }: {
   structure: AtlasNamedStructure;
-  withSide?: boolean;
   className?: string;
 }) {
   const { vietnamese, english } = atlasDisplayNames(structure);
-  const side =
-    structure.side === "left"
-      ? "Trái"
-      : structure.side === "right"
-        ? "Phải"
-        : "";
   return (
     <span
       className={`block min-w-0 break-words ${className}`}
@@ -29,11 +21,6 @@ export function AtlasStructureName({
     >
       <span lang={vietnamese ? "vi" : "en"} className="block leading-snug">
         {vietnamese ?? english}
-        {withSide && side && (
-          <span className="ml-2 inline-block text-xs font-normal text-slate">
-            · {side}
-          </span>
-        )}
       </span>
       {vietnamese && (
         <span
