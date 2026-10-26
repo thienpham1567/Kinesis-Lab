@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import { BriefError, buildChatIllustrationBrief } from "@/lib/chat/illustration-brief";
 import { compileChatIllustrationPrompt } from "@/lib/chat/illustration-prompt";
 import { resolveChatImageSources } from "@/lib/chat/illustration-sources";
+import { resolveChatImageEvidence } from "@/lib/chat/illustration-evidence";
+import { MEDICAL_ILLUSTRATION_POLICY_VERSION } from "@/lib/chat/medical-illustration-policy";
 import { jobStore, requestFingerprint, type ChatImageJob } from "@/lib/chat/image-jobs";
 import {
   CHAT_IMAGE_COOKIE,
@@ -15,7 +17,7 @@ import {
   signedChatIllustrationUrl,
   uploadChatIllustration,
 } from "@/lib/chat/image-storage-server";
-import { ImageInputError, requestRasterImage } from "@/lib/illustrations/provider";
+import { ImageInputError, hashBytes, requestRasterImage } from "@/lib/illustrations/provider";
 import { ILLUSTRATION_LABEL } from "@/lib/illustrations/catalog";
 import {
   CHAT_IMAGE_MODEL,
@@ -38,7 +40,7 @@ const POST_KEYS = [
 ];
 const UUID = /^[0-9a-f-]{36}$/i;
 const DEADLINE_MS = 170_000;
-const BRIEF_MS = 15_000;
+const BRIEF_MS = 20_000;
 const IMAGE_MS = 140_000;
 const UPLOAD_MS = 10_000;
 
@@ -90,6 +92,7 @@ export async function chatIllustrationGET(req: Request) {
   return json({
     enabled: status.enabled,
     model: status.model,
+    promptVersion: MEDICAL_ILLUSTRATION_POLICY_VERSION,
     estimateUsd: status.estimateUsd,
     outputTokenPriceUsd: status.outputTokenPriceUsd,
     priceCheckedAt: status.priceCheckedAt,
@@ -205,10 +208,13 @@ export async function chatIllustrationPOST(req: Request) {
   try {
     const briefMs = Math.min(BRIEF_MS, remain());
     if (briefMs <= 0) throw new ImageInputError("Hết thời gian chuẩn bị nội dung.", 502);
+    const evidence = resolveChatImageEvidence(`${input.instruction}\n${input.selectedContext}`, sources);
     const brief = await buildChatIllustrationBrief({
       instruction: input.instruction,
       selectedContext: input.selectedContext,
-      sources,
+      sources: evidence.sources,
+      claims: evidence.claims,
+      evidenceLimitations: evidence.limitations,
       deadlineMs: briefMs,
     });
     await store.update(job.id, session.ownerHash, { brief, state: "generating" });
@@ -223,8 +229,9 @@ export async function chatIllustrationPOST(req: Request) {
       const bytes = await downloadChatIllustration(parent.storagePath);
       referenceDataUrl = `data:${parent.receipt?.mediaType ?? "image/png"};base64,${bytes.toString("base64")}`;
     }
+    const compiledPrompt = compileChatIllustrationPrompt(brief, { instruction: input.instruction, isEdit: Boolean(input.parentId) });
     const raster = await requestRasterImage({
-      prompt: compileChatIllustrationPrompt(brief),
+      prompt: compiledPrompt,
       resolution: CHAT_IMAGE_RESOLUTION,
       aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
       quality: "auto",
@@ -260,6 +267,8 @@ export async function chatIllustrationPOST(req: Request) {
       resolution: CHAT_IMAGE_RESOLUTION,
       aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
       parentId: input.parentId,
+      promptVersion: MEDICAL_ILLUSTRATION_POLICY_VERSION,
+      promptSha256: hashBytes(compiledPrompt),
       label: ILLUSTRATION_LABEL,
       reviewedBy: null,
     };

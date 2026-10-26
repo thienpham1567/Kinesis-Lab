@@ -18,10 +18,14 @@ export type ChatIllustrationBrief = {
   subjectKind: "anatomy" | "movement" | "comparison";
   visualDescription: string;
   imageText: string[];
+  imageExplanation?: string;
+  claims?: ChatImageClaim[];
   explanation: string;
   sources: ChatImageSource[];
   limitations: string[];
 };
+
+export type ChatImageClaim = { id: string; text: string; sourceIds: string[] };
 
 export type ChatImageReceipt = {
   id: string;
@@ -40,6 +44,8 @@ export type ChatImageReceipt = {
   resolution: "1K" | "2K" | "auto";
   aspectRatio: "4:3" | "auto";
   parentId: string | null;
+  promptVersion?: string;
+  promptSha256?: string;
   label: "Hình minh họa AI";
   reviewedBy: null;
 };

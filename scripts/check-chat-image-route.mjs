@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { randomUUID } from "node:crypto";
+import { randomUUID, createHash } from "node:crypto";
 import { createAppLoader } from "./lib/load-app-module.mjs";
 import { PROTOCOL } from "./eval-study-chat-images.mjs";
 
@@ -51,6 +51,7 @@ function harness() {
         BriefError: class BriefError extends Error {},
       },
       "@/lib/illustrations/provider": {
+        hashBytes: (bytes) => createHash("sha256").update(bytes).digest("hex"),
         requestRasterImage: async (input, target) => {
           calls.image++;
           calls.imageInput = input;
@@ -145,6 +146,10 @@ test("POST generates once, poll does not bill again, foreign owner cannot read",
   assert.equal(payload.state, "succeeded");
   assert.equal(payload.receipt.model, "openai/gpt-image-2.5-sunburst");
   assert.equal(payload.receipt.provider, "openai");
+  assert.equal(payload.receipt.promptVersion, "medical-image-v1-2026-10-26");
+  assert.match(payload.receipt.promptSha256, /^[0-9a-f]{64}$/);
+  assert.ok(f.calls.imageInput.prompt.includes(body.instruction));
+  assert.ok(f.calls.imageInput.prompt.startsWith("MEDICAL EDUCATIONAL ILLUSTRATION"));
   assert.equal(payload.receipt.resolution, "auto");
   assert.equal(payload.receipt.estimateUsd, null);
   assert.equal(f.calls.imageInput.resolution, "auto");

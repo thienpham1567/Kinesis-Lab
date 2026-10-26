@@ -71,7 +71,7 @@ export function StudyChatImageCard({
       </button>
       <figcaption className="space-y-1 text-xs leading-5 text-slate">
         <p className="font-medium text-ink">{brief?.title ?? "Hình minh họa AI"}</p>
-        <p>{receipt?.model ?? "Seedream 5.0 Flash"} · Hình minh họa AI</p>
+        <p>{receipt?.model ? `${receipt.model} · ` : ""}Hình minh họa AI</p>
         <button type="button" className="font-medium text-cobalt" onClick={onOpen}>
           Mở ảnh lớn
         </button>
@@ -87,6 +87,7 @@ export function StudyChatImageCard({
               {brief.imageText.map((line) => (
                 <li key={line}>{line}</li>
               ))}
+              {brief.imageExplanation && <li>{brief.imageExplanation}</li>}
             </ul>
             <p className="mt-1">Đây là nội dung đã yêu cầu vẽ, không phải OCR đã xác minh ảnh.</p>
           </details>

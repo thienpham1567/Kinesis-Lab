@@ -36,7 +36,7 @@ test("accepts a sourced brief within length caps", () => {
   const brief = parseChatIllustrationBrief(valid, allowed);
   assert.equal(brief.title, "Cánh tay trước");
   assert.equal(brief.subjectKind, "anatomy");
-  assert.deepEqual(brief.imageText, valid.imageText);
+  assert.deepEqual(Array.from(brief.imageText), valid.imageText);
   assert.equal(brief.reviewedBy, undefined);
 });
 
@@ -53,21 +53,13 @@ test("rejects invalid JSON shape and enum; strips extra fields", () => {
   assert.equal(JSON.stringify(stripped).includes("raw history"), false);
 });
 
-test("clips overlong title, captions and total image text", () => {
-  assert.equal(parseChatIllustrationBrief({ ...valid, title: "T".repeat(61) }, allowed).title.length, 60);
-  assert.equal(parseChatIllustrationBrief({ ...valid, imageText: ["A".repeat(121), "B"] }, allowed).imageText[0].length, 120);
-  reject({ ...valid, imageText: ["chỉ một nhãn"] }, /2–4|2-4|hai/i);
-  const clipped = parseChatIllustrationBrief(
-    {
-      ...valid,
-      title: "T".repeat(60),
-      imageText: ["A".repeat(120), "B".repeat(120), "C".repeat(120), "D".repeat(121)],
-    },
-    allowed,
-  );
-  assert.ok(clipped.title.length + clipped.imageText.join("").length <= 550);
-  assert.equal(parseChatIllustrationBrief({ ...valid, visualDescription: "v".repeat(1601) }, allowed).visualDescription.length, 1600);
-  assert.equal(parseChatIllustrationBrief({ ...valid, explanation: "e".repeat(1601) }, allowed).explanation.length, 1600);
+test("rejects overlong medical copy instead of truncating meaning", () => {
+  reject({ ...valid, title: "T".repeat(61) }, /60|dài/);
+  reject({ ...valid, imageText: ["A".repeat(121), "B"] }, /120|dài/);
+  reject({ ...valid, imageText: ["chỉ một nhãn"] }, /2–8|2-8/);
+  reject({ ...valid, title: "T".repeat(60), imageText: Array.from({ length: 8 }, (_, i) => String(i) + "A".repeat(119)) }, /900|giới hạn/);
+  reject({ ...valid, visualDescription: "v".repeat(1601) }, /1600|dài/);
+  reject({ ...valid, explanation: "e".repeat(1601) }, /1600|dài/);
 });
 
 test("brief builder uses Gemini Flash, deadline and supplied sources only", async () => {
