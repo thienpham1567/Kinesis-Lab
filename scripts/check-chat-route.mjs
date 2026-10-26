@@ -10,7 +10,7 @@ function fixture({ wire, upstreamError, literatureError = false } = {}) {
       '@/lib/supabase/server': { hasSupabase: () => false },
       '@/lib/local-store': { readLocalStore: () => ({ clients: [], biomarkers: [] }) },
       '@/lib/ai/openrouter': {
-        pickChatModel: () => 'anthropic/claude-haiku-5.5',
+        pickChatModel: () => 'google/gemini-2.5-flash',
         chatStream: async ({ messages }) => {
           calls.model++; calls.messages = messages;
           if (upstreamError) throw new Error('private upstream secret');
@@ -59,7 +59,7 @@ test('emits truthful source metadata and uses topic history only for private ret
   ] });
   assert.equal(response.status, 200);
   const e = await events(response);
-  assert.equal(e[0].model, 'anthropic/claude-haiku-5.5');
+  assert.equal(e[0].model, 'google/gemini-2.5-flash');
   assert.equal(e[0].sourceStatus.rag.status, 'empty');
   assert.equal(e[0].sourceStatus.pubmed.status, 'error');
   assert.equal(e[0].sourceStatus.rag.dimensions, 1536);

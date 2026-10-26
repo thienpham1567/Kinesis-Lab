@@ -13,13 +13,13 @@ function runtime(fetcher, env = {}) {
   return exports;
 }
 const vector = () => Array.from({ length: 1536 }, (_, i) => i === 0 ? 1 : 0);
-test('all default chat routes use Haiku, embedding uses Gemini 2', () => {
+test('all default chat routes use Gemini 2.5 Flash, embedding uses Gemini 2', () => {
   const ai = runtime(() => {});
-  assert.equal(ai.MODELS.clinical, 'anthropic/claude-haiku-5.5');
-  assert.equal(ai.MODELS.fast, 'anthropic/claude-haiku-5.5');
+  assert.equal(ai.MODELS.clinical, 'google/gemini-2.5-flash');
+  assert.equal(ai.MODELS.fast, 'google/gemini-2.5-flash');
   assert.equal(ai.MODELS.embedding, 'google/gemini-embedding-2');
-  assert.equal(ai.pickChatModel({ text: 'đau gối', clientId: 'synthetic' }), 'anthropic/claude-haiku-5.5');
-  assert.equal(ai.pickChatModel({ text: 'kiến thức bài tập' }), 'anthropic/claude-haiku-5.5');
+  assert.equal(ai.pickChatModel({ text: 'đau gối', clientId: 'synthetic' }), 'google/gemini-2.5-flash');
+  assert.equal(ai.pickChatModel({ text: 'kiến thức bài tập' }), 'google/gemini-2.5-flash');
 });
 test('query has retrieval task prefix and requests 1536 dimensions', async () => {
   let sent;

@@ -23,9 +23,9 @@ Mở [http://localhost:3000](http://localhost:3000).
 
 Model mặc định (đổi được trong `.env.local`):
 
-- Lập luận lâm sàng: `anthropic/claude-haiku-5.5`
+- Lập luận lâm sàng: `google/gemini-2.5-flash`
 - Đọc ảnh xét nghiệm/InBody: `google/gemini-2.5-pro`
-- Tra cứu nhanh: `anthropic/claude-haiku-5.5`
+- Tra cứu nhanh: `google/gemini-2.5-flash`
 - Embedding: `google/gemini-embedding-2 (1.536 chiều)`
 
 ## Supabase
