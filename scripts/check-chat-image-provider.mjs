@@ -69,44 +69,52 @@ test("raster request pins Seedream, 2K/4:3, n=1 and Vietnamese brief text", asyn
   assert.equal(result.mediaType, "image/png");
 });
 
-test("chat raster uses Nano Banana 2.1 at 1K, including reference edits", async () => {
+test("chat raster uses Sunburst auto dimensions and quality, including reference edits", async () => {
   const f = fixture();
   const target = { model: PROTOCOL.model, provider: PROTOCOL.provider };
   await f.requestRasterImage({
     prompt: f.prompt.compileChatIllustrationPrompt(brief),
     resolution: PROTOCOL.resolution,
     aspectRatio: PROTOCOL.aspectRatio,
-    timeoutMs: 110_000,
+    quality: PROTOCOL.quality,
+    timeoutMs: 140_000,
     referenceDataUrl: `data:image/png;base64,${png}`,
   }, target);
   assert.equal(f.calls.length, 1);
   const body = JSON.parse(f.calls[0].options.body);
-  assert.equal(body.model, "google/gemini-nano-banana-2.1");
-  assert.equal(body.resolution, "1K");
+  assert.equal(body.model, "openai/gpt-image-2.5-sunburst");
+  assert.equal(body.resolution, undefined);
+  assert.equal(body.size, undefined);
+  assert.equal(body.aspect_ratio, "auto");
+  assert.equal(body.quality, "auto");
   assert.equal(body.n, 1);
-  assert.deepEqual(body.provider, { only: ["google-ai-studio"], allow_fallbacks: false });
+  assert.deepEqual(body.provider, { only: ["openai"], allow_fallbacks: false });
   assert.equal(body.input_references[0].image_url.url, `data:image/png;base64,${png}`);
 });
 
-test("chat price converts output tokens and retains a dated fallback on catalog failure", async () => {
+test("auto mode reports the token price without inventing a per-image estimate", async () => {
   for (const unavailable of [false, true]) {
     const load = createAppLoader({
       globals: {
         process: { env: { OPENROUTER_API_KEY: "synthetic-only" } },
         fetch: async (url) => {
-          assert.match(url, /google\/gemini-nano-banana-2\.1\/endpoints$/);
+          assert.match(url, /openai\/gpt-image-2\.5-sunburst\/endpoints$/);
           if (unavailable) throw new Error("offline");
           return Response.json({ endpoints: [{
-            provider_tag: "google-ai-studio",
+            provider_tag: "openai",
             pricing: [{ billable: "output_image", unit: "token", cost_usd: 0.00003 }],
           }] });
         },
       },
     });
-    const status = await load("src/lib/chat/image-config.ts").chatImageStatus();
-    assert.equal(status.model, "google/gemini-nano-banana-2.1");
-    assert.ok(Math.abs(status.prices["1K"] - 0.0336) < 1e-10);
-    assert.ok(Math.abs(status.prices["2K"] - 0.0504) < 1e-10);
+    const config = load("src/lib/chat/image-config.ts");
+    assert.equal(config.CHAT_IMAGE_MODEL, PROTOCOL.model);
+    assert.equal(config.CHAT_IMAGE_RESOLUTION, "auto");
+    assert.equal(config.CHAT_IMAGE_ASPECT_RATIO, "auto");
+    const status = await config.chatImageStatus();
+    assert.equal(status.model, "openai/gpt-image-2.5-sunburst");
+    assert.equal(status.estimateUsd, null);
+    assert.equal(status.outputTokenPriceUsd, 0.00003);
     assert.equal(status.livePrice, !unavailable);
     if (unavailable) assert.equal(status.priceCheckedAt, "2026-10-26");
   }

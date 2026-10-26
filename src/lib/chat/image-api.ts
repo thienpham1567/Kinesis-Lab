@@ -21,6 +21,7 @@ import {
   CHAT_IMAGE_MODEL,
   CHAT_IMAGE_PROVIDER,
   CHAT_IMAGE_RESOLUTION,
+  CHAT_IMAGE_ASPECT_RATIO,
   CHAT_IMAGE_TARGET,
   chatImageStatus,
 } from "@/lib/chat/image-config";
@@ -36,9 +37,9 @@ const POST_KEYS = [
   "parentId",
 ];
 const UUID = /^[0-9a-f-]{36}$/i;
-const DEADLINE_MS = 140_000;
+const DEADLINE_MS = 170_000;
 const BRIEF_MS = 15_000;
-const IMAGE_MS = 110_000;
+const IMAGE_MS = 140_000;
 const UPLOAD_MS = 10_000;
 
 function sameOrigin(req: Request) {
@@ -89,11 +90,13 @@ export async function chatIllustrationGET(req: Request) {
   return json({
     enabled: status.enabled,
     model: status.model,
-    estimateUsd: status.prices[CHAT_IMAGE_RESOLUTION],
+    estimateUsd: status.estimateUsd,
+    outputTokenPriceUsd: status.outputTokenPriceUsd,
     priceCheckedAt: status.priceCheckedAt,
     livePrice: status.livePrice,
     resolution: CHAT_IMAGE_RESOLUTION,
-    aspectRatio: "4:3",
+    aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
+    quality: "auto",
   });
 }
 
@@ -223,7 +226,8 @@ export async function chatIllustrationPOST(req: Request) {
     const raster = await requestRasterImage({
       prompt: compileChatIllustrationPrompt(brief),
       resolution: CHAT_IMAGE_RESOLUTION,
-      aspectRatio: "4:3",
+      aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
+      quality: "auto",
       timeoutMs: imageBudget,
       referenceDataUrl,
     }, CHAT_IMAGE_TARGET);
@@ -251,10 +255,10 @@ export async function chatIllustrationPOST(req: Request) {
       sha256: raster.sha256,
       elapsedMs: Date.now() - started,
       costUsd: raster.costUsd,
-      estimateUsd: status.prices[CHAT_IMAGE_RESOLUTION],
+      estimateUsd: status.estimateUsd,
       priceCheckedAt: status.priceCheckedAt,
       resolution: CHAT_IMAGE_RESOLUTION,
-      aspectRatio: "4:3",
+      aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
       parentId: input.parentId,
       label: ILLUSTRATION_LABEL,
       reviewedBy: null,

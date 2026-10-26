@@ -71,14 +71,16 @@ function harness() {
         },
       },
       "@/lib/chat/image-config": {
-        CHAT_IMAGE_MODEL: "google/gemini-nano-banana-2.1",
-        CHAT_IMAGE_PROVIDER: "google-ai-studio",
-        CHAT_IMAGE_RESOLUTION: "1K",
-        CHAT_IMAGE_TARGET: { model: "google/gemini-nano-banana-2.1", provider: "google-ai-studio" },
+        CHAT_IMAGE_MODEL: "openai/gpt-image-2.5-sunburst",
+        CHAT_IMAGE_PROVIDER: "openai",
+        CHAT_IMAGE_RESOLUTION: "auto",
+        CHAT_IMAGE_ASPECT_RATIO: "auto",
+        CHAT_IMAGE_TARGET: { model: "openai/gpt-image-2.5-sunburst", provider: "openai" },
         chatImageStatus: async () => ({
           enabled: true,
-          model: "google/gemini-nano-banana-2.1",
-          prices: { "1K": 0.0336, "2K": 0.0504 },
+          model: "openai/gpt-image-2.5-sunburst",
+          estimateUsd: null,
+          outputTokenPriceUsd: 0.00003,
           priceCheckedAt: "2026-10-26",
           livePrice: true,
         }),
@@ -126,9 +128,9 @@ test("GET issues a session cookie before generation; POST without it is unauthor
   const ready = await f.route.GET(f.req("/api/chat/illustrations"));
   assert.equal(ready.status, 200);
   const status = await ready.json();
-  assert.equal(status.model, "google/gemini-nano-banana-2.1");
-  assert.equal(status.resolution, "1K");
-  assert.equal(status.estimateUsd, 0.0336);
+  assert.equal(status.model, "openai/gpt-image-2.5-sunburst");
+  assert.equal(status.resolution, "auto");
+  assert.equal(status.estimateUsd, null);
   assert.equal(status.priceCheckedAt, "2026-10-26");
   assert.ok(f.jar.bag.get("chat_image_session"));
 });
@@ -141,12 +143,16 @@ test("POST generates once, poll does not bill again, foreign owner cannot read",
   assert.equal(created.status, 200);
   const payload = await created.json();
   assert.equal(payload.state, "succeeded");
-  assert.equal(payload.receipt.model, "google/gemini-nano-banana-2.1");
-  assert.equal(payload.receipt.provider, "google-ai-studio");
-  assert.equal(payload.receipt.resolution, "1K");
-  assert.equal(payload.receipt.estimateUsd, 0.0336);
-  assert.equal(f.calls.imageInput.resolution, "1K");
-  assert.deepEqual(f.calls.imageTarget, { model: "google/gemini-nano-banana-2.1", provider: "google-ai-studio" });
+  assert.equal(payload.receipt.model, "openai/gpt-image-2.5-sunburst");
+  assert.equal(payload.receipt.provider, "openai");
+  assert.equal(payload.receipt.resolution, "auto");
+  assert.equal(payload.receipt.estimateUsd, null);
+  assert.equal(f.calls.imageInput.resolution, "auto");
+  assert.equal(f.calls.imageInput.aspectRatio, "auto");
+  assert.equal(f.calls.imageInput.quality, "auto");
+  assert.ok(f.calls.imageInput.timeoutMs >= 120_000);
+  assert.ok(f.route.maxDuration >= 180);
+  assert.deepEqual(f.calls.imageTarget, { model: "openai/gpt-image-2.5-sunburst", provider: "openai" });
   assert.equal(f.calls.image, 1);
   assert.equal(f.calls.brief, 1);
   const replay = await f.route.POST(f.req("/api/chat/illustrations", { method: "POST", body }));

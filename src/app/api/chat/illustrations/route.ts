@@ -4,7 +4,7 @@ import {
 } from "@/lib/chat/image-api";
 
 export const runtime = "nodejs";
-export const maxDuration = 150;
+export const maxDuration = 180;
 
 export function GET(req: Request) {
   return chatIllustrationGET(req);

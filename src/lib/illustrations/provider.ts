@@ -61,8 +61,9 @@ export function hashBytes(bytes: string | Buffer) {
 
 export type RasterImageRequest = {
   prompt: string;
-  resolution: Resolution;
-  aspectRatio: AspectRatio;
+  resolution: Resolution | "auto";
+  aspectRatio: AspectRatio | "auto";
+  quality?: "auto";
   timeoutMs: number;
   referenceDataUrl?: string;
   onAccepted?: () => void;
@@ -100,8 +101,9 @@ export async function requestRasterImage(
         model: target.model,
         prompt: input.prompt,
         n: 1,
-        resolution: input.resolution,
+        ...(input.resolution !== "auto" ? { resolution: input.resolution } : {}),
         aspect_ratio: input.aspectRatio,
+        ...(input.quality ? { quality: input.quality } : {}),
         provider: { only: [target.provider], allow_fallbacks: false },
         ...(input.referenceDataUrl
           ? {

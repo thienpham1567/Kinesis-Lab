@@ -32,3 +32,14 @@ Local ignored QA artifacts include screenshots of the applied migration and the 
 The earlier direct call and the later deployed-app request both requested Nano Banana 2.1, 1K, 4:3, with a generic Vietnamese learning infographic and no personal/medical information. OpenRouter returned HTTP 429. No model image or successful generation receipt was obtained; no automatic retry or alternate model was used. A successful image-quality check remains pending provider availability. This does not validate image quality or medical accuracy.
 
 The previously reported QA findings in `2026-10-26-study-chat-image-qa.md` remain separate outstanding improvements; this deployment task did not claim to resolve them.
+
+## Root-cause diagnosis of HTTP 429
+
+Follow-up checks on 2026-10-26 used only a simple book illustration prompt. No production settings or application behavior were changed.
+
+- OpenRouter key inspection returned HTTP 200, paid-tier status, and no key spending limit. The credits endpoint confirmed a remaining balance greater than $1; exact balances and credentials are not recorded.
+- The Images API returned HTTP 429 from `Google AI Studio`, with a quota-exceeded message.
+- The same model/provider, 1K and 4:3, through Chat Completions also returned HTTP 429. Its metadata explicitly reported `is_byok: false`, provider error 429, and that `google/gemini-nano-banana-2.1` is temporarily rate-limited upstream. One eligible endpoint was available in the routing summary.
+- Neither response included `Retry-After`; no recovery time was established.
+
+Conclusion for this incident: the shared upstream Google AI Studio capacity used by OpenRouter is rate-limiting this model. Changing from Images to Chat Completions does not resolve it. Evidence does not point to the application's request format, a missing database migration, or exhausted OpenRouter credits as the cause of these 429 responses. Keep the selected model; recovery depends on upstream availability, or a separately configured Google provider key with usable quota. No alternate model, provider key, billing setting, or automatic retry was introduced.

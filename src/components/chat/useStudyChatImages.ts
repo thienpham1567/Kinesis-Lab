@@ -17,7 +17,7 @@ import type { ChatImageSource, StudyChatMessage } from "@/lib/chat/illustration-
 export type ImageEstimate = {
   enabled: boolean;
   model: string;
-  estimateUsd: number;
+  estimateUsd: number | null;
   priceCheckedAt: string;
   livePrice: boolean;
 };

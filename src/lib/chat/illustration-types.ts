@@ -35,10 +35,10 @@ export type ChatImageReceipt = {
   sha256: string;
   elapsedMs: number;
   costUsd: number | null;
-  estimateUsd: number;
+  estimateUsd: number | null;
   priceCheckedAt: string;
-  resolution: "1K" | "2K";
-  aspectRatio: "4:3";
+  resolution: "1K" | "2K" | "auto";
+  aspectRatio: "4:3" | "auto";
   parentId: string | null;
   label: "Hình minh họa AI";
   reviewedBy: null;
