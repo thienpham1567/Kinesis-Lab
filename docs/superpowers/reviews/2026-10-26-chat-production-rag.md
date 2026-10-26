@@ -1,5 +1,7 @@
 # Cập nhật chat production — 2026-10-26
 
+**Cập nhật sau báo cáo:** người dùng đã chọn Gemini 2.5 Flash thay Haiku cho chat. Xem [cấu hình và xác minh mới](2026-10-26-chat-gemini-flash.md). Nội dung dưới đây ghi lần triển khai ban đầu.
+
 Bản chạy: [kinesis-lab.vercel.app](https://kinesis-lab.vercel.app/consult). Deployment cuối [dpl_HreofVjUdr6Bus6p6UtZtYCMTC11](https://vercel.com/thienphamuser-1935s-projects/kinesis-lab/HreofVjUdr6Bus6p6UtZtYCMTC11), Vercel `READY`, source commit `ac2438d`.
 
 ## Mã nguồn và cấu hình
