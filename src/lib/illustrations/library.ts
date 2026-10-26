@@ -3,6 +3,9 @@ import type { GeneratedImage, LibraryImage, MovementTopicId } from "./catalog";
 const EVENT = "kinesis-illustrations-changed";
 const CHANNEL = "kinesis-illustrations";
 let connection: Promise<IDBDatabase> | null = null;
+export function openIllustrationDatabase() {
+  return database();
+}
 function database() {
   if (!connection)
     connection = new Promise<IDBDatabase>((resolve, reject) => {
@@ -14,9 +17,14 @@ function database() {
         );
         return;
       }
-      const request = indexedDB.open("kinesis-illustrations", 1);
-      request.onupgradeneeded = () =>
-        request.result.createObjectStore("images", { keyPath: "receipt.id" });
+      const request = indexedDB.open("kinesis-illustrations", 2);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains("images"))
+          db.createObjectStore("images", { keyPath: "receipt.id" });
+        if (!db.objectStoreNames.contains("chat-images"))
+          db.createObjectStore("chat-images", { keyPath: "id" });
+      };
       request.onerror = () => {
         connection = null;
         reject(new Error("Chưa mở được thư viện ảnh trên trình duyệt."));

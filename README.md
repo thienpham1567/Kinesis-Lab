@@ -1,6 +1,6 @@
 # Kinesis Lab — PT Medical & Exercise Science Agent
 
-Clinical co-pilot cho Personal Trainer: hồ sơ bệnh lý học viên, sàng lọc Red Flags, RAG sách chuyên ngành, PubMed, đọc phiếu xét nghiệm/InBody.
+Clinical co-pilot cho Personal Trainer: hồ sơ bệnh lý học viên, sàng lọc Red Flags, truy xuất bằng chứng theo nguồn, PubMed, đọc phiếu xét nghiệm/InBody.
 
 ## Chạy local
 
@@ -17,16 +17,16 @@ Mở [http://localhost:3000](http://localhost:3000).
 | Key | Việc |
 | --- | --- |
 | `OPENROUTER_API_KEY` | Bắt buộc. Chat, Vision, embedding đều đi qua OpenRouter. |
-| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Hồ sơ học viên, vector sách PDF. |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Hồ sơ học viên, vector tài liệu bằng chứng. |
 | `NCBI_EMAIL` / `NCBI_API_KEY` | Tuỳ chọn, lịch sự với PubMed. |
 | `SITE_URL` | Origin HTTPS thực tế khi tự host; dùng cho canonical và URL ảnh chia sẻ của landing. Vercel tự cung cấp hostname production. |
 
 Model mặc định (đổi được trong `.env.local`):
 
-- Lập luận lâm sàng: `anthropic/claude-sonnet-4`
+- Lập luận lâm sàng: `google/gemini-2.5-flash`
 - Đọc ảnh xét nghiệm/InBody: `google/gemini-2.5-pro`
 - Tra cứu nhanh: `google/gemini-2.5-flash`
-- Embedding: `openai/text-embedding-3-small`
+- Embedding: `google/gemini-embedding-2 (1.536 chiều)`
 
 ## Supabase
 
@@ -38,10 +38,10 @@ Không expose service role ra trình duyệt. Mọi truy vấn đi qua API route
 
 ## Việc nên làm trên app
 
-1. **Thư viện** — nạp PDF ACSM / NSCA / NASM.
+1. **Nguồn chat** — guideline, tổng quan hệ thống và nghiên cứu đã đăng ký; xem nguồn và phạm vi trong từng lượt. Thư viện NCSF là nội dung học tập riêng.
 2. **Học viên** — bệnh nền, thuốc, pain trigger, PAR-Q+.
 3. **Xét nghiệm / InBody** — chụp phiếu, Gemini đọc chỉ số.
-4. **Tư vấn** — hỏi bài tập; agent trích sách + PMID và kiểm tra chống chỉ định.
+4. **Tư vấn** — hỏi bài tập; agent trích đoạn nguồn + PMID và kiểm tra chống chỉ định.
 
 PT không chẩn đoán, không kê thuốc. Red Flags → chuyển bác sĩ.
 
@@ -57,3 +57,17 @@ Cài lại đúng skill và phiên bản:
 npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.7.0 -- \
   agentic-awesome-skills --release 19.7.0 --path .agents/skills --skills frontend-design
 ```
+
+## Kho bằng chứng cho chat
+
+Cấu hình trên Vercel phải dùng cùng model với local. Đổi embedding model cần tạo lại vector; không trộn các không gian embedding dù cùng số chiều. Kho đầu tiên có 3 nguồn CC BY / 197 đoạn (WHO hoạt động thể chất, tổng quan bài tập đau lưng, thử nghiệm lateral raise), chưa bao phủ toàn bộ y học. Registry lưu DOI, giấy phép, hash nội dung, ngày truy cập và phạm vi đọc; `reviewedBy: null`.
+
+```bash
+npm run evidence:prepare # tải XML và chuẩn bị metadata; không ghi database
+npm run evidence:import  # tạo Gemini vectors và ghi collection đã chuẩn bị
+npm run check:chat
+```
+
+Triển khai code và biến môi trường trước khi import. Import từ chối kho cũ chưa được đăng ký; runtime từ chối truy vấn nếu namespace/model không khớp hoặc collection chưa nhập đủ. Giữ `.data/evidence-corpus` để chạy tiếp khi import gián đoạn. Import lặp lại không tính tiền embedding cho chunk đã có. Không đưa service role hoặc API key vào phía trình duyệt.
+
+Chat kết hợp kho đoạn toàn văn, bộ bằng chứng trong app và PubMed theo từ vựng chủ đề cố định. PubMed chỉ cung cấp metadata/abstract; trạng thái nguồn được hiển thị kể cả khi trống hoặc lỗi. Trích đoạn không thay thế đọc bài đầy đủ và không thiết lập giá trị điều trị cá nhân.

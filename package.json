@@ -20,7 +20,10 @@
     "check:atlas-names": "node scripts/check-atlas-names.mjs",
     "rea": "bash scripts/rea.sh",
     "check:ncsf-quiz": "node scripts/check-ncsf-quiz.mjs && node scripts/ncsf-coverage.mjs",
-    "check:training-observation": "node --experimental-transform-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --disable-warning=ExperimentalWarning scripts/check-training-observation.mjs"
+    "check:training-observation": "node --experimental-transform-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --disable-warning=ExperimentalWarning scripts/check-training-observation.mjs",
+    "evidence:prepare": "node scripts/ingest-evidence.mjs --prepare",
+    "evidence:import": "node scripts/ingest-evidence.mjs --apply",
+    "check:chat": "node --test scripts/check-ai-runtime.mjs scripts/check-chat-stream.mjs scripts/check-rag-runtime.mjs scripts/check-evidence-import.mjs scripts/check-chat-route.mjs && node scripts/check-evidence-coverage.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
@@ -43,6 +46,7 @@
     "@types/three": "^0.186.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.1",
+    "fast-xml-parser": "^5.11.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

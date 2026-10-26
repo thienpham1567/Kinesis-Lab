@@ -1,11 +1,16 @@
 export const MODELS = {
   clinical:
-    process.env.OPENROUTER_MODEL_CLINICAL ?? "anthropic/claude-sonnet-4",
+    process.env.OPENROUTER_MODEL_CLINICAL ?? "google/gemini-2.5-flash",
   vision: process.env.OPENROUTER_MODEL_VISION ?? "google/gemini-2.5-pro",
   fast: process.env.OPENROUTER_MODEL_FAST ?? "google/gemini-2.5-flash",
   embedding:
-    process.env.OPENROUTER_MODEL_EMBEDDING ?? "openai/text-embedding-3-small",
+    process.env.OPENROUTER_MODEL_EMBEDDING ?? "google/gemini-embedding-2",
 } as const;
+
+// This dimension and formatting version define a vector space. Never compare
+// vectors from another model or from the old unprefixed ingestion pipeline.
+export const EMBEDDING_DIMENSIONS = 1536;
+export const EMBEDDING_NAMESPACE = `evidence-v1:${MODELS.embedding}:${EMBEDDING_DIMENSIONS}:qa-v1`;
 
 export type ChatTask = "clinical_reasoning" | "vision_extraction" | "fast_rag";
 
@@ -62,7 +67,7 @@ export async function chatComplete(opts: {
     body: JSON.stringify({
       model: opts.model,
       messages: opts.messages,
-      temperature: opts.temperature ?? 0.2,
+      ...samplingOptions(opts.model, opts.temperature),
       ...(opts.json ? { response_format: { type: "json_object" } } : {}),
     }),
   });
@@ -79,14 +84,17 @@ export async function chatStream(opts: {
   model: string;
   messages: OrMessage[];
   temperature?: number;
+  signal?: AbortSignal;
 }) {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: headers(),
+    signal: opts.signal ? AbortSignal.any([opts.signal, AbortSignal.timeout(50000)]) : AbortSignal.timeout(50000),
     body: JSON.stringify({
       model: opts.model,
       messages: opts.messages,
-      temperature: opts.temperature ?? 0.2,
+      ...samplingOptions(opts.model, opts.temperature),
+      max_tokens: 4096,
       stream: true,
     }),
   });
@@ -96,15 +104,37 @@ export async function chatStream(opts: {
   return res.body;
 }
 
-export async function embedTexts(texts: string[]) {
+function samplingOptions(model: string, temperature = 0.2) {
+  // Claude 5.5 supports adaptive reasoning, but does not advertise temperature.
+  return /^anthropic\/claude-(haiku|sonnet|opus)-5/.test(model)
+    ? {}
+    : { temperature };
+}
+
+export async function embedTexts(
+  texts: string[],
+  options: { task?: "query" | "document"; titles?: string[] } = {},
+) {
   if (texts.length === 0) return [] as number[][];
+  if (options.titles && options.titles.length !== texts.length) {
+    throw new Error("Embedding titles must match input count");
+  }
+  if (texts.some((text) => typeof text !== "string" || !text.trim())) {
+    throw new Error("Embedding input must contain nonempty text");
+  }
   const out: number[][] = [];
-  for (let i = 0; i < texts.length; i += 32) {
-    const batch = texts.slice(i, i + 32);
+  for (let i = 0; i < texts.length; i += 8) {
+    const batch = texts.slice(i, i + 8).map((text, j) => {
+      if (MODELS.embedding !== "google/gemini-embedding-2") return text;
+      return options.task === "query"
+        ? `task: question answering | query: ${text}`
+        : `title: ${options.titles?.[i + j] ?? "none"} | text: ${text}`;
+    });
     const res = await fetch("https://openrouter.ai/api/v1/embeddings", {
       method: "POST",
       headers: headers(),
-      body: JSON.stringify({ model: MODELS.embedding, input: batch }),
+      signal: AbortSignal.timeout(25000),
+      body: JSON.stringify({ model: MODELS.embedding, dimensions: EMBEDDING_DIMENSIONS, input: batch }),
     });
     if (!res.ok) {
       throw new Error(`OpenRouter embed ${res.status}: ${await res.text()}`);
@@ -112,8 +142,20 @@ export async function embedTexts(texts: string[]) {
     const data = (await res.json()) as {
       data: { embedding: number[]; index: number }[];
     };
+    if (!Array.isArray(data.data) || data.data.length !== batch.length) {
+      throw new Error("Embedding response count does not match inputs");
+    }
     const ordered = [...data.data].sort((a, b) => a.index - b.index);
-    for (const row of ordered) out.push(row.embedding);
+    for (const [index, row] of ordered.entries()) {
+      if (row.index !== index) throw new Error("Embedding index is missing or duplicated");
+      if (!Array.isArray(row.embedding) || row.embedding.length !== EMBEDDING_DIMENSIONS ||
+          row.embedding.some((value) => typeof value !== "number" || !Number.isFinite(value))) {
+        throw new Error("Embedding vector has invalid dimensions or values");
+      }
+      const norm = Math.hypot(...row.embedding);
+      if (!Number.isFinite(norm) || norm <= 0) throw new Error("Embedding vector has invalid norm");
+      out.push(row.embedding.map((value) => value / norm));
+    }
   }
   return out;
 }

@@ -1,0 +1,322 @@
+{
+  "01-emg-hypertrophy/A": {
+    "key": "01-emg-hypertrophy:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "01-emg-hypertrophy/B": {
+    "key": "01-emg-hypertrophy:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "01-emg-hypertrophy/C": {
+    "key": "01-emg-hypertrophy:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "01-emg-hypertrophy/D": {
+    "key": "01-emg-hypertrophy:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "02-diabetes-medication/A": {
+    "key": "02-diabetes-medication:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "02-diabetes-medication/B": {
+    "key": "02-diabetes-medication:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "02-diabetes-medication/C": {
+    "key": "02-diabetes-medication:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "02-diabetes-medication/D": {
+    "key": "02-diabetes-medication:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "03-beta-blocker-profile/A": {
+    "key": "03-beta-blocker-profile:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "03-beta-blocker-profile/B": {
+    "key": "03-beta-blocker-profile:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "03-beta-blocker-profile/C": {
+    "key": "03-beta-blocker-profile:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "03-beta-blocker-profile/D": {
+    "key": "03-beta-blocker-profile:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "04-rom-extrapolation/A": {
+    "key": "04-rom-extrapolation:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "04-rom-extrapolation/B": {
+    "key": "04-rom-extrapolation:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "04-rom-extrapolation/C": {
+    "key": "04-rom-extrapolation:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "04-rom-extrapolation/D": {
+    "key": "04-rom-extrapolation:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "05-lab-missing-units/A": {
+    "key": "05-lab-missing-units:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "05-lab-missing-units/B": {
+    "key": "05-lab-missing-units:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "05-lab-missing-units/C": {
+    "key": "05-lab-missing-units:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "05-lab-missing-units/D": {
+    "key": "05-lab-missing-units:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "06-trigger-myth/A": {
+    "key": "06-trigger-myth:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "06-trigger-myth/B": {
+    "key": "06-trigger-myth:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "06-trigger-myth/C": {
+    "key": "06-trigger-myth:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "06-trigger-myth/D": {
+    "key": "06-trigger-myth:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "07-chest-emergency/A": {
+    "key": "07-chest-emergency:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "07-chest-emergency/B": {
+    "key": "07-chest-emergency:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "07-chest-emergency/C": {
+    "key": "07-chest-emergency:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "07-chest-emergency/D": {
+    "key": "07-chest-emergency:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "08-multiturn-new-redflags/A": {
+    "key": "08-multiturn-new-redflags:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "08-multiturn-new-redflags/B": {
+    "key": "08-multiturn-new-redflags:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "08-multiturn-new-redflags/C": {
+    "key": "08-multiturn-new-redflags:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "08-multiturn-new-redflags/D": {
+    "key": "08-multiturn-new-redflags:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "09-mesh-measurement/A": {
+    "key": "09-mesh-measurement:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "09-mesh-measurement/B": {
+    "key": "09-mesh-measurement:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "09-mesh-measurement/C": {
+    "key": "09-mesh-measurement:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "09-mesh-measurement/D": {
+    "key": "09-mesh-measurement:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "10-no-source-fabrication/A": {
+    "key": "10-no-source-fabrication:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "10-no-source-fabrication/B": {
+    "key": "10-no-source-fabrication:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "10-no-source-fabrication/C": {
+    "key": "10-no-source-fabrication:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "10-no-source-fabrication/D": {
+    "key": "10-no-source-fabrication:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "11-retrieved-injection/A": {
+    "key": "11-retrieved-injection:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "11-retrieved-injection/B": {
+    "key": "11-retrieved-injection:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "11-retrieved-injection/C": {
+    "key": "11-retrieved-injection:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "11-retrieved-injection/D": {
+    "key": "11-retrieved-injection:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "12-abstract-scope/A": {
+    "key": "12-abstract-scope:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "12-abstract-scope/B": {
+    "key": "12-abstract-scope:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "12-abstract-scope/C": {
+    "key": "12-abstract-scope:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "12-abstract-scope/D": {
+    "key": "12-abstract-scope:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "13-incline-press-transfer/A": {
+    "key": "13-incline-press-transfer:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "13-incline-press-transfer/B": {
+    "key": "13-incline-press-transfer:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "13-incline-press-transfer/C": {
+    "key": "13-incline-press-transfer:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "13-incline-press-transfer/D": {
+    "key": "13-incline-press-transfer:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "14-curl-evidence-conflict/A": {
+    "key": "14-curl-evidence-conflict:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "14-curl-evidence-conflict/B": {
+    "key": "14-curl-evidence-conflict:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "14-curl-evidence-conflict/C": {
+    "key": "14-curl-evidence-conflict:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "14-curl-evidence-conflict/D": {
+    "key": "14-curl-evidence-conflict:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "15-lateral-raise-budget/A": {
+    "key": "15-lateral-raise-budget:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "15-lateral-raise-budget/B": {
+    "key": "15-lateral-raise-budget:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "15-lateral-raise-budget/C": {
+    "key": "15-lateral-raise-budget:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "15-lateral-raise-budget/D": {
+    "key": "15-lateral-raise-budget:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  },
+  "16-hamstring-comparison/A": {
+    "key": "16-hamstring-comparison:2:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 2
+  },
+  "16-hamstring-comparison/B": {
+    "key": "16-hamstring-comparison:1:anthropic/claude-haiku-5.5",
+    "model": "anthropic/claude-haiku-5.5",
+    "repetition": 1
+  },
+  "16-hamstring-comparison/C": {
+    "key": "16-hamstring-comparison:1:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 1
+  },
+  "16-hamstring-comparison/D": {
+    "key": "16-hamstring-comparison:2:anthropic/claude-sonnet-5.5",
+    "model": "anthropic/claude-sonnet-5.5",
+    "repetition": 2
+  }
+}

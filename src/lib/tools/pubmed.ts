@@ -35,6 +35,7 @@ export async function searchPubMed(userText: string, retmax = 5): Promise<PubMed
 
   const search = await fetch(
     `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?${params}`,
+    { signal: AbortSignal.timeout(10000) },
   );
   if (!search.ok) throw new Error(`PubMed search ${search.status}`);
   const found = (await search.json()) as { esearchresult?: { idlist?: string[] } };
@@ -52,6 +53,7 @@ export async function searchPubMed(userText: string, retmax = 5): Promise<PubMed
 
   const summary = await fetch(
     `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?${sumParams}`,
+    { signal: AbortSignal.timeout(10000) },
   );
   if (!summary.ok) throw new Error(`PubMed summary ${summary.status}`);
   const data = (await summary.json()) as {
@@ -94,6 +96,7 @@ async function fetchAbstracts(ids: string[]) {
   if (process.env.NCBI_API_KEY) params.set("api_key", process.env.NCBI_API_KEY);
   const res = await fetch(
     `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?${params}`,
+    { signal: AbortSignal.timeout(10000) },
   );
   if (!res.ok) return {} as Record<string, string>;
   const xml = await res.text();
@@ -122,8 +125,8 @@ export function formatPubMed(papers: PubMedPaper[]) {
   if (!papers.length) return "";
   return papers
     .map(
-      (p, i) =>
-        `${i + 1}. ${p.title} (${p.year}) PMID ${p.pmid}\n${p.journal}\n${p.abstract || "(no abstract)"}`,
+      (p) =>
+        `[PMID:${p.pmid}] ${p.title} (${p.year})\n${p.url}\n${p.journal}\nPhạm vi: metadata và abstract nếu có; chưa cung cấp toàn văn.\n${p.abstract || "(không có abstract)"}`,
     )
     .join("\n\n");
 }
