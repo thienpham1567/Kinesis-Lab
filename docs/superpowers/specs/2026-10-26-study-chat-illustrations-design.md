@@ -80,4 +80,3 @@ Lựa chọn model đề xuất: thử Seedream 5.0 Flash đang tích hợp trư
 - Reload khôi phục được ảnh/history; lỗi storage và ảnh hết hạn có trạng thái thật.
 - Chat thường, Markdown chặn ảnh ngoài, gallery và nguồn/citation cũ không bị hồi quy.
 - Triển khai production sau khi code/test/QA đạt và có quyền chạy migration/bucket. Service role app hiện có không đồng nghĩa quyền chạy DDL; xác minh đường áp migration Supabase trước khi bắt đầu phần server.
-
