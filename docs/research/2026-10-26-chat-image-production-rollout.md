@@ -1,5 +1,7 @@
 # Chat image production rollout — 2026-10-26
 
+Historical Nano Banana rollout. The user subsequently switched to Sunburst with automatic settings; see [the current rollout](2026-10-26-sunburst-production-rollout.md).
+
 Status: promoted to the primary domain. Application/database/storage checks passed; the image provider is currently rate-limiting generation (HTTP 429).
 
 - Source: commit `0ffdd3b`, branch `feature/study-chat-illustrations`, pushed to origin.

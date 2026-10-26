@@ -2,6 +2,8 @@
 
 User-selected target: `openai/gpt-image-2.5-sunburst`, through OpenRouter's dedicated Images API, pinned to provider `openai`. The subsequent user instruction replaces the former 1K default with automatic sizing.
 
+Status: deployed and promoted to https://kinesis-lab.vercel.app. Source commit `ef3c87a`, pushed to `origin/feature/study-chat-illustrations`. Vercel deployment `dpl_6no2sRhvfWvivKJt3nD7drCQCWtw` is READY.
+
 ## Request contract
 
 - `n: 1`, `quality: auto`, `aspect_ratio: auto`. Omit fixed `resolution` and `size`; the provider chooses dimensions. Preserve the exact user-selected model.
@@ -24,4 +26,9 @@ User-selected target: `openai/gpt-image-2.5-sunburst`, through OpenRouter's dedi
 - Production build (including TypeScript) and lint passed.
 - A regression assertion first failed with the prior 110-second image budget, then passed after the Sunburst timing adjustment. Request tests verify auto parameters, no fixed size, owner-checked edit references, no duplicate billing, and nullable per-image estimates.
 - React Doctor reported 15 warnings across the existing image/chat implementation and earlier test scripts. This model migration does not claim to resolve the previously documented recovery/viewer issues; no rules were suppressed.
-- Deployment smoke check is pending. No clinical validation is claimed by this migration.
+- The deployed app's real create and reference-edit requests both returned HTTP 200 and `succeeded`, using the requested Sunburst model and automatic settings. No HTTP 429 occurred in these two requests.
+- Create: 24.263 seconds, PNG 1774 × 887, 1,371,102 bytes, provider-reported cost $0.01513. Edit: 28.741 seconds, PNG 1774 × 887, 1,419,647 bytes, provider-reported cost $0.020754. These are observed sample costs, not fixed estimates for future requests.
+- Both stored assets downloaded successfully with SHA-256 matching the receipt. Replaying each POST and polling preserved the original receipt rather than creating another image.
+- Visual inspection found the Vietnamese title and three intended captions legible. The requested green accent appeared in the edit, but the model also redrew some icons/layout details; the smoke test does not establish exact edit fidelity.
+- After promotion, the primary-domain image GET returned HTTP 200 with Sunburst, `resolution: auto`, `aspectRatio: auto`, `quality: auto` and `estimateUsd: null`. The successful create receipt was also replayed through the primary domain.
+- No clinical validation is claimed by this migration. Samples contain generic learning graphics, not anatomical claims or personal information.
