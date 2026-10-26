@@ -120,7 +120,7 @@ const adapters = {
     chatStream: async ({ messages }) => {
       calls.system = messages[0].content;
       return new ReadableStream({ start(controller) {
-        controller.enqueue(new TextEncoder().encode('data: {"choices":[{"delta":{"content":"Test response"}}]}\n\ndata: [DONE]\n'));
+        controller.enqueue(new TextEncoder().encode('data: {"choices":[{"delta":{"content":"Test response"},"finish_reason":"stop"}]}\n\ndata: [DONE]\n'));
         controller.close();
       } });
     },
@@ -129,7 +129,8 @@ const adapters = {
   "@/lib/local-store": { readLocalStore: () => { throw new Error("unexpected local branch"); } },
   "@/lib/supabase/server": { hasSupabase: () => true, supabase: () => db },
   "@/lib/tools/pubmed": { formatPubMed: () => "", searchPubMed: async (query) => { calls.publicQueries.push(query); return []; } },
-  "@/lib/tools/rag-search": { formatRag: () => "", searchRag: async () => [] },
+  "@/lib/tools/rag-search": { formatRag: () => "", retrieveKnowledge: async () => ({ hits: [], retrieval: { status: "empty", message: "test empty" } }) },
+  "@/lib/ai/stream-events": (await import("./lib/load-app-module.mjs")).createAppLoader()("src/lib/ai/stream-events.ts"),
 };
 const routeExports = {};
 vm.runInNewContext(ts.transpileModule(route, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, {

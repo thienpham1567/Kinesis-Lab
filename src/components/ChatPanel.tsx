@@ -2,6 +2,8 @@
 
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
 import { ASSISTANT_EVIDENCE } from "@/lib/clinical/evidence-assessment";
+import type { EvidenceIndexEntry } from "@/lib/clinical/evidence-registry";
+import { readNdjson } from "@/lib/ai/stream-events";
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
@@ -12,7 +14,7 @@ import {
   type AnatomyRegionId,
 } from "@/lib/clinical/anatomy-atlas";
 import { safetyNotes } from "@/lib/clinical/safety";
-import type { ChatMessage, Client, PubMedPaper, RagHit } from "@/lib/types";
+import type { ChatMessage, ChatSourceStatus, Client, PubMedPaper, RagHit } from "@/lib/types";
 import { JointDiagramSvg } from "./JointDiagramSvg";
 import { Icon } from "./WorkspaceUI";
 import { IllustrationWorkspace } from "./illustrations/IllustrationWorkspace";
@@ -48,6 +50,9 @@ export function ChatPanel({
   const [busy, setBusy] = useState(false);
   const [rag, setRag] = useState<RagHit[]>([]);
   const [pubmed, setPubmed] = useState<PubMedPaper[]>([]);
+  const [curated, setCurated] = useState<EvidenceIndexEntry[]>([]);
+  const [sourceStatus, setSourceStatus] = useState<ChatSourceStatus | null>(null);
+  const [notice, setNotice] = useState("");
   const [model, setModel] = useState("");
   const [error, setError] = useState("");
   const [visualRegionId, setVisualRegionId] = useState<AnatomyRegionId | null>(
@@ -59,6 +64,10 @@ export function ChatPanel({
   const [clientsLoading, setClientsLoading] = useState(true);
   const [clientsError, setClientsError] = useState(false);
   const [imageWorkspaceOpen, setImageWorkspaceOpen] = useState(false);
+  const requestRef = useRef<AbortController | null>(null);
+  const inFlight = useRef(false);
+
+  useEffect(() => () => { requestRef.current?.abort(); }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -100,9 +109,24 @@ export function ChatPanel({
     ? (ANATOMY_REGIONS.find((r) => r.id === effectiveRegionId) ?? null)
     : null;
 
+  function resetConversation() {
+    setMessages([]);
+    setInput("");
+    setRag([]);
+    setPubmed([]);
+    setCurated([]);
+    setSourceStatus(null);
+    setNotice("");
+    setModel("");
+    setError("");
+    setVisualRegionId(null);
+    composer.current?.focus();
+  }
+
   async function sendText(rawText: string) {
     const text = rawText.trim();
-    if (!text || busy) return;
+    if (!text || inFlight.current) return;
+    inFlight.current = true;
     const failedTurn = messages
       .map((message) => message.role)
       .lastIndexOf("user");
@@ -118,57 +142,65 @@ export function ChatPanel({
     setError("");
     setRag([]);
     setPubmed([]);
+    setCurated([]);
+    setSourceStatus(null);
+    setNotice("");
     setModel("");
+    const controller = new AbortController();
+    requestRef.current = controller;
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
-          messages: next,
+          messages: next.slice(-11),
           clientId: (lockedClientId ?? selectedId) || undefined,
         }),
       });
       if (!res.ok || !res.body) {
         const errJson = await res.json().catch(() => null);
-        throw new Error(errJson?.error ?? (await res.text()) ?? "Lỗi kết nối");
+        throw new Error(errJson?.error ?? "Chưa kết nối được phiên tư vấn. Vui lòng thử lại.");
       }
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
       let assistant = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += decoder.decode(value, { stream: true });
-        const lines = buf.split("\n");
-        buf = lines.pop() ?? "";
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          const evt = JSON.parse(line) as {
+      let complete = false;
+      let streamError = false;
+      for await (const evt of readNdjson<{
             type: string;
             text?: string;
             model?: string;
             rag?: RagHit[];
             pubmed?: PubMedPaper[];
+            curated?: EvidenceIndexEntry[];
+            sourceStatus?: ChatSourceStatus;
             error?: string;
-          };
+          }>(res.body)) {
           if (evt.type === "meta") {
             setRag(evt.rag ?? []);
             setPubmed(evt.pubmed ?? []);
             setModel(evt.model ?? "");
+            setCurated(evt.curated ?? []);
+            setSourceStatus(evt.sourceStatus ?? null);
           } else if (evt.type === "token") {
             assistant += evt.text ?? "";
             setMessages([...next, { role: "assistant", content: assistant }]);
           } else if (evt.type === "error") {
+            streamError = true;
             setError(evt.error ?? "Lỗi xử lý");
+          } else if (evt.type === "warning") {
+            setNotice(evt.text ?? "");
+          } else if (evt.type === "done") {
+            complete = true;
           }
-        }
         scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
       }
+      if (!complete && !streamError) throw new Error("Kết nối bị gián đoạn; câu trả lời có thể chưa đầy đủ. Vui lòng thử lại.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Không gửi được câu hỏi");
+      if (!controller.signal.aborted) setError(err instanceof Error ? err.message : "Không gửi được câu hỏi");
     } finally {
+      inFlight.current = false;
+      requestRef.current = null;
       setBusy(false);
     }
   }
@@ -205,14 +237,7 @@ export function ChatPanel({
             <button
               type="button"
               disabled={busy}
-              onClick={() => {
-                setMessages([]);
-                setRag([]);
-                setPubmed([]);
-                setModel("");
-                setError("");
-                composer.current?.focus();
-              }}
+              onClick={resetConversation}
               className="inline-flex min-h-10 items-center gap-1.5 text-xs font-medium text-slate hover:text-cobalt disabled:opacity-50"
             >
               <Icon name="refresh" className="size-3.5" />
@@ -233,7 +258,7 @@ export function ChatPanel({
                 disabled={clientsLoading || busy}
                 onChange={(e) => {
                   setSelectedId(e.target.value);
-                  setVisualRegionId(null);
+                  resetConversation();
                 }}
                 className="min-h-10 w-full min-w-0 flex-1 px-2.5 py-2 text-xs font-medium text-ink"
               >
@@ -405,6 +430,9 @@ export function ChatPanel({
                 setMessages(messages.slice(0, lastIndex));
                 setRag([]);
                 setPubmed([]);
+                setCurated([]);
+                setSourceStatus(null);
+                setNotice("");
                 setModel("");
                 setError("");
                 composer.current?.focus();
@@ -417,10 +445,18 @@ export function ChatPanel({
         </div>
       )}
 
-      {(rag.length > 0 || pubmed.length > 0) && (
+      {notice && <p role="status" className="mx-5 my-2 text-xs leading-5 text-caution sm:mx-6">{notice}</p>}
+      {sourceStatus && (
+        <div className="mx-5 my-3 rounded-lg border border-rule bg-canvas px-3 py-2 text-xs leading-5 text-slate sm:mx-6">
+          <p className="font-medium text-ink">Phạm vi nguồn trong lượt trả lời này</p>
+          <p>{sourceStatus.rag.message}</p>
+          <p>{sourceStatus.pubmed.message}</p>
+        </div>
+      )}
+      {(rag.length > 0 || pubmed.length > 0 || curated.length > 0) && (
         <details className="mx-5 my-3 rounded-xl border border-rule bg-canvas px-4 text-xs sm:mx-6">
           <summary className="py-3 font-semibold text-ink">
-            Nguồn tham chiếu · {rag.length + pubmed.length} tài liệu
+            Nguồn tham chiếu · {rag.length + pubmed.length + curated.length} mục
           </summary>
           <div className="grid max-h-60 gap-2 overflow-y-auto pb-4 sm:grid-cols-2">
             {rag.map((h) => (
@@ -428,13 +464,23 @@ export function ChatPanel({
                 key={h.id}
                 className="rounded-lg border border-rule bg-sheet p-3"
               >
+                <p className="mb-1 break-all font-mono text-[10px] text-slate">RAG:{h.id}</p>
                 <p className="font-medium text-ink">
-                  {h.title}
+                  {h.url ? <a href={h.url} target="_blank" rel="noreferrer" className="text-cobalt underline underline-offset-2">{h.title} ↗</a> : h.title}
                   {h.page != null ? ` · Trang ${h.page}` : ""}
                 </p>
+                <p className="mt-1 text-[11px] leading-5 text-slate">{h.chapter} · {h.year} · {h.licenseUrl ? <a href={h.licenseUrl} target="_blank" rel="noreferrer" className="underline">{h.license}</a> : h.license}</p>
+                {h.authors?.length ? <p className="mt-1 text-[10px] leading-4 text-slate">{h.authors.length > 3 ? `${h.authors.slice(0, 3).join(", ")} et al.` : h.authors.join(", ")}</p> : null}
                 <p className="mt-1 line-clamp-2 leading-5 text-slate">
                   {h.content}
                 </p>
+                {h.checkedAt && <p className="mt-1 text-[10px] text-slate">Nguồn kiểm tra {h.checkedAt} · Đoạn toàn văn, chưa xác nhận từng câu trả lời AI.</p>}
+              </div>
+            ))}
+            {curated.map(item => (
+              <div key={item.id} className="min-w-0 rounded-lg border border-rule bg-sheet p-3">
+                <p className="mb-2 break-all font-mono text-[10px] text-slate">APP:{item.id}</p>
+                <ClinicalEvidencePanel evidence={item.evidence} title={item.label} />
               </div>
             ))}
             {pubmed.map((p) => (

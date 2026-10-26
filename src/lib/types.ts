@@ -65,6 +65,28 @@ export type RagHit = {
   page: number | null;
   content: string;
   score: number;
+  url?: string;
+  doi?: string;
+  year?: string;
+  license?: string;
+  licenseUrl?: string;
+  authors?: string[];
+  checkedAt?: string;
+  access?: string;
+  sourceKind?: string;
+};
+
+export type RetrievalState = {
+  status: "ready" | "empty" | "no_matches" | "indexing" | "unavailable" | "incompatible" | "error" | "skipped";
+  message: string;
+  model?: string;
+  dimensions?: number;
+  documents?: number;
+};
+
+export type ChatSourceStatus = {
+  rag: RetrievalState;
+  pubmed: { status: string; message: string };
 };
 
 export type PubMedPaper = {

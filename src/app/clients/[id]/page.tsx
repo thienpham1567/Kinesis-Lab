@@ -313,7 +313,7 @@ function ClientDetailPageInner() {
       )}
       {tab === "chat" && (
         <ChatPanel
-          key={chatPrompt}
+          key={`${client.id}:${chatPrompt}`}
           clientId={client.id}
           initialPrompt={chatPrompt}
           placeholder={`Hỏi bài tập, kiểm tra chống chỉ định hoặc lên giáo án Rehab cho ${client.name}...`}

@@ -9,13 +9,13 @@ import { selectCuratedEvidence, formatCuratedEvidence, normalizeEvidenceQuery } 
 import { readLocalStore } from "@/lib/local-store";
 import { hasSupabase, supabase } from "@/lib/supabase/server";
 import { formatPubMed, searchPubMed } from "@/lib/tools/pubmed";
-import { formatRag, searchRag } from "@/lib/tools/rag-search";
+import { formatRag, retrieveKnowledge } from "@/lib/tools/rag-search";
+import { readSseData } from "@/lib/ai/stream-events";
 import type {
   BiomarkerRecord,
   ChatMessage,
   Client,
   PubMedPaper,
-  RagHit,
 } from "@/lib/types";
 
 export const maxDuration = 90;
@@ -48,11 +48,24 @@ export async function POST(req: Request) {
   if (!process.env.OPENROUTER_API_KEY) {
     return Response.json({ error: "Chưa cấu hình OPENROUTER_API_KEY" }, { status: 503 });
   }
-  const body = (await req.json()) as {
-    messages: ChatMessage[];
-    clientId?: string;
-  };
-  const messages = body.messages ?? [];
+  let body: { messages: ChatMessage[]; clientId?: string };
+  try {
+    const input = await req.json();
+    if (!input || typeof input !== "object" || !Array.isArray(input.messages) ||
+        input.messages.length < 1 || input.messages.length > 48 || JSON.stringify(input).length > 240000 ||
+        input.messages.some((m: unknown) => !m || typeof m !== "object" ||
+          !["user", "assistant"].includes((m as ChatMessage).role) ||
+          typeof (m as ChatMessage).content !== "string" || (m as ChatMessage).content.length > 20000) ||
+        (input.clientId != null && (typeof input.clientId !== "string" || input.clientId.length > 100)) ||
+        input.messages.at(-1)?.role !== "user") {
+      return Response.json({ error: "Nội dung hội thoại không hợp lệ hoặc quá dài." }, { status: 400 });
+    }
+    body = { messages: input.messages.map((m: ChatMessage) => ({ role: m.role, content: m.content })),
+      clientId: input.clientId || undefined };
+  } catch {
+    return Response.json({ error: "Không đọc được nội dung câu hỏi." }, { status: 400 });
+  }
+  const messages = body.messages;
   const last = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
   if (!last.trim()) return Response.json({ error: "Thiếu câu hỏi" }, { status: 400 });
 
@@ -85,17 +98,27 @@ export async function POST(req: Request) {
     }
   }
 
-  const curated = selectCuratedEvidence(last);
+  // Preserve a short topic history for follow-ups; public search still receives
+  // fixed vocabulary derived from the current question only, never that history.
+  const prior = messages.filter(m => m.role === "user").slice(-3, -1).map(m => m.content.slice(-800));
+  const retrievalQuery = [...prior, last.slice(-4000)].join("\n");
+  const curated = selectCuratedEvidence(retrievalQuery);
   const publicQuery = publicLiteratureQuery(last);
   const publicSearch = { query: publicQuery || null, scope: "fixed-topic-vocabulary", skipped: !publicQuery };
-  const [rag, pubmed] = await Promise.all([
-    hasSupabase()
-      ? searchRag(last).catch(() => [] as RagHit[])
-      : Promise.resolve([] as RagHit[]),
+  const [knowledge, literature] = await Promise.all([
+    retrieveKnowledge(retrievalQuery),
     publicQuery
-      ? searchPubMed(publicQuery, 5).catch(() => [] as PubMedPaper[])
-      : Promise.resolve([] as PubMedPaper[]),
+      ? searchPubMed(publicQuery, 5).then(papers => ({ papers, status: papers.length ? "ready" : "no_matches" }))
+        .catch(() => ({ papers: [] as PubMedPaper[], status: "error" }))
+      : Promise.resolve({ papers: [] as PubMedPaper[], status: "skipped" }),
   ]);
+  const { hits: rag, retrieval } = knowledge;
+  const pubmed = literature.papers;
+  const sourceStatus = { rag: retrieval, pubmed: { status: literature.status,
+    message: literature.status === "error" ? "Chưa tra cứu được PubMed trong lượt này." :
+      literature.status === "no_matches" ? "PubMed chưa trả về bài phù hợp với chủ đề tra cứu." :
+      literature.status === "skipped" ? "Chủ đề này chưa có truy vấn PubMed cố định; chưa tìm nguồn công khai." :
+      "Kết quả PubMed gồm thông tin bài và abstract nếu có, không đồng nghĩa đã đọc toàn văn." } };
 
   const system = [
     CLINICAL_PT_SYSTEM,
@@ -109,6 +132,7 @@ export async function POST(req: Request) {
       : "",
     formatCuratedEvidence(curated),
     evidenceBlock(formatRag(rag), formatPubMed(pubmed)),
+    `TRẠNG THÁI NGUỒN CỦA LƯỢT NÀY\nKho toàn văn: ${retrieval.status}. ${retrieval.message}\nPubMed: ${sourceStatus.pubmed.status}. ${sourceStatus.pubmed.message}`,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -121,63 +145,59 @@ export async function POST(req: Request) {
 
   let upstream: ReadableStream<Uint8Array>;
   try {
-    upstream = await chatStream({ model, messages: orMessages });
+    upstream = await chatStream({ model, messages: orMessages, signal: req.signal });
   } catch (err) {
     return Response.json(
-      { error: err instanceof Error ? err.message : "OpenRouter lỗi" },
+      { error: err instanceof Error && err.name === "TimeoutError" ? "Model chưa phản hồi kịp. Vui lòng thử lại." : "Chưa kết nối được model trả lời. Vui lòng thử lại." },
       { status: 502 },
     );
   }
   const encoder = new TextEncoder();
   let assistant = "";
+  let cancelled = false;
 
   const stream = new ReadableStream({
     async start(controller) {
       controller.enqueue(
-        encoder.encode(JSON.stringify({ type: "meta", model, rag, pubmed, curated, publicSearch }) + "\n"),
+        encoder.encode(JSON.stringify({ type: "meta", model, rag, pubmed, curated, publicSearch, sourceStatus }) + "\n"),
       );
-      const reader = upstream.getReader();
-      const decoder = new TextDecoder();
-      let buf = "";
       try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buf += decoder.decode(value, { stream: true });
-          const lines = buf.split("\n");
-          buf = lines.pop() ?? "";
-          for (const line of lines) {
-            const payload = line.trim();
-            if (!payload.startsWith("data:")) continue;
-            const data = payload.slice(5).trim();
-            if (data === "[DONE]") continue;
-            try {
-              const json = JSON.parse(data) as {
-                choices?: { delta?: { content?: string } }[];
-              };
-              const text = json.choices?.[0]?.delta?.content ?? "";
-              if (!text) continue;
-              assistant += text;
-              controller.enqueue(encoder.encode(JSON.stringify({ type: "token", text }) + "\n"));
-            } catch {
-              // incomplete json at boundary
-            }
+        let complete = false;
+        for await (const data of readSseData(upstream)) {
+          if (cancelled) return;
+          if (data === "[DONE]") break;
+          let json: {
+            error?: unknown;
+            choices?: { delta?: { content?: string }; finish_reason?: string | null }[];
+          };
+          try { json = JSON.parse(data); } catch { throw new Error("Phản hồi model không hợp lệ. Vui lòng thử lại."); }
+          if (json.error) throw new Error("Model bị gián đoạn; câu trả lời có thể chưa hoàn tất.");
+          for (const choice of json.choices ?? []) {
+            if (choice.finish_reason === "length") throw new Error("Câu trả lời chạm giới hạn độ dài. Hãy chia câu hỏi thành phần nhỏ hơn.");
+            if (choice.finish_reason && choice.finish_reason !== "stop") throw new Error("Model chưa hoàn tất câu trả lời. Vui lòng thử lại hoặc diễn đạt câu hỏi khác.");
+            if (choice.finish_reason === "stop") complete = true;
+            const text = choice.delta?.content ?? "";
+            if (!text) continue;
+            assistant += text;
+            controller.enqueue(encoder.encode(JSON.stringify({ type: "token", text }) + "\n"));
           }
         }
+        if (!complete || !assistant.trim()) throw new Error("Kết nối kết thúc trước khi nhận đủ câu trả lời. Vui lòng thử lại.");
         if (body.clientId && hasSupabase() && assistant) {
-          await supabase().from("consultations").insert([
+          const { error: saveError } = await supabase().from("consultations").insert([
             { client_id: body.clientId, role: "user", content: last, citations: [] },
             {
               client_id: body.clientId,
               role: "assistant",
               content: assistant,
-              citations: { rag, pubmed, model, curated, publicSearch },
+              citations: { rag, pubmed, model, curated, publicSearch, sourceStatus },
             },
           ]);
+          if (saveError) controller.enqueue(encoder.encode(JSON.stringify({ type: "warning", text: "Câu trả lời đã hiển thị nhưng chưa lưu được vào hồ sơ." }) + "\n"));
         }
         controller.enqueue(encoder.encode(JSON.stringify({ type: "done" }) + "\n"));
       } catch (err) {
-        controller.enqueue(
+        if (!cancelled) controller.enqueue(
           encoder.encode(
             JSON.stringify({
               type: "error",
@@ -186,12 +206,13 @@ export async function POST(req: Request) {
           ),
         );
       } finally {
-        controller.close();
+        if (!cancelled) controller.close();
       }
     },
+    cancel() { cancelled = true; },
   });
 
   return new Response(stream, {
-    headers: { "Content-Type": "application/x-ndjson; charset=utf-8" },
+    headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" },
   });
 }
