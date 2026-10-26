@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
 import { TriggerSourceAnatomy } from "./TriggerSourceAnatomy";
 import { TriggerPainLocator } from "./TriggerPainLocator";
+import { ContextualAnatomyViewer } from "./atlas3d/ContextualAnatomyViewer";
+import { triggerPainRegion } from "@/lib/clinical/contextual-anatomy";
 import { TRIGGER_POINT_EVIDENCE, TRIGGER_GENERAL_EVIDENCE } from "@/lib/clinical/evidence-trigger";
 import { useState, type ReactNode } from "react";
 import {
@@ -157,9 +159,29 @@ export function TriggerPointExplorer({
         <div className="grid min-w-0 grid-cols-1 gap-4 lg:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
           <div className="min-w-0 rounded-lg border border-rule bg-sheet p-3.5 shadow-xs lg:sticky lg:top-[5.5rem] lg:self-start lg:max-h-[calc(100dvh-6.5rem)] lg:overflow-y-auto">
             {lookupMode === "muscle_to_pain" ? (
-              <TriggerSourceAnatomy muscle={activeMuscle}/>
+              <div className="space-y-3">
+                <ContextualAnatomyViewer
+                  context={{ kind: "trigger", id: activeMuscle.id }}
+                  title={activeMuscle.shortName}
+                  onNavigate={(id) => {
+                    const target = TRIGGER_POINT_MUSCLES.find((m) => m.id === id);
+                    if (target) selectMuscle(target.id);
+                  }}
+                />
+                <details className="rounded-lg border border-rule p-3 text-xs">
+                  <summary className="cursor-pointer font-semibold text-ink">Đối chiếu hình giải phẫu có nguồn</summary>
+                  <div className="mt-3"><TriggerSourceAnatomy muscle={activeMuscle} /></div>
+                </details>
+              </div>
             ) : (
-              <TriggerPainLocator selectedId={selectedPainSiteId} side={bodySide} onSide={setBodySide} onSelect={selectPainSite}/>
+              <div className="space-y-3">
+                <TriggerPainLocator selectedId={selectedPainSiteId} side={bodySide} onSide={setBodySide} onSelect={selectPainSite}/>
+                <ContextualAnatomyViewer
+                  context={{ kind: "region", id: triggerPainRegion(selectedPainSiteId) ?? "" }}
+                  title={`Giải phẫu vùng · ${getPainSite(selectedPainSiteId).shortName}`}
+                />
+                <p className="text-xs leading-5 text-slate">Mô hình chỉ giúp định hướng vùng đang tra cứu. Chọn cấu trúc không xác định nguồn đau hoặc chẩn đoán.</p>
+              </div>
             )}
           </div>
 

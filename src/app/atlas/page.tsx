@@ -185,6 +185,7 @@ function AtlasPageInner() {
         />
       ) : (
         <BodyMapExplorer
+          showAnatomy3D
           mode="full"
           clients={clients}
           client={activeClient}

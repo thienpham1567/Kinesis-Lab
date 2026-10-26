@@ -3,6 +3,7 @@ import {
   CLINICAL_PT_SYSTEM,
   clientContextBlock,
   evidenceBlock,
+  studyContextBlock,
 } from "@/lib/ai/prompts/clinical-pt-system";
 import { formatClient, safetyNotes } from "@/lib/clinical/safety";
 import { selectCuratedEvidence, formatCuratedEvidence, normalizeEvidenceQuery } from "@/lib/clinical/evidence-registry";
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
   if (!process.env.OPENROUTER_API_KEY) {
     return Response.json({ error: "Chưa cấu hình OPENROUTER_API_KEY" }, { status: 503 });
   }
-  let body: { messages: ChatMessage[]; clientId?: string };
+  let body: { messages: ChatMessage[]; clientId?: string; studyPage?: string };
   try {
     const input = await req.json();
     if (!input || typeof input !== "object" || !Array.isArray(input.messages) ||
@@ -56,12 +57,13 @@ export async function POST(req: Request) {
         input.messages.some((m: unknown) => !m || typeof m !== "object" ||
           !["user", "assistant"].includes((m as ChatMessage).role) ||
           typeof (m as ChatMessage).content !== "string" || (m as ChatMessage).content.length > 20000) ||
+        (input.studyPage != null && (typeof input.studyPage !== "string" || input.studyPage.length > 500)) ||
         (input.clientId != null && (typeof input.clientId !== "string" || input.clientId.length > 100)) ||
         input.messages.at(-1)?.role !== "user") {
       return Response.json({ error: "Nội dung hội thoại không hợp lệ hoặc quá dài." }, { status: 400 });
     }
     body = { messages: input.messages.map((m: ChatMessage) => ({ role: m.role, content: m.content })),
-      clientId: input.clientId || undefined };
+      clientId: input.clientId || undefined, studyPage: input.studyPage || undefined };
   } catch {
     return Response.json({ error: "Không đọc được nội dung câu hỏi." }, { status: 400 });
   }
@@ -130,6 +132,7 @@ export async function POST(req: Request) {
           safetyNotes(client),
         )
       : "",
+    typeof body.studyPage === "string" ? studyContextBlock(body.studyPage) : "",
     formatCuratedEvidence(curated),
     evidenceBlock(formatRag(rag), formatPubMed(pubmed)),
     `TRẠNG THÁI NGUỒN CỦA LƯỢT NÀY\nKho toàn văn: ${retrieval.status}. ${retrieval.message}\nPubMed: ${sourceStatus.pubmed.status}. ${sourceStatus.pubmed.message}`,

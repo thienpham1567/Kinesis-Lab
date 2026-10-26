@@ -20,6 +20,7 @@ import { ClinicalEvidencePanel } from "../ClinicalEvidencePanel";
 import { EmptyState, Icon } from "../WorkspaceUI";
 import { MuscleStudyCard } from "./MuscleStudyCard";
 import { TrainingAnatomyViewer } from "./TrainingAnatomyViewer";
+import { ContextualAnatomyViewer } from "../atlas3d/ContextualAnatomyViewer";
 import { CurlExercisePreview } from "./curl/CurlExercisePreview";
 import type { Client } from "@/lib/types";
 const ROLE_STYLE = {
@@ -409,6 +410,14 @@ export function TrainingAtlasExplorer({
             </>
           ) : (
             <>
+              <ContextualAnatomyViewer
+                context={{ kind: "training", id: muscle.id }}
+                title={muscle.name}
+                onNavigate={(id) => {
+                  const target = MUSCLE_GROUP_ATLAS.find((m) => m.id === id);
+                  if (target) goMuscle(target.id);
+                }}
+              />
               <MuscleStudyCard muscle={muscle} />
               <section
                 className="panel space-y-4 p-4 sm:p-5"

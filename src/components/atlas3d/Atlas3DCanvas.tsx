@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/WorkspaceUI";
 import type { AtlasStage } from "./atlas-stage";
 import type { AtlasCanvasProps } from "./types";
+import { withLoadDeadline } from "./load-deadline";
 
 export default function Atlas3DCanvas(props: AtlasCanvasProps) {
   const host = useRef<HTMLDivElement>(null);
@@ -31,25 +32,35 @@ export default function Atlas3DCanvas(props: AtlasCanvasProps) {
   useEffect(() => {
     let active = true;
     let instance: AtlasStage | null = null;
+    let expired = false;
     const url = props.bundleUrl;
     const updateStatus = (changes: Partial<typeof status>) => {
       if (active)
         setStatus((previous) => ({ ...previous, url, retry, ...changes }));
     };
-    import("./atlas-stage")
-      .then(async ({ AtlasStage }) => {
-        if (!active || !host.current) return;
+    withLoadDeadline(
+      import("./atlas-stage").then(async ({ AtlasStage }) => {
+        if (!active || expired || !host.current) return;
         instance = new AtlasStage(host.current, latest.current);
         stage.current = instance;
         updateStatus({ loading: true, error: false, progress: null });
         await instance.load(url, (value) => updateStatus({ progress: value }));
-        updateStatus({ loading: false });
-      })
+      }),
+      30000,
+      () => {
+        expired = true;
+        instance?.dispose();
+        if (stage.current === instance) stage.current = null;
+        instance = null;
+      },
+    )
+      .then(() => updateStatus({ loading: false }))
       .catch(() => updateStatus({ loading: false, error: true }));
     return () => {
       active = false;
       instance?.dispose();
       if (stage.current === instance) stage.current = null;
+      instance = null;
     };
   }, [props.bundleUrl, retry]);
   useEffect(() => {

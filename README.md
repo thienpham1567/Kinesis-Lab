@@ -19,6 +19,7 @@ Mở [http://localhost:3000](http://localhost:3000).
 | `OPENROUTER_API_KEY` | Bắt buộc. Chat, Vision, embedding đều đi qua OpenRouter. |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Hồ sơ học viên, vector tài liệu bằng chứng. |
 | `NCBI_EMAIL` / `NCBI_API_KEY` | Tuỳ chọn, lịch sự với PubMed. |
+| `SITE_URL` | Origin HTTPS thực tế khi tự host; dùng cho canonical và URL ảnh chia sẻ của landing. Vercel tự cung cấp hostname production. |
 
 Model mặc định (đổi được trong `.env.local`):
 
