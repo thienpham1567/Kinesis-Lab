@@ -73,12 +73,15 @@ export class StructureCallouts {
     width: number,
     height: number,
     occupied: LabelBounds[],
+    targetIds?: ReadonlySet<string>,
   ) {
     for (const item of this.items) item.button.hidden = item.line.hidden = true;
     if (!enabled || width < 240 || height < 200) return;
-    const visible = [...meshes.values()].flat().filter((mesh) => mesh.visible);
+    // Faded context must not hide labels on the searched inner tissue.
+    const visible = [...meshes.values()].flat().filter((mesh) => mesh.visible && (!targetIds?.size || targetIds.has(mesh.userData.structureId)));
     // Bound raycasting and DOM work independently of the full catalog size.
     const candidates = structures.flatMap((structure) => {
+      if (targetIds?.size && !targetIds.has(structure.id)) return [];
       const own =
         meshes.get(structure.id)?.filter((mesh) => mesh.visible) ?? [];
       if (!own.length) return [];
@@ -169,7 +172,9 @@ export class StructureCallouts {
         item.button.hidden = true;
         continue;
       }
-      const labelSide = point.x < width / 2 ? 1 : -1;
+      const labelSide = targetIds?.size
+        ? point.x < width / 2 ? -1 : 1
+        : point.x < width / 2 ? 1 : -1;
       const x = THREE.MathUtils.clamp(
         point.x + labelSide * 30 - (labelSide < 0 ? w : 0),
         12,

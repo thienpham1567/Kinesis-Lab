@@ -25,6 +25,7 @@ export type AtlasCanvasProps = {
   frameIds?: ReadonlySet<string>;
   isolatedId: string | null;
   selectedId: string | null;
+  searchTargetIds?: ReadonlySet<string>;
   thicknessId: string | null;
   materialStudy: boolean;
   showSurfaceLabels: boolean;

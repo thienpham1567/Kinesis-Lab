@@ -28,7 +28,7 @@ import { isHipStudyStructure, HIP_STUDY_SAMPLES } from "./hip-material-policy";
 import { TissueStudyResources } from "./tissue-study-resources";
 import { findSurfaceFocus, surfaceFocusPose } from "./surface-focus.mjs";
 import { resolveRenderQuality, shouldUseOcclusion } from "./render-policy";
-import { isStructureVisible } from "@/lib/clinical/atlas-3d";
+import { atlasSearchAppearance, isStructureVisible } from "@/lib/clinical/atlas-3d";
 import type { AtlasCanvasProps, CameraCommand } from "./types";
 
 type Mesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshPhysicalMaterial>;
@@ -202,7 +202,7 @@ export class AtlasStage {
         bounds.height,
       );
       this.callouts.update(
-        !!this.props.learningMode && !!this.props.showStructureLabels,
+        (!!this.props.learningMode || !!this.props.searchTargetIds?.size) && !!this.props.showStructureLabels,
         this.props.selectedId,
         this.props.structures,
         this.meshes,
@@ -210,6 +210,7 @@ export class AtlasStage {
         bounds.width,
         bounds.height,
         this.labels.occupiedBounds,
+        this.props.searchTargetIds,
       );
       const finished = performance.now();
       this.frameTimings.push(finished - started);
@@ -378,7 +379,7 @@ export class AtlasStage {
     );
     const candidates = [...this.meshes.values()]
       .flat()
-      .filter((mesh) => mesh.visible);
+      .filter((mesh) => mesh.visible && (!this.props.searchTargetIds?.size || this.props.searchTargetIds.has(mesh.userData.structureId)));
     return ray.intersectObjects(candidates, false)[0];
   }
   private surfaceDoubleClick = (event: MouseEvent) => {
@@ -421,7 +422,7 @@ export class AtlasStage {
     );
     this.studio.configure(
       quality,
-      shouldUseOcclusion(quality, visibleMuscles, this.props.muscleOpacity),
+      shouldUseOcclusion(quality, visibleMuscles, this.props.searchTargetIds?.size ? 0.08 : this.props.muscleOpacity),
     );
   }
 
@@ -467,7 +468,10 @@ export class AtlasStage {
             props.hiddenIds,
             props.isolatedId,
           );
-        const opacity = structure?.layer === "muscle" ? props.muscleOpacity : 1;
+        const appearance = structure
+          ? atlasSearchAppearance(structure, props.selectedId, props.searchTargetIds, props.muscleOpacity)
+          : { opacity: 1, highlighted: false };
+        const opacity = appearance.opacity;
         setTissueStudy(
           mesh.material,
           mesh.userData.tissueKind,
@@ -483,17 +487,18 @@ export class AtlasStage {
           setTissueSelection(
             mesh.material,
             mesh.userData.tissueKind,
-            id === props.selectedId,
+            appearance.highlighted,
+            props.searchTargetIds?.size ? 1 : 0.65,
           );
         setThicknessView(mesh.material, id === props.thicknessId);
       }
     }
-    this.studio.setSelection(
-      (this.meshes.get(props.selectedId ?? "") ?? []).filter(
-        (mesh) => mesh.visible,
-      ),
-      !!props.learningMode,
-    );
+    const highlightedIds = props.searchTargetIds?.size
+      ? [...props.searchTargetIds]
+      : props.selectedId ? [props.selectedId] : [];
+    const highlightedMeshes = highlightedIds.flatMap((id) => this.meshes.get(id) ?? []).filter((mesh) => mesh.visible);
+    this.renderer.domElement.dataset.highlightedIds = [...new Set(highlightedMeshes.map((mesh) => mesh.userData.structureId))].sort().join(",");
+    this.studio.setSelection(highlightedMeshes, !!props.learningMode || !!props.searchTargetIds?.size);
     this.updateQuality();
     if (shadowsChanged) this.studio.invalidateShadows();
     this.render();
@@ -599,8 +604,9 @@ export class AtlasStage {
       (command.type === "focus" || command.type === "muscle") &&
       this.props.selectedId
     ) {
-      for (const mesh of this.meshes.get(this.props.selectedId) ?? [])
-        box.expandByObject(mesh);
+      const focusIds = this.props.searchTargetIds?.size ? [...this.props.searchTargetIds] : [this.props.selectedId];
+      for (const id of focusIds)
+        for (const mesh of this.meshes.get(id) ?? []) if (mesh.visible) box.expandByObject(mesh);
     } else {
       // Fit the visible geometry; use regional bounds only when every layer is off.
       for (const [id, meshes] of this.meshes) {

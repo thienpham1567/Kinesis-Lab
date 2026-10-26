@@ -72,7 +72,7 @@ assert.ok(
 muscle.dispose();
 console.log("Tissue transparency lifecycle checks passed (8 assertions).");
 
-const { surfaceKind, setThicknessView, setTissueSelection, TISSUE_COLORS } =
+const { surfaceKind, setThicknessView, setTissueSelection, TISSUE_COLORS, SELECTION_COLOR } =
   await import('../src/components/atlas3d/tissue-materials.ts');
 assert.equal(surfaceKind('Kinesis_tendon', 'muscle'), 'tendon');
 assert.equal(surfaceKind('Kinesis_cartilage', 'bone'), 'cartilage');
@@ -90,6 +90,12 @@ for (const kind of Object.keys(TISSUE_COLORS)) {
   assert.ok(material.emissiveIntensity > 0, `selected ${kind} glows`);
   material.dispose();
 }
+const searchMuscle = createTissueMaterial('muscle');
+setTissueSelection(searchMuscle, 'muscle', true, 1);
+assert.equal(searchMuscle.color.getHex(), SELECTION_COLOR, 'searched muscle uses full cobalt for visibility');
+setTissueSelection(searchMuscle, 'muscle', false);
+assert.equal(searchMuscle.color.getHex(), TISSUE_COLORS.muscle, 'clearing search restores tissue colour');
+searchMuscle.dispose();
 setThicknessView(tendon, true);
 assert.equal(tendon.userData.thicknessUniform.value, 1);
 setThicknessView(tendon, false);

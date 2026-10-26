@@ -17,6 +17,7 @@ import {
   ATLAS_AREAS,
   ATLAS_LAYERS,
   isStructureVisible,
+  resolveAtlasSearch,
   searchStructures,
   type AtlasArea,
   type AtlasLayer,
@@ -111,6 +112,10 @@ export default function Atlas3DExplorer({
   const [studyRetry, setStudyRetry] = useState(0);
   const [muscleOpacity, setMuscleOpacity] = useState(1);
   const [query, setQuery] = useState("");
+  const [searchTargetIds, setSearchTargetIds] = useState<ReadonlySet<string>>(new Set());
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchFocused = useRef(false);
+  const refocusSearch = useRef(false);
   const [focusedGroupId, setFocusedGroupId] = useState<string | null>(null);
   const [limit, setLimit] = useState(80);
   const [command, setCommand] = useState<CameraCommand>({
@@ -131,6 +136,7 @@ export default function Atlas3DExplorer({
     // Native history updates also reach useSearchParams. A locally applied region
     // must not trigger a second manifest fetch that wipes a subsequent selection.
     if (appliedRoute.current === routeKey) return;
+    if (searchTimer.current) clearTimeout(searchTimer.current);
     const controller = new AbortController();
     fetch("/anatomy/3d/manifest.json", { signal: controller.signal })
       .then((response) => {
@@ -139,6 +145,9 @@ export default function Atlas3DExplorer({
       })
       .then((data) => {
         if (controller.signal.aborted) return;
+        if (searchTimer.current) clearTimeout(searchTimer.current);
+        searchTimer.current = null;
+        searchFocused.current = false;
         appliedRoute.current = routeKey;
         const nextArea = validArea(initialArea);
         const focusGroup = MUSCLE_GROUP_ATLAS.find(
@@ -156,6 +165,8 @@ export default function Atlas3DExplorer({
               (nextArea === "full" || structure.areas.includes(nextArea)),
           ) ?? groupStructures[0];
         setManifest(data);
+        setQuery("");
+        setSearchTargetIds(new Set());
         setLearning((current) => ({ ...current, step: 0 }));
         setArea(nextArea);
         setSelectedId(initial?.id ?? null);
@@ -193,10 +204,15 @@ export default function Atlas3DExplorer({
     return () => controller.abort();
   }, [initialArea, initialStructure, initialGroup, retry]);
 
-  const results = useMemo(
-    () => searchStructures(manifest?.structures ?? [], query, area),
+  useEffect(() => () => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+  }, []);
+
+  const search = useMemo(
+    () => resolveAtlasSearch(manifest?.structures ?? [], query, area),
     [manifest, query, area],
   );
+  const results = search.results;
   const areaStructures = useMemo(
     () => searchStructures(manifest?.structures ?? [], "", area),
     [manifest, area],
@@ -225,9 +241,68 @@ export default function Atlas3DExplorer({
     setCommand((current) => ({ type, revision: current.revision + 1 }));
   }
 
+  function cancelSearch() {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = null;
+  }
+
+  function clearSearchTargets() {
+    cancelSearch();
+    searchFocused.current = false;
+    setSearchTargetIds(new Set());
+  }
+
+  function focusSearchTargets(targets: AtlasStructure[], nextArea: AtlasArea) {
+    if (!targets.length) return;
+    cancelSearch();
+    searchFocused.current = true;
+    setSearchTargetIds(new Set(targets.map((structure) => structure.id)));
+    setSelectedId(targets[0].id);
+    setThicknessId(null);
+    setMaterialStudy(false);
+    setFocusedGroupId(null);
+    setHiddenIds(new Set());
+    setIsolatedId(null);
+    setLayers((current) => ({ ...current, ...Object.fromEntries(targets.map((structure) => [structure.layer, true])) }));
+    setShareStatus("");
+    setManualShareUrl("");
+    if (nextArea !== area) {
+      refocusSearch.current = document.activeElement?.id === "atlas-structure-search";
+      appliedRoute.current = JSON.stringify([nextArea, null, null, retry]);
+      window.history.replaceState(null, "", atlasAreaHref(window.location.href, nextArea));
+      setArea(nextArea);
+    }
+    sendCommand("focus");
+  }
+
+  function searchFor(value: string, immediate = false) {
+    cancelSearch();
+    setQuery(value);
+    setLimit(80);
+    setSearchTargetIds(new Set());
+    setSelectedId(null);
+    setThicknessId(null);
+    setIsolatedId(null);
+    setHiddenIds(new Set());
+    const result = resolveAtlasSearch(manifest?.structures ?? [], value, area);
+    if (result.kind === "match") {
+      if (immediate) focusSearchTargets(result.targets, result.area);
+      else searchTimer.current = setTimeout(() => focusSearchTargets(result.targets, result.area), 300);
+    } else if (searchFocused.current) {
+      searchFocused.current = false;
+      sendCommand("reset");
+    }
+  }
+
   function selectStructure(id: string) {
     const structure = manifest?.structures.find((entry) => entry.id === id);
     if (!structure) return;
+    cancelSearch();
+    if (query.trim()) {
+      const nextArea = area === "full" || structure.areas.includes(area) ? area : structure.areas[0] ?? "full";
+      focusSearchTargets([structure], nextArea);
+      return;
+    }
     setSelectedId(id);
     setThicknessId((current) => (current === id ? current : null));
     setLayers((current) => ({ ...current, [structure.layer]: true }));
@@ -243,6 +318,7 @@ export default function Atlas3DExplorer({
   }
 
   function changeArea(nextArea: AtlasArea) {
+    clearSearchTargets();
     appliedRoute.current = JSON.stringify([nextArea, null, null, retry]);
     window.history.replaceState(
       null,
@@ -268,6 +344,13 @@ export default function Atlas3DExplorer({
   }
 
   function restoreVisibility() {
+    const wasSearching = searchFocused.current;
+    clearSearchTargets();
+    setQuery("");
+    if (wasSearching) {
+      setSelectedId(null);
+      sendCommand("reset");
+    }
     setFocusedGroupId(null);
     setLayers(DEFAULT_LAYERS);
     setHiddenIds(new Set());
@@ -275,6 +358,7 @@ export default function Atlas3DExplorer({
   }
 
   function openStudySample(sample: HipStudySample) {
+    clearSearchTargets();
     const preset = HIP_STUDY_SAMPLES[sample];
     const ids: ReadonlySet<string> = new Set(preset.ids);
     setMaterialStudy(true);
@@ -299,6 +383,7 @@ export default function Atlas3DExplorer({
   function applyLearningStep(index: number) {
     const step = learningSteps[index];
     if (!step || !manifest) return;
+    clearSearchTargets();
     const target = step.structureId
       ? manifest.structures.find(
           (structure) =>
@@ -389,18 +474,31 @@ export default function Atlas3DExplorer({
         <div className="input-with-icon mt-3">
           <Icon name="search" className="size-4" />
           <input
+            ref={(element) => {
+              if (element && refocusSearch.current) {
+                element.focus();
+                refocusSearch.current = false;
+              }
+            }}
             id="atlas-structure-search"
             type="search"
             placeholder="Tên Việt, Anh, Latin…"
             value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setLimit(80);
+            onChange={(event) => searchFor(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                searchFor(query, true);
+              }
             }}
           />
         </div>
         <p className="mt-2 text-xs leading-5 text-slate" aria-live="polite">
-          {results.length} kết quả trong vùng · Chọn tên để hiện cấu trúc
+          {search.kind === "missing"
+            ? `Không tìm thấy “${query.trim()}” trong mô hình 3D.`
+            : searchTargetIds.size
+              ? `Đang tô xanh ${searchTargetIds.size} cấu trúc khớp tên trên 3D. Các lớp khác được làm mờ.`
+              : `${results.length} kết quả${query.trim() ? " trong mô hình" : " trong vùng"} · ${search.kind === "ambiguous" ? "Tên khớp nhiều cấu trúc khác nhau; chọn kết quả để định vị." : "Chọn tên hoặc nhấn Enter để định vị trên 3D."}`}
         </p>
       </div>
       <ul
@@ -418,9 +516,9 @@ export default function Atlas3DExplorer({
             <li key={structure.id}>
               <button
                 type="button"
-                aria-pressed={structure.id === selectedId}
+                aria-pressed={searchTargetIds.has(structure.id) || structure.id === selectedId}
                 onClick={() => selectStructure(structure.id)}
-                className={`my-0.5 flex min-h-11 w-full min-w-0 items-start gap-2 rounded-lg border px-3 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt ${structure.id === selectedId ? "border-cobalt bg-cobalt-soft text-cobalt" : "border-transparent text-ink hover:bg-surface"}`}
+                className={`my-0.5 flex min-h-11 w-full min-w-0 items-start gap-2 rounded-lg border px-3 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt ${searchTargetIds.has(structure.id) || structure.id === selectedId ? "border-cobalt bg-cobalt-soft text-cobalt" : "border-transparent text-ink hover:bg-surface"}`}
               >
                 <span
                   className={`mt-1.5 size-1.5 shrink-0 rounded-full ${visible ? "bg-cleared" : "bg-rule-strong"}`}
@@ -440,7 +538,7 @@ export default function Atlas3DExplorer({
         })}
         {results.length === 0 && (
           <li className="px-3 py-7 text-center text-xs leading-6 text-slate">
-            Không tìm thấy cấu trúc. Thử tên khác hoặc chọn toàn hệ vận động.
+            Thử tên Việt, Anh hoặc Latin khác.
           </li>
         )}
       </ul>
@@ -893,6 +991,7 @@ export default function Atlas3DExplorer({
                 hiddenIds={hiddenIds}
                 isolatedId={isolatedId}
                 selectedId={selectedId}
+                searchTargetIds={searchTargetIds}
                 thicknessId={thicknessId}
                 materialStudy={area === "hip" && materialStudy}
                 showSurfaceLabels={
@@ -908,7 +1007,7 @@ export default function Atlas3DExplorer({
                 projection={
                   learningActive ? learning.projection : "perspective"
                 }
-                showStructureLabels={learningActive && learning.labels}
+                showStructureLabels={learning.labels}
                 command={command}
                 onSelect={selectStructure}
               />
@@ -982,10 +1081,18 @@ export default function Atlas3DExplorer({
                 aria-pressed={Boolean(selected && isolatedId === selected.id)}
                 onClick={() => {
                   if (!selected) return;
-                  selectStructure(selected.id);
+                  // Preserve the searched family when toggling isolation; a
+                  // re-selection would reset isolation before this toggle.
+                  setLayers((current) => ({ ...current, [selected.layer]: true }));
+                  setHiddenIds((current) => {
+                    const next = new Set(current);
+                    next.delete(selected.id);
+                    return next;
+                  });
                   setIsolatedId((current) =>
                     current === selected.id ? null : selected.id,
                   );
+                  sendCommand("focus");
                 }}
               >
                 Tách riêng
@@ -1033,7 +1140,7 @@ export default function Atlas3DExplorer({
         {learningActive ? (
           <AtlasLearningInspector
             key={`${area}-${learning.step}`}
-            defaultTab={learning.step === 3 ? "knowledge" : "overview"}
+            defaultTab={searchTargetIds.size ? "structures" : learning.step === 3 ? "knowledge" : "overview"}
             overview={
               <RegionLearningOverview
                 area={area}

@@ -18,6 +18,7 @@
     "check:atlas-evidence": "node scripts/check-atlas-evidence.mjs",
     "check:atlas-context": "node scripts/check-contextual-anatomy.mjs && node scripts/check-anatomy-load.mjs",
     "check:atlas-names": "node scripts/check-atlas-names.mjs",
+    "check:atlas-search": "node --test scripts/check-atlas-search-highlight.mjs",
     "rea": "bash scripts/rea.sh",
     "check:ncsf-quiz": "node scripts/check-ncsf-quiz.mjs && node scripts/ncsf-coverage.mjs",
     "check:training-observation": "node --experimental-transform-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --disable-warning=ExperimentalWarning scripts/check-training-observation.mjs",

@@ -76,6 +76,54 @@ export function searchStructures(
       ),
   );
 }
+
+export type AtlasSearchResult = {
+  kind: "idle" | "missing" | "ambiguous" | "match";
+  results: AtlasStructure[];
+  targets: AtlasStructure[];
+  area: AtlasArea;
+};
+
+/** Search source names globally; never substitute an entire training group. */
+export function resolveAtlasSearch(
+  structures: AtlasStructure[],
+  query: string,
+  area: AtlasArea,
+): AtlasSearchResult {
+  if (!query.trim())
+    return { kind: "idle", results: searchStructures(structures, "", area), targets: [], area };
+  const results = searchStructures(structures, query, "full");
+  if (!results.length) return { kind: "missing", results, targets: [], area };
+  // Named heads/parts in the source catalog can share a parent name. This is
+  // display-name grammar, not an inferred anatomical or functional grouping.
+  const families = new Set(results.map((structure) =>
+    `${structure.layer}:${normalizeAnatomyText(atlasShortEnglishName(structure).split(" · ")[0])}`,
+  ));
+  if (families.size !== 1 || normalizeAnatomyText(query).length < 2)
+    return { kind: "ambiguous", results, targets: [], area };
+  const targetArea = area === "full" || results.every((structure) => structure.areas.includes(area))
+    ? area
+    : ATLAS_AREAS.find((entry) => entry.id !== "full" && results.every((structure) => structure.areas.includes(entry.id)))?.id ?? "full";
+  return { kind: "match", results, targets: results, area: targetArea };
+}
+
+/** Reveal searched tissues while retaining faint surrounding model context. */
+export function atlasSearchAppearance(
+  structure: Pick<AtlasStructure, "id" | "layer">,
+  selectedId: string | null,
+  searchTargetIds: ReadonlySet<string> | undefined,
+  muscleOpacity: number,
+) {
+  if (searchTargetIds?.size) {
+    const highlighted = searchTargetIds.has(structure.id);
+    return { highlighted, opacity: highlighted ? 1 : 0.08 };
+  }
+  return {
+    highlighted: structure.id === selectedId,
+    opacity: structure.layer === "muscle" ? muscleOpacity : 1,
+  };
+}
+
 export function isStructureVisible(
   structure: AtlasStructure,
   layers: Record<AtlasLayer, boolean>,

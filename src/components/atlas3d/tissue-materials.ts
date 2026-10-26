@@ -197,10 +197,11 @@ export function setTissueSelection(
   material: THREE.MeshPhysicalMaterial,
   layer: TissueKind,
   selected: boolean,
+  strength = 0.65,
 ) {
   material.color.set(TISSUE_COLORS[layer]);
-  // Keep a trace of the tissue colour so tendon vs muscle stays readable.
-  if (selected) material.color.lerp(new THREE.Color(SELECTION_COLOR), 0.65);
+  // Normal selection retains tissue colour; search uses full cobalt for visibility.
+  if (selected) material.color.lerp(new THREE.Color(SELECTION_COLOR), strength);
   material.emissive.set(selected ? SELECTION_COLOR : 0);
   material.emissiveIntensity = selected ? 0.3 : 0;
 }
