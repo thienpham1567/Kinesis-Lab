@@ -633,6 +633,45 @@ select:focus {
   }
 }
 
+.study-chat-image-card img {
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.study-chat-image-viewer {
+  width: min(96vw, 1200px);
+  height: min(96dvh, 900px);
+  max-width: none;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.study-chat-image-viewer::backdrop {
+  background: rgb(26 45 64 / 0.55);
+}
+
+.study-chat-image-stage {
+  display: flex;
+  height: calc(100% - 52px);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--canvas);
+  touch-action: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.study-chat-image-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+}
+
 @media (min-width: 640px) {
   .workspace-main {
     padding: 32px 28px 40px;

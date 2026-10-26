@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/internal/chat-illustrations/cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

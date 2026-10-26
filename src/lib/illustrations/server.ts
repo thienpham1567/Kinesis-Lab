@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import {
   ILLUSTRATION_MODEL,
   ILLUSTRATION_PROVIDER,
@@ -12,55 +11,17 @@ import {
   type ImageRequest,
   type ImageStatus,
 } from "./catalog";
+import {
+  ImageInputError,
+  decodeImageBase64,
+  hashBytes,
+  imageMime,
+  requestRasterImage,
+} from "./provider";
+
+export { ImageInputError, imageMime };
 
 const MAX_BODY = 3_900_000;
-const MAX_IMAGE = 12 * 1024 * 1024;
-export class ImageInputError extends Error {
-  constructor(
-    message: string,
-    public status = 400,
-  ) {
-    super(message);
-  }
-}
-export function imageMime(bytes: Uint8Array) {
-  if (
-    bytes.length >= 8 &&
-    Buffer.from(bytes.subarray(0, 8)).equals(
-      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    )
-  )
-    return "image/png";
-  if (
-    bytes.length >= 3 &&
-    bytes[0] === 255 &&
-    bytes[1] === 216 &&
-    bytes[2] === 255
-  )
-    return "image/jpeg";
-  if (
-    bytes.length >= 12 &&
-    Buffer.from(bytes.subarray(0, 4)).toString() === "RIFF" &&
-    Buffer.from(bytes.subarray(8, 12)).toString() === "WEBP"
-  )
-    return "image/webp";
-  throw new ImageInputError("Chỉ hỗ trợ ảnh PNG, JPEG hoặc WebP hợp lệ.");
-}
-const hash = (bytes: string | Buffer) =>
-  createHash("sha256").update(bytes).digest("hex");
-function decodeBase64(value: string, max: number) {
-  if (
-    !value ||
-    value.length > Math.ceil(max / 3) * 4 ||
-    !/^[A-Za-z0-9+/]+={0,2}$/.test(value) ||
-    value.length % 4 === 1
-  )
-    throw new ImageInputError("Dữ liệu ảnh không hợp lệ hoặc quá lớn.");
-  const bytes = Buffer.from(value, "base64");
-  if (!bytes.length || bytes.length > max)
-    throw new ImageInputError("Ảnh vượt giới hạn dung lượng.", 413);
-  return bytes;
-}
 export async function readImageRequest(req: Request): Promise<ImageRequest> {
   if (Number(req.headers.get("content-length")) > MAX_BODY)
     throw new ImageInputError(
@@ -151,7 +112,7 @@ export async function readImageRequest(req: Request): Promise<ImageRequest> {
       throw new ImageInputError(
         "Chọn tệp PNG, JPEG hoặc WebP; không nhận URL ảnh bên ngoài.",
       );
-    const bytes = decodeBase64(match[2], 2_700_000);
+    const bytes = decodeImageBase64(match[2], 2_700_000);
     if (imageMime(bytes) !== match[1])
       throw new ImageInputError("Định dạng ảnh không khớp nội dung tệp.");
   }
@@ -227,7 +188,7 @@ export async function generateIllustration(
       "Chưa cấu hình OPENROUTER_API_KEY trên máy chủ.",
       503,
     );
-  const fingerprint = hash(JSON.stringify(input));
+  const fingerprint = hashBytes(JSON.stringify(input));
   for (const [id, entry] of results)
     if (entry.expires < Date.now()) results.delete(id);
   const previous = results.get(input.requestId);
@@ -269,95 +230,17 @@ export async function generateIllustration(
   try {
     const status = await imageStatus();
     const compiledPrompt = compileImagePrompt(input);
-    const res = await fetch("https://openrouter.ai/api/v1/images", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-        "X-Title": "Kinesis Lab Illustrations",
-      },
-      signal: AbortSignal.timeout(120_000),
-      body: JSON.stringify({
-        model: ILLUSTRATION_MODEL,
-        prompt: compiledPrompt,
-        n: 1,
-        resolution: input.resolution,
-        aspect_ratio: input.aspectRatio,
-        provider: { only: [ILLUSTRATION_PROVIDER], allow_fallbacks: false },
-        ...(input.reference
-          ? {
-              input_references: [
-                {
-                  type: "image_url",
-                  image_url: { url: input.reference.dataUrl },
-                },
-              ],
-            }
-          : {}),
-      }),
+    const raster = await requestRasterImage({
+      prompt: compiledPrompt,
+      resolution: input.resolution,
+      aspectRatio: input.aspectRatio,
+      timeoutMs: 120_000,
+      referenceDataUrl: input.reference?.dataUrl,
+      onAccepted: () => completed.set(input.requestId, fingerprint),
     });
-    if (!res.ok) {
-      if (res.status === 402)
-        throw new ImageInputError(
-          "OpenRouter chưa đủ credits để tạo ảnh. Nạp credits rồi thử lại.",
-          402,
-        );
-      if (res.status === 401 || res.status === 403)
-        throw new ImageInputError(
-          "OpenRouter từ chối quyền tạo ảnh. Kiểm tra khóa và quyền truy cập model.",
-          503,
-        );
-      if (res.status === 429)
-        throw new ImageInputError(
-          "Nhà cung cấp đang giới hạn lượt tạo. Hãy thử lại sau.",
-          429,
-        );
-      throw new ImageInputError(
-        `Chưa tạo được ảnh (OpenRouter ${res.status}). Không tự động gửi lại yêu cầu.`,
-        502,
-      );
-    }
-    // Preserve the completed ID even if output parsing fails afterwards.
-    completed.set(input.requestId, fingerprint);
-    if (Number(res.headers.get("content-length")) > MAX_IMAGE * 1.5)
-      throw new ImageInputError(
-        "Ảnh trả về vượt giới hạn xử lý; kiểm tra lịch sử OpenRouter trước khi tạo lại.",
-        502,
-      );
-    const responseReader = res.body?.getReader();
-    if (!responseReader)
-      throw new ImageInputError("API trả nội dung rỗng.", 502);
-    const responseChunks: Uint8Array[] = [];
-    let responseLength = 0;
-    try {
-      for (;;) {
-        const { done, value } = await responseReader.read();
-        if (done) break;
-        responseLength += value.length;
-        if (responseLength > MAX_IMAGE * 1.5) {
-          await responseReader.cancel();
-          throw new ImageInputError(
-            "Ảnh trả về vượt giới hạn xử lý; kiểm tra lịch sử OpenRouter trước khi tạo lại.",
-            502,
-          );
-        }
-        responseChunks.push(value);
-      }
-    } finally {
-      responseReader.releaseLock();
-    }
-    const data = JSON.parse(Buffer.concat(responseChunks).toString("utf8"));
-    const raw = data.data?.[0]?.b64_json;
-    if (typeof raw !== "string")
-      throw new ImageInputError(
-        "API không trả ảnh hoàn chỉnh. Kiểm tra lịch sử OpenRouter trước khi thử lại.",
-        502,
-      );
-    const bytes = decodeBase64(raw, MAX_IMAGE);
-    const mediaType = imageMime(bytes);
     const ref = input.reference?.dataUrl.split(",")[1];
     const result: GeneratedImage = {
-      dataUrl: `data:${mediaType};base64,${raw}`,
+      dataUrl: `data:${raster.mediaType};base64,${raster.rawBase64}`,
       receipt: {
         id: input.requestId,
         createdAt: new Date().toISOString(),
@@ -370,24 +253,19 @@ export async function generateIllustration(
         compiledPrompt,
         resolution: input.resolution,
         aspectRatio: input.aspectRatio,
-        costUsd:
-          typeof data.usage?.cost === "number" &&
-          Number.isFinite(data.usage.cost) &&
-          data.usage.cost >= 0
-            ? data.usage.cost
-            : null,
+        costUsd: raster.costUsd,
         estimateUsd: status.prices[input.resolution],
         priceCheckedAt: status.priceCheckedAt,
         elapsedMs: Date.now() - started,
-        sha256: hash(bytes),
-        mediaType,
-        byteLength: bytes.length,
+        sha256: raster.sha256,
+        mediaType: raster.mediaType,
+        byteLength: raster.bytes.length,
         sources: anatomySources(input.presetId),
         reference:
           input.reference && ref
             ? {
                 name: input.reference.name,
-                sha256: hash(Buffer.from(ref, "base64")),
+                sha256: hashBytes(Buffer.from(ref, "base64")),
               }
             : null,
         parentId: input.parentId ?? null,

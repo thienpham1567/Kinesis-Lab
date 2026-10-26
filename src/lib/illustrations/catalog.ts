@@ -6,6 +6,7 @@ export const ILLUSTRATION_PROVIDER = "seed";
 export const ILLUSTRATION_MODEL_LABEL = "Seedream 5.0 Flash";
 export function illustrationModelLabel(model: string) {
   if (model === ILLUSTRATION_MODEL) return ILLUSTRATION_MODEL_LABEL;
+  if (model === "google/gemini-nano-banana-2.1") return "Nano Banana 2.1";
   if (model === "black-forest-labs/flux-3-image-klein") return "FLUX 3 Image Klein";
   return model;
 }
