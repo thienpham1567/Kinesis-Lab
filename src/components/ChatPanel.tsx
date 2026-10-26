@@ -190,7 +190,7 @@ export function ChatPanel({
             streamError = true;
             setError(evt.error ?? "Lỗi xử lý");
           } else if (evt.type === "warning") {
-            setNotice(evt.text ?? "");
+            setNotice(current => [current, evt.text].filter(Boolean).join(" "));
           } else if (evt.type === "done") {
             complete = true;
           }

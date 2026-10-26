@@ -42,6 +42,7 @@ export function StudyChatWidget({
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [pubmed, setPubmed] = useState<PubMedPaper[]>([]);
   const [rag, setRag] = useState<RagHit[]>([]);
   const [sourceStatus, setSourceStatus] = useState<ChatSourceStatus | null>(null);
@@ -111,6 +112,7 @@ export function StudyChatWidget({
     setRag([]);
     setSourceStatus(null);
     setError("");
+    setNotice("");
     setInput("");
     composer.current?.focus();
   }
@@ -127,6 +129,7 @@ export function StudyChatWidget({
     setInput("");
     setBusy(true);
     setError("");
+    setNotice("");
     setPubmed([]);
     setRag([]);
     setSourceStatus(null);
@@ -160,6 +163,8 @@ export function StudyChatWidget({
           setMessages([...next, { role: "assistant", content: assistant }]);
         } else if (evt.type === "error") {
           throw new Error(evt.error ?? "Lỗi xử lý");
+        } else if (evt.type === "warning") {
+          setNotice(current => [current, evt.text].filter(Boolean).join(" "));
         } else if (evt.type === "done") {
           complete = true;
         }
@@ -303,6 +308,7 @@ export function StudyChatWidget({
             )}
           </div>
 
+          {notice && <p role="status" className="mx-4 mb-2 text-xs leading-5 text-caution">{notice}</p>}
           {error && (
             <p role="alert" className="alert-error mx-4 mb-2 text-xs">
               {error}

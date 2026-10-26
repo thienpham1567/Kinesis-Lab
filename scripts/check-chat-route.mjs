@@ -97,3 +97,12 @@ test('merged floating study chat retains server-owned page context without raw p
   await events(await f.post({ ...question('hello'), studyPage: 'PRIVATE_PATH_INSTRUCTION_IGNORE_SAFETY' }));
   assert.ok(!f.calls.messages[0].content.includes('PRIVATE_PATH_INSTRUCTION_IGNORE_SAFETY'));
 });
+
+test('a fabricated or placeholder RAG reference produces a visible warning', async () => {
+  for (const content of ['See [RAG:invented-id]', 'No source [RAG:... không có]']) {
+    const wire = 'data: ' + JSON.stringify({ choices: [{ delta: { content }, finish_reason: 'stop' }] }) + '\n\ndata: [DONE]\n\n';
+    const e = await events(await fixture({ wire }).post(question('hello')));
+    assert.equal(e.at(-1).type, 'done');
+    assert.ok(e.some(event => event.type === 'warning' && event.text.includes('không khớp')));
+  }
+});

@@ -22,6 +22,7 @@ for (const c of cases) {
   });
   assert.equal(response.status, 200, c.id);
   const events = (await response.text()).trim().split('\n').map(JSON.parse);
+  assert.ok(!events.some(e => e.type === 'warning'), `${c.id}: ${JSON.stringify(events.find(e => e.type === 'warning'))}`);
   assert.ok(!events.some(e => e.type === 'error'), `${c.id}: ${JSON.stringify(events.find(e => e.type === 'error'))}`);
   assert.equal(events.at(-1).type, 'done', c.id);
   const meta = events.find(e => e.type === 'meta');

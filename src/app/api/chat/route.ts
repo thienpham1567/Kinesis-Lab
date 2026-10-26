@@ -186,6 +186,12 @@ export async function POST(req: Request) {
           }
         }
         if (!complete || !assistant.trim()) throw new Error("Kết nối kết thúc trước khi nhận đủ câu trả lời. Vui lòng thử lại.");
+        const suppliedRagIds = new Set(rag.map(hit => hit.id));
+        const citedRag = [...assistant.matchAll(/\bRAG:([^\s,\];)]+)/g)].map(match => match[1].replace(/[.:]+$/, ""));
+        const citationAudit = { unsupportedRagReferences: citedRag.filter(id => !suppliedRagIds.has(id)).length };
+        if (citationAudit.unsupportedRagReferences > 0) controller.enqueue(encoder.encode(JSON.stringify({
+          type: "warning", text: "Có mã trích dẫn RAG không khớp đoạn nguồn đã cung cấp. Hãy đối chiếu danh sách nguồn trước khi sử dụng câu trả lời.",
+        }) + "\n"));
         if (body.clientId && hasSupabase() && assistant) {
           const { error: saveError } = await supabase().from("consultations").insert([
             { client_id: body.clientId, role: "user", content: last, citations: [] },
@@ -193,7 +199,7 @@ export async function POST(req: Request) {
               client_id: body.clientId,
               role: "assistant",
               content: assistant,
-              citations: { rag, pubmed, model, curated, publicSearch, sourceStatus },
+              citations: { rag, pubmed, model, curated, publicSearch, sourceStatus, citationAudit },
             },
           ]);
           if (saveError) controller.enqueue(encoder.encode(JSON.stringify({ type: "warning", text: "Câu trả lời đã hiển thị nhưng chưa lưu được vào hồ sơ." }) + "\n"));
