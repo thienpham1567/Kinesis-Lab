@@ -92,6 +92,14 @@ export function StudyChatImageCard({
             <p className="mt-1">Đây là nội dung đã yêu cầu vẽ, không phải OCR đã xác minh ảnh.</p>
           </details>
         )}
+        {!!brief?.limitations.length && (
+          <details>
+            <summary className="cursor-pointer font-medium text-ink">Phạm vi nguồn và giới hạn hình</summary>
+            <ul className="mt-1 list-disc pl-4">
+              {brief.limitations.map((limit) => <li key={limit}>{limit}</li>)}
+            </ul>
+          </details>
+        )}
         {brief?.sources?.map((source) => (
           <p key={source.id}>
             <a href={source.url} target="_blank" rel="noreferrer" className="text-cobalt underline">

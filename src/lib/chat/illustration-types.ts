@@ -25,7 +25,7 @@ export type ChatIllustrationBrief = {
   limitations: string[];
 };
 
-export type ChatImageClaim = { id: string; text: string; sourceIds: string[] };
+export type ChatImageClaim = { id: string; text: string; sourceIds: string[]; requiredForDrawing?: boolean };
 
 export type ChatImageReceipt = {
   id: string;

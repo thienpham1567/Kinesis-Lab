@@ -54,6 +54,16 @@ test("brief canonicalizes sources and claim statements rather than trusting mode
   assert.throws(() => parseChatIllustrationBrief({ ...raw, imageExplanation: "X".repeat(321) }, context.sources, context.claims), /dài|giới hạn|320/i);
 });
 
+test("drawing-critical attachment facts cannot be omitted by the brief model", () => {
+  const context = evidenceModule().resolveChatImageEvidence("ACL và PCL ở gối phải", []);
+  assert.ok(context.claims.some(x => x.id === "knee:acl-attachments"));
+  assert.ok(context.claims.some(x => x.id === "knee:pcl-attachments"));
+  const { raw } = fixture();
+  const parsed = load("src/lib/chat/illustration-brief.ts").parseChatIllustrationBrief({ ...raw, sources: context.sources, claimIds: ["knee:connections"] }, context.sources, context.claims);
+  assert.ok(parsed.claims.some(x => x.id === "knee:acl-attachments"));
+  assert.ok(parsed.claims.some(x => x.id === "knee:pcl-attachments"));
+});
+
 test("fixed raster pretext includes evidence, exact explanatory copy and isolated user task", () => {
   const { context, raw } = fixture();
   const { parseChatIllustrationBrief } = load("src/lib/chat/illustration-brief.ts");

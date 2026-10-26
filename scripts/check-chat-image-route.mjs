@@ -146,7 +146,7 @@ test("POST generates once, poll does not bill again, foreign owner cannot read",
   assert.equal(payload.state, "succeeded");
   assert.equal(payload.receipt.model, "openai/gpt-image-2.5-sunburst");
   assert.equal(payload.receipt.provider, "openai");
-  assert.equal(payload.receipt.promptVersion, "medical-image-v1-2026-10-26");
+  assert.equal(payload.receipt.promptVersion, "medical-image-v2-2026-10-26");
   assert.match(payload.receipt.promptSha256, /^[0-9a-f]{64}$/);
   assert.ok(f.calls.imageInput.prompt.includes(body.instruction));
   assert.ok(f.calls.imageInput.prompt.startsWith("MEDICAL EDUCATIONAL ILLUSTRATION"));

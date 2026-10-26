@@ -93,7 +93,7 @@ export function parseChatIllustrationBrief(
   if (claimIds !== undefined) {
     if (!Array.isArray(claimIds) || claimIds.length > 12 || claimIds.some(id => typeof id !== "string"))
       throw new BriefError("Danh sách claim không hợp lệ.");
-    for (const id of new Set(claimIds)) {
+    for (const id of new Set([...claimIds, ...allowedClaims.filter(claim => claim.requiredForDrawing).map(claim => claim.id)])) {
       const claim = allowedClaims.find(item => item.id === id);
       if (!claim || claim.sourceIds.some(sourceId => !allowedSources.some(source => source.id === sourceId)))
         throw new BriefError("Nhận định không nằm trong nguồn máy chủ cung cấp.");

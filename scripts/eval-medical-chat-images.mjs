@@ -5,7 +5,7 @@ import path from "node:path";
 export const MEDICAL_IMAGE_CASES = [
   {
     id: "elbow-flexors",
-    instruction: "Tạo hình giảng dạy y khoa tiếng Việt về cơ nhị đầu cánh tay và cơ cánh tay khi gấp khuỷu. Chi trên phải nhìn trước, tách hai ô để phân biệt lớp nông và lớp sâu; cùng tư thế và hướng nhìn. Ghi nhãn hai cơ, xương cánh tay, xương quay, xương trụ và các bám tận cần phân biệt. Vẽ đường chỉ dẫn rõ đến đúng cấu trúc. Giải thích ngắn ngay trong ảnh về chức năng và sự khác nhau điểm bám. Không thêm thần kinh, số đo hay chẩn đoán.",
+    instruction: "Tạo hình giảng dạy y khoa tiếng Việt về cơ nhị đầu cánh tay và cơ cánh tay, là hai cơ gấp khuỷu. Dùng chi trên phải ở tư thế giải phẫu với khuỷu duỗi và lòng bàn tay hướng trước, tách hai ô nhìn trước cùng tư thế để phân biệt lớp nông và lớp sâu. Ưu tiên sơ đồ sạch, không cần vẻ ảnh chụp. Ghi nhãn hai cơ, xương cánh tay, quay, trụ và hai điểm bám tận; dùng ô phóng đại nếu cần để phân biệt gân nhị đầu tới lồi củ quay với cơ cánh tay tới mỏm vẹt trụ. Giải thích ngắn trong ảnh về chức năng và sự khác nhau điểm bám. Không thêm thần kinh, số đo hay chẩn đoán.",
     checks: ["Brachialis nằm sâu dưới biceps, bộc lộ lớp sâu được nêu rõ", "Biceps tới xương quay; brachialis tới xương trụ", "Nhãn không trỏ nhầm xương/gân và hai ô cùng hướng nhìn", "Chữ/giải thích không đảo chức năng hoặc điểm bám"],
   },
   {
@@ -25,7 +25,7 @@ if (!apply) {
   const headers = { origin, "content-type": "application/json" };
   const ready = await fetch(`${origin}/api/chat/illustrations`, { headers });
   const status = await ready.json();
-  if (!ready.ok || status.promptVersion !== "medical-image-v1-2026-10-26") throw new Error("Deployment does not expose the expected medical prompt version.");
+  if (!ready.ok || status.promptVersion !== "medical-image-v2-2026-10-26") throw new Error("Deployment does not expose the expected medical prompt version.");
   headers.cookie = ready.headers.getSetCookie().map(x => x.split(";")[0]).join("; ");
   const results = [];
   for (const item of MEDICAL_IMAGE_CASES) {
