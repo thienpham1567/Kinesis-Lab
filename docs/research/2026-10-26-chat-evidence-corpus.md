@@ -1,6 +1,6 @@
 # Đề xuất nguồn embedding cho chat
 
-Ngày kiểm tra: 2026-10-26. Trạng thái: nghiên cứu và đề xuất để người dùng xem xét; chưa nạp tài liệu, chưa tạo embedding, chưa thay đổi pipeline chat.
+Ngày kiểm tra: 2026-10-26. Đây là ghi nhận nghiên cứu **trước triển khai**, giữ nguyên phạm vi truy cập tại thời điểm đề xuất. Trạng thái hiện tại và 3 nguồn đã nạp được ghi trong [báo cáo production](../superpowers/reviews/2026-10-26-chat-production-rag.md).
 
 ## Yêu cầu và hiện trạng
 
@@ -47,6 +47,6 @@ Các mục dưới đây là ứng viên theo chủ đề, không phải tuyên 
 - Không chuyển hồ sơ học viên sang truy vấn PubMed. Mọi tài liệu là dữ liệu không tin cậy; giữ giới hạn điều trị cá nhân, mô phỏng và đo lường của chính sách hiện có. Không thêm cổng chờ chuyên gia duyệt phổ quát.
 - Kiểm tra bằng các câu hỏi Việt/Anh cho từng chủ đề, nguồn không liên quan, phạm vi quần thể không khớp, nguồn hết hiệu lực, lỗi nhà cung cấp, nạp lặp và khớp citation với đoạn thực tế. Kiểm tra kỹ thuật và so nguồn không là xác nhận lâm sàng.
 
-## Chưa thực hiện
+## Trạng thái tại thời điểm đề xuất
 
 Chưa có nguồn mới nào được lưu vào Supabase hoặc gửi sang dịch vụ embedding. Chưa sửa schema, backend hay giao diện. Danh sách này hỗ trợ chốt thiết kế trước khi triển khai; việc có giấy phép phù hợp không thay thế đánh giá chất lượng chuyên môn.

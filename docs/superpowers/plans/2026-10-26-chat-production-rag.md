@@ -8,14 +8,14 @@
 
 ## Work and verification
 
-- [ ] Write failing behavioral checks for embedding dimensions, query/document formatting, independent batch outputs, malformed vectors and Haiku model selection. Implement the OpenRouter changes and update local/example configuration and README. Run `node --test scripts/check-ai-runtime.mjs`.
-- [ ] Implement an idempotent corpus importer with explicit source/license metadata, text-only JATS parsing, bounded section chunks, deterministic IDs, and a model namespace. The importer must never ingest credentials, client data or protected NCSF PDFs. Use the existing `knowledge_documents.source_type` for the namespace and `filename` for the canonical source URL; source content hashes and version metadata remain in the source registry/ingestion receipt and chunk provenance. Before any database mutation, preview exact source and chunk counts. Never overwrite existing incompatible corpus rows.
-- [ ] Test and implement RAG namespace checks and source metadata. The current RPC searches all stored vectors; therefore refuse mixed namespaces before calling it. Preserve the 1536-dimensional schema and use only a homogeneous collection. Return empty/no-match/error statuses explicitly, with safe user-facing notices.
-- [ ] Validate chat request roles and size, preserve source matching across bounded recent user turns, render curated/RAG/PubMed sources, clear conversation when changing client, and handle truncated/error streams honestly. Keep public PubMed queries restricted to fixed topic vocabulary. Add focused regression checks for cross-client reset, malformed input, provider stream errors and source metadata.
-- [ ] Tighten prompt wording around unsupported citations, truthful reading scope, experimental muscle damage and insulin symptoms without claiming clinical validation. Preserve source-based educational acceptance and truthful null reviewer metadata.
-- [ ] Run the focused checks plus existing evidence/safety/lab checks, TypeScript, lint, production build and React Doctor. Inspect the actual UI using a synthetic consultation.
-- [ ] Smoke-test the real Gemini Embedding 2 endpoint for multiple independent 1536-dimensional vectors. Import the approved initial corpus, verify stored counts, and test Vietnamese queries against that same namespace.
-- [ ] Update the shared Vercel model variables (`OPENROUTER_MODEL_CLINICAL`, `OPENROUTER_MODEL_FAST`, `OPENROUTER_MODEL_EMBEDDING`) to the chosen values. Keep other credentials unchanged. Deploy the verified source to production and confirm readiness, domain alias, response model and RAG/source metadata through the production API. Do not call completion until these checks succeed or a concrete external blocker is identified.
+- [x] Write failing behavioral checks for embedding dimensions, query/document formatting, independent batch outputs, malformed vectors and Haiku model selection. Implement the OpenRouter changes and update local/example configuration and README. Run `node --test scripts/check-ai-runtime.mjs`.
+- [x] Implement an idempotent corpus importer with explicit source/license metadata, text-only JATS parsing, bounded section chunks, deterministic IDs, and a model namespace. The importer must never ingest credentials, client data or protected NCSF PDFs. Use the existing `knowledge_documents.source_type` for the namespace and `filename` for the canonical source URL; source content hashes and version metadata remain in the source registry/ingestion receipt and chunk provenance. Before any database mutation, preview exact source and chunk counts. Never overwrite existing incompatible corpus rows.
+- [x] Test and implement RAG namespace checks and source metadata. The current RPC searches all stored vectors; therefore refuse mixed namespaces before calling it. Preserve the 1536-dimensional schema and use only a homogeneous collection. Return empty/no-match/error statuses explicitly, with safe user-facing notices.
+- [x] Validate chat request roles and size, preserve source matching across bounded recent user turns, render curated/RAG/PubMed sources, clear conversation when changing client, and handle truncated/error streams honestly. Keep public PubMed queries restricted to fixed topic vocabulary. Add focused regression checks for cross-client reset, malformed input, provider stream errors and source metadata.
+- [x] Tighten prompt wording around unsupported citations, truthful reading scope, experimental muscle damage and insulin symptoms without claiming clinical validation. Preserve source-based educational acceptance and truthful null reviewer metadata.
+- [x] Run the focused checks plus existing evidence/safety/lab checks, TypeScript, lint, production build and React Doctor. Inspect the actual UI using a synthetic consultation.
+- [x] Smoke-test the real Gemini Embedding 2 endpoint for multiple independent 1536-dimensional vectors. Import the approved initial corpus, verify stored counts, and test Vietnamese queries against that same namespace.
+- [x] Update the shared Vercel model variables (`OPENROUTER_MODEL_CLINICAL`, `OPENROUTER_MODEL_FAST`, `OPENROUTER_MODEL_EMBEDDING`) to the chosen values. Keep other credentials unchanged. Deploy the verified source to production and confirm readiness, domain alias, response model and RAG/source metadata through the production API. Do not call completion until these checks succeed or a concrete external blocker is identified.
 
 ## Initial source scope
 
@@ -24,3 +24,7 @@ Select open full-text articles with explicit CC BY metadata: the BJSM article de
 ## Release constraints
 
 No sensitive values in repository or build logs. No universal expert-approval badge. No claims that embedding, tests or source comparison establish clinical validation. No changes to private NCSF access. Production deployment is explicitly authorized by the user; use the already linked project `kinesis-lab` and verify its returned alias.
+
+## Completion record
+
+Deployed and verified after merging `origin/master` at `4bdeb35`. See [release verification](../reviews/2026-10-26-chat-production-rag.md). Production runtime source commit: `ac2438d`.
