@@ -16,16 +16,18 @@ export const MEDICAL_IMAGE_CASES = [
 ];
 
 const apply = process.argv.includes("--apply");
+const expectedModel = "bytedance-seed/seedream-5-0-flash";
 const origin = process.argv.find(x => x.startsWith("--url="))?.slice(6) ?? "http://localhost:3000";
 const out = path.resolve(".data/medical-image-policy");
 if (!apply) {
-  console.log(JSON.stringify({ paidCalls: false, model: "openai/gpt-image-2.5-sunburst", cases: MEDICAL_IMAGE_CASES, note: "--apply makes exactly two initial app-route requests; no automatic retries. Source comparison and visual review are required." }, null, 2));
+  console.log(JSON.stringify({ paidCalls: false, model: expectedModel, cases: MEDICAL_IMAGE_CASES, note: "--apply makes exactly two initial app-route requests; no automatic retries. Source comparison and visual review are required." }, null, 2));
 } else {
   mkdirSync(out, { recursive: true });
   const headers = { origin, "content-type": "application/json" };
   const ready = await fetch(`${origin}/api/chat/illustrations`, { headers });
   const status = await ready.json();
-  if (!ready.ok || status.promptVersion !== "medical-image-v2-2026-10-26") throw new Error("Deployment does not expose the expected medical prompt version.");
+  if (!ready.ok || status.promptVersion !== "medical-image-v2-2026-10-26" || status.model !== expectedModel || status.resolution !== "2K" || status.aspectRatio !== "auto")
+    throw new Error("Deployment does not expose the expected Seedream model, image settings and medical prompt version.");
   headers.cookie = ready.headers.getSetCookie().map(x => x.split(";")[0]).join("; ");
   const results = [];
   for (const item of MEDICAL_IMAGE_CASES) {

@@ -40,6 +40,33 @@ test("medical evidence is selected locally with traceable, bounded claims", () =
   assert.equal(called.claims.some(x => x.id.startsWith("knee:")), false);
 });
 
+test("a study-card request does not inherit medical claims from generic learning words", () => {
+  const { resolveChatImageEvidence } = evidenceModule();
+  const context = resolveChatImageEvidence("Tạo một thẻ học có hình quyển sách, tiêu đề Học chủ động, hai nhãn Đọc bài và Tự kiểm tra. Bố cục rõ ràng, màu xanh, chữ tiếng Việt dễ đọc.", []);
+  assert.equal(context.claims.length, 0);
+  assert.equal(context.sources.length, 0);
+  const muscle = resolveChatImageEvidence("Vẽ cơ hình lê", []);
+  assert.ok(muscle.sources.some(source => source.id.includes("piriformis")));
+});
+
+test("positional terminology has its own checked sources rather than unrelated movement claims", () => {
+  const { resolveChatImageEvidence } = evidenceModule();
+  const context = resolveChatImageEvidence("Thuật ngữ về vị trí (Positional terms): Midline, anterior axillary line, midaxillary line, anterior/posterior, proximal/distal, superior/inferior, medial/lateral, ipsilateral/contralateral, superficial/deep.", []);
+  assert.ok(context.claims.length >= 7 && context.claims.length <= 12);
+  assert.ok(context.claims.every(claim => claim.id.startsWith("position:")));
+  assert.ok(context.claims.some(claim => claim.id === "position:proximal-distal" && claim.requiredForDrawing));
+  assert.ok(context.claims.some(claim => claim.id === "position:axillary-lines"));
+  const sourceIds = new Set(context.sources.map(source => source.id));
+  assert.ok(context.claims.every(claim => claim.sourceIds.every(id => sourceIds.has(id))));
+  assert.ok(context.sources.every(source => source.checkedAt === "2026-10-26" && source.access));
+  for (const query of ["So sánh medial và lateral", "Vẽ sơ đồ proximal và distal", "Minh họa đường nách trước và đường nách giữa", "Positional terms ở khuỷu tay và gối: proximal/distal, ACL PCL, midaxillary line"]) {
+    const matched = resolveChatImageEvidence(query, []);
+    assert.ok(matched.claims.some(claim => claim.id.startsWith("position:")), query);
+    assert.ok(matched.claims.every(claim => claim.id.startsWith("position:")), query);
+    assert.ok(matched.claims.some(claim => claim.id === "position:axillary-lines"), query);
+  }
+});
+
 test("brief canonicalizes sources and claim statements rather than trusting model metadata", () => {
   const { context, raw } = fixture();
   const { parseChatIllustrationBrief } = load("src/lib/chat/illustration-brief.ts");

@@ -24,13 +24,14 @@ function cookieJar(initial) {
   };
 }
 
-function harness() {
+function harness({ slowUpload = false, uploadError = false } = {}) {
   const jar = cookieJar();
   const calls = { brief: 0, image: 0, uploads: 0 };
   const load = createAppLoader({
     globals: {
       Buffer,
       crypto,
+      ...(slowUpload ? { setTimeout: (fn, ms) => setTimeout(fn, ms / 1000) } : {}),
       process: {
         env: {
           OPENROUTER_API_KEY: "synthetic-only",
@@ -72,16 +73,15 @@ function harness() {
         },
       },
       "@/lib/chat/image-config": {
-        CHAT_IMAGE_MODEL: "openai/gpt-image-2.5-sunburst",
-        CHAT_IMAGE_PROVIDER: "openai",
-        CHAT_IMAGE_RESOLUTION: "auto",
+        CHAT_IMAGE_MODEL: "bytedance-seed/seedream-5-0-flash",
+        CHAT_IMAGE_PROVIDER: "seed",
+        CHAT_IMAGE_RESOLUTION: "2K",
         CHAT_IMAGE_ASPECT_RATIO: "auto",
-        CHAT_IMAGE_TARGET: { model: "openai/gpt-image-2.5-sunburst", provider: "openai" },
+        CHAT_IMAGE_TARGET: { model: "bytedance-seed/seedream-5-0-flash", provider: "seed" },
         chatImageStatus: async () => ({
           enabled: true,
-          model: "openai/gpt-image-2.5-sunburst",
-          estimateUsd: null,
-          outputTokenPriceUsd: 0.00003,
+          model: "bytedance-seed/seedream-5-0-flash",
+          estimateUsd: 0.018,
           priceCheckedAt: "2026-10-26",
           livePrice: true,
         }),
@@ -89,6 +89,9 @@ function harness() {
       "@/lib/chat/image-storage-server": {
         uploadChatIllustration: async () => {
           calls.uploads++;
+          if (uploadError) throw new Error("Storage connection failed");
+          // Scale a 20s upload to 20ms; the former 10s deadline becomes 10ms.
+          if (slowUpload) await new Promise(resolve => setTimeout(resolve, 20));
           return { storagePath: "owner/id.png", assetUrl: "https://signed.example/img" };
         },
         signedChatIllustrationUrl: async () => "https://signed.example/img",
@@ -129,9 +132,9 @@ test("GET issues a session cookie before generation; POST without it is unauthor
   const ready = await f.route.GET(f.req("/api/chat/illustrations"));
   assert.equal(ready.status, 200);
   const status = await ready.json();
-  assert.equal(status.model, "openai/gpt-image-2.5-sunburst");
-  assert.equal(status.resolution, "auto");
-  assert.equal(status.estimateUsd, null);
+  assert.equal(status.model, "bytedance-seed/seedream-5-0-flash");
+  assert.equal(status.resolution, "2K");
+  assert.equal(status.estimateUsd, 0.018);
   assert.equal(status.priceCheckedAt, "2026-10-26");
   assert.ok(f.jar.bag.get("chat_image_session"));
 });
@@ -144,20 +147,20 @@ test("POST generates once, poll does not bill again, foreign owner cannot read",
   assert.equal(created.status, 200);
   const payload = await created.json();
   assert.equal(payload.state, "succeeded");
-  assert.equal(payload.receipt.model, "openai/gpt-image-2.5-sunburst");
-  assert.equal(payload.receipt.provider, "openai");
+  assert.equal(payload.receipt.model, "bytedance-seed/seedream-5-0-flash");
+  assert.equal(payload.receipt.provider, "seed");
   assert.equal(payload.receipt.promptVersion, "medical-image-v2-2026-10-26");
   assert.match(payload.receipt.promptSha256, /^[0-9a-f]{64}$/);
   assert.ok(f.calls.imageInput.prompt.includes(body.instruction));
   assert.ok(f.calls.imageInput.prompt.startsWith("MEDICAL EDUCATIONAL ILLUSTRATION"));
-  assert.equal(payload.receipt.resolution, "auto");
-  assert.equal(payload.receipt.estimateUsd, null);
-  assert.equal(f.calls.imageInput.resolution, "auto");
+  assert.equal(payload.receipt.resolution, "2K");
+  assert.equal(payload.receipt.estimateUsd, 0.018);
+  assert.equal(f.calls.imageInput.resolution, "2K");
   assert.equal(f.calls.imageInput.aspectRatio, "auto");
-  assert.equal(f.calls.imageInput.quality, "auto");
+  assert.equal(f.calls.imageInput.quality, undefined);
   assert.ok(f.calls.imageInput.timeoutMs >= 120_000);
   assert.ok(f.route.maxDuration >= 180);
-  assert.deepEqual(f.calls.imageTarget, { model: "openai/gpt-image-2.5-sunburst", provider: "openai" });
+  assert.deepEqual(f.calls.imageTarget, { model: "bytedance-seed/seedream-5-0-flash", provider: "seed" });
   assert.equal(f.calls.image, 1);
   assert.equal(f.calls.brief, 1);
   const replay = await f.route.POST(f.req("/api/chat/illustrations", { method: "POST", body }));
@@ -186,6 +189,18 @@ test("rejects other origin, extra fields and does not leak upstream errors", asy
   assert.equal(f.calls.image, 0);
 });
 
+test("same-origin checks use the browser-facing Host when Next reconstructs an internal localhost URL", async () => {
+  const f = harness();
+  const local = await f.route.GET(new Request("http://localhost:3000/api/chat/illustrations", {
+    headers: { host: "127.0.0.1:3000", referer: "http://127.0.0.1:3000/knowledge" },
+  }));
+  assert.equal(local.status, 200);
+  const foreign = await f.route.GET(new Request("http://localhost:3000/api/chat/illustrations", {
+    headers: { host: "127.0.0.1:3000", origin: "https://evil.example" },
+  }));
+  assert.equal(foreign.status, 403);
+});
+
 test("POST returns 503 when job ledger is unavailable, without calling the image provider", async () => {
   const f = harness();
   f.jobs.useJobStoreForTests({
@@ -204,4 +219,41 @@ test("POST returns 503 when job ledger is unavailable, without calling the image
   assert.equal(payload.error.includes("chat_image_jobs"), false);
   assert.equal(f.calls.image, 0);
   assert.equal(f.calls.brief, 0);
+});
+
+test("POST accepts full chat prompts up to 20000 characters and rejects longer input before billing", async () => {
+  const f = harness();
+  await f.route.GET(f.req("/api/chat/illustrations"));
+  const body = { ...postBody(), instruction: "x".repeat(20_000) };
+  const accepted = await f.route.POST(f.req("/api/chat/illustrations", { method: "POST", body }));
+  assert.equal(accepted.status, 200);
+  assert.ok(f.calls.imageInput.prompt.includes(body.instruction));
+  const rejected = await f.route.POST(f.req("/api/chat/illustrations", {
+    method: "POST", body: { ...postBody(), instruction: "x".repeat(20_001) },
+  }));
+  assert.equal(rejected.status, 400);
+  assert.equal(f.calls.image, 1);
+});
+
+test("a slow upload can use remaining request time without discarding the generated image", async () => {
+  const f = harness({ slowUpload: true });
+  await f.route.GET(f.req("/api/chat/illustrations"));
+  const response = await f.route.POST(f.req("/api/chat/illustrations", { method: "POST", body: postBody() }));
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).state, "succeeded");
+  assert.equal(f.calls.image, 1);
+  assert.equal(f.calls.uploads, 1);
+});
+
+test("a storage outage still delivers the generated raster for viewing and browser storage", async () => {
+  const f = harness({ uploadError: true });
+  await f.route.GET(f.req("/api/chat/illustrations"));
+  const response = await f.route.POST(f.req("/api/chat/illustrations", { method: "POST", body: postBody() }));
+  assert.equal(response.status, 200);
+  const job = await response.json();
+  assert.equal(job.state, "succeeded");
+  assert.equal(job.receipt.storage, "browser-only");
+  assert.equal(job.assetUrl, `data:image/png;base64,${png}`);
+  assert.match(job.notice, /máy chủ|trình duyệt/);
+  assert.equal(f.calls.image, 1);
 });

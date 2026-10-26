@@ -1,6 +1,6 @@
-export const CHAT_IMAGE_MODEL = "openai/gpt-image-2.5-sunburst";
-export const CHAT_IMAGE_PROVIDER = "openai";
-export const CHAT_IMAGE_RESOLUTION = "auto";
+export const CHAT_IMAGE_MODEL = "bytedance-seed/seedream-5-0-flash";
+export const CHAT_IMAGE_PROVIDER = "seed";
+export const CHAT_IMAGE_RESOLUTION = "2K";
 export const CHAT_IMAGE_ASPECT_RATIO = "auto";
 export const CHAT_IMAGE_TARGET = {
   model: CHAT_IMAGE_MODEL,
@@ -10,8 +10,7 @@ export const CHAT_IMAGE_TARGET = {
 type ChatImageStatus = {
   enabled: boolean;
   model: string;
-  estimateUsd: null;
-  outputTokenPriceUsd: number;
+  estimateUsd: number;
   priceCheckedAt: string;
   livePrice: boolean;
 };
@@ -24,9 +23,7 @@ export async function chatImageStatus(): Promise<ChatImageStatus> {
   const status: ChatImageStatus = {
     enabled,
     model: CHAT_IMAGE_MODEL,
-    // Auto dimensions/quality have no fixed per-image estimate.
-    estimateUsd: null,
-    outputTokenPriceUsd: 0.00003,
+    estimateUsd: 0.018,
     priceCheckedAt: "2026-10-26",
     livePrice: false,
   };
@@ -44,15 +41,16 @@ export async function chatImageStatus(): Promise<ChatImageStatus> {
     const prices: Price[] = endpoint?.pricing?.filter(
       (price: Price) => price.billable === "output_image",
     ) ?? [];
-    const price = prices.find((item) => item.unit === "token" && !item.variant);
+    const price = prices.find((item) => item.unit === "image" && item.variant === CHAT_IMAGE_RESOLUTION.toLowerCase())
+      ?? prices.find((item) => item.unit === "image" && !item.variant);
     if (!price || !Number.isFinite(price.cost_usd) || price.cost_usd < 0)
-      throw new Error("Missing image token price");
-    status.outputTokenPriceUsd = price.cost_usd;
+      throw new Error("Missing image price");
+    status.estimateUsd = price.cost_usd;
     status.priceCheckedAt = new Date().toISOString();
     status.livePrice = true;
     cached = status;
   } catch {
-    // Retain the dated token rate when the public price catalog is unavailable.
+    // Retain the dated image estimate when the public price catalog is unavailable.
   }
   return status;
 }

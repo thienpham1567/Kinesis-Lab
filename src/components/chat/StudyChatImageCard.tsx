@@ -26,7 +26,7 @@ export function StudyChatImageCard({
     return (
       <p className="inline-flex items-center gap-2 text-xs text-slate">
         <Icon name="spinner" className="size-4 animate-spin" />
-        Đang chuẩn bị nội dung
+        Đang chuẩn bị nội dung và tạo hình…
       </p>
     );
   if (attachment.state === "generating")
@@ -75,10 +75,13 @@ export function StudyChatImageCard({
         <button type="button" className="font-medium text-cobalt" onClick={onOpen}>
           Mở ảnh lớn
         </button>
-        {" · "}
-        <button type="button" className="font-medium text-cobalt" onClick={onEdit}>
-          Chỉnh sửa ảnh
-        </button>
+        {receipt?.storage !== "browser-only" && <>
+          {" · "}
+          <button type="button" className="font-medium text-cobalt" onClick={onEdit}>
+            Chỉnh sửa ảnh
+          </button>
+        </>}
+        {receipt?.storage === "browser-only" && <p>Ảnh chưa lưu trên máy chủ. Hãy tải ảnh gốc để giữ lại.</p>}
         {brief && (
           <details>
             <summary className="cursor-pointer font-medium text-ink">Chữ đã yêu cầu model vẽ</summary>

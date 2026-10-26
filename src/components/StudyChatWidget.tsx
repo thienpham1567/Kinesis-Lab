@@ -3,14 +3,17 @@
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { readNdjson } from "@/lib/ai/stream-events";
 import type { ChatSourceStatus, RagHit, PubMedPaper } from "@/lib/types";
+import type { EvidenceIndexEntry } from "@/lib/clinical/evidence-registry";
+import { answerCitationsFromEvidence, type ChatAnswerCitation } from "@/lib/chat/answer-citations";
 import {
   illustrationContextFromChat,
+  imagePromptMessageId,
   parseStudyChatStore,
   serializeStudyChatStore,
   toChatMessages,
 } from "@/lib/chat/study-messages";
 import { catalogChatImageSources } from "@/lib/chat/illustration-sources";
-import type { ChatImageSource, StudyChatMessage } from "@/lib/chat/illustration-types";
+import type { ChatImageAttachment, ChatImageSource, StudyChatMessage } from "@/lib/chat/illustration-types";
 import { MarkdownAnswer } from "./MarkdownAnswer";
 import { Icon } from "./WorkspaceUI";
 import { StudyChatImageCard } from "./chat/StudyChatImageCard";
@@ -206,15 +209,18 @@ export function StudyChatWidget({
       let assistant = "";
       let complete = false;
       let nextRag: RagHit[] = [];
+      let nextCitations: ChatAnswerCitation[] = [];
       for await (const evt of readNdjson<{
         type: string; text?: string; pubmed?: PubMedPaper[]; rag?: RagHit[];
         sourceStatus?: ChatSourceStatus; error?: string;
+        curated?: EvidenceIndexEntry[];
       }>(res.body)) {
         if (controller.signal.aborted) return;
         if (evt.type === "meta") {
           setPubmed(evt.pubmed ?? []);
           nextRag = evt.rag ?? [];
           setRag(nextRag);
+          nextCitations = answerCitationsFromEvidence(evt.curated ?? []);
           setSourceStatus(evt.sourceStatus ?? null);
         } else if (evt.type === "token") {
           assistant += evt.text ?? "";
@@ -226,6 +232,7 @@ export function StudyChatWidget({
               content: assistant,
               attachments: [],
               sources: ragSources(nextRag),
+              citations: nextCitations,
             },
           ]);
         } else if (evt.type === "error") {
@@ -251,12 +258,20 @@ export function StudyChatWidget({
     }
   }
 
-  function openIllustrate(preferredAssistantId?: string | null) {
-    const ctx = illustrationContextFromChat(messages, preferredAssistantId);
+  function openIllustrate(preferredMessageId?: string | null, editImageId: string | null = null, instructionOverride?: string) {
+    const ctx = illustrationContextFromChat(messages, preferredMessageId);
     setSourceMessageId(ctx.sourceMessageId);
+    setParentImageId(editImageId);
     setMode("illustrate");
-    setImageInstruction((current) => (current.trim() ? current : ctx.instruction));
-    void images.ensureSession();
+    setImageInstruction((current) => instructionOverride ?? (preferredMessageId
+      ? ctx.instruction
+      : input.trim() ? input : current.trim() ? current : ctx.instruction));
+  }
+
+  function reopenImage(attachment: ChatImageAttachment, edit: boolean) {
+    const promptId = imagePromptMessageId(messages, attachment.imageId);
+    const instruction = messages.find((message) => message.id === promptId)?.content;
+    openIllustrate(attachment.sourceMessageId, edit ? attachment.imageId : null, instruction);
   }
 
   function createFromComposer() {
@@ -347,12 +362,12 @@ export function StudyChatWidget({
                     className={`[overflow-wrap:anywhere] ${m.role === "user" ? "ml-auto max-w-[88%] rounded-2xl rounded-tr-sm bg-cobalt-soft px-3.5 py-2.5" : ""}`}
                   >
                     {m.role === "assistant" && m.content ? (
-                      <MarkdownAnswer text={m.content} className="text-[13px]" />
+                      <MarkdownAnswer text={m.content} citations={m.citations} className="text-[13px]" />
                     ) : m.content ? (
                       <div className="whitespace-pre-wrap text-[13px] leading-6 text-ink">
                         {m.content}
                       </div>
-                    ) : (
+                    ) : m.attachments.length ? null : (
                       <div className="whitespace-pre-wrap text-[13px] leading-6 text-ink">
                         <span className="inline-flex items-center gap-2 text-xs text-slate">
                           <Icon
@@ -363,13 +378,13 @@ export function StudyChatWidget({
                         </span>
                       </div>
                     )}
-                    {m.role === "assistant" && m.content && (
+                    {m.content && (
                       <button
                         type="button"
-                        className="mt-2 text-xs font-medium text-cobalt"
+                        className="mt-2 inline-flex min-h-9 items-center rounded-lg px-2 text-xs font-medium text-cobalt hover:bg-cobalt/10"
                         onClick={() => openIllustrate(m.id)}
                       >
-                        Minh họa nội dung này
+                        {m.role === "user" ? "Tạo hình" : "Minh họa nội dung này"}
                       </button>
                     )}
                     {m.attachments.map((attachment) => (
@@ -380,11 +395,8 @@ export function StudyChatWidget({
                         brief={images.details[attachment.imageId]?.brief as never}
                         receipt={images.details[attachment.imageId]?.receipt as never}
                         onOpen={() => images.openViewer(attachment.imageId)}
-                        onEdit={() => {
-                          setParentImageId(attachment.imageId);
-                          openIllustrate(attachment.sourceMessageId);
-                        }}
-                        onRetry={() => openIllustrate(attachment.sourceMessageId)}
+                        onEdit={() => reopenImage(attachment, true)}
+                        onRetry={() => reopenImage(attachment, false)}
                         onRecover={() => images.recover(attachment.imageId, attachment.sourceMessageId)}
                       />
                     ))}
@@ -462,8 +474,8 @@ export function StudyChatWidget({
               instruction={imageInstruction}
               onInstruction={setImageInstruction}
               contextTitle={illustrationCtx.contextTitle}
-              estimate={images.estimate}
               busy={images.imageBusy}
+              chatBusy={busy}
               onCreate={createFromComposer}
             />
             {mode === "ask" && (

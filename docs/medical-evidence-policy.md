@@ -40,4 +40,6 @@ Public literature searches use only a fixed topic vocabulary selected from the c
 
 ## Regression checks
 
+Study-image terminology update 2026-10-26: `src/lib/chat/positional-evidence.ts` records claim-level comparisons for anatomical reference directions, laterality and axillary reference lines. Reading scopes are OpenStax A&P 2e §1.6 (Anatomical Position, Directional Terms, Body Planes), UNLV School of Medicine terminology page 10 and Loyola's chest reference-line descriptions, accessed 2026-10-26. These support terminology only, not AI pixels, measurements or procedures. No independent reviewer approval is recorded. The image selector now excludes generic composer/learning wording from its fallback topic query; this bounded lexical matching is not a clinical relevance rule.
+
 `scripts/check-evidence-coverage.mjs` checks the exact finite ID inventory, no silent coverage gaps, record/source metadata, truthful reviewer fields, catalog provenance, unknown/prototype IDs, retrieval relevance, bounded context and route integration. Domain-specific scripts retain their narrower checks. These checks establish software/data consistency only; they cannot establish medical truth or clinical validation. Research and integration limits are recorded in `docs/superpowers/reviews/2026-10-20-evidence-integration.md` and the later domain review notes.

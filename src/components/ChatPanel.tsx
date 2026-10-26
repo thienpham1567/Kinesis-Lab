@@ -3,6 +3,7 @@
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
 import { ASSISTANT_EVIDENCE } from "@/lib/clinical/evidence-assessment";
 import type { EvidenceIndexEntry } from "@/lib/clinical/evidence-registry";
+import { answerCitationsFromEvidence, type ChatAnswerCitation } from "@/lib/chat/answer-citations";
 import { readNdjson } from "@/lib/ai/stream-events";
 
 import Link from "next/link";
@@ -156,7 +157,7 @@ export function ChatPanel({
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          messages: next.slice(-11),
+          messages: next.slice(-11).map(({ role, content }) => ({ role, content })),
           clientId: (lockedClientId ?? selectedId) || undefined,
         }),
       });
@@ -167,6 +168,7 @@ export function ChatPanel({
       let assistant = "";
       let complete = false;
       let streamError = false;
+      let nextCitations: ChatAnswerCitation[] = [];
       for await (const evt of readNdjson<{
             type: string;
             text?: string;
@@ -182,10 +184,11 @@ export function ChatPanel({
             setPubmed(evt.pubmed ?? []);
             setModel(evt.model ?? "");
             setCurated(evt.curated ?? []);
+            nextCitations = answerCitationsFromEvidence(evt.curated ?? []);
             setSourceStatus(evt.sourceStatus ?? null);
           } else if (evt.type === "token") {
             assistant += evt.text ?? "";
-            setMessages([...next, { role: "assistant", content: assistant }]);
+            setMessages([...next, { role: "assistant", content: assistant, citations: nextCitations }]);
           } else if (evt.type === "error") {
             streamError = true;
             setError(evt.error ?? "Lỗi xử lý");
@@ -399,7 +402,7 @@ export function ChatPanel({
                 </span>
               </div>
               {m.role === "assistant" && m.content ? (
-                <MarkdownAnswer text={m.content} className="text-sm" />
+                <MarkdownAnswer text={m.content} citations={m.citations} className="text-sm" />
               ) : (
                 <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
                   {m.content ||

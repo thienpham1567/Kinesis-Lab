@@ -1,5 +1,7 @@
 # Sunburst chat image migration — 2026-10-26
 
+Historical rollout. The user subsequently selected Seedream for all image generation; see [the current chat configuration](2026-10-26-seedream-chat-config.md).
+
 User-selected target: `openai/gpt-image-2.5-sunburst`, through OpenRouter's dedicated Images API, pinned to provider `openai`. The subsequent user instruction replaces the former 1K default with automatic sizing.
 
 Status: deployed and promoted to https://kinesis-lab.vercel.app. Source commit `ef3c87a`, pushed to `origin/feature/study-chat-illustrations`. Vercel deployment `dpl_6no2sRhvfWvivKJt3nD7drCQCWtw` is READY.

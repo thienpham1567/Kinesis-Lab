@@ -4,6 +4,7 @@ import type {
   StudyChatMessage,
 } from "./illustration-types";
 import type { ChatMessage } from "@/lib/types";
+import { parseAnswerCitations } from "./answer-citations";
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const ROLES = new Set(["user", "assistant"]);
@@ -80,6 +81,7 @@ export function upgradeStudyMessages(raw: unknown): StudyChatMessage[] {
         content: asText(row.content).slice(0, 20000),
         attachments: asAttachments(row.attachments),
         sources: asSources(row.sources),
+        citations: parseAnswerCitations(row.citations),
       },
     ];
   });
@@ -94,26 +96,31 @@ export function toChatMessages(messages: StudyChatMessage[]): ChatMessage[] {
 
 export function illustrationContextFromChat(
   messages: StudyChatMessage[],
-  preferredAssistantId?: string | null,
+  preferredMessageId?: string | null,
 ) {
-  const assistants = messages.filter((message) => message.role === "assistant" && message.content.trim());
-  const source =
-    (preferredAssistantId ? assistants.find((message) => message.id === preferredAssistantId) : undefined) ??
-    assistants.at(-1) ??
-    null;
+  const candidates = messages.filter((message) => message.content.trim());
+  const source = preferredMessageId
+    ? candidates.find((message) => message.id === preferredMessageId)
+    : candidates.at(-1);
   if (!source)
     return { sourceMessageId: null, instruction: "", selectedContext: "", contextTitle: "" };
   const index = messages.findIndex((message) => message.id === source.id);
-  const user = messages
+  const user = source.role === "user" ? source : messages
     .slice(0, index)
     .reverse()
     .find((message) => message.role === "user" && message.content.trim());
-  const instruction = (user?.content ?? "").trim().slice(0, 1600);
-  const selectedContext = [`Câu hỏi:\n${user?.content ?? ""}`, `Câu trả lời:\n${source.content}`]
+  const instruction = user?.content ?? "";
+  const selectedContext = [`Câu hỏi:\n${instruction}`, ...(source.role === "assistant" ? [`Câu trả lời:\n${source.content}`] : [])]
     .join("\n\n")
     .slice(0, 4000);
   const contextTitle = (user?.content || source.content).replace(/\s+/g, " ").trim().slice(0, 80);
   return { sourceMessageId: source.id, instruction, selectedContext, contextTitle };
+}
+
+export function imagePromptMessageId(messages: StudyChatMessage[], imageId: string) {
+  const index = messages.findIndex((message) => message.attachments.some((item) => item.imageId === imageId));
+  if (index < 0) return null;
+  return messages.slice(0, index).reverse().find((message) => message.role === "user" && message.content.trim())?.id ?? null;
 }
 
 export function serializeStudyChatStore(input: {
@@ -133,6 +140,7 @@ export function serializeStudyChatStore(input: {
         state: item.state,
       })),
       sources: message.sources,
+      citations: message.citations,
     })),
   });
 }

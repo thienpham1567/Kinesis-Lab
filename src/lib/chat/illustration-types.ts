@@ -48,6 +48,7 @@ export type ChatImageReceipt = {
   promptSha256?: string;
   label: "Hình minh họa AI";
   reviewedBy: null;
+  storage?: "server" | "browser-only";
 };
 
 export type ChatImageAttachment = {
@@ -62,6 +63,7 @@ export type StudyChatMessage = {
   content: string;
   attachments: ChatImageAttachment[];
   sources: ChatImageSource[];
+  citations?: import("./answer-citations").ChatAnswerCitation[];
 };
 
 export type ChatImageErrorCode =

@@ -23,7 +23,12 @@ function fixture({ status = 200, body, includeCost = true, hangMs = 0 } = {}) {
       fetch: async (url, options) => {
         calls.push({ url, options });
         if (hangMs) await new Promise((_, reject) => {
-          options.signal?.addEventListener("abort", () => reject(options.signal.reason));
+          // A real pending fetch keeps Node alive; AbortSignal.timeout alone does not.
+          const timer = setTimeout(() => reject(new Error("Mock fetch did not abort")), 1000);
+          options.signal?.addEventListener("abort", () => {
+            clearTimeout(timer);
+            reject(options.signal.reason);
+          }, { once: true });
         });
         if (status !== 200) return Response.json({ error: { message: "upstream-private-detail" } }, { status });
         return Response.json(body ?? {
@@ -69,52 +74,51 @@ test("raster request pins Seedream, 2K/4:3, n=1 and Vietnamese brief text", asyn
   assert.equal(result.mediaType, "image/png");
 });
 
-test("chat raster uses Sunburst auto dimensions and quality, including reference edits", async () => {
+test("chat raster uses Seedream 2K and automatic aspect ratio, including reference edits", async () => {
   const f = fixture();
   const target = { model: PROTOCOL.model, provider: PROTOCOL.provider };
   await f.requestRasterImage({
     prompt: f.prompt.compileChatIllustrationPrompt(brief),
     resolution: PROTOCOL.resolution,
     aspectRatio: PROTOCOL.aspectRatio,
-    quality: PROTOCOL.quality,
     timeoutMs: 140_000,
     referenceDataUrl: `data:image/png;base64,${png}`,
   }, target);
   assert.equal(f.calls.length, 1);
   const body = JSON.parse(f.calls[0].options.body);
-  assert.equal(body.model, "openai/gpt-image-2.5-sunburst");
-  assert.equal(body.resolution, undefined);
+  assert.equal(body.model, "bytedance-seed/seedream-5-0-flash");
+  assert.equal(body.resolution, "2K");
   assert.equal(body.size, undefined);
   assert.equal(body.aspect_ratio, "auto");
-  assert.equal(body.quality, "auto");
+  assert.equal(body.quality, undefined);
   assert.equal(body.n, 1);
-  assert.deepEqual(body.provider, { only: ["openai"], allow_fallbacks: false });
+  assert.deepEqual(body.provider, { only: ["seed"], allow_fallbacks: false });
   assert.equal(body.input_references[0].image_url.url, `data:image/png;base64,${png}`);
 });
 
-test("auto mode reports the token price without inventing a per-image estimate", async () => {
+test("chat reports Seedream's image price, with a dated estimate when the catalog is unavailable", async () => {
   for (const unavailable of [false, true]) {
     const load = createAppLoader({
       globals: {
         process: { env: { OPENROUTER_API_KEY: "synthetic-only" } },
         fetch: async (url) => {
-          assert.match(url, /openai\/gpt-image-2\.5-sunburst\/endpoints$/);
+          assert.match(url, /bytedance-seed\/seedream-5-0-flash\/endpoints$/);
           if (unavailable) throw new Error("offline");
           return Response.json({ endpoints: [{
-            provider_tag: "openai",
-            pricing: [{ billable: "output_image", unit: "token", cost_usd: 0.00003 }],
+            provider_tag: "seed",
+            pricing: [{ billable: "output_image", unit: "image", cost_usd: 0.018 }],
           }] });
         },
       },
     });
     const config = load("src/lib/chat/image-config.ts");
     assert.equal(config.CHAT_IMAGE_MODEL, PROTOCOL.model);
-    assert.equal(config.CHAT_IMAGE_RESOLUTION, "auto");
+    assert.equal(config.CHAT_IMAGE_RESOLUTION, "2K");
     assert.equal(config.CHAT_IMAGE_ASPECT_RATIO, "auto");
     const status = await config.chatImageStatus();
-    assert.equal(status.model, "openai/gpt-image-2.5-sunburst");
-    assert.equal(status.estimateUsd, null);
-    assert.equal(status.outputTokenPriceUsd, 0.00003);
+    assert.equal(status.model, "bytedance-seed/seedream-5-0-flash");
+    assert.equal(status.estimateUsd, 0.018);
+    assert.equal(status.outputTokenPriceUsd, undefined);
     assert.equal(status.livePrice, !unavailable);
     if (unavailable) assert.equal(status.priceCheckedAt, "2026-10-26");
   }

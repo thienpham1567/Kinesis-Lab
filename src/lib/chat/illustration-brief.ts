@@ -1,5 +1,6 @@
 import type { ChatIllustrationBrief, ChatImageClaim, ChatImageSource } from "./illustration-types";
 import { MEDICAL_ILLUSTRATION_PRETEXT } from "./medical-illustration-policy";
+import { CHAT_IMAGE_MAX_INSTRUCTION } from "./image-limits";
 
 const SUBJECTS = new Set(["anatomy", "movement", "comparison"]);
 const ALLOWED = [
@@ -129,7 +130,7 @@ export async function buildChatIllustrationBrief(input: {
 }): Promise<ChatIllustrationBrief> {
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) throw new BriefError("Chưa cấu hình OPENROUTER_API_KEY trên máy chủ.");
-  const instruction = text(input.instruction, "Mô tả tạo hình", 1600);
+  const instruction = text(input.instruction, "Mô tả tạo hình", CHAT_IMAGE_MAX_INSTRUCTION);
   const selectedContext = input.selectedContext.slice(0, 4000);
   const sourceBlock = JSON.stringify({ sources: input.sources, supportedClaims: input.claims ?? [], limitations: input.evidenceLimitations ?? [] });
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {

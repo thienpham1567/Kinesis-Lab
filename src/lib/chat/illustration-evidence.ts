@@ -1,5 +1,6 @@
 import { normalizeEvidenceQuery, selectCuratedEvidence } from "@/lib/clinical/evidence-registry";
 import type { ChatImageClaim, ChatImageSource } from "./illustration-types";
+import { POSITIONAL_CLAIMS, POSITIONAL_SOURCES } from "./positional-evidence";
 
 const checkedAt = "2026-10-26";
 const elbowSources: ChatImageSource[] = [
@@ -51,10 +52,28 @@ export function resolveChatImageEvidence(query: string, supplied: ChatImageSourc
         claims.push({ ...claim, sourceIds });
     }
   }
-  if (/\b(khuyu|brachialis|biceps brachii|nhi dau canh tay|co canh tay|elbow)\b/.test(normalized)) addPack(elbowSources, elbowClaims);
-  if (/\b(acl|pcl|day chang cheo|khop goi|dau goi|goi phai|goi trai|knee)\b/.test(normalized) || /\bgối\b/iu.test(query.normalize("NFC"))) addPack(kneeSources, kneeClaims);
+  const elbowTopic = /\b(khuyu|brachialis|biceps brachii|nhi dau canh tay|co canh tay|elbow)\b/.test(normalized);
+  const kneeTopic = /\b(acl|pcl|cruciate ligaments?|day chang cheo|khop goi|dau goi|goi phai|goi trai|knee)\b/.test(normalized) || /\bgối\b/iu.test(query.normalize("NFC"));
+  const words = new Set(normalized.split(" "));
+  const directionalPair = [["anterior", "posterior"], ["superior", "inferior"], ["medial", "lateral"], ["proximal", "distal"], ["superficial", "deep"]]
+    .some(pair => pair.every(word => words.has(word)));
+  const explicitPositionTopic = /\b(positional terms|directional terms|anatomical terminology|thuat ngu (ve )?vi tri|midline|midaxillary|axillary line|duong nach (truoc|giua|sau)|ipsilateral|contralateral)\b/.test(normalized);
+  // Region examples must not crowd the actual terminology lesson out of the cap.
+  if (explicitPositionTopic || (directionalPair && !elbowTopic && !kneeTopic)) {
+    addPack(POSITIONAL_SOURCES, POSITIONAL_CLAIMS);
+  } else {
+    if (elbowTopic) addPack(elbowSources, elbowClaims);
+    if (kneeTopic) addPack(kneeSources, kneeClaims);
+  }
   if (!claims.length) {
-    for (const record of selectCuratedEvidence(query, 3)) {
+    // Learning/composer wording alone must not select clinical facts. Otherwise
+    // “Đọc bài / Tự kiểm tra” matches handbook labels and blocks a simple card
+    // for correctly declining to cite unrelated movement research.
+    const topicQuery = normalized
+      .replace(/\bhinh le\b/g, "piriformis")
+      .replace(/\b(chu dong|ro rang|bo cuc|tieu de)\b/g, " ")
+      .replace(/\b(doc|hoc|bai|kiem|tra|hinh|tao|anh|minh|hoa|hai)\b/g, " ");
+    for (const record of selectCuratedEvidence(topicQuery, 3)) {
       limitations.push(...record.evidence.limitations);
       const ids = record.evidence.sources.map((source, index) => addSource({ ...source, id: `app:${record.id}:${index + 1}` }));
       for (const [index, statement] of record.evidence.supportedClaims.slice(0, 4).entries()) {

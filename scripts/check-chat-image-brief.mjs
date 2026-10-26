@@ -120,3 +120,18 @@ test("drops sources the server did not supply", () => {
   );
   assert.equal(evil.sources.length, 0);
 });
+
+test("brief receives a full quoted chat prompt beyond the old 1600-character limit", async () => {
+  let received;
+  const loadBuild = createAppLoader({ globals: {
+    process: { env: { OPENROUTER_API_KEY: "synthetic-only" } },
+    fetch: async (_url, options) => {
+      received = JSON.parse(JSON.parse(options.body).messages[1].content).userRequest;
+      return Response.json({ choices: [{ message: { content: JSON.stringify(valid) } }] });
+    },
+  } });
+  const { buildChatIllustrationBrief } = loadBuild("src/lib/chat/illustration-brief.ts");
+  const instruction = `Đoạn tôi đang đọc:\n"${"Thuật ngữ về vị trí. ".repeat(110)}"\n\nVẽ sơ đồ.`;
+  await buildChatIllustrationBrief({ instruction, selectedContext: "", sources: allowed, deadlineMs: 15_000 });
+  assert.equal(received, instruction);
+});

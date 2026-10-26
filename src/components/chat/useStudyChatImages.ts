@@ -34,9 +34,12 @@ type JobPayload = {
   assetUrl?: string | null;
   errorCode?: string | null;
   error?: string;
+  notice?: string;
 };
 
 function errorText(payload: JobPayload | null, fallback: string) {
+  if (payload?.errorCode === "invalid-brief")
+    return "Chưa chuẩn bị được nội dung hình theo nguồn đã có. Hãy nêu rõ nội dung cần minh họa rồi thử lại.";
   if (payload?.error) return payload.error;
   if (payload?.errorCode === "credit")
     return "OpenRouter chưa đủ credits để tạo ảnh. Nạp credits rồi thử lại.";
@@ -148,7 +151,9 @@ export function useStudyChatImages(input: {
     async (id: string, sourceMessageId: string, conversationId: string, signal: AbortSignal) => {
       while (!signal.aborted) {
         const res = await fetch(`/api/chat/illustrations/${id}`, { signal });
-        const job = (await res.json()) as JobPayload;
+        const job = (await res.json().catch(() => null)) as JobPayload | null;
+        if (!res.ok || !job?.state)
+          throw new Error(errorText(job, "Chưa kiểm tra được trạng thái ảnh. Bạn có thể kiểm tra lại."));
         if (signal.aborted) return job;
         applyJob({ ...job, id }, sourceMessageId, conversationId);
         if (job.state === "succeeded") {
@@ -173,7 +178,7 @@ export function useStudyChatImages(input: {
       sources: ChatImageSource[];
       parentId?: string | null;
     }) => {
-      if (!shouldBillNewImage(opts.reason) || imageBusy) return;
+      if (!shouldBillNewImage(opts.reason) || imageBusy || abort.current) return;
       setError("");
       setNotice("");
       const requestId = crypto.randomUUID();
@@ -191,8 +196,12 @@ export function useStudyChatImages(input: {
       setImageBusy(true);
       const controller = new AbortController();
       abort.current = controller;
+      let requestSent = false;
+      let settledState: JobPayload["state"] | null = null;
       try {
-        await ensureSession();
+        const session = await ensureSession();
+        if (!session.enabled) throw new Error("Máy chủ chưa bật tạo hình. Vui lòng thử lại sau.");
+        requestSent = true;
         const res = await fetch("/api/chat/illustrations", {
           method: "POST",
           headers: {
@@ -219,6 +228,8 @@ export function useStudyChatImages(input: {
             ? job.state
             : "failed";
         applyJob({ ...job, id: requestId, state }, opts.sourceMessageId, conversationId);
+        if (job.notice) setNotice(job.notice);
+        if (state === "succeeded" || state === "failed" || state === "unknown") settledState = state;
         if (job.brief || job.receipt)
           setDetails((current) => ({
             ...current,
@@ -238,7 +249,7 @@ export function useStudyChatImages(input: {
                   receipt: job.receipt as never,
                   savedAt: new Date().toISOString(),
                 });
-                if (!saved.saved) setNotice(saved.notice ?? "");
+                if (!saved.saved) setNotice((current) => [current, saved.notice].filter(Boolean).join(" "));
               }
             }
           }
@@ -255,6 +266,7 @@ export function useStudyChatImages(input: {
         setError(errorText(job, "Chưa tạo được hình minh họa."));
       } catch (err) {
         if (controller.signal.aborted) return;
+        applyJob({ id: requestId, state: settledState ?? (requestSent ? "unknown" : "failed") }, opts.sourceMessageId, conversationId);
         setError(err instanceof Error ? err.message : "Không gửi được yêu cầu tạo hình.");
       } finally {
         if (abort.current === controller) {
@@ -285,10 +297,27 @@ export function useStudyChatImages(input: {
     cancelWait,
     openViewer: (id: string) => setViewerId(id),
     closeViewer: () => setViewerId(null),
-    recover: (id: string, sourceMessageId: string) => {
+    recover: async (id: string, sourceMessageId: string) => {
+      if (abort.current) return;
       const controller = new AbortController();
       abort.current = controller;
-      void poll(id, sourceMessageId, conversationRef.current, controller.signal);
+      const conversationId = conversationRef.current;
+      setError("");
+      setImageBusy(true);
+      try {
+        const job = await poll(id, sourceMessageId, conversationId, controller.signal);
+        if (job?.state === "failed" || job?.state === "unknown")
+          setError(errorText(job, "Chưa tạo được hình minh họa."));
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        applyJob({ id, state: "unknown" }, sourceMessageId, conversationId);
+        setError(err instanceof Error ? err.message : "Chưa kiểm tra được trạng thái ảnh.");
+      } finally {
+        if (abort.current === controller) {
+          abort.current = null;
+          setImageBusy(false);
+        }
+      }
     },
   };
 }

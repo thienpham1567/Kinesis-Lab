@@ -28,6 +28,7 @@ import {
   chatImageStatus,
 } from "@/lib/chat/image-config";
 import type { ChatImageErrorCode, ChatImageReceipt } from "@/lib/chat/illustration-types";
+import { CHAT_IMAGE_MAX_INSTRUCTION } from "@/lib/chat/image-limits";
 
 const POST_KEYS = [
   "requestId",
@@ -43,10 +44,14 @@ const DEADLINE_MS = 170_000;
 const BRIEF_MS = 20_000;
 const IMAGE_MS = 140_000;
 const UPLOAD_MS = 10_000;
+const MAX_UPLOAD_MS = 60_000;
 
 function sameOrigin(req: Request) {
   const origin = req.headers.get("origin");
-  const host = new URL(req.url).origin;
+  const url = new URL(req.url);
+  // Next can reconstruct req.url with its internal hostname. Host is the
+  // browser-facing authority; do not trust arbitrary forwarded-host headers.
+  const host = `${url.protocol}//${req.headers.get("host") ?? url.host}`;
   if (origin) return origin === host;
   if (req.headers.get("sec-fetch-site") === "same-origin") return true;
   const referer = req.headers.get("referer");
@@ -94,12 +99,10 @@ export async function chatIllustrationGET(req: Request) {
     model: status.model,
     promptVersion: MEDICAL_ILLUSTRATION_POLICY_VERSION,
     estimateUsd: status.estimateUsd,
-    outputTokenPriceUsd: status.outputTokenPriceUsd,
     priceCheckedAt: status.priceCheckedAt,
     livePrice: status.livePrice,
     resolution: CHAT_IMAGE_RESOLUTION,
     aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
-    quality: "auto",
   });
 }
 
@@ -115,8 +118,8 @@ function parsePost(raw: unknown) {
     throw new ImageInputError("Mã cuộc chat không hợp lệ.");
   if (typeof body.sourceMessageId !== "string" || !UUID.test(body.sourceMessageId))
     throw new ImageInputError("Mã câu trả lời không hợp lệ.");
-  if (typeof body.instruction !== "string" || !body.instruction.trim() || body.instruction.length > 1600)
-    throw new ImageInputError("Mô tả tối đa 1.600 ký tự.");
+  if (typeof body.instruction !== "string" || !body.instruction.trim() || body.instruction.length > CHAT_IMAGE_MAX_INSTRUCTION)
+    throw new ImageInputError("Mô tả tối đa 20.000 ký tự.");
   if (body.selectedContext !== undefined && (typeof body.selectedContext !== "string" || body.selectedContext.length > 4000))
     throw new ImageInputError("Ngữ cảnh chọn không hợp lệ.");
   if (!Array.isArray(body.sourceIds) || body.sourceIds.length > 8 || body.sourceIds.some((id) => typeof id !== "string" || id.length > 120))
@@ -234,21 +237,34 @@ export async function chatIllustrationPOST(req: Request) {
       prompt: compiledPrompt,
       resolution: CHAT_IMAGE_RESOLUTION,
       aspectRatio: CHAT_IMAGE_ASPECT_RATIO,
-      quality: "auto",
       timeoutMs: imageBudget,
       referenceDataUrl,
     }, CHAT_IMAGE_TARGET);
-    const upload = await Promise.race([
+    // Short generations leave ample time to upload a full-size raster. Keep
+    // the total deadline, rather than discarding a billed image after 10s.
+    const uploadMs = Math.max(1, Math.min(MAX_UPLOAD_MS, remain()));
+    let uploadTimer: ReturnType<typeof setTimeout> | undefined;
+    let upload: { storagePath: string | null; assetUrl: string };
+    let notice: string | undefined;
+    try {
+      upload = await Promise.race([
       uploadChatIllustration({
         ownerHash: session.ownerHash,
         id: job.id,
         bytes: raster.bytes,
         mediaType: raster.mediaType,
       }),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new ImageInputError("Lưu ảnh vượt 10 giây.", 502)), UPLOAD_MS),
-      ),
-    ]);
+      new Promise<never>((_, reject) => {
+        uploadTimer = setTimeout(() => reject(new ImageInputError("Hết thời gian lưu ảnh. Hãy kiểm tra trạng thái trước khi tạo lại.", 502)), uploadMs);
+      }),
+      ]).finally(() => clearTimeout(uploadTimer));
+    } catch (err) {
+      // A completed, billed raster is still useful when cloud storage is slow.
+      // Bound the inline fallback to keep the JSON response below hosting caps.
+      if (raster.bytes.length > 3 * 1024 * 1024) throw err;
+      upload = { storagePath: null, assetUrl: `data:${raster.mediaType};base64,${raster.bytes.toString("base64")}` };
+      notice = "Ảnh đã tạo xong nhưng chưa lưu trên máy chủ. Bạn vẫn có thể xem, tải và lưu ảnh trên trình duyệt này.";
+    }
     const status = await chatImageStatus();
     const receipt: ChatImageReceipt = {
       id: job.id,
@@ -271,6 +287,7 @@ export async function chatIllustrationPOST(req: Request) {
       promptSha256: hashBytes(compiledPrompt),
       label: ILLUSTRATION_LABEL,
       reviewedBy: null,
+      storage: upload.storagePath ? "server" : "browser-only",
     };
     const saved = await store.update(job.id, session.ownerHash, {
       state: "succeeded",
@@ -279,7 +296,7 @@ export async function chatIllustrationPOST(req: Request) {
       storagePath: upload.storagePath,
       errorCode: null,
     });
-    return json(publicJob(saved ?? job, upload.assetUrl));
+    return json({ ...publicJob(saved ?? job, upload.assetUrl), ...(notice ? { notice } : {}) });
   } catch (err) {
     const timedOut =
       (err instanceof Error && err.name === "TimeoutError") ||
