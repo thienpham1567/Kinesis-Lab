@@ -1,5 +1,6 @@
 import type { AtlasArea, AtlasStructure } from "./atlas-3d";
 import type { MuscleGroupId } from "./muscle-hypertrophy-atlas";
+import { atlasStructureName } from "./atlas-names";
 
 // Display preferences only; these do not encode motion or anatomical measurements.
 export function preferredTrainingView(group: MuscleGroupId) {
@@ -21,7 +22,7 @@ export function sourceStructureLabel(structure: AtlasStructure) {
       : structure.side === "right"
         ? "phải"
         : "không phân bên";
-  return `${structure.label} · ${side} — ${structure.english}`;
+  return `${atlasStructureName(structure)} · ${side}`;
 }
 
 export function visibleObservationSelection(

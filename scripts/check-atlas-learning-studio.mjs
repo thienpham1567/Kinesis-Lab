@@ -105,7 +105,7 @@ test("all muscular-layer source names have paired display names and both-languag
     assert.ok(vi.length > 0 && vi !== structure.english);
     assert.equal(
       names.atlasStructureName(structure),
-      `${vi} · ${structure.english}`,
+      `${vi} · ${names.atlasShortEnglishName(structure)}`,
     );
     for (const query of [vi, structure.english])
       assert.ok(

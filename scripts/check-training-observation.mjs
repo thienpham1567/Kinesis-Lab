@@ -1,5 +1,14 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { registerHooks } from 'node:module';
+// Next resolves extensionless local TypeScript dependencies; mirror that here.
+const hook = registerHooks({resolve(specifier, context, nextResolve) {
+  if (specifier.startsWith('.') && context.parentURL?.includes('/src/')) {
+    const file = new URL(`${specifier}.ts`, context.parentURL);
+    if (existsSync(file)) return nextResolve(file.href, context);
+  }
+  return nextResolve(specifier, context);
+}});
 const policy = await import('../src/components/atlas3d/render-policy.ts');
 assert.equal(typeof policy.presentationBackground, 'function', 'observation backgrounds must be implemented');
 assert.equal(policy.presentationBackground('light'), 0xeeefeb);
@@ -25,12 +34,6 @@ const heads=manifest.structures.filter(s=>/biceps femoris/i.test(s.english));
 assert.equal(new Set(heads.map(observation.sourceStructureLabel)).size,heads.length,'source labels distinguish long/short heads');
 console.log('Training observation: backgrounds, preferred views, source labels, region/layer/isolation selection passed.');
 
-// Resolve this existing extensionless TS import for the Node-only method check.
-const {registerHooks} = await import('node:module');
-const hook = registerHooks({resolve(specifier, context, nextResolve) {
-  if (specifier === './render-policy' && context.parentURL?.endsWith('/studio-renderer.ts')) return nextResolve('./render-policy.ts', context);
-  return nextResolve(specifier, context);
-}});
 const {StudioRenderer}=await import('../src/components/atlas3d/studio-renderer.ts');
 const {Scene}=await import('three');
 const fixture={scene:new Scene(),renderer:{setClearColor() {}}};

@@ -11,7 +11,7 @@ import {
 import { RegionLearningRail } from "./RegionLearningRail";
 import { atlasAreaHref, regionLearningSteps } from "./region-learning";
 import { EmptyState, Icon } from "@/components/WorkspaceUI";
-import { atlasStructureName } from "@/lib/clinical/atlas-names";
+import { AtlasStructureName } from "./AtlasStructureName";
 import { AtlasTerminologySources } from "./AtlasTerminologySources";
 import {
   ATLAS_AREAS,
@@ -428,7 +428,7 @@ export default function Atlas3DExplorer({
                 />
                 <span className="min-w-0 break-words">
                   <span className="block text-xs font-semibold leading-5">
-                    {atlasStructureName(structure)}
+                    <AtlasStructureName structure={structure} />
                   </span>
                   <span className="block text-xs leading-5 text-slate">
                     {sideLabel(structure)}
@@ -467,7 +467,7 @@ export default function Atlas3DExplorer({
           <div>
             <p className="eyebrow">Cấu trúc đã chọn</p>
             <h3 className="mt-1 text-lg font-semibold tracking-tight text-ink">
-              {atlasStructureName(selected)}
+              <AtlasStructureName structure={selected} />
             </h3>
             <dl className="mt-3 space-y-2 text-xs leading-5">
               <div>
@@ -818,7 +818,7 @@ export default function Atlas3DExplorer({
                   </p>
                   <p className="mt-1 break-words text-sm font-semibold leading-6 text-ink">
                     {selected
-                      ? atlasStructureName(selected)
+                      ? <AtlasStructureName structure={selected} />
                       : "Chọn một cấu trúc để bắt đầu"}
                   </p>
                 </div>

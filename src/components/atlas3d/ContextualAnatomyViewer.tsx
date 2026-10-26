@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { AtlasLayer, AtlasManifest } from "@/lib/clinical/atlas-3d";
 import { atlasStructureName } from "@/lib/clinical/atlas-names";
+import { AtlasStructureName, AtlasSourceNames } from "./AtlasStructureName";
 import {
   completeContextBundle,
   contextForStructure,
@@ -318,11 +319,12 @@ function ContextualAnatomyPanel({
             ))}
           </select>
         </label>
-        <p className="text-xs leading-5 text-slate" aria-live="polite">
+        <div className="text-xs leading-5 text-slate" aria-live="polite">
           {selected
-            ? `${atlasStructureName(selected)}${selected.side ? ` · bên ${selected.side === "left" ? "trái" : "phải"}` : ""}`
+            ? <AtlasStructureName structure={selected} withSide className="font-semibold text-ink" />
             : `${options.length} cấu trúc có thể chọn`}
-        </p>
+        </div>
+        {selected && <AtlasSourceNames structure={selected} />}
         <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
