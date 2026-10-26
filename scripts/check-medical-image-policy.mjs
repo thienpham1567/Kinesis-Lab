@@ -36,6 +36,8 @@ test("medical evidence is selected locally with traceable, bounded claims", () =
   }
   const unrelated = resolveChatImageEvidence("infographic học ngoại ngữ", []);
   assert.equal(unrelated.claims.some(x => x.id.startsWith("elbow:") || x.id.startsWith("knee:")), false);
+  const called = resolveChatImageEvidence("gọi tên các bước học ngoại ngữ", []);
+  assert.equal(called.claims.some(x => x.id.startsWith("knee:")), false);
 });
 
 test("brief canonicalizes sources and claim statements rather than trusting model metadata", () => {

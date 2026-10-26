@@ -46,7 +46,7 @@ export function resolveChatImageEvidence(query: string, supplied: ChatImageSourc
     }
   }
   if (/\b(khuyu|brachialis|biceps brachii|nhi dau canh tay|co canh tay|elbow)\b/.test(normalized)) addPack(elbowSources, elbowClaims);
-  if (/\b(acl|pcl|day chang cheo|goi|knee)\b/.test(normalized)) addPack(kneeSources, kneeClaims);
+  if (/\b(acl|pcl|day chang cheo|khop goi|dau goi|goi phai|goi trai|knee)\b/.test(normalized) || /\bgối\b/iu.test(query.normalize("NFC"))) addPack(kneeSources, kneeClaims);
   if (!claims.length) {
     for (const record of selectCuratedEvidence(query, 3)) {
       limitations.push(...record.evidence.limitations);
