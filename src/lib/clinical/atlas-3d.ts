@@ -92,7 +92,21 @@ export function resolveAtlasSearch(
 ): AtlasSearchResult {
   if (!query.trim())
     return { kind: "idle", results: searchStructures(structures, "", area), targets: [], area };
-  const results = searchStructures(structures, query, "full");
+  const found = searchStructures(structures, query, "full");
+  const normalizedQuery = normalizeAnatomyText(query).replace(/\s+/g, " ");
+  // A complete catalog name wins over incidental matches such as Brachialis
+  // inside Coracobrachialis, or Vietnamese syllables appearing in other words.
+  const exact = found.filter((structure) => {
+    const names = [atlasVietnameseName(structure), atlasShortEnglishName(structure), structure.english, structure.latin, structure.label]
+      .filter((name): name is string => !!name)
+      .flatMap((name) => [name, name.split(" · ")[0]])
+      .map((name) => normalizeAnatomyText(name).replace(/\s+/g, " "));
+    const sides = structure.side === "left" ? ["trai", "left"] : structure.side === "right" ? ["phai", "right"] : [];
+    return names.some((name) => name === normalizedQuery || sides.some((side) =>
+      `${name} ${side}` === normalizedQuery || `${side} ${name}` === normalizedQuery,
+    ));
+  });
+  const results = exact.length ? exact : found;
   if (!results.length) return { kind: "missing", results, targets: [], area };
   // Named heads/parts in the source catalog can share a parent name. This is
   // display-name grammar, not an inferred anatomical or functional grouping.

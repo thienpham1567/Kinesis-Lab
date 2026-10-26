@@ -6,6 +6,7 @@ import { createAppLoader } from "./lib/load-app-module.mjs";
 const { structures } = JSON.parse(readFileSync(new URL("../public/anatomy/3d/manifest.json", import.meta.url)));
 const load = createAppLoader();
 const atlas = load("src/lib/clinical/atlas-3d.ts");
+const names = load("src/lib/clinical/atlas-names.ts");
 const ids = rows => Array.from(rows, row => row.id).sort();
 const internal = structures.filter(row => row.english === "Internal abdominal oblique muscle");
 
@@ -54,6 +55,34 @@ test("ambiguous names require a choice rather than selecting an unrelated muscle
     assert.equal(result.kind, "ambiguous", query);
     assert.ok(result.results.length > 2);
     assert.equal(result.targets.length, 0);
+  }
+});
+
+test("every displayed muscle name takes priority over incidental substring matches", () => {
+  for (const structure of structures.filter(row => row.layer === "muscle")) {
+    for (const query of [names.atlasShortEnglishName(structure), names.atlasVietnameseName(structure)].filter(Boolean)) {
+      const result = atlas.resolveAtlasSearch(structures, query, "full");
+      assert.equal(result.kind, "match", query);
+      assert.ok(result.targets.some(target => target.id === structure.id), query);
+      const family = names.atlasShortEnglishName(structure).split(" · ")[0];
+      assert.ok(result.targets.every(target => names.atlasShortEnglishName(target).split(" · ")[0] === family), query);
+      if (structure.side) {
+        const sideQuery = `${query} ${structure.side === "left" ? "trái" : "phải"}`;
+        const sided = atlas.resolveAtlasSearch(structures, sideQuery, "full");
+        assert.equal(sided.kind, "match", sideQuery);
+        assert.ok(sided.targets.some(target => target.id === structure.id), sideQuery);
+        assert.ok(sided.targets.every(target => target.side === structure.side && names.atlasShortEnglishName(target).split(" · ")[0] === family), sideQuery);
+      }
+    }
+  }
+});
+
+test("exact-name priority also honors Vietnamese side qualifiers", () => {
+  for (const query of ["Brachialis trái", "trái Brachialis", "trai Brachialis", "Cơ cánh tay phải", "Cơ bán gân phải"]) {
+    const result = atlas.resolveAtlasSearch(structures, query, "full");
+    assert.equal(result.kind, "match", query);
+    assert.equal(result.targets.length, 1, query);
+    assert.equal(result.targets[0].side, /trái|trai/.test(query) ? "left" : "right", query);
   }
 });
 
