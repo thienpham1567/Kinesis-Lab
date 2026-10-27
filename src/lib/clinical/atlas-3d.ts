@@ -115,13 +115,10 @@ export function resolveAtlasSearch(
   ));
   if (families.size !== 1 || normalizeAnatomyText(query).length < 2)
     return { kind: "ambiguous", results, targets: [], area };
-  const targetArea = area === "full" || results.every((structure) => structure.areas.includes(area))
-    ? area
-    : ATLAS_AREAS.find((entry) => entry.id !== "full" && results.every((structure) => structure.areas.includes(entry.id)))?.id ?? "full";
-  return { kind: "match", results, targets: results, area: targetArea };
+  return { kind: "match", results, targets: results, area: "full" };
 }
 
-/** Reveal searched tissues while retaining faint surrounding model context. */
+/** Colour only search targets; retain the body and show deep targets as an overlay. */
 export function atlasSearchAppearance(
   structure: Pick<AtlasStructure, "id" | "layer">,
   selectedId: string | null,
@@ -130,11 +127,12 @@ export function atlasSearchAppearance(
 ) {
   if (searchTargetIds?.size) {
     const highlighted = searchTargetIds.has(structure.id);
-    return { highlighted, opacity: highlighted ? 1 : 0.08 };
+    return { highlighted, opacity: highlighted ? 1 : structure.layer === "muscle" ? muscleOpacity : 1, overlay: highlighted };
   }
   return {
     highlighted: structure.id === selectedId,
     opacity: structure.layer === "muscle" ? muscleOpacity : 1,
+    overlay: false,
   };
 }
 

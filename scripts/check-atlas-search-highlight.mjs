@@ -3,7 +3,8 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { createAppLoader } from "./lib/load-app-module.mjs";
 
-const { structures } = JSON.parse(readFileSync(new URL("../public/anatomy/3d/manifest.json", import.meta.url)));
+const manifest = JSON.parse(readFileSync(new URL("../public/anatomy/3d/manifest.json", import.meta.url)));
+const { structures } = manifest;
 const load = createAppLoader();
 const atlas = load("src/lib/clinical/atlas-3d.ts");
 const names = load("src/lib/clinical/atlas-names.ts");
@@ -35,11 +36,11 @@ test("side-qualified searches highlight only the requested side", () => {
   }
 });
 
-test("search can leave the current region and load a bundle containing its targets", () => {
+test("search opens the whole-body bundle even from a regional view", () => {
   const result = atlas.resolveAtlasSearch(structures, "Internal Oblique", "upper");
   assert.equal(result.kind, "match");
-  assert.equal(result.area, "trunk");
-  assert.ok(result.targets.every(row => row.areas.includes(result.area)));
+  assert.equal(result.area, "full");
+  assert.equal(manifest.bundles[result.area].structures, structures.length);
 });
 
 test("source-named heads of one muscle can be highlighted together", () => {
@@ -99,20 +100,23 @@ test("missing and blank queries do not retain search targets or invent catalog e
   assert.equal(JSON.stringify(structures), before);
 });
 
-test("search reveals target tissues fully while keeping surrounding anatomy faint", () => {
+test("search highlights the target over an opaque whole body without fading other anatomy", () => {
   assert.equal(typeof atlas.atlasSearchAppearance, "function");
   const targetIds = new Set(internal.map(row => row.id));
   for (const target of internal) {
     const result = atlas.atlasSearchAppearance(target, null, targetIds, 0);
     assert.equal(result.highlighted, true);
     assert.equal(result.opacity, 1, "even when the muscle slider had hidden the target");
+    assert.equal(result.overlay, true, "deep targets must remain visible over opaque covering tissues");
   }
   for (const layer of ["muscle", "bone", "joint"]) {
     const result = atlas.atlasSearchAppearance({ id: "context", layer }, "context", targetIds, 1);
     assert.equal(result.highlighted, false, "old selection must not stay highlighted");
-    assert.ok(result.opacity > 0 && result.opacity < 0.15);
+    assert.equal(result.opacity, 1, "the rest of the body stays opaque");
+    assert.equal(result.overlay, false);
   }
   assert.equal(atlas.atlasSearchAppearance(internal[0], null, new Set(), 0.4).opacity, 0.4);
   assert.equal(atlas.atlasSearchAppearance({ id: "bone", layer: "bone" }, null, new Set(), 0.4).opacity, 1);
+  assert.equal(atlas.atlasSearchAppearance(internal[0], null, new Set(), 1).overlay, false);
 });
 

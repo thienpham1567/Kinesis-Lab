@@ -263,7 +263,8 @@ export default function Atlas3DExplorer({
     setFocusedGroupId(null);
     setHiddenIds(new Set());
     setIsolatedId(null);
-    setLayers((current) => ({ ...current, ...Object.fromEntries(targets.map((structure) => [structure.layer, true])) }));
+    setLayers({ ...DEFAULT_LAYERS, ...Object.fromEntries(targets.map((structure) => [structure.layer, true])) });
+    setMuscleOpacity(1);
     setShareStatus("");
     setManualShareUrl("");
     if (nextArea !== area) {
@@ -272,7 +273,7 @@ export default function Atlas3DExplorer({
       window.history.replaceState(null, "", atlasAreaHref(window.location.href, nextArea));
       setArea(nextArea);
     }
-    sendCommand("focus");
+    sendCommand("search");
   }
 
   function searchFor(value: string, immediate = false) {
@@ -299,8 +300,7 @@ export default function Atlas3DExplorer({
     if (!structure) return;
     cancelSearch();
     if (query.trim()) {
-      const nextArea = area === "full" || structure.areas.includes(area) ? area : structure.areas[0] ?? "full";
-      focusSearchTargets([structure], nextArea);
+      focusSearchTargets([structure], "full");
       return;
     }
     setSelectedId(id);
@@ -497,7 +497,7 @@ export default function Atlas3DExplorer({
           {search.kind === "missing"
             ? `Không tìm thấy “${query.trim()}” trong mô hình 3D.`
             : searchTargetIds.size
-              ? `Đang tô xanh ${searchTargetIds.size} cấu trúc khớp tên trên 3D. Các lớp khác được làm mờ.`
+              ? `Đang tô xanh ${searchTargetIds.size} cấu trúc trên toàn bộ cơ thể 3D. Cơ sâu được tô màu xuyên lớp che.`
               : `${results.length} kết quả${query.trim() ? " trong mô hình" : " trong vùng"} · ${search.kind === "ambiguous" ? "Tên khớp nhiều cấu trúc khác nhau; chọn kết quả để định vị." : "Chọn tên hoặc nhấn Enter để định vị trên 3D."}`}
         </p>
       </div>

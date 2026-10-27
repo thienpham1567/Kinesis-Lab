@@ -11,6 +11,7 @@ export type CameraCommand = {
     | "left"
     | "right"
     | "focus"
+    | "search"
     | "reset"
     | "hip"
     | "muscle"

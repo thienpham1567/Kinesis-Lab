@@ -422,7 +422,8 @@ export class AtlasStage {
     );
     this.studio.configure(
       quality,
-      shouldUseOcclusion(quality, visibleMuscles, this.props.searchTargetIds?.size ? 0.08 : this.props.muscleOpacity),
+      // Screen-space AO would darken the deliberately visible deep-tissue overlay.
+      !this.props.searchTargetIds?.size && shouldUseOcclusion(quality, visibleMuscles, this.props.muscleOpacity),
     );
   }
 
@@ -470,7 +471,7 @@ export class AtlasStage {
           );
         const appearance = structure
           ? atlasSearchAppearance(structure, props.selectedId, props.searchTargetIds, props.muscleOpacity)
-          : { opacity: 1, highlighted: false };
+          : { opacity: 1, highlighted: false, overlay: false };
         const opacity = appearance.opacity;
         setTissueStudy(
           mesh.material,
@@ -478,6 +479,9 @@ export class AtlasStage {
           studyActive && isHipStudyStructure(id),
         );
         setTissueOpacity(mesh.material, opacity);
+        mesh.material.depthTest = !appearance.overlay;
+        mesh.material.depthWrite = opacity === 1 && !appearance.overlay;
+        mesh.renderOrder = appearance.overlay ? 10 : 0;
         mesh.castShadow = opacity === 1;
         mesh.receiveShadow = opacity === 1;
         shadowsChanged ||=
@@ -610,7 +614,7 @@ export class AtlasStage {
     } else {
       // Fit the visible geometry; use regional bounds only when every layer is off.
       for (const [id, meshes] of this.meshes) {
-        if (this.props.frameIds?.size && !this.props.frameIds.has(id)) continue;
+        if (command.type !== "search" && this.props.frameIds?.size && !this.props.frameIds.has(id)) continue;
         for (const mesh of meshes) if (mesh.visible) box.expandByObject(mesh);
       }
       if (box.isEmpty()) box.setFromObject(this.root);
@@ -631,7 +635,7 @@ export class AtlasStage {
     if (command.type === "left") direction.set(1, 0, 0);
     if (command.type === "right") direction.set(-1, 0, 0);
     if (command.type === "hip") direction.set(1, 0.15, -0.15).normalize();
-    if (command.type === "focus")
+    if (command.type === "focus" || command.type === "search")
       direction
         .copy(this.camera.position)
         .sub(this.controls.target)

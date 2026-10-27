@@ -77,7 +77,7 @@ export class StructureCallouts {
   ) {
     for (const item of this.items) item.button.hidden = item.line.hidden = true;
     if (!enabled || width < 240 || height < 200) return;
-    // Faded context must not hide labels on the searched inner tissue.
+    // Match the deep-tissue colour overlay: covering body surfaces do not hide its labels.
     const visible = [...meshes.values()].flat().filter((mesh) => mesh.visible && (!targetIds?.size || targetIds.has(mesh.userData.structureId)));
     // Bound raycasting and DOM work independently of the full catalog size.
     const candidates = structures.flatMap((structure) => {
