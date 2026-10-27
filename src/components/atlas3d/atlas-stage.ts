@@ -551,13 +551,15 @@ export class AtlasStage {
       }
       const id = ancestor.name;
       const mesh = object as Mesh;
-      sourceMaterials.add(mesh.material);
-      const kind = surfaceKind(mesh.material.name, metadata.get(id)!.layer);
+      const sourceMaterial = mesh.material;
+      sourceMaterials.add(sourceMaterial);
+      const kind = surfaceKind(sourceMaterial.name, metadata.get(id)!.layer);
       mesh.material = createTissueMaterial(
         kind,
         !!mesh.geometry.getAttribute("_thickness") &&
           !!mesh.geometry.getAttribute("_thickness_valid"),
         isHipStudyStructure(id) ? this.study.uniforms : undefined,
+        sourceMaterial.side,
       );
       mesh.userData.structureId = id;
       mesh.userData.tissueKind = kind;

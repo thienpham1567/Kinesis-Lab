@@ -151,6 +151,7 @@ export class CurlStage {
       oldMaterials.add(old);
       const kind = old.name.replace("Kinesis_", "");
       const mat = new THREE.MeshPhysicalMaterial({
+        side: old.side,
         roughness: kind === "muscle" ? 0.48 : 0.65,
         metalness: 0,
         envMapIntensity: 0.55,

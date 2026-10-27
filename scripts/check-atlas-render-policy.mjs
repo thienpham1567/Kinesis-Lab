@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import * as THREE from "three";
 import {
   createTissueMaterial,
   setTissueOpacity,
+  setTissueSelection,
 } from "../src/components/atlas3d/tissue-materials.ts";
 import {
   resolveRenderQuality,
@@ -45,6 +47,24 @@ assert.equal(shouldUseOcclusion("detailed", true, 1), true);
 assert.equal(shouldUseOcclusion("fast", true, 1), false);
 console.log("Atlas rendering policy checks passed (9 assertions).");
 
+const defaultMaterial = createTissueMaterial("muscle");
+assert.equal(defaultMaterial.side, THREE.FrontSide, "unspecified source side retains the front-side default");
+defaultMaterial.dispose();
+for (const side of [THREE.DoubleSide, THREE.BackSide, THREE.FrontSide]) {
+  const material = createTissueMaterial("muscle", false, undefined, side);
+  assert.equal(material.side, side, `replacement preserves source side ${side}`);
+  setTissueSelection(material, "muscle", true);
+  assert.equal(material.side, side, "selection preserves source side");
+  setTissueOpacity(material, 0.5);
+  assert.equal(material.side, side, "transparency preserves source side");
+  setTissueSelection(material, "muscle", false);
+  assert.equal(material.side, side, "clearing selection preserves source side");
+  setTissueOpacity(material, 1);
+  assert.equal(material.side, side, "restoring opacity preserves source side");
+  material.dispose();
+}
+console.log("Source material sidedness lifecycle checks passed (16 assertions).");
+
 const muscle = createTissueMaterial("muscle");
 const originalVersion = muscle.version;
 setTissueOpacity(muscle, 0.5);
@@ -72,7 +92,7 @@ assert.ok(
 muscle.dispose();
 console.log("Tissue transparency lifecycle checks passed (8 assertions).");
 
-const { surfaceKind, setThicknessView, setTissueSelection, TISSUE_COLORS, SELECTION_COLOR } =
+const { surfaceKind, setThicknessView, TISSUE_COLORS, SELECTION_COLOR } =
   await import('../src/components/atlas3d/tissue-materials.ts');
 assert.equal(surfaceKind('Kinesis_tendon', 'muscle'), 'tendon');
 assert.equal(surfaceKind('Kinesis_cartilage', 'bone'), 'cartilage');

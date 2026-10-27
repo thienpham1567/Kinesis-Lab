@@ -77,8 +77,10 @@ export function createTissueMaterial(
   layer: TissueKind,
   hasThickness = false,
   study?: StudyUniforms,
+  sourceSide: THREE.Side = THREE.FrontSide,
 ) {
   const material = new THREE.MeshPhysicalMaterial({
+    side: sourceSide,
     color: TISSUE_COLORS[layer],
     metalness: 0,
     roughness: layer === "bone" ? 0.66 : layer === "muscle" ? 0.48 : 0.4,
