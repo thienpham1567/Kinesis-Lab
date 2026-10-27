@@ -29,8 +29,8 @@ export function RegionLearningOverview({
           Đọc cấu trúc qua từng lớp.
         </h3>
         <p className="mt-2 text-xs leading-6 text-slate">
-          Chọn một bước dưới mô hình. Mở Cấu trúc để tra tên; Kiến thức để đọc
-          nội dung của cấu trúc đã chọn.
+          Tra tên ở thanh tìm kiếm phía trên mô hình. Chọn một bước bên dưới
+          để quan sát theo lớp, hoặc mở Kiến thức để đọc về cấu trúc đã chọn.
         </p>
       </div>
       <div className="space-y-4 border-t border-rule pt-4">

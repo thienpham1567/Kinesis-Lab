@@ -115,7 +115,9 @@ export default function Atlas3DExplorer({
   const [searchTargetIds, setSearchTargetIds] = useState<ReadonlySet<string>>(new Set());
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchFocused = useRef(false);
-  const refocusSearch = useRef(false);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const searchContainer = useRef<HTMLDivElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
   const [focusedGroupId, setFocusedGroupId] = useState<string | null>(null);
   const [limit, setLimit] = useState(80);
   const [command, setCommand] = useState<CameraCommand>({
@@ -208,6 +210,16 @@ export default function Atlas3DExplorer({
     if (searchTimer.current) clearTimeout(searchTimer.current);
   }, []);
 
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    function dismissSuggestions(event: PointerEvent) {
+      if (event.target instanceof Node && !searchContainer.current?.contains(event.target))
+        setSuggestionsOpen(false);
+    }
+    document.addEventListener("pointerdown", dismissSuggestions);
+    return () => document.removeEventListener("pointerdown", dismissSuggestions);
+  }, [suggestionsOpen]);
+
   const search = useMemo(
     () => resolveAtlasSearch(manifest?.structures ?? [], query, area),
     [manifest, query, area],
@@ -246,6 +258,12 @@ export default function Atlas3DExplorer({
     searchTimer.current = null;
   }
 
+  function closeSuggestions(restoreFocus = false) {
+    // Focus first: onFocus may open suggestions, so the final update closes them.
+    if (restoreFocus) searchInput.current?.focus();
+    setSuggestionsOpen(false);
+  }
+
   function clearSearchTargets() {
     cancelSearch();
     searchFocused.current = false;
@@ -268,7 +286,6 @@ export default function Atlas3DExplorer({
     setShareStatus("");
     setManualShareUrl("");
     if (nextArea !== area) {
-      refocusSearch.current = document.activeElement?.id === "atlas-structure-search";
       appliedRoute.current = JSON.stringify([nextArea, null, null, retry]);
       window.history.replaceState(null, "", atlasAreaHref(window.location.href, nextArea));
       setArea(nextArea);
@@ -298,6 +315,7 @@ export default function Atlas3DExplorer({
   function selectStructure(id: string) {
     const structure = manifest?.structures.find((entry) => entry.id === id);
     if (!structure) return;
+    closeSuggestions(!!searchContainer.current?.contains(document.activeElement));
     cancelSearch();
     if (query.trim()) {
       focusSearchTargets([structure], "full");
@@ -462,45 +480,8 @@ export default function Atlas3DExplorer({
     ? `Giải thích giải phẫu và vai trò vận động của ${selected.english}${selected.latin ? ` (${selected.latin})` : ""}${selected.side === "left" ? " bên trái" : selected.side === "right" ? " bên phải" : ""}. Liên hệ với nhóm cơ và các bài tập trong phạm vi PT. Đây là yêu cầu tra cứu cấu trúc, chưa có hồ sơ hay triệu chứng học viên.`
     : "";
 
-  const searchPanel = (
-    <div
-      className={learningActive ? "overflow-hidden" : "panel overflow-hidden"}
-    >
-      <div className="border-b border-rule p-4">
-        <h3 className="text-sm font-semibold text-ink">Tìm cấu trúc</h3>
-        <label htmlFor="atlas-structure-search" className="sr-only">
-          Tên Việt, Anh hoặc Latin
-        </label>
-        <div className="input-with-icon mt-3">
-          <Icon name="search" className="size-4" />
-          <input
-            ref={(element) => {
-              if (element && refocusSearch.current) {
-                element.focus();
-                refocusSearch.current = false;
-              }
-            }}
-            id="atlas-structure-search"
-            type="search"
-            placeholder="Tên Việt, Anh, Latin…"
-            value={query}
-            onChange={(event) => searchFor(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.nativeEvent.isComposing) {
-                event.preventDefault();
-                searchFor(query, true);
-              }
-            }}
-          />
-        </div>
-        <p className="mt-2 text-xs leading-5 text-slate" aria-live="polite">
-          {search.kind === "missing"
-            ? `Không tìm thấy “${query.trim()}” trong mô hình 3D.`
-            : searchTargetIds.size
-              ? `Đang tô xanh ${searchTargetIds.size} cấu trúc trên toàn bộ cơ thể 3D. Cơ sâu được tô màu xuyên lớp che.`
-              : `${results.length} kết quả${query.trim() ? " trong mô hình" : " trong vùng"} · ${search.kind === "ambiguous" ? "Tên khớp nhiều cấu trúc khác nhau; chọn kết quả để định vị." : "Chọn tên hoặc nhấn Enter để định vị trên 3D."}`}
-        </p>
-      </div>
+  const structureList = (
+    <>
       <ul
         className="max-h-80 overflow-y-auto overscroll-contain p-2"
         aria-label="Cấu trúc giải phẫu"
@@ -553,6 +534,15 @@ export default function Atlas3DExplorer({
           </button>
         </div>
       )}
+    </>
+  );
+  const searchPanel = (
+    <div className={learningActive ? "overflow-hidden" : "panel overflow-hidden"}>
+      <div className="border-b border-rule p-4">
+        <h3 className="text-sm font-semibold text-ink">Danh mục cấu trúc</h3>
+        <p className="mt-1 text-xs text-slate">{results.length} kết quả{query.trim() ? ` cho “${query.trim()}”` : " trong vùng"}</p>
+      </div>
+      {structureList}
     </div>
   );
   const knowledgePanel = (
@@ -789,6 +779,70 @@ export default function Atlas3DExplorer({
             ? "Chuyển sang khám phá tự do"
             : "Mở bàn học theo bước"}
         </button>
+      </div>
+      <div
+        ref={searchContainer}
+        role="search"
+        aria-label="Tìm cấu trúc trên mô hình 3D"
+        className="relative z-20 min-w-0 rounded-xl border border-cobalt/30 bg-sheet p-4 sm:p-5"
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setSuggestionsOpen(false);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            event.stopPropagation();
+            closeSuggestions(true);
+          }
+        }}
+      >
+        <h3 className="text-sm font-semibold text-ink">Tìm cơ trên mô hình 3D</h3>
+        <label htmlFor="atlas-structure-search" className="sr-only">Tên Việt, Anh hoặc Latin</label>
+        <div className="input-with-icon mt-2">
+          <Icon name="search" className="size-5 text-cobalt" />
+          <input
+            ref={searchInput}
+            id="atlas-structure-search"
+            type="search"
+            className="min-h-12 border-cobalt/40 text-base"
+            placeholder="Tên cơ, ví dụ: Internal Oblique"
+            aria-describedby="atlas-search-status"
+            value={query}
+            onFocus={() => setSuggestionsOpen(true)}
+            onClick={() => setSuggestionsOpen(true)}
+            onChange={(event) => {
+              setSuggestionsOpen(true);
+              searchFor(event.target.value);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                searchFor(query, true);
+                setSuggestionsOpen(false);
+              }
+            }}
+          />
+        </div>
+        <p id="atlas-search-status" className="mt-2 text-xs leading-5 text-slate" aria-live="polite">
+          {search.kind === "missing"
+            ? `Không tìm thấy “${query.trim()}” trong mô hình 3D.`
+            : searchTargetIds.size
+              ? `Đang tô xanh ${searchTargetIds.size} cấu trúc trên toàn bộ cơ thể 3D. Cơ sâu được tô màu xuyên lớp che.`
+              : query.trim()
+                ? `${results.length} kết quả · ${search.kind === "ambiguous" ? "Chọn tên bên dưới để định vị." : "Nhấn Enter để xem trên 3D."}`
+                : "Tra tên Việt, Anh hoặc Latin để tô màu cơ trên toàn bộ cơ thể 3D."}
+        </p>
+        {suggestionsOpen && query.trim() && results.length > 0 && (
+          <div
+            className="absolute inset-x-0 top-full mt-2 overflow-hidden rounded-xl border border-rule bg-sheet shadow-lg [&_ul]:max-h-56"
+            aria-label="Gợi ý tìm kiếm cấu trúc"
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-rule px-3 py-1">
+              <p className="text-xs font-semibold text-slate">{results.length} kết quả</p>
+              <button type="button" className="min-h-11 px-2 text-xs font-medium text-cobalt" onClick={() => closeSuggestions(true)}>Ẩn gợi ý</button>
+            </div>
+            {structureList}
+          </div>
+        )}
       </div>
       <details
         className="panel overflow-hidden"
