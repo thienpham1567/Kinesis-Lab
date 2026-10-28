@@ -21,6 +21,15 @@ import type {
 
 export const maxDuration = 90;
 
+const CHAT_MODEL_CHOICES = ["google/gemini-2.5-flash", "google/gemini-3.8-flash"] as const;
+
+function chosenChatModel(requested: unknown, fallback: string) {
+  return typeof requested === "string" &&
+    (CHAT_MODEL_CHOICES as readonly string[]).includes(requested)
+    ? requested
+    : fallback;
+}
+
 // Public search receives only fixed topic vocabulary, never the raw question,
 // stored client profile, laboratory values, medication list, or document text.
 const PUBLIC_LITERATURE_TOPICS: readonly [RegExp, string][] = [
@@ -49,7 +58,7 @@ export async function POST(req: Request) {
   if (!process.env.OPENROUTER_API_KEY) {
     return Response.json({ error: "Chưa cấu hình OPENROUTER_API_KEY" }, { status: 503 });
   }
-  let body: { messages: ChatMessage[]; clientId?: string; studyPage?: string };
+  let body: { messages: ChatMessage[]; clientId?: string; studyPage?: string; model?: string };
   try {
     const input = await req.json();
     if (!input || typeof input !== "object" || !Array.isArray(input.messages) ||
@@ -58,12 +67,14 @@ export async function POST(req: Request) {
           !["user", "assistant"].includes((m as ChatMessage).role) ||
           typeof (m as ChatMessage).content !== "string" || (m as ChatMessage).content.length > 20000) ||
         (input.studyPage != null && (typeof input.studyPage !== "string" || input.studyPage.length > 500)) ||
+        (input.model != null && (typeof input.model !== "string" || input.model.length > 80)) ||
         (input.clientId != null && (typeof input.clientId !== "string" || input.clientId.length > 100)) ||
         input.messages.at(-1)?.role !== "user") {
       return Response.json({ error: "Nội dung hội thoại không hợp lệ hoặc quá dài." }, { status: 400 });
     }
     body = { messages: input.messages.map((m: ChatMessage) => ({ role: m.role, content: m.content })),
-      clientId: input.clientId || undefined, studyPage: input.studyPage || undefined };
+      clientId: input.clientId || undefined, studyPage: input.studyPage || undefined,
+      model: typeof input.model === "string" ? input.model : undefined };
   } catch {
     return Response.json({ error: "Không đọc được nội dung câu hỏi." }, { status: 400 });
   }
@@ -140,7 +151,7 @@ export async function POST(req: Request) {
     .filter(Boolean)
     .join("\n\n");
 
-  const model = pickChatModel({ clientId: body.clientId, text: last });
+  const model = chosenChatModel(body.model, pickChatModel({ clientId: body.clientId, text: last }));
   const orMessages = [
     { role: "system" as const, content: system },
     ...messages.slice(-12).map((m) => ({ role: m.role, content: m.content })),

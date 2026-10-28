@@ -1,8 +1,8 @@
 export const MODELS = {
   clinical:
-    process.env.OPENROUTER_MODEL_CLINICAL ?? "google/gemini-2.5-flash",
+    process.env.OPENROUTER_MODEL_CLINICAL ?? "google/gemini-3.8-flash",
   vision: process.env.OPENROUTER_MODEL_VISION ?? "google/gemini-2.5-pro",
-  fast: process.env.OPENROUTER_MODEL_FAST ?? "google/gemini-2.5-flash",
+  fast: process.env.OPENROUTER_MODEL_FAST ?? "google/gemini-3.8-flash",
   embedding:
     process.env.OPENROUTER_MODEL_EMBEDDING ?? "google/gemini-embedding-2",
 } as const;

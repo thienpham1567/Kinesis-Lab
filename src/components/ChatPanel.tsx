@@ -19,7 +19,6 @@ import type { ChatMessage, ChatSourceStatus, Client, PubMedPaper, RagHit } from 
 import { JointDiagramSvg } from "./JointDiagramSvg";
 import { MarkdownAnswer } from "./MarkdownAnswer";
 import { Icon } from "./WorkspaceUI";
-import { IllustrationWorkspace } from "./illustrations/IllustrationWorkspace";
 
 const REGION_CHIP: Record<AnatomyRegionId, string> = {
   cervical: "Cổ",
@@ -65,7 +64,6 @@ export function ChatPanel({
   const composerId = useId();
   const [clientsLoading, setClientsLoading] = useState(true);
   const [clientsError, setClientsError] = useState(false);
-  const [imageWorkspaceOpen, setImageWorkspaceOpen] = useState(false);
   const requestRef = useRef<AbortController | null>(null);
   const inFlight = useRef(false);
 
@@ -215,13 +213,6 @@ export function ChatPanel({
       aria-label="Phiên tư vấn chuyên môn"
     >
       <div className="px-5 pt-4"><ClinicalEvidencePanel evidence={ASSISTANT_EVIDENCE} title="Nguồn, phạm vi và giới hạn trợ lý" /></div>
-      <div className="border-b border-rule bg-canvas/50 px-5 py-3 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div><p className="text-[13px] font-semibold text-ink">Minh họa giải phẫu cơ thể</p><p className="mt-0.5 hidden text-[11px] leading-5 text-slate sm:block">Seedream 5.0 Flash · cơ, xương, gân và thư viện ảnh.</p></div>
-          <button type="button" aria-expanded={imageWorkspaceOpen} className="button-secondary min-h-9 px-3 text-xs" onClick={() => setImageWorkspaceOpen(v => !v)}><Icon name="plus" className="size-4" />{imageWorkspaceOpen ? "Thu gọn công cụ tạo hình" : "Tạo hình Seedream"}</button>
-        </div>
-        <div hidden={!imageWorkspaceOpen} className="mt-5 border-t border-rule pt-5"><IllustrationWorkspace /></div>
-      </div>
       <div className="border-b border-rule px-5 py-4 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">

@@ -26,7 +26,7 @@ for (const c of cases) {
   assert.ok(!events.some(e => e.type === 'error'), `${c.id}: ${JSON.stringify(events.find(e => e.type === 'error'))}`);
   assert.equal(events.at(-1).type, 'done', c.id);
   const meta = events.find(e => e.type === 'meta');
-  assert.equal(meta.model, 'google/gemini-2.5-flash');
+  assert.equal(meta.model, 'google/gemini-3.8-flash');
   assert.equal(meta.sourceStatus.rag.status, 'ready');
   assert.equal(meta.sourceStatus.rag.model, 'google/gemini-embedding-2');
   assert.equal(meta.sourceStatus.rag.dimensions, 1536);
