@@ -24,6 +24,7 @@ function readingScope(correction: AtlasCorrection, access: string) {
   }
   return access
     .replace(/\s*Báo cáo:.*$/u, "")
+    .replace(/\bbone\b/gu, "Hệ xương")
     .replaceAll("thứ tự một-based", "đếm từ trang đầu tài liệu")
     .replaceAll("từng vertex", "từng điểm trên bề mặt mô hình")
     .replaceAll("GLB", "mô hình 3D")
