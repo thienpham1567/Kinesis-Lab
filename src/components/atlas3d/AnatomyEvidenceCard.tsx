@@ -1,35 +1,35 @@
-import { getAnatomyEvidence } from "@/lib/clinical/anatomy-evidence.mjs";
+import { getStructureAnatomyEvidence } from "@/lib/clinical/structure-anatomy-evidence";
 
 export default function AnatomyEvidenceCard({
   structureId,
 }: {
   structureId: string;
 }) {
-  const record = getAnatomyEvidence(structureId);
+  const record = getStructureAnatomyEvidence(structureId);
   if (!record) return null;
-  const entries = Object.entries(record.sources),
-    numbers = new Map(entries.map(([id], i) => [id, i + 1]));
+  const sources = new Map(record.sources.map((source) => [source.id, source]));
+  const numbers = new Map(record.sources.map((source, i) => [source.id, i + 1]));
   return (
     <section
       className="mt-5 border-t border-rule pt-4"
-      aria-label="Giải phẫu có nguồn của cơ mông nhỡ"
+      aria-label={`Giải phẫu có nguồn của ${record.name}`}
     >
-      <p className="eyebrow">Giải phẫu có nguồn</p>
+      <p className="eyebrow">Giải phẫu có nguồn · {record.name}</p>
       <p className="mt-2 text-xs leading-5 text-slate">
         Đối chiếu tài liệu:{" "}
-        {record.review.literatureCheckedAt.split("-").reverse().join("/")}. Các nguồn
+        {record.literatureCheckedAt.split("-").reverse().join("/")}. Các nguồn
         mô tả giải phẫu đại thể; không xác nhận tọa độ điểm bám hoặc hướng sợi trên mesh.
       </p>
       <dl className="mt-3 space-y-3 text-xs leading-6">
-        {record.facts.map((fact) => (
+        {record.claims.map((fact) => (
           <div key={fact.id}>
             <dt className="font-semibold text-ink">{fact.label}</dt>
             <dd className="text-slate">
               {fact.text}{" "}
-              {fact.sources.map((id) => (
+              {fact.sourceIds.map((id) => (
                 <a
                   key={id}
-                  href={record.sources[id as keyof typeof record.sources].url}
+                  href={sources.get(id)!.url}
                   target="_blank"
                   rel="noreferrer"
                   className="ml-1 font-mono text-cobalt underline underline-offset-2"
@@ -47,15 +47,15 @@ export default function AnatomyEvidenceCard({
           Nguồn & phạm vi đối chiếu
         </summary>
         <ol className="mt-2 space-y-2 text-xs leading-5">
-          {entries.map(([id, source]) => (
-            <li key={id}>
+          {record.sources.map((source) => (
+            <li key={source.id}>
               <a
                 href={source.url}
                 target="_blank"
                 rel="noreferrer"
                 className="text-cobalt underline underline-offset-2"
               >
-                [{numbers.get(id)}] {source.label}
+                [{numbers.get(source.id)}] {source.title}
               </a>
               <p className="mt-0.5 text-slate">
                 Đối chiếu {source.checkedAt}: {source.access}
@@ -63,21 +63,28 @@ export default function AnatomyEvidenceCard({
             </li>
           ))}
         </ol>
-        <p className="mt-3 text-xs leading-6 text-slate">
-          {record.architectureNote}{" "}
-          {record.architectureSources.map((id) => (
-            <a
-              key={id}
-              href={record.sources[id as keyof typeof record.sources].url}
-              target="_blank"
-              rel="noreferrer"
-              className="ml-1 text-cobalt underline underline-offset-2"
-              aria-label={"Nguồn " + numbers.get(id) + " về cấu trúc cơ và gân"}
-            >
-              [{numbers.get(id)}]
-            </a>
+        {record.architectureNote && !!record.architectureSources?.length && (
+          <p className="mt-3 text-xs leading-6 text-slate">
+            {record.architectureNote}{" "}
+            {record.architectureSources.map((id) => (
+              <a
+                key={id}
+                href={sources.get(id)!.url}
+                target="_blank"
+                rel="noreferrer"
+                className="ml-1 text-cobalt underline underline-offset-2"
+                aria-label={"Nguồn " + numbers.get(id) + " về cấu trúc cơ và gân"}
+              >
+                [{numbers.get(id)}]
+              </a>
+            ))}
+          </p>
+        )}
+        <ul className="mt-3 list-disc space-y-2 pl-4 text-xs leading-6 text-slate">
+          {record.limitations.map((limitation) => (
+            <li key={limitation}>{limitation}</li>
           ))}
-        </p>
+        </ul>
         <p className="mt-2 text-xs leading-6 text-slate">
           {record.fiberMapping.reason} Nhãn 3D chỉ chỉ vùng vật liệu của mô hình
           nguồn, không xác nhận điểm nguyên ủy, bám tận hay độ dày mô thật.

@@ -593,7 +593,12 @@ export default function Atlas3DExplorer({
           )}
           <AnatomyEvidenceCard structureId={selected.id} />
           {muscleGroup && (
-            <div className="space-y-3">
+            <section className="space-y-3" aria-label="Nhóm cơ liên quan">
+              <h4 className="eyebrow">Nhóm cơ liên quan</h4>
+              <p className="text-xs leading-5 text-slate">
+                Nội dung dưới đây mô tả cả nhóm cơ, không phải nguyên ủy, bám tận
+                hay thần kinh riêng của cấu trúc đang chọn.
+              </p>
               <Link
                 href={trainingHref("muscle", muscleGroup.id)}
                 className="button-primary w-full"
@@ -601,7 +606,7 @@ export default function Atlas3DExplorer({
                 Giải phẫu nhóm & bài tập liên quan →
               </Link>
               <MuscleStudyCard muscle={muscleGroup} compact />
-            </div>
+            </section>
           )}
           <div className="border-t border-rule pt-3">
             <p className="text-xs font-semibold text-ink">

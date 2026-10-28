@@ -462,7 +462,12 @@ const gluteusMedius: StructureAnatomyEvidence | null = originalGluteusMedius ? {
 } : null;
 
 const byStructureId = new Map<string, StructureAnatomyEvidence>();
-for (const record of [...STRUCTURE_ANATOMY_EVIDENCE, ...(gluteusMedius ? [gluteusMedius] : [])]) {
+/** One educational record per family, including the preserved original adapter. */
+export const STRUCTURE_ANATOMY_FAMILIES: readonly StructureAnatomyEvidence[] = [
+  ...STRUCTURE_ANATOMY_EVIDENCE,
+  ...(gluteusMedius ? [gluteusMedius] : []),
+];
+for (const record of STRUCTURE_ANATOMY_FAMILIES) {
   for (const id of record.structureIds) byStructureId.set(id, record);
 }
 

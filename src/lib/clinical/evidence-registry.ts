@@ -11,11 +11,12 @@ import { HANDBOOK } from "./movement-handbook";
 import { ROM_MOVEMENTS } from "./rom-norms";
 import { HANDBOOK_EVIDENCE, ROM_EVIDENCE, SCREENING_EVIDENCE, MEDICATION_EVIDENCE, LAB_EVIDENCE, ASSISTANT_EVIDENCE } from "./evidence-assessment";
 import type { EvidenceRecord } from "./evidence-types";
+import { STRUCTURE_ANATOMY_FAMILIES, type StructureAnatomyEvidence } from "./structure-anatomy-evidence";
 
-export type EvidenceDomain = "anatomy" | "muscle" | "exercise" | "trigger" | "pain-site" | "handbook" | "rom" | "screening" | "medication" | "labs" | "assistant" | "catalog";
+export type EvidenceDomain = "anatomy" | "structure" | "muscle" | "exercise" | "trigger" | "pain-site" | "handbook" | "rom" | "screening" | "medication" | "labs" | "assistant" | "catalog";
 export type EvidenceIndexEntry = { id: string; label: string; domain: EvidenceDomain; evidence: EvidenceRecord };
 export const EVIDENCE_DOMAIN_LABELS: Record<EvidenceDomain, string> = {
-  anatomy: "Giải phẫu vùng", muscle: "Nhóm cơ", exercise: "Bài tập", trigger: "Trigger point",
+  anatomy: "Giải phẫu vùng", structure: "Giải phẫu từng cơ", muscle: "Nhóm cơ", exercise: "Bài tập", trigger: "Trigger point",
   "pain-site": "Vùng đau minh họa", handbook: "Nền tảng vận động", rom: "Đo ROM",
   screening: "Sàng lọc", medication: "Thuốc và vận động", labs: "Trích xuất xét nghiệm",
   assistant: "Trợ lý AI", catalog: "Cấu trúc 3D · dữ liệu nguồn",
@@ -70,9 +71,27 @@ export function getCatalogEvidence(structureId: string): EvidenceRecord | undefi
 
 const entry = (domain: EvidenceDomain, id: string, label: string, evidence: EvidenceRecord): EvidenceIndexEntry => ({ id: `${domain}:${id}`, label, domain, evidence });
 
+function structureEvidence(record: StructureAnatomyEvidence): EvidenceRecord {
+  const numbers = new Map(record.sources.map((source, index) => [source.id, index + 1]));
+  const citations = (ids: readonly string[]) => ids.map((id) => `[${numbers.get(id)}]`).join(" ");
+  return {
+    status: "literature-reviewed",
+    reviewedBy: record.reviewedBy,
+    sources: record.sources.map(({ title, url, checkedAt, access }) => ({ title, url, checkedAt, access })),
+    supportedClaims: [
+      ...record.claims.map((claim) => `${citations(claim.sourceIds)} ${claim.label}: ${claim.text}`),
+      ...(record.architectureNote && record.architectureSources?.length
+        ? [`${citations(record.architectureSources)} Cấu trúc cơ và gân: ${record.architectureNote}`]
+        : []),
+    ],
+    limitations: [...record.limitations, record.fiberMapping.reason],
+  };
+}
+
 /** Complete finite inventory. The domain prefix prevents collisions between clinical IDs. */
 export const EVIDENCE_INDEX: EvidenceIndexEntry[] = [
   ...ANATOMY_REGIONS.map((region) => entry("anatomy", region.id, `${region.name} · ${region.latinName}`, ANATOMY_REGION_EVIDENCE[region.id])),
+  ...STRUCTURE_ANATOMY_FAMILIES.map((record) => entry("structure", record.id, `${record.name} · ${record.latin}`, structureEvidence(record))),
   ...MUSCLE_GROUP_ATLAS.map((group) => entry("muscle", group.id, `${group.name} · ${group.latinName}`, MUSCLE_GROUP_EVIDENCE[group.id])),
   ...HYPERTROPHY_EXERCISES.map((exercise) => entry("exercise", exercise.id, exercise.name, EXERCISE_EVIDENCE[exercise.id])),
   ...TRIGGER_POINT_MUSCLES.map((muscle) => entry("trigger", muscle.id, `${muscle.name} · ${muscle.latinName}`, TRIGGER_POINT_EVIDENCE[muscle.id])),
@@ -141,7 +160,8 @@ export function formatCuratedEvidence(records: readonly EvidenceIndexEntry[]): s
   let length = header.length;
   for (const item of records.slice(0, 6)) {
     const evidence = item.evidence;
-    const block = `\n[APP:${item.id}] ${item.label}\nTrạng thái đối chiếu: ${evidence.status}\nPhát biểu được đối chiếu:\n${evidence.supportedClaims.slice(0, 4).map((claim) => `- ${claim}`).join("\n")}\nGiới hạn:\n${evidence.limitations.map((text) => `- ${text}`).join("\n")}\nNguồn (số thứ tự chỉ trong mục này):\n${evidence.sources.map((source, index) => `[${index + 1}] ${source.title}\n${source.url}\nKiểm tra: ${source.checkedAt}; phạm vi đọc: ${source.access}`).join("\n")}\n`;
+    const claims = item.domain === "structure" ? evidence.supportedClaims : evidence.supportedClaims.slice(0, 4);
+    const block = `\n[APP:${item.id}] ${item.label}\nTrạng thái đối chiếu: ${evidence.status}\nPhát biểu được đối chiếu:\n${claims.map((claim) => `- ${claim}`).join("\n")}\nGiới hạn:\n${evidence.limitations.map((text) => `- ${text}`).join("\n")}\nNguồn (số thứ tự chỉ trong mục này):\n${evidence.sources.map((source, index) => `[${index + 1}] ${source.title}\n${source.url}\nKiểm tra: ${source.checkedAt}; phạm vi đọc: ${source.access}`).join("\n")}\n`;
     if (length + block.length > 24000) break;
     sections.push(block);
     length += block.length;

@@ -6,6 +6,7 @@ import path from "node:path";
 import vm from "node:vm";
 import test from "node:test";
 import * as original from "../src/lib/clinical/anatomy-evidence.mjs";
+import { createAppLoader } from "./lib/load-app-module.mjs";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
@@ -113,4 +114,51 @@ test("individual-muscle registry preserves exact scope and source provenance", a
     assert.deepEqual(plain(adapted.sources), Object.entries(prior.sources).map(([id, { label, ...source }]) => ({ id, title: label, ...source })));
     assert.deepEqual(plain(adapted.structureIds), original.GLUTEUS_MEDIUS_IDS);
   });
+});
+
+
+test("individual anatomy is indexed separately from geometry with complete numbered claims", () => {
+  const load = createAppLoader({ mocks: { "./anatomy-evidence.mjs": original } });
+  const { EVIDENCE_INDEX, getCatalogEvidence, selectCuratedEvidence, formatCuratedEvidence } = load("src/lib/clinical/evidence-registry.ts");
+  const { getStructureAnatomyEvidence: get } = load("src/lib/clinical/structure-anatomy-evidence.ts");
+  const families = [...expected, ["gluteus-medius", "Musculus gluteus medius", ...original.GLUTEUS_MEDIUS_IDS]];
+  const indexed = EVIDENCE_INDEX.filter((entry) => entry.domain === "structure");
+  assert.deepEqual(Array.from(indexed, (entry) => entry.id).sort(), families.map(([id]) => `structure:${id}`).sort());
+  for (const [family, , left, right] of families) {
+    const record = get(left);
+    const item = indexed.find((entry) => entry.id === `structure:${family}`);
+    assert.ok(item, family);
+    assert.equal(item.evidence.status, "literature-reviewed");
+    assert.equal(item.evidence.reviewedBy, null);
+    assert.deepEqual(plain(item.evidence.sources), plain(record.sources.map(({ title, url, checkedAt, access }) => ({ title, url, checkedAt, access }))));
+    const citations = (ids) => ids.map((id) => `[${record.sources.findIndex((source) => source.id === id) + 1}]`).join(" ");
+    const claims = record.claims.map((claim) => `${citations(claim.sourceIds)} ${claim.label}: ${claim.text}`);
+    if (record.architectureNote && record.architectureSources?.length) claims.push(`${citations(record.architectureSources)} Cấu trúc cơ và gân: ${record.architectureNote}`);
+    assert.deepEqual(plain(item.evidence.supportedClaims), plain(claims));
+    const context = formatCuratedEvidence([item]);
+    for (const claim of claims) assert.ok(context.includes(claim), `${family}: formatter dropped a claim`);
+    for (const limitation of [...record.limitations, record.fiberMapping.reason]) assert.ok(item.evidence.limitations.includes(limitation));
+    assert.equal(getCatalogEvidence(left).status, "source-only");
+    assert.equal(getCatalogEvidence(right).status, "source-only");
+  }
+  const bounded = formatCuratedEvidence(indexed);
+  assert.ok(bounded.length <= 24000);
+  assert.ok((bounded.match(/\[APP:/g) ?? []).length <= 6);
+  for (const item of indexed) {
+    if (bounded.includes(`[APP:${item.id}]`)) {
+      for (const claim of item.evidence.supportedClaims) assert.ok(bounded.includes(claim), `${item.id}: context must retain whole records`);
+      for (const source of item.evidence.sources) assert.ok(bounded.includes(source.url));
+    }
+  }
+  // Existing domains retain the previous four-claim formatter contract.
+  const legacy = EVIDENCE_INDEX.find((entry) => entry.domain === "anatomy");
+  const legacyClaims = ["one", "two", "three", "four", "legacy-fifth-claim-sentinel"];
+  const legacyContext = formatCuratedEvidence([{ ...legacy, evidence: { ...legacy.evidence, supportedClaims: legacyClaims } }]);
+  assert.ok(legacyClaims.slice(0, 4).every((claim) => legacyContext.includes(`- ${claim}`)));
+  assert.ok(!legacyContext.includes(legacyClaims[4]));
+  for (const [query, family] of [["Internal Oblique", "internal-oblique"], ["Transversus abdominis", "transversus-abdominis"], ["Supraspinatus", "supraspinatus"], ["Infraspinatus", "infraspinatus"], ["Subscapularis", "subscapularis"], ["Teres minor", "teres-minor"]]) {
+    const records = selectCuratedEvidence(query);
+    assert.ok(records.some((entry) => entry.id === `structure:${family}`), query);
+    assert.ok(records.every((entry) => entry.domain !== "catalog"));
+  }
 });

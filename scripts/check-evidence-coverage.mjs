@@ -4,6 +4,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import vm from "node:vm";
+import * as originalAnatomyEvidence from "../src/lib/clinical/anatomy-evidence.mjs";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
@@ -12,6 +13,7 @@ const cache = new Map();
 function load(relative) {
   let file = path.resolve(root, relative);
   if (!existsSync(file) && !path.extname(file)) file += ".ts";
+  if (file === path.join(root, "src/lib/clinical/anatomy-evidence.mjs")) return originalAnatomyEvidence;
   if (cache.has(file)) return cache.get(file);
   if (file.endsWith(".json")) return JSON.parse(readFileSync(file, "utf8"));
   const exports = {};
@@ -30,6 +32,7 @@ const manifest = load("public/anatomy/3d/manifest.json");
 const audit = load("src/lib/clinical/catalog-evidence.json");
 const domains = [
   ["anatomy", load("src/lib/clinical/anatomy-atlas.ts").ANATOMY_REGIONS, 8],
+  ["structure", load("src/lib/clinical/structure-anatomy-evidence.ts").STRUCTURE_ANATOMY_FAMILIES, 8],
   ["muscle", load("src/lib/clinical/muscle-hypertrophy-atlas.ts").MUSCLE_GROUP_ATLAS, 11],
   ["exercise", load("src/lib/clinical/muscle-hypertrophy-atlas.ts").HYPERTROPHY_EXERCISES, 13],
   ["trigger", load("src/lib/clinical/trigger-point-atlas.ts").TRIGGER_POINT_MUSCLES, 10],
@@ -45,6 +48,8 @@ for (const [domain, records, count] of domains) {
   assert.equal(new Set(recordIds).size, records.length, `${domain}: duplicate record IDs`);
   recordIds.forEach((id) => expected.add(id));
 }
+const individualFamilies = ["external-oblique", "gluteus-medius", "infraspinatus", "internal-oblique", "subscapularis", "supraspinatus", "teres-minor", "transversus-abdominis"];
+assert.deepEqual(Array.from(EVIDENCE_INDEX.filter((entry) => entry.domain === "structure"), (entry) => entry.id).sort(), individualFamilies.map((id) => `structure:${id}`));
 assert.equal(EVIDENCE_INDEX.length, expected.size);
 assert.equal(new Set(EVIDENCE_INDEX.map((entry) => entry.id)).size, expected.size);
 assert.deepEqual(Array.from(EVIDENCE_INDEX, (entry) => entry.id).sort(), [...expected].sort());
@@ -78,6 +83,14 @@ for (const [query, domain] of [["metformin insulin beta blocker", "medication"],
   const selected = selectCuratedEvidence(query);
   assert.ok(selected.length && selected.some((entry) => entry.domain === domain), `${query}: relevant records missing`);
   assert.ok(selected.every((entry) => entry.evidence.status !== "source-only"));
+}
+for (const [query, id] of [["Internal Oblique", "internal-oblique"], ["Transversus abdominis", "transversus-abdominis"], ["Supraspinatus", "supraspinatus"], ["Infraspinatus", "infraspinatus"], ["Subscapularis", "subscapularis"], ["Teres minor", "teres-minor"]]) {
+  const selected = selectCuratedEvidence(query);
+  const individual = selected.find((entry) => entry.id === `structure:${id}`);
+  assert.ok(individual, `${query}: individual knowledge missing`);
+  const context = formatCuratedEvidence(selected);
+  for (const claim of individual.evidence.supportedClaims) assert.ok(context.includes(claim), `${id}: a supported claim was omitted`);
+  assert.ok(selected.every((entry) => entry.domain !== "catalog"));
 }
 for (const limit of [-5, 0, 1, 2, 6, 1000, NaN, Infinity]) {
   const selected = selectCuratedEvidence("ROM gối vai cơ gluteus medius thuốc insulin", limit);
@@ -157,4 +170,4 @@ const unrelatedEvents = (await unrelated.text()).trim().split("\n").map((line) =
 assert.equal(calls.publicQueries.length, 1, "unmatched topics skip public retrieval");
 assert.equal(unrelatedEvents[0].publicSearch.skipped, true);
 assert.equal(unrelatedEvents[0].curated.length, 0);
-console.log(`Evidence coverage passed: ${EVIDENCE_INDEX.length} entries including 1,031 source-only structures; bounded topic retrieval and truthful source/reviewer metadata checked.`);
+console.log(`Evidence coverage passed: ${EVIDENCE_INDEX.length} entries including 8 educational muscle families and 1,031 source-only catalog structures; bounded topic retrieval and truthful source/reviewer metadata checked.`);
