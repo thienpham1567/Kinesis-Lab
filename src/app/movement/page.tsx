@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon, PageHeading } from "@/components/WorkspaceUI";
 import { MovementTopic } from "@/components/movement/MovementTopic";
-import { MovementIllustrations } from "@/components/illustrations/MovementIllustrations";
 import {
   HANDBOOK,
   type HandbookTopic,
@@ -83,7 +82,6 @@ function HandbookInner() {
         ))}
       </div>
       <MovementTopic key={topic.id} topic={topic} />
-      <MovementIllustrations topicId={topic.id} />
     </div>
   );
 }

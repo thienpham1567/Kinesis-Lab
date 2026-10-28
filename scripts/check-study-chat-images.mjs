@@ -4,32 +4,24 @@ import test from "node:test";
 import { createAppLoader } from "./lib/load-app-module.mjs";
 
 const widget = readFileSync(new URL("../src/components/StudyChatWidget.tsx", import.meta.url), "utf8");
-const composer = readFileSync(new URL("../src/components/chat/StudyChatImageComposer.tsx", import.meta.url), "utf8");
-const card = readFileSync(new URL("../src/components/chat/StudyChatImageCard.tsx", import.meta.url), "utf8");
 const markdown = readFileSync(new URL("../src/components/MarkdownAnswer.tsx", import.meta.url), "utf8");
 
-test("text chat still posts to /api/chat; image generation is a separate control", () => {
+test("floating chat posts text only and does not offer image generation", () => {
   assert.match(widget, /fetch\("\/api\/chat"/);
   assert.match(widget, /toChatMessages/);
-  assert.match(widget, /Minh họa nội dung này/);
-  assert.match(widget, /illustrationContextFromChat/);
-  assert.match(widget, /openIllustrate/);
-  assert.match(widget, /mode !== "ask"/);
-  assert.match(composer, /Tạo hình/);
-  assert.match(composer, /Hỏi đáp/);
-  assert.equal(composer.includes("Ước tính"), false);
-  assert.equal(composer.includes("Đang đọc giá tạo hình"), false);
+  assert.equal(widget.includes("Minh họa nội dung này"), false);
+  assert.equal(widget.includes("StudyChatImageComposer"), false);
+  assert.equal(widget.includes("/api/chat/illustrations"), false);
+  assert.equal(widget.includes("Đoạn tài liệu tham chiếu"), false);
+  assert.equal(widget.includes("RAG:"), false);
+  assert.match(widget, /Gemini 3\.8/);
+  assert.match(widget, /Gemini 2\.5/);
+  assert.match(widget, /learnerAnswer/);
+  assert.match(widget, /APP\|RAG\|PMID/);
 });
 
 test("markdown still strips model-controlled image URLs", () => {
   assert.match(markdown, /img: \(\{ alt \}\) => <span>\{alt\}<\/span>/);
-});
-
-test("image card keeps billed retry explicit and unknown does not auto-send", () => {
-  assert.match(card, /tính phí mới/);
-  assert.match(card, /Không tự gửi lại yêu cầu trả phí/);
-  assert.match(card, /Hình minh họa AI/);
-  assert.match(card, /Chữ đã yêu cầu model vẽ/);
 });
 
 test("image-only rows are not sent to the text chat API", () => {

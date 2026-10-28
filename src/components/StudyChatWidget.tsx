@@ -2,25 +2,44 @@
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { readNdjson } from "@/lib/ai/stream-events";
-import type { ChatSourceStatus, RagHit, PubMedPaper } from "@/lib/types";
 import {
-  illustrationContextFromChat,
   parseStudyChatStore,
   serializeStudyChatStore,
   toChatMessages,
 } from "@/lib/chat/study-messages";
-import { catalogChatImageSources } from "@/lib/chat/illustration-sources";
-import type { ChatImageSource, StudyChatMessage } from "@/lib/chat/illustration-types";
+import type { StudyChatMessage } from "@/lib/chat/illustration-types";
 import { MarkdownAnswer } from "./MarkdownAnswer";
 import { Icon } from "./WorkspaceUI";
-import { StudyChatImageCard } from "./chat/StudyChatImageCard";
-import { StudyChatImageComposer } from "./chat/StudyChatImageComposer";
-import { StudyChatImageViewer } from "./chat/StudyChatImageViewer";
-import { useStudyChatImages } from "./chat/useStudyChatImages";
 
 const STORAGE_KEY = "kinesis-study-chat";
+const MODEL_KEY = "kinesis-study-chat-model";
 const MAX_QUOTE = 1500;
-const catalogIds = new Set(catalogChatImageSources().map((source) => source.id));
+const CHAT_MODELS = [
+  { id: "google/gemini-3.8-flash", label: "Gemini 3.8" },
+  { id: "google/gemini-2.5-flash", label: "Gemini 2.5" },
+] as const;
+
+function loadChatModel(): (typeof CHAT_MODELS)[number]["id"] {
+  if (typeof window === "undefined") return CHAT_MODELS[0].id;
+  try {
+    const saved = sessionStorage.getItem(MODEL_KEY);
+    if (CHAT_MODELS.some((item) => item.id === saved)) {
+      return saved as (typeof CHAT_MODELS)[number]["id"];
+    }
+  } catch {
+    /* private mode */
+  }
+  return CHAT_MODELS[0].id;
+}
+
+function learnerAnswer(text: string) {
+  return text
+    .replace(/\s*\[(?:APP|RAG|PMID):[^\]]*\]/g, "")
+    .replace(/\s*\((?:APP|RAG|PMID):[^)]*\)/g, "")
+    .replace(/\s*\b(?:APP|RAG|PMID):[A-Za-z0-9_.:-]+/g, "")
+    .replace(/\.,/g, ".")
+    .replace(/[ \t]{2,}/g, " ");
+}
 
 function loadStore(): { conversationId: string; messages: StudyChatMessage[] } {
   if (typeof window === "undefined")
@@ -45,22 +64,6 @@ function saveStore(conversationId: string, messages: StudyChatMessage[]) {
   }
 }
 
-function ragSources(hits: RagHit[]): ChatImageSource[] {
-  return hits.slice(0, 8).flatMap((hit) =>
-    hit.url
-      ? [
-          {
-            id: hit.id,
-            title: hit.title,
-            url: hit.url,
-            checkedAt: hit.checkedAt ?? "",
-            access: hit.access ?? "",
-          },
-        ]
-      : [],
-  );
-}
-
 export function StudyChatWidget({
   pathname,
   pageLabel,
@@ -73,16 +76,9 @@ export function StudyChatWidget({
   const [conversationId, setConversationId] = useState(initial.conversationId);
   const [messages, setMessages] = useState<StudyChatMessage[]>(initial.messages);
   const [input, setInput] = useState("");
+  const [chatModel, setChatModel] = useState(loadChatModel);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [pubmed, setPubmed] = useState<PubMedPaper[]>([]);
-  const [rag, setRag] = useState<RagHit[]>([]);
-  const [sourceStatus, setSourceStatus] = useState<ChatSourceStatus | null>(null);
-  const [mode, setMode] = useState<"ask" | "illustrate">("ask");
-  const [imageInstruction, setImageInstruction] = useState("");
-  const [sourceMessageId, setSourceMessageId] = useState<string | null>(null);
-  const [parentImageId, setParentImageId] = useState<string | null>(null);
   const inFlight = useRef(false);
   const [selection, setSelection] = useState("");
   const panel = useRef<HTMLDivElement>(null);
@@ -93,8 +89,6 @@ export function StudyChatWidget({
   const composerId = useId();
   const titleId = useId();
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
-  const images = useStudyChatImages({ conversationId, messages, setMessages });
-  const illustrationCtx = illustrationContextFromChat(messages, sourceMessageId);
 
   useEffect(() => {
     function onSelectionChange() {
@@ -114,27 +108,24 @@ export function StudyChatWidget({
     composer.current?.focus();
     function onKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return;
-      if (images.viewerId) return;
       setOpen(false);
       launcher.current?.focus();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, images.viewerId]);
+  }, [open]);
 
   useEffect(() => {
-    if (!busy && !images.imageBusy)
-      saveStore(conversationId, messages);
+    if (!busy) saveStore(conversationId, messages);
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
-  }, [messages, busy, images.imageBusy, open, conversationId]);
+  }, [messages, busy, open, conversationId]);
 
   useEffect(() => () => abort.current?.abort(), []);
 
   function quoteSelection() {
     if (!selection) return;
     const quote = `Đoạn tôi đang đọc:\n"${selection}"\n\n`;
-    if (mode === "illustrate") setImageInstruction((current) => quote + current);
-    else setInput((current) => quote + current);
+    setInput((current) => quote + current);
     setSelection("");
     composer.current?.focus();
   }
@@ -143,26 +134,17 @@ export function StudyChatWidget({
     abort.current?.abort();
     abort.current = null;
     inFlight.current = false;
-    images.cancelWait();
     setBusy(false);
     setConversationId(crypto.randomUUID());
     setMessages([]);
-    setPubmed([]);
-    setRag([]);
-    setSourceStatus(null);
     setError("");
-    setNotice("");
     setInput("");
-    setImageInstruction("");
-    setSourceMessageId(null);
-    setParentImageId(null);
-    setMode("ask");
     composer.current?.focus();
   }
 
   async function send(rawText: string) {
     const text = rawText.trim();
-    if (!text || inFlight.current || mode !== "ask") return;
+    if (!text || inFlight.current) return;
     inFlight.current = true;
     const next = [
       ...messages.filter((m) => m.content.trim() || m.attachments.length),
@@ -182,10 +164,6 @@ export function StudyChatWidget({
     setInput("");
     setBusy(true);
     setError("");
-    setNotice("");
-    setPubmed([]);
-    setRag([]);
-    setSourceStatus(null);
     const controller = new AbortController();
     abort.current = controller;
 
@@ -196,6 +174,7 @@ export function StudyChatWidget({
         body: JSON.stringify({
           messages: toChatMessages(next),
           studyPage: pathname,
+          model: chatModel,
         }),
         signal: controller.signal,
       });
@@ -205,33 +184,24 @@ export function StudyChatWidget({
       }
       let assistant = "";
       let complete = false;
-      let nextRag: RagHit[] = [];
       for await (const evt of readNdjson<{
-        type: string; text?: string; pubmed?: PubMedPaper[]; rag?: RagHit[];
-        sourceStatus?: ChatSourceStatus; error?: string;
+        type: string; text?: string; error?: string;
       }>(res.body)) {
         if (controller.signal.aborted) return;
-        if (evt.type === "meta") {
-          setPubmed(evt.pubmed ?? []);
-          nextRag = evt.rag ?? [];
-          setRag(nextRag);
-          setSourceStatus(evt.sourceStatus ?? null);
-        } else if (evt.type === "token") {
+        if (evt.type === "token") {
           assistant += evt.text ?? "";
           setMessages([
             ...next,
             {
               id: assistantId,
               role: "assistant",
-              content: assistant,
+              content: learnerAnswer(assistant),
               attachments: [],
-              sources: ragSources(nextRag),
+              sources: [],
             },
           ]);
         } else if (evt.type === "error") {
           throw new Error(evt.error ?? "Lỗi xử lý");
-        } else if (evt.type === "warning") {
-          setNotice((current) => [current, evt.text].filter(Boolean).join(" "));
         } else if (evt.type === "done") {
           complete = true;
         }
@@ -249,30 +219,6 @@ export function StudyChatWidget({
         setBusy(false);
       }
     }
-  }
-
-  function openIllustrate(preferredAssistantId?: string | null) {
-    const ctx = illustrationContextFromChat(messages, preferredAssistantId);
-    setSourceMessageId(ctx.sourceMessageId);
-    setMode("illustrate");
-    setImageInstruction((current) => (current.trim() ? current : ctx.instruction));
-    void images.ensureSession();
-  }
-
-  function createFromComposer() {
-    const selected = messages.find((message) => message.id === illustrationCtx.sourceMessageId);
-    void images.createImage({
-      reason: parentImageId ? "edit" : "create",
-      sourceMessageId: illustrationCtx.sourceMessageId ?? conversationId,
-      instruction: imageInstruction.trim() || illustrationCtx.instruction,
-      selectedContext: illustrationCtx.selectedContext,
-      sourceIds: (selected?.sources ?? [])
-        .map((source) => source.id)
-        .filter((id) => catalogIds.has(id)),
-      sources: selected?.sources ?? [],
-      parentId: parentImageId,
-    });
-    setParentImageId(null);
   }
 
   return (
@@ -322,12 +268,33 @@ export function StudyChatWidget({
               </button>
             </div>
           </div>
+          <div className="tab-bar mx-4 mb-2 flex" role="group" aria-label="Chọn model">
+            {CHAT_MODELS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-pressed={chatModel === item.id}
+                disabled={busy}
+                onClick={() => {
+                  setChatModel(item.id);
+                  try {
+                    sessionStorage.setItem(MODEL_KEY, item.id);
+                  } catch {
+                    /* private mode */
+                  }
+                }}
+                className="tab-button min-h-8 flex-1 px-2 text-xs"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
 
           <div
             ref={scroller}
             role="log"
             aria-label="Nội dung hỏi đáp"
-            aria-busy={busy || images.imageBusy}
+            aria-busy={busy}
             className="flex-1 space-y-4 overflow-y-auto px-4 py-4"
           >
             {messages.length === 0 ? (
@@ -341,7 +308,7 @@ export function StudyChatWidget({
               </p>
             ) : (
               messages.map((m) =>
-                m.role === "assistant" && !m.content && !m.attachments.length && !busy ? null : (
+                m.role === "assistant" && !m.content && !busy ? null : (
                   <article
                     key={m.id}
                     className={`[overflow-wrap:anywhere] ${m.role === "user" ? "ml-auto max-w-[88%] rounded-2xl rounded-tr-sm bg-cobalt-soft px-3.5 py-2.5" : ""}`}
@@ -363,80 +330,22 @@ export function StudyChatWidget({
                         </span>
                       </div>
                     )}
-                    {m.role === "assistant" && m.content && (
-                      <button
-                        type="button"
-                        className="mt-2 text-xs font-medium text-cobalt"
-                        onClick={() => openIllustrate(m.id)}
-                      >
-                        Minh họa nội dung này
-                      </button>
-                    )}
-                    {m.attachments.map((attachment) => (
-                      <StudyChatImageCard
-                        key={attachment.imageId}
-                        attachment={attachment}
-                        previewUrl={images.previews[attachment.imageId]}
-                        brief={images.details[attachment.imageId]?.brief as never}
-                        receipt={images.details[attachment.imageId]?.receipt as never}
-                        onOpen={() => images.openViewer(attachment.imageId)}
-                        onEdit={() => {
-                          setParentImageId(attachment.imageId);
-                          openIllustrate(attachment.sourceMessageId);
-                        }}
-                        onRetry={() => openIllustrate(attachment.sourceMessageId)}
-                        onRecover={() => images.recover(attachment.imageId, attachment.sourceMessageId)}
-                      />
-                    ))}
                   </article>
                 ),
               )
             )}
-            {sourceStatus && !busy && <div className="rounded-lg border border-rule bg-canvas px-3 py-2 text-xs leading-5 text-slate">
-              <p>{sourceStatus.rag.message}</p><p>{sourceStatus.pubmed.message}</p>
-            </div>}
-            {rag.length > 0 && !busy && <details className="rounded-lg border border-rule bg-canvas px-3 text-xs">
-              <summary className="py-2 font-medium text-ink">Đoạn tài liệu tham chiếu · {rag.length}</summary>
-              <ul className="space-y-2 pb-2.5">{rag.map(hit => <li key={hit.id}>
-                <a href={hit.url} target="_blank" rel="noreferrer" className="text-cobalt underline">{hit.title}</a>
-                <p className="mt-1 break-all text-[10px] leading-4 text-slate">RAG:{hit.id} · {hit.chapter} · {hit.year} · {hit.license}</p>
-              </li>)}</ul>
-            </details>}
-            {pubmed.length > 0 && !busy && (
-              <details className="rounded-lg border border-rule bg-canvas px-3 text-xs">
-                <summary className="py-2 font-medium text-ink">
-                  Bài báo tham chiếu · {pubmed.length}
-                </summary>
-                <ul className="space-y-1.5 pb-2.5">
-                  {pubmed.map((p) => (
-                    <li key={p.pmid}>
-                      <a
-                        href={p.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="line-clamp-2 leading-5 text-cobalt underline-offset-2 hover:underline"
-                      >
-                        PMID {p.pmid} · {p.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
           </div>
 
-          {notice && <p role="status" className="mx-4 mb-2 text-xs leading-5 text-caution">{notice}</p>}
-          {images.notice && <p role="status" className="mx-4 mb-2 text-xs leading-5 text-caution">{images.notice}</p>}
-          {(error || images.error) && (
+          {error && (
             <p role="alert" className="alert-error mx-4 mb-2 text-xs">
-              {error || images.error}
+              {error}
             </p>
           )}
 
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (mode === "ask") void send(input);
+              void send(input);
             }}
             className="border-t border-rule bg-canvas/50 px-3 pb-3 pt-2.5"
           >
@@ -453,25 +362,10 @@ export function StudyChatWidget({
                 <span className="truncate opacity-80">“{selection}”</span>
               </button>
             )}
-            <StudyChatImageComposer
-              mode={mode}
-              onMode={(next) => {
-                if (next === "illustrate") openIllustrate();
-                else setMode("ask");
-              }}
-              instruction={imageInstruction}
-              onInstruction={setImageInstruction}
-              contextTitle={illustrationCtx.contextTitle}
-              estimate={images.estimate}
-              busy={images.imageBusy}
-              onCreate={createFromComposer}
-            />
-            {mode === "ask" && (
-              <>
-                <label htmlFor={composerId} className="sr-only">
-                  Câu hỏi của bạn
-                </label>
-                <div className="chat-composer mt-2 flex items-end gap-2 rounded-xl border border-rule-strong bg-sheet p-2">
+            <label htmlFor={composerId} className="sr-only">
+              Câu hỏi của bạn
+            </label>
+            <div className="chat-composer flex items-end gap-2 rounded-xl border border-rule-strong bg-sheet p-2">
                   <textarea
                     ref={composer}
                     id={composerId}
@@ -502,21 +396,10 @@ export function StudyChatWidget({
                       className={`size-4 ${busy ? "animate-spin" : ""}`}
                     />
                   </button>
-                </div>
-              </>
-            )}
+            </div>
           </form>
         </div>
       )}
-
-      <StudyChatImageViewer
-        open={Boolean(images.viewerId)}
-        src={images.viewerId ? images.previews[images.viewerId] : undefined}
-        title="Hình minh họa AI"
-        onClose={() => {
-          images.closeViewer();
-        }}
-      />
 
       <button
         ref={launcher}

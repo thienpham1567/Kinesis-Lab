@@ -12,6 +12,14 @@ npm run dev
 
 Mở [http://localhost:3000](http://localhost:3000).
 
+### Biên soạn đề NCSF riêng tư
+
+Khi đã có bộ tài liệu được cấp quyền trong `.data/ncsf/`, chạy `NCSF_LOCAL_CONTENT=1 npm run dev` để xem JSON và hình đang sửa ở local; vẫn cần đăng nhập NCSF. Cờ này chỉ hoạt động ở development, không có tác dụng trên production. Chạy `npm run ncsf:figures` để render các trang hình được câu hỏi tham chiếu, sau đó `npm run check:ncsf-quiz` để kiểm tra dữ liệu và bảng coverage. Các kiểm tra không xác nhận tính đúng y khoa.
+
+PDF, ngân hàng câu hỏi và hình NCSF giữ trong thư mục/bucket riêng tư; không thêm vào `public/` hoặc git. Khi phát hành, cập nhật mã giao diện và ngân hàng/hình tương ứng cùng nhau để tránh câu phụ thuộc hình xuất hiện trên giao diện cũ.
+
+Sau khi triển khai mã tương ứng, `node --env-file=.env.local scripts/ncsf-upload.mjs` chỉ cập nhật đề và hình, sao lưu đề đang phục vụ và kiểm tra hash sau tải lên. Chỉ dùng `--include-pdfs` khi chủ động khởi tạo/cập nhật PDF; mặc định giữ nguyên các PDF.
+
 ## Biến môi trường
 
 | Key | Việc |
@@ -23,9 +31,9 @@ Mở [http://localhost:3000](http://localhost:3000).
 
 Model mặc định (đổi được trong `.env.local`):
 
-- Lập luận lâm sàng: `google/gemini-2.5-flash`
+- Lập luận lâm sàng: `google/gemini-3.8-flash`
 - Đọc ảnh xét nghiệm/InBody: `google/gemini-2.5-pro`
-- Tra cứu nhanh: `google/gemini-2.5-flash`
+- Tra cứu nhanh: `google/gemini-3.8-flash`
 - Embedding: `google/gemini-embedding-2 (1.536 chiều)`
 
 ## Supabase
