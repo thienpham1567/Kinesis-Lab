@@ -14,6 +14,7 @@ import { atlasAreaHref, regionLearningSteps } from "./region-learning";
 import { EmptyState, Icon } from "@/components/WorkspaceUI";
 import { AtlasStructureName } from "./AtlasStructureName";
 import { AtlasTerminologySources } from "./AtlasTerminologySources";
+import { AtlasCatalogCorrectionDetails } from "./AtlasCatalogCorrectionDetails";
 import {
   ATLAS_AREAS,
   ATLAS_LAYERS,
@@ -75,7 +76,7 @@ function sideLabel(structure: AtlasStructure) {
     ? "Bên trái"
     : structure.side === "right"
       ? "Bên phải"
-      : "Đường giữa / không phân bên";
+      : "Không phân bên trong dữ liệu nguồn";
 }
 
 function thicknessMillimeters(meters: number) {
@@ -571,8 +572,8 @@ export default function Atlas3DExplorer({
                 </div>
               )}
               <div>
-                <dt className="sr-only">Phân lớp và bên</dt>
-                <dd className="text-slate">
+                <dt className="text-slate">Nhóm hiển thị</dt>
+                <dd className="text-ink">
                   {
                     ATLAS_LAYERS.find((layer) => layer.id === selected.layer)
                       ?.label
@@ -583,6 +584,7 @@ export default function Atlas3DExplorer({
             </dl>
           </div>
           <AtlasTerminologySources key={selected.english} english={selected.english} />
+          <AtlasCatalogCorrectionDetails structure={selected} />
           {!learningActive && (
             <ClinicalEvidencePanel
               evidence={getCatalogEvidence(selected.id)}
@@ -896,7 +898,7 @@ export default function Atlas3DExplorer({
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-rule pt-3">
             <fieldset className="flex flex-wrap gap-x-4 gap-y-1">
-              <legend className="sr-only">Lớp cấu trúc</legend>
+              <legend className="sr-only">Nhóm hiển thị của nguồn</legend>
               {ATLAS_LAYERS.map((layer) => (
                 <label
                   key={layer.id}
@@ -1067,6 +1069,14 @@ export default function Atlas3DExplorer({
                 command={command}
                 onSelect={selectStructure}
               />
+              {searchTargetIds.size > 0 && (
+                <div className="pointer-events-none absolute inset-x-3 top-3 z-10 flex justify-start">
+                  <p className="max-w-full rounded-md border border-rule bg-sheet/95 px-2 py-1 text-[11px] leading-5 text-ink">
+                    <span className="mr-1.5 inline-block size-2 rounded-full bg-cobalt" aria-hidden="true" />
+                    Tô xuyên lớp để định vị
+                  </p>
+                </div>
+              )}
               {thicknessId && selectedVisible && (
                 <div className="absolute inset-x-3 bottom-3 rounded-lg border border-rule bg-sheet/95 p-3 text-xs text-ink">
                   <p className="font-semibold">

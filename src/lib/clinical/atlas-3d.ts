@@ -55,8 +55,8 @@ export const ATLAS_AREAS: { id: AtlasArea; label: string }[] = [
 ];
 export const ATLAS_LAYERS: { id: AtlasLayer; label: string; color: string }[] =
   [
-    { id: "bone", label: "Xương", color: "#d5c7ac" },
-    { id: "muscle", label: "Cơ", color: "#b95c62" },
+    { id: "bone", label: "Hệ xương", color: "#d5c7ac" },
+    { id: "muscle", label: "Hệ cơ–gân", color: "#b95c62" },
     { id: "joint", label: "Khớp & dây chằng", color: "#74a8a0" },
   ];
 export function normalizeAnatomyText(value: string) {

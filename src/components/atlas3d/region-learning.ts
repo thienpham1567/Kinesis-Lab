@@ -91,19 +91,19 @@ export function regionLearningSteps(
     },
     {
       id: "bones",
-      title: "Quan sát lớp xương",
-      short: "Xương",
+      title: "Quan sát hệ xương",
+      short: "Hệ xương",
       instruction:
-        "Đã tắt lớp cơ và mô khớp. Chọn xương trên mô hình; dùng Trước / Sau để đổi hướng quan sát.",
+        "Đã tắt nhóm Hệ cơ–gân và Khớp & dây chằng. Hệ xương là nhóm hiển thị của nguồn, không phải kết luận về loại mô của mọi cấu trúc trong nhóm. Dùng Trước / Sau để đổi hướng quan sát.",
       layers: { bone: true, muscle: false, joint: false },
       camera: "front-oblique",
     },
     {
       id: "muscles",
-      title: "Thêm lớp cơ",
-      short: "Cơ",
+      title: "Thêm hệ cơ–gân",
+      short: "Hệ cơ–gân",
       instruction:
-        "Lớp cơ được hiện cùng xương. Đây là nhóm hiển thị của mô hình nguồn; không phải phân lớp nông–sâu đã được xác minh.",
+        "Nhóm Hệ cơ–gân được hiện cùng Hệ xương. Đây là các nhóm hiển thị của mô hình nguồn; không phải phân lớp mô học hay nông–sâu đã được xác minh.",
       layers,
       camera: "back-oblique",
     },
