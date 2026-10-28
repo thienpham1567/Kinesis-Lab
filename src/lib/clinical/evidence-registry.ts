@@ -40,18 +40,19 @@ for (const [structureId, audit] of Object.entries(catalogAudit.structures)) {
     sources: [{
       title: `Z-Anatomy Models of human anatomy · commit ${catalogAudit.source.commit.slice(0, 12)}`,
       url: `${catalogAudit.source.repository}/tree/${catalogAudit.source.commit}`,
-      checkedAt: catalogAudit.checkedAt,
-      access: `Provenance của bộ mesh và so chuỗi với TA2.csv dẫn xuất. CC-BY-SA-4.0; asset version ${catalogAudit.source.assetVersion}. CSV SHA-256: ${catalogAudit.csvSha256}.`,
+      checkedAt: catalogAudit.provenanceCheckedAt,
+      access: `Provenance của bộ mesh và so chuỗi với TA2.csv dẫn xuất. CC-BY-SA-4.0; asset version ${catalogAudit.source.assetVersion}. Phép so chuỗi tệp đã ghim chạy lại ${catalogAudit.checkedAt}; không ghi đã đọc lại nguồn giải phẫu. CSV SHA-256: ${catalogAudit.csvSha256}.`,
     }, ...correctionSources],
     supportedClaims: [
       `[1] ID ${structureId} có trong manifest của bộ nguồn đã ghi nhận; đây là truy xuất nguồn dữ liệu, không phải xác nhận giải phẫu.`,
       audit.englishMatch && audit.latinMatches
-        ? `[1] Chuỗi tên tiếng Anh và Latin của CSV gốc khớp TA2.csv dẫn xuất ở ID TA2 ${audit.ta2Ids.join(", ")}; phép so chuỗi không xác nhận danh pháp độc lập.`
+        ? `[1] Chuỗi tên tiếng Anh và Latin của CSV gốc khớp TA2.csv dẫn xuất ở khóa dòng nguồn ${audit.upstreamRowIds.map((id) => id ?? "không có khóa").join(", ")}; đây là khóa của CSV dẫn xuất, không phải ID TA2 chính thức đã xác minh. Phép so chuỗi không xác nhận danh pháp độc lập.`
         : "[1] CSV gốc chưa có cặp chuỗi tiếng Anh/Latin khớp trong phép so TA2.csv dẫn xuất; không tự điền hay xác nhận tên.",
       ...corrections.map((correction) => {
         const refs = correction.sources.map((_, index) => `[${2 + correctionSources.indexOf(correction.sources[0]) + index}]`).join(" ");
         const changes = Object.entries(correction.changes).map(([field, value]) => `${correctionFieldLabels[field]}: ${correctionValue(field, value)}`).join("; ");
-        return `${refs} Hiệu chỉnh có nguồn — ${changes}. Phạm vi: ${correction.access}`;
+        const canonical = correction.canonicalTa2Id ? ` Mục TA2 gốc ${correction.canonicalTa2Id} chỉ áp dụng cho đối chiếu thuật ngữ có trích dẫn này.` : "";
+        return `${refs} Hiệu chỉnh có nguồn — ${changes}.${canonical} Phạm vi: ${correction.access}`;
       }),
     ],
     limitations: [

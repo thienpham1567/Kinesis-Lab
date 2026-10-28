@@ -23,7 +23,8 @@
     "checkedAt": "2026-10-27",
     "access": "Chỉ bỏ pedis lặp. Không bổ sung brevis: tên chính không có brevis và synonym dài hơn đều hợp lệ trong TA2.",
     "basis": "original-terminology-table",
-    "reviewedBy": null
+    "reviewedBy": null,
+    "canonicalTa2Id": "2682"
   },
   {
     "id": "latin-triceps-medial-head",
@@ -49,7 +50,8 @@
     "checkedAt": "2026-10-27",
     "access": "Bỏ caput thừa trước brachii, theo mục tên đã đối chiếu.",
     "basis": "original-terminology-table",
-    "reviewedBy": null
+    "reviewedBy": null,
+    "canonicalTa2Id": "2474"
   },
   {
     "id": "latin-first-metacarpal",

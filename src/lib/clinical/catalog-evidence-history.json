@@ -1,0 +1,20 @@
+[
+  {
+    "checkedAt": "2026-10-19",
+    "source": {
+      "repository": "https://github.com/Z-Anatomy/Models-of-human-anatomy",
+      "commit": "0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+      "license": "CC-BY-SA-4.0",
+      "assetVersion": 2
+    },
+    "csvSha256": "0f9092a328b27dcd15d696d9f9a4087deb229a1aad21b75876657622de835974",
+    "scope": "String comparison with upstream derivative TA2.csv only. No independent FIPAT, translation, geometry, attachment, measurement or clinical validation.",
+    "counts": {
+      "structures": 1031,
+      "englishMatches": 884,
+      "latinMatches": 884
+    },
+    "algorithm": "numeric-only-upstream-rows-v1",
+    "limitation": "Historical parser excluded derivative row keys containing suffixes. Its counts are superseded by the 2026-10-28 replay; historical source reading dates are preserved."
+  }
+]

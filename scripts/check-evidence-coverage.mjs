@@ -75,6 +75,17 @@ for (const structure of manifest.structures) {
   assert.equal(evidence.status, "source-only");
   assert.ok(evidence.limitations.join(" ").includes("3D"));
   assert.ok(evidence.sources[0].url.includes(audit.source.commit));
+  assert.equal(evidence.sources[0].checkedAt, audit.provenanceCheckedAt, "local replay does not change source reading date");
+  const row = audit.structures[structure.id];
+  assert(!Object.hasOwn(row, "ta2Ids"), "derivative keys are not labeled official TA2 IDs");
+  if (row.latinMatches) {
+    assert(evidence.supportedClaims.some(claim => claim.includes("khóa dòng nguồn") && row.upstreamRowIds.every(id => claim.includes(id))));
+  }
+  if (row.canonicalTa2Id !== null) {
+    assert(["2682", "2474"].includes(row.canonicalTa2Id));
+    assert.equal(row.canonicalComparison.checkedAt, "2026-10-27");
+    assert(evidence.supportedClaims.some(claim => claim.includes(`Mục TA2 gốc ${row.canonicalTa2Id}`)));
+  }
 }
 for (const query of ["", "   ", "pizza weather javascript", "nguồn và thông tin", "the and of please"]) {
   assert.equal(selectCuratedEvidence(query).length, 0, `unrelated/empty query: ${query}`);
