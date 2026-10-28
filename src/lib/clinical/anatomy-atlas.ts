@@ -591,7 +591,8 @@ export const ANATOMY_REGIONS: AnatomyRegion[] = [
 /**
  * Kiến thức nền theo vùng, diễn đạt lại tiếng Việt từ nguồn giải phẫu đã ghi
  * trong evidence-anatomy.ts (OpenStax Anatomy and Physiology 2e, CC BY 4.0;
- * đọc lại 2026-10-22). sourceRefs là số thứ tự nguồn trong hồ sơ của vùng.
+ * đọc lại 2026-10-22; nguồn vận động cột sống §9.6 đọc 2026-10-28).
+ * sourceRefs là số thứ tự nguồn trong hồ sơ của vùng.
  * Đây là giải phẫu đại thể, không phải đo lường trên mô hình 3D hay chẩn đoán.
  */
 export const REGION_FOUNDATIONS: Record<
@@ -609,7 +610,7 @@ export const REGION_FOUNDATIONS: Record<
     },
     {
       text: "Mặt khớp đốt cổ tương đối phẳng và hướng lên/xuống, nên vùng cổ vận động được nhiều ở gập, duỗi, nghiêng và xoay.",
-      sourceRefs: [1],
+      sourceRefs: [10],
     },
   ],
   shoulder: [
@@ -629,11 +630,11 @@ export const REGION_FOUNDATIONS: Record<
   thoracic_core: [
     {
       text: "Đốt ngực có diện khớp với đầu xương sườn và củ sườn; lồng ngực gắn vào cột sống ngực nên vùng này vận động ít hơn cổ và thắt lưng.",
-      sourceRefs: [1],
+      sourceRefs: [1, 11],
     },
     {
       text: "Mỏm gai đốt ngực dài và chúc xuống chồng lên đốt dưới, góp phần hạn chế duỗi và nghiêng ở vùng ngực.",
-      sourceRefs: [1],
+      sourceRefs: [1, 11],
     },
     {
       text: "Đường cong ngực là đường cong nguyên phát, lồi ra sau; đường cong cổ và thắt lưng là cong thứ phát, lõm ra sau, hình thành khi trẻ tập giữ đầu, đứng và đi.",
@@ -647,7 +648,7 @@ export const REGION_FOUNDATIONS: Record<
     },
     {
       text: "Hướng mặt khớp thắt lưng cho phép gập, duỗi và nghiêng khá nhiều, nhưng hạn chế xoay rõ rệt.",
-      sourceRefs: [1],
+      sourceRefs: [11],
     },
     {
       text: "Giữa các thân đốt là đĩa đệm gồm vòng sợi bên ngoài và nhân nhầy dạng gel ở giữa; đĩa vừa đệm vừa cho phép vận động giữa các đốt.",

@@ -51,6 +51,12 @@ const selectedJoints = source(
   "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
   "Full HTML; Shoulder, Hip, Knee and Ankle Joint prose checked for gross articulations, labrum, cruciate/collateral ligaments and ankle inversion/eversion restraints. No injury rates, postoperative advice or source-to-image coordinate verification adopted.",
 );
+const vertebralJoints = {
+  title: "OpenStax, Anatomy and Physiology 2e §9.6: Articulations of the Vertebral Column",
+  url: "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+  checkedAt: "2026-10-28",
+  access: "HTML subsection Articulations of the Vertebral Column; paragraphs on facet-joint orientation and cervical, thoracic and lumbar movement checked. Only these regional movement descriptions are used here, not personal ROM measurements, treatment guidance or mesh validation.",
+};
 const synovialJoints = source(
   "OpenStax, Anatomy and Physiology 2e §9.4: Synovial Joints",
   "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-4-synovial-joints",
@@ -84,7 +90,8 @@ const commonLimitations = [
 ];
 
 /**
- * Source comparison for all eight educational region cards, rechecked 2026-10-22 including linked joint annotations. Source numbering is
+ * Source comparison for all eight educational region cards, rechecked 2026-10-22 including linked joint annotations;
+ * vertebral movement source added 2026-10-28 with its own reading scope/date. Source numbering is
  * local to each record, one-based. `reviewedBy` stays null until an actual expert
  * review occurs. Clinical observations do not establish a diagnosis or clearance.
  */
@@ -100,6 +107,7 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       source("AAOS OrthoInfo: Cervical Radiculopathy (Pinched Nerve)", "https://www.orthoinfo.org/diseases--conditions/cervical-radiculopathy-pinched-nerve/", "Full HTML; Symptoms, Physical Examination and Physical therapy paragraphs checked."),
       source("AAOS OrthoInfo: Neck Sprains and Strains", "https://www.orthoinfo.org/diseases--conditions/neck-sprain/", "Full HTML; Anatomy and Warning Signs checked. Medication, collar and passive treatment advice not adopted."),
       headNeck,
+      vertebralJoints,
     ],
     supportedClaims: [
       "[1] Giải phẫu vùng: cột sống cổ nâng đỡ và vận động đầu; nguồn là §7.3 về cấu trúc và vận động cột sống.",
@@ -109,7 +117,8 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       "[7] Tình trạng thường gặp, Hoạt động liên quan triệu chứng: đau rễ có thể lan tay kèm tê/yếu; một số vận động cổ làm triệu chứng tăng. Nguồn không chứng nhận tự chẩn đoán từ đau lan.",
       "[8] Dấu hiệu cần trợ giúp y tế: đau cổ sau chấn thương và đau kèm đau đầu/tê/yếu tay chân cần đánh giá y tế ngay; không quy chóng mặt đơn độc thành thiếu máu động mạch đốt sống.",
       "[4,5,9] Chú giải hình cơ cổ: chức năng chung ức–đòn–chũm/bậc thang và cơ sau cổ; bỏ mô tả gộp mọi cơ sâu đều nối xương chẩm với C1/C2.",
-      "[1] Kiến thức nền: C1 không thân/mỏm gai và khớp đội–chẩm cho gật đầu; mỏm răng C2 cho xoay đầu; mặt khớp cổ phẳng nên vùng cổ linh hoạt (OpenStax §7.3, đọc lại 2026-10-22).",
+      "[1] Kiến thức nền: C1 không thân/mỏm gai và khớp đội–chẩm cho gật đầu; mỏm răng C2 cho xoay đầu (OpenStax §7.3, đọc lại 2026-10-22).",
+      "[10] Kiến thức nền: mặt khớp cổ phẳng, hướng lên/xuống cho phép gập, duỗi, nghiêng và xoay nhiều (OpenStax §9.6, Articulations of the Vertebral Column, đọc 2026-10-28).",
     ],
     limitations: [...commonLimitations, "Hướng dẫn cổ được kiểm tra là bản 2017; không khẳng định đã rà soát toàn bộ chứng cứ cổ công bố sau đó. Không có mô hình lực cá nhân để định lượng tải từ tư thế đầu."],
     reviewedBy: null,
@@ -156,6 +165,7 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       source("Hernández-Granados et al. European Hernia Society guidelines on management of rectus diastasis. BJS 2021;108:1189–1191; doi:10.1093/bjs/znab128", "https://pmc.ncbi.nlm.nih.gov/articles/PMC10364860/", "Full executive-summary HTML; KQ2 assessment, KQ4–KQ5 symptom/width uncertainty and KQ6 nonoperative treatment read. Supplementary full guideline and every trial not audited."),
       abdominalWall,
       pectoralGirdle,
+      vertebralJoints,
     ],
     supportedClaims: [
       "[1] Giải phẫu vùng: đối chiếu liên kết đốt ngực–xương sườn và việc cột sống cho phép vận động; bỏ mô hình tuyệt đối ngực chỉ linh hoạt/thắt lưng chỉ ổn định.",
@@ -164,7 +174,8 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       "[7] Tình trạng thường gặp về đau ngực, Quan sát và khi cần khám, Dấu hiệu cần trợ giúp y tế: đau ngực cần đánh giá theo triệu chứng và dấu hiệu cấp cứu; vận động thử không loại trừ bệnh tim phổi.",
       "[8] Tình trạng thường gặp về tách cơ bụng, Điều chỉnh hoạt động: hướng dẫn EHS yêu cầu đánh giá lâm sàng, nêu tương quan bề rộng–triệu chứng chưa rõ và chưa đủ chứng cứ chọn một phác đồ vận động; bỏ cấm sit-up/crunch mặc định.",
       "[2,4,5,8–10] Chú giải hình cơ thành bụng: bốn nhóm cơ bụng, ba lớp thành bụng bên, cơ thẳng bụng/đường trắng; cơ răng trước/lưng rộng được mô tả đại thể, không suy ra một hệ ổn định đo được.",
-      "[1] Kiến thức nền: đốt ngực khớp với xương sườn, mỏm gai dài chúc xuống và lồng ngực hạn chế vận động vùng ngực; đường cong ngực là cong nguyên phát lồi ra sau (OpenStax §7.3, đọc lại 2026-10-22).",
+      "[1] Kiến thức nền: đốt ngực khớp với xương sườn, mỏm gai dài chúc xuống; đường cong ngực là cong nguyên phát lồi ra sau (OpenStax §7.3, đọc lại 2026-10-22).",
+      "[11] Kiến thức nền: mỏm gai ngực chúc xuống, chồng lên nhau cùng lồng ngực hạn chế gập, duỗi và nghiêng; cổ và thắt lưng có biên độ lớn hơn (OpenStax §9.6, Articulations of the Vertebral Column, đọc 2026-10-28).",
     ],
     limitations: [...commonLimitations, "Phạm vi đã kiểm tra gồm giải phẫu chức năng, hô hấp chung, cảnh báo đau ngực và tóm tắt EHS2021 về tách cơ bụng. Chưa rà soát đầy đủ điều trị sau sinh/sàn chậu hoặc thử nghiệm mới hơn; không cung cấp phác đồ cá nhân.", "Các quan sát thở chỉ mô tả biểu hiện, không đo áp lực ổ bụng; chưa có kiểm chứng hiệu quả phòng chấn thương của cue 360° hoặc ribcage–pelvis stack."],
     reviewedBy: null,
@@ -182,6 +193,7 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       lumen("Transversus abdominis", "trab"),
       abdominalWall,
       source("NHS: Sciatica", "https://www.nhs.uk/conditions/sciatica/", "Full HTML; Symptoms, Immediate action and Causes sections rechecked. Supports radiating pain, sensory/strength changes, disc-related causes and emergency bilateral/saddle/bladder/bowel symptoms; not exercise dosage or imaging-based diagnosis."),
+      vertebralJoints,
     ],
     supportedClaims: [
       "[1] Giải phẫu vùng, Cấu trúc giải phẫu: đối chiếu cấu trúc vòng sợi/nhân nhầy, vị trí giữa thân đốt và chức năng chịu tải/vận động. Không coi gập lưng là chứng cứ thoát vị trong từng lần nâng.",
@@ -190,7 +202,8 @@ export const ANATOMY_REGION_EVIDENCE: Record<AnatomyRegionId, AnatomyRegionEvide
       "[5,10] Dấu hiệu cần trợ giúp y tế: đối chiếu chức năng thần kinh chùm đuôi ngựa, thay đổi cảm giác/tiểu tiện/đại tiện và tê/yếu nặng hoặc tăng dần hai chân cần đánh giá cấp cứu; không dùng nghiệm pháp PT để loại trừ.",
       "[4,5] Dấu hiệu cần trợ giúp y tế: cảnh báo chuyển đánh giá khi có triệu chứng thần kinh mới/tăng dần hoặc nghi nhiễm trùng, ung thư, chấn thương; không gán bệnh chỉ từ một dấu hiệu.",
       "[1,3,5–10] Chú giải hình đĩa đệm và cơ sâu vùng thắt lưng: đại thể đĩa đệm/rễ, QL, iliopsoas và thành bụng; bám tận và cơ sâu không được xác nhận bằng vị trí trên hình.",
-      "[1] Kiến thức nền: thân đốt thắt lưng lớn và dày vì chịu tải lớn nhất; mặt khớp cho gập/duỗi/nghiêng nhiều nhưng hạn chế xoay; đĩa đệm gồm vòng sợi và nhân nhầy (OpenStax §7.3, đọc lại 2026-10-22).",
+      "[1] Kiến thức nền: thân đốt thắt lưng lớn và dày vì chịu tải lớn nhất; đĩa đệm gồm vòng sợi và nhân nhầy (OpenStax §7.3, đọc lại 2026-10-22).",
+      "[11] Kiến thức nền: vùng thắt lưng gập, duỗi và nghiêng khá nhiều, nhưng hướng mặt khớp hạn chế xoay rõ rệt (OpenStax §9.6, Articulations of the Vertebral Column, đọc 2026-10-28).",
     ],
     limitations: [...commonLimitations, "NG59 dành cho người từ 16 tuổi, không phải quy trình tập sau mổ hoặc phác đồ cho mọi chẩn đoán cột sống. LUMEN multifidus là mô tả nhóm cơ cũ, không đủ lập bản đồ điểm bám thắt lưng chi tiết.", "Các ví dụ theo dõi hoạt động không phải công cụ xác định mô gây đau; chưa đối chiếu đầy đủ độ chính xác từng nghiệm pháp thần kinh."],
     reviewedBy: null,
