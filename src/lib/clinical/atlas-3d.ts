@@ -17,6 +17,14 @@ export type AtlasStructure = {
   areas: AtlasArea[];
   group: string | null;
   clinicalRegion: string | null;
+  sourceMetadata?: {
+    english: string;
+    latin: string;
+    side: "left" | "right" | null;
+    clinicalRegion: string | null;
+  };
+  correctionIds?: string[];
+  anatomicalTissueLabel?: string;
   surfaces?: { kind: TissueKind; faces: number; sourceMaterials: string[] }[];
   thickness?: {
     method: string;
@@ -71,7 +79,7 @@ export function searchStructures(
       (area === "full" || s.areas.includes(area)) &&
       terms.every((term) =>
         normalizeAnatomyText(
-          `${atlasVietnameseName(s) ?? ""} ${atlasShortEnglishName(s)} ${s.label} ${s.english} ${s.latin} ${s.side === "left" ? "trái left" : s.side === "right" ? "phải right" : ""}`,
+          `${atlasVietnameseName(s) ?? ""} ${atlasShortEnglishName(s)} ${s.label} ${s.english} ${s.latin} ${s.sourceMetadata?.latin ?? ""} ${s.side === "left" ? "trái left" : s.side === "right" ? "phải right" : ""}`,
         ).includes(term),
       ),
   );

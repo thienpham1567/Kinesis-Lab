@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { resolveAtlasManifest } from "@/lib/clinical/atlas-catalog";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { AtlasLayer, AtlasManifest } from "@/lib/clinical/atlas-3d";
@@ -48,7 +49,7 @@ export function ContextualAnatomyViewer(props: ContextualAnatomyProps) {
           if (!response.ok) throw new Error("Manifest unavailable");
           return response.json() as Promise<AtlasManifest>;
         },
-      ),
+      ).then(resolveAtlasManifest),
       15000,
       () => {
         if (!controller.signal.aborted) {

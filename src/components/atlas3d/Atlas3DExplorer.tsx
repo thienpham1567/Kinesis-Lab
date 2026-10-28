@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { resolveAtlasManifest } from "@/lib/clinical/atlas-catalog";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AtlasLearningInspector } from "./AtlasLearningInspector";
@@ -145,6 +146,7 @@ export default function Atlas3DExplorer({
         if (!response.ok) throw new Error("Manifest unavailable");
         return response.json() as Promise<AtlasManifest>;
       })
+      .then(resolveAtlasManifest)
       .then((data) => {
         if (controller.signal.aborted) return;
         if (searchTimer.current) clearTimeout(searchTimer.current);

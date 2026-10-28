@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import { resolveAtlasManifest } from "@/lib/clinical/atlas-catalog";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type {
@@ -57,6 +58,7 @@ export function TrainingAnatomyViewer({
         if (!r.ok) throw new Error("Không tải được danh mục");
         return r.json() as Promise<AtlasManifest>;
       })
+      .then(resolveAtlasManifest)
       .then((d) => {
         if (!controller.signal.aborted) setManifest(d);
       })

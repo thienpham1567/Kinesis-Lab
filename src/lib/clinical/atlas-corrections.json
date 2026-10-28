@@ -1,0 +1,370 @@
+[
+  {
+    "id": "latin-flexor-digiti-minimi-pedis",
+    "structureIds": [
+      "za-0594168bc7e0",
+      "za-a71914347fd5"
+    ],
+    "expected": {
+      "english": "Flexor digiti minimi of foot",
+      "latin": "Flexor digiti minimi pedis pedis"
+    },
+    "changes": {
+      "latin": "Flexor digiti minimi pedis"
+    },
+    "sources": [
+      {
+        "title": "FIPAT Terminologia Anatomica 2, v2.07, Part 2",
+        "url": "https://cdn.dal.ca/content/dam/dalhousie/pdf/library/FIPAT/TA2/FIPAT-TA2-Part-2.pdf",
+        "checkedAt": "2026-10-27",
+        "access": "Bảng mục 2682, trang PDF 76 (thứ tự một-based), đã đọc trực tiếp trong audit 27/10; không ghi đã đọc toàn tài liệu. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Chỉ bỏ pedis lặp. Không bổ sung brevis: tên chính không có brevis và synonym dài hơn đều hợp lệ trong TA2.",
+    "basis": "original-terminology-table",
+    "reviewedBy": null
+  },
+  {
+    "id": "latin-triceps-medial-head",
+    "structureIds": [
+      "za-f0a2b9e97a61",
+      "za-57697192a9ea"
+    ],
+    "expected": {
+      "english": "Medial head of triceps brachii",
+      "latin": "Caput mediale musculi tricipitis caput brachii"
+    },
+    "changes": {
+      "latin": "Caput mediale musculi tricipitis brachii"
+    },
+    "sources": [
+      {
+        "title": "FIPAT Terminologia Anatomica 2, v2.07, Part 2",
+        "url": "https://cdn.dal.ca/content/dam/dalhousie/pdf/library/FIPAT/TA2/FIPAT-TA2-Part-2.pdf",
+        "checkedAt": "2026-10-27",
+        "access": "Bảng mục 2474, trang PDF 69 (thứ tự một-based), đã đọc trực tiếp trong audit 27/10; không ghi đã đọc toàn tài liệu. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Bỏ caput thừa trước brachii, theo mục tên đã đối chiếu.",
+    "basis": "original-terminology-table",
+    "reviewedBy": null
+  },
+  {
+    "id": "latin-first-metacarpal",
+    "structureIds": [
+      "za-9df38dd0067f",
+      "za-0ca27c38f6ab"
+    ],
+    "expected": {
+      "english": "First metacarpal bone",
+      "latin": "Os primum metarcapi"
+    },
+    "changes": {
+      "latin": "Os primum metacarpi"
+    },
+    "sources": [
+      {
+        "title": "Comenius University Faculty of Medicine · bàn tay",
+        "url": "https://portal.fmed.uniba.sk/clanky.php?aid=301",
+        "checkedAt": "2026-10-27",
+        "access": "Mục tên trong HTML đầy đủ lấy qua HTTP trong audit; web reader trả 502 nhưng HTTP trực tiếp có nội dung. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Đối chiếu cách viết Latin ở mục tên liên quan, không xác nhận hình học mesh.",
+    "basis": "university-terminology-entry",
+    "reviewedBy": null
+  },
+  {
+    "id": "latin-fourth-metatarsal",
+    "structureIds": [
+      "za-a1dbeb10397d",
+      "za-ed21d2eab363"
+    ],
+    "expected": {
+      "english": "Fourth metatarsal bone",
+      "latin": "Os quatum metatarsi"
+    },
+    "changes": {
+      "latin": "Os quartum metatarsi"
+    },
+    "sources": [
+      {
+        "title": "Comenius University Faculty of Medicine · bàn chân",
+        "url": "https://portal.fmed.uniba.sk/clanky.php?aid=300",
+        "checkedAt": "2026-10-27",
+        "access": "Mục tên trong HTML đầy đủ lấy qua HTTP trong audit; web reader trả 502 nhưng HTTP trực tiếp có nội dung. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Đối chiếu cách viết Latin ở mục tên liên quan, không xác nhận hình học mesh.",
+    "basis": "university-terminology-entry",
+    "reviewedBy": null
+  },
+  {
+    "id": "side-iliocostalis-colli",
+    "structureIds": [
+      "za-ad4d8464ab41"
+    ],
+    "expected": {
+      "english": "Iliocostalis colli muscle",
+      "side": null
+    },
+    "changes": {
+      "side": "left"
+    },
+    "sources": [
+      {
+        "title": "Z-Anatomy · placement và đối tác trong audit metadata",
+        "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+        "checkedAt": "2026-10-27",
+        "access": "World bounds của GLB đã giải mã và metadata đối tác, xem docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md F3 và assets/2026-10-27-atlas-medical-audit/geometry-metrics.json. Không so với mẫu giải phẫu độc lập."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Khôi phục metadata bên theo vị trí cặp trong cùng hệ tọa độ nguồn; không phải kiểm chứng độc lập hình học hoặc phép đo y khoa.",
+    "basis": "paired-source-placement",
+    "reviewedBy": null
+  },
+  {
+    "id": "side-rib-head-ligament",
+    "structureIds": [
+      "za-5e590f3614ed"
+    ],
+    "expected": {
+      "english": "Intra-articular ligament of head of rib",
+      "side": null
+    },
+    "changes": {
+      "side": "left"
+    },
+    "sources": [
+      {
+        "title": "Z-Anatomy · placement và đối tác trong audit metadata",
+        "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+        "checkedAt": "2026-10-27",
+        "access": "World bounds của GLB đã giải mã và metadata đối tác, xem docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md F3 và assets/2026-10-27-atlas-medical-audit/geometry-metrics.json. Không so với mẫu giải phẫu độc lập."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Khôi phục metadata bên theo vị trí cặp trong cùng hệ tọa độ nguồn; không phải kiểm chứng độc lập hình học hoặc phép đo y khoa.",
+    "basis": "paired-source-placement",
+    "reviewedBy": null
+  },
+  {
+    "id": "side-ulnopisiform-ligament",
+    "structureIds": [
+      "za-ef71d29b63c0"
+    ],
+    "expected": {
+      "english": "Ulnopisiform ligament",
+      "side": null
+    },
+    "changes": {
+      "side": "right"
+    },
+    "sources": [
+      {
+        "title": "Z-Anatomy · placement và đối tác trong audit metadata",
+        "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+        "checkedAt": "2026-10-27",
+        "access": "World bounds của GLB đã giải mã và metadata đối tác, xem docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md F3 và assets/2026-10-27-atlas-medical-audit/geometry-metrics.json. Không so với mẫu giải phẫu độc lập."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Khôi phục metadata bên theo vị trí cặp trong cùng hệ tọa độ nguồn; không phải kiểm chứng độc lập hình học hoặc phép đo y khoa.",
+    "basis": "paired-source-placement",
+    "reviewedBy": null
+  },
+  {
+    "id": "region-supraspinatus-shoulder",
+    "structureIds": [
+      "za-0425424460a5",
+      "za-01cb75938da6"
+    ],
+    "expected": {
+      "english": "Supraspinatus muscle",
+      "clinicalRegion": "thoracic_core"
+    },
+    "changes": {
+      "clinicalRegion": "shoulder"
+    },
+    "sources": [
+      {
+        "title": "OpenStax Anatomy and Physiology 2e §9.6 · Shoulder Joint",
+        "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+        "checkedAt": "2026-10-28",
+        "access": "Đọc lại đoạn Shoulder Joint về bốn cơ chóp xoay ngày 28/10, sau đối chiếu trong audit 27/10; không xác nhận vị trí từng vertex."
+      }
+    ],
+    "checkedAt": "2026-10-28",
+    "access": "Liên kết ngữ cảnh học vùng vai vì cấu trúc thuộc chóp xoay; không kết luận cơ đặt sai vị trí trên mô hình.",
+    "basis": "textbook-regional-membership",
+    "reviewedBy": null
+  },
+  {
+    "id": "region-infraspinatus-shoulder",
+    "structureIds": [
+      "za-87ff24e3a85d",
+      "za-3eade513dbf4"
+    ],
+    "expected": {
+      "english": "Infraspinatus muscle",
+      "clinicalRegion": "thoracic_core"
+    },
+    "changes": {
+      "clinicalRegion": "shoulder"
+    },
+    "sources": [
+      {
+        "title": "OpenStax Anatomy and Physiology 2e §9.6 · Shoulder Joint",
+        "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+        "checkedAt": "2026-10-28",
+        "access": "Đọc lại đoạn Shoulder Joint về bốn cơ chóp xoay ngày 28/10, sau đối chiếu trong audit 27/10; không xác nhận vị trí từng vertex."
+      }
+    ],
+    "checkedAt": "2026-10-28",
+    "access": "Liên kết ngữ cảnh học vùng vai vì cấu trúc thuộc chóp xoay; không kết luận cơ đặt sai vị trí trên mô hình.",
+    "basis": "textbook-regional-membership",
+    "reviewedBy": null
+  },
+  {
+    "id": "region-subscapularis-shoulder",
+    "structureIds": [
+      "za-84c7d3654da9",
+      "za-bb19dc35992b"
+    ],
+    "expected": {
+      "english": "Subscapularis muscle",
+      "clinicalRegion": "thoracic_core"
+    },
+    "changes": {
+      "clinicalRegion": "shoulder"
+    },
+    "sources": [
+      {
+        "title": "OpenStax Anatomy and Physiology 2e §9.6 · Shoulder Joint",
+        "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+        "checkedAt": "2026-10-28",
+        "access": "Đọc lại đoạn Shoulder Joint về bốn cơ chóp xoay ngày 28/10, sau đối chiếu trong audit 27/10; không xác nhận vị trí từng vertex."
+      }
+    ],
+    "checkedAt": "2026-10-28",
+    "access": "Liên kết ngữ cảnh học vùng vai vì cấu trúc thuộc chóp xoay; không kết luận cơ đặt sai vị trí trên mô hình.",
+    "basis": "textbook-regional-membership",
+    "reviewedBy": null
+  },
+  {
+    "id": "tissue-digastric-intermediate-tendon",
+    "structureIds": [
+      "za-09d8674ed113",
+      "za-d64d3d420b6c"
+    ],
+    "expected": {
+      "english": "Intermediate tendon of digastric muscle",
+      "surfaceKinds": [
+        "ligament"
+      ]
+    },
+    "changes": {
+      "anatomicalTissueLabel": "Gân trung gian cơ hai bụng"
+    },
+    "sources": [
+      {
+        "title": "FIPAT/IFAA TAH15240 · Intermediate tendon of digastric muscle",
+        "url": "https://ifaa.unifr.ch/Public/TNAEntryPage/auto/unit/LAEN/TAH15240%20Unit%20EN.htm",
+        "checkedAt": "2026-10-28",
+        "access": "Đọc lại entry tên và taxonomy ngày 28/10, sau audit 27/10; trang ghi work in progress. Không dùng để xác nhận hình học GLB."
+      }
+    ],
+    "checkedAt": "2026-10-28",
+    "access": "Danh tính gân của cấu trúc được đặt tên; material Ligament của nguồn giữ nguyên và không phải phân loại mô học.",
+    "basis": "terminology-entry-tissue-identity",
+    "reviewedBy": null
+  },
+  {
+    "id": "tissue-distal-radioulnar-disc",
+    "structureIds": [
+      "za-76671b911ccb",
+      "za-d7748ccf7a30"
+    ],
+    "expected": {
+      "english": "Articular disc of distal radio-ulnar joint",
+      "surfaceKinds": [
+        "ligament"
+      ]
+    },
+    "changes": {
+      "anatomicalTissueLabel": "Đĩa sụn sợi"
+    },
+    "sources": [
+      {
+        "title": "Semisch và cs. · Histological assessment of the triangular fibrocartilage complex",
+        "url": "https://doi.org/10.1177/1753193415618391",
+        "checkedAt": "2026-10-27",
+        "access": "Abstract do publisher lập chỉ mục được đọc trong audit 27/10. Không đọc toàn bài. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Chỉ đĩa khớp quay–trụ dưới được đặt tên trong catalog, không phải toàn bộ TFCC; abstract phân biệt đĩa sụn sợi với mô dây chằng. Không phân đoạn mô học GLB.",
+    "basis": "histology-abstract-tissue-distinction",
+    "reviewedBy": null
+  },
+  {
+    "id": "tissue-iliotibial-tract-fascia",
+    "structureIds": [
+      "za-119decb9d97f",
+      "za-c50e8a3180cf"
+    ],
+    "expected": {
+      "english": "Iliotibial tract",
+      "surfaceKinds": [
+        "tendon"
+      ]
+    },
+    "changes": {
+      "anatomicalTissueLabel": "Dải chậu–chày · phần fascia lata"
+    },
+    "sources": [
+      {
+        "title": "Fairclough và cs. · The functional anatomy of the iliotibial band during flexion and extension of the knee",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/16533314/",
+        "checkedAt": "2026-10-27",
+        "access": "Abstract và mô tả hình được đọc trong audit 27/10; không ghi đã đọc toàn bài. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+      }
+    ],
+    "checkedAt": "2026-10-27",
+    "access": "Ghi quan hệ dải chậu–chày với fascia lata; không đổi material Tendon hoặc suy bề dày/diện bám từ lưới.",
+    "basis": "anatomy-abstract-fascia-relationship",
+    "reviewedBy": null
+  },
+  {
+    "id": "tissue-thyroid-cartilage",
+    "structureIds": [
+      "za-9cf0878d5d75"
+    ],
+    "expected": {
+      "english": "Thyroid cartilage",
+      "surfaceKinds": [
+        "cartilage"
+      ]
+    },
+    "changes": {
+      "anatomicalTissueLabel": "Sụn giáp"
+    },
+    "sources": [
+      {
+        "title": "OpenStax Anatomy and Physiology 2e §22.1 · Larynx",
+        "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+        "checkedAt": "2026-10-28",
+        "access": "Đọc lại đoạn Larynx ngày 28/10, sau audit 27/10; danh tính sụn giáp, không phải kiểm chứng hình học."
+      }
+    ],
+    "checkedAt": "2026-10-28",
+    "access": "Danh tính sụn của cấu trúc được đặt tên; bone vẫn là nhóm hiển thị theo hệ của nguồn.",
+    "basis": "textbook-tissue-identity",
+    "reviewedBy": null
+  }
+]

@@ -1,5 +1,6 @@
 import manifest from "../../../public/anatomy/3d/manifest.json";
 import catalogAudit from "./catalog-evidence.json";
+import atlasCorrections from "./atlas-corrections.json";
 import { ANATOMY_REGIONS } from "./anatomy-atlas";
 import { ANATOMY_REGION_EVIDENCE } from "./evidence-anatomy";
 import { MUSCLE_GROUP_ATLAS, HYPERTROPHY_EXERCISES } from "./muscle-hypertrophy-atlas";
@@ -21,7 +22,17 @@ export const EVIDENCE_DOMAIN_LABELS: Record<EvidenceDomain, string> = {
 };
 
 const catalogRecords = new Map<string, EvidenceRecord>();
+const correctionFieldLabels: Record<string, string> = {
+  latin: "Tên Latin", side: "Bên", clinicalRegion: "Vùng học", anatomicalTissueLabel: "Loại mô đại thể",
+};
+function correctionValue(field: string, value: unknown) {
+  if (field === "side") return value === "left" ? "trái" : value === "right" ? "phải" : "không phân bên";
+  if (field === "clinicalRegion") return ANATOMY_REGIONS.find((region) => region.id === value)?.name ?? "không gán vùng";
+  return String(value);
+}
 for (const [structureId, audit] of Object.entries(catalogAudit.structures)) {
+  const corrections = atlasCorrections.filter((correction) => correction.structureIds.includes(structureId));
+  const correctionSources = corrections.flatMap((correction) => correction.sources);
   catalogRecords.set(structureId, {
     status: "source-only",
     reviewedBy: null,
@@ -30,15 +41,22 @@ for (const [structureId, audit] of Object.entries(catalogAudit.structures)) {
       url: `${catalogAudit.source.repository}/tree/${catalogAudit.source.commit}`,
       checkedAt: catalogAudit.checkedAt,
       access: `Provenance của bộ mesh và so chuỗi với TA2.csv dẫn xuất. CC-BY-SA-4.0; asset version ${catalogAudit.source.assetVersion}. CSV SHA-256: ${catalogAudit.csvSha256}.`,
-    }],
+    }, ...correctionSources],
     supportedClaims: [
       `[1] ID ${structureId} có trong manifest của bộ nguồn đã ghi nhận; đây là truy xuất nguồn dữ liệu, không phải xác nhận giải phẫu.`,
       audit.englishMatch && audit.latinMatches
-        ? `[1] Chuỗi tên tiếng Anh và Latin khớp TA2.csv dẫn xuất ở ID TA2 ${audit.ta2Ids.join(", ")}; phép so chuỗi không xác nhận danh pháp độc lập.`
-        : "[1] Chưa có cặp chuỗi tiếng Anh/Latin khớp trong phép so TA2.csv dẫn xuất; không tự điền hay xác nhận tên.",
+        ? `[1] Chuỗi tên tiếng Anh và Latin của CSV gốc khớp TA2.csv dẫn xuất ở ID TA2 ${audit.ta2Ids.join(", ")}; phép so chuỗi không xác nhận danh pháp độc lập.`
+        : "[1] CSV gốc chưa có cặp chuỗi tiếng Anh/Latin khớp trong phép so TA2.csv dẫn xuất; không tự điền hay xác nhận tên.",
+      ...corrections.map((correction) => {
+        const refs = correction.sources.map((_, index) => `[${2 + correctionSources.indexOf(correction.sources[0]) + index}]`).join(" ");
+        const changes = Object.entries(correction.changes).map(([field, value]) => `${correctionFieldLabels[field]}: ${correctionValue(field, value)}`).join("; ");
+        return `${refs} Hiệu chỉnh có nguồn — ${changes}. Phạm vi: ${correction.access}`;
+      }),
     ],
     limitations: [
-      "Chưa đối chiếu độc lập tài liệu FIPAT gốc hoặc duyệt bản dịch tiếng Việt. Khớp chuỗi không chứng minh cấu trúc mesh được gắn đúng tên.",
+      corrections.length
+        ? "Đối chiếu nguồn hiệu chỉnh chỉ giới hạn ở các trường và phạm vi nêu trên; không xác nhận toàn bộ danh pháp, bản dịch tiếng Việt hoặc danh tính hình học của mesh. CSV gốc vẫn là phép so chuỗi dẫn xuất riêng."
+        : "Chưa đối chiếu độc lập tài liệu FIPAT gốc hoặc duyệt bản dịch tiếng Việt. Khớp chuỗi không chứng minh cấu trúc mesh được gắn đúng tên.",
       "Hình học 3D, bám cơ, hướng bó sợi, điểm mốc, độ dày và phép đo chưa được xác nhận; không suy chức năng hay chỉ định tập từ mesh này.",
       "Hồ sơ này ghi xuất xứ và phép so tên; không xác nhận từng điểm mốc, bản dịch hoặc phép đo trên mô hình 3D.",
     ],

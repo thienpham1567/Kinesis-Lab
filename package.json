@@ -15,6 +15,7 @@
     "check:atlas-learning": "node --test scripts/check-atlas-learning-studio.mjs",
     "check:atlas-study": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-hip-material-study.mjs",
     "check:atlas-detail": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-tissue-detail.mjs",
+    "check:atlas-corrections": "node scripts/check-atlas-medical-corrections.mjs",
     "check:atlas-evidence": "node scripts/check-atlas-evidence.mjs",
     "check:atlas-context": "node scripts/check-contextual-anatomy.mjs && node scripts/check-anatomy-load.mjs",
     "check:atlas-names": "node scripts/check-atlas-names.mjs",
