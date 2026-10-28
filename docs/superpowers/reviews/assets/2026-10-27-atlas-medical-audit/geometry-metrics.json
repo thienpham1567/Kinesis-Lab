@@ -1,0 +1,425 @@
+{
+  "checkedAt": "2026-10-27",
+  "commit": "8fa995f79170bec73052418271f01d4ec4e52ad5",
+  "method": "Read-only GLB/Draco decode via scripts/load-atlas-audit.mjs; boundaries weld identical local positions at 1e-7m. Mesh counts are engineering metrics, not medical validation.",
+  "bundles": [
+    {
+      "area": "full",
+      "structures": 1031,
+      "bytes": 9720004,
+      "sha256": "bb1a7269cabab3b86112962777bb4509527dda79bae6094324e266a9145c1b1f",
+      "idsMatch": true,
+      "bytesMatch": true,
+      "hashPrefixMatch": true
+    },
+    {
+      "area": "neck",
+      "structures": 133,
+      "bytes": 1171968,
+      "sha256": "63bf69b6bd82a352f0577e7575ec520422381dd386ddb897a20a6c1834a48c9a",
+      "idsMatch": true,
+      "bytesMatch": true,
+      "hashPrefixMatch": true
+    },
+    {
+      "area": "upper",
+      "structures": 330,
+      "bytes": 1848312,
+      "sha256": "ad59d4149322d81b3475363222ac07dc270448dcd6a088bc8b19752d38abd678",
+      "idsMatch": true,
+      "bytesMatch": true,
+      "hashPrefixMatch": true
+    },
+    {
+      "area": "trunk",
+      "structures": 362,
+      "bytes": 5730636,
+      "sha256": "4e97a0b29a31eb149d52e29faa686f9b169d67eafb66730d1a922b37066c0fda",
+      "idsMatch": true,
+      "bytesMatch": true,
+      "hashPrefixMatch": true
+    },
+    {
+      "area": "hip",
+      "structures": 54,
+      "bytes": 441312,
+      "sha256": "2db62bd876e9fddd25c0b9d714c9abeade3d1f2ac637f06d5d6b8eff661146e3",
+      "idsMatch": true,
+      "bytesMatch": true,
+      "hashPrefixMatch": true
+    },
+    {
+      "area": "lower",
+      "structures": 372,
+      "bytes": 2481088,
+      "sha256": "8b67088bc6385428e9211ffc45fc8b84db80c99c276e96bd0a25219f30208b73",
+      "idsMatch": true,
+      "bytesMatch": true,
+      "hashPrefixMatch": true
+    }
+  ],
+  "full": {
+    "structures": 1031,
+    "primitives": 1411,
+    "triangles": 2368785,
+    "vertexSlots": 1393895,
+    "positionComponents": 4181685,
+    "nonfinitePositionComponents": 0,
+    "exactly2Triangles": 58,
+    "atMost10Triangles": 154
+  },
+  "selected": [
+    {
+      "id": "za-acb77fda82d0",
+      "name": "Anterior talofibular ligament",
+      "side": "left",
+      "layer": "joint",
+      "triangles": 2,
+      "vertexSlots": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.09074806108610314,
+          0.06039013378584166,
+          -0.04033723564055713
+        ],
+        [
+          0.10152457122985523,
+          0.07128507013132543,
+          -0.0329527306446267
+        ]
+      ]
+    },
+    {
+      "id": "za-975efd6a59c5",
+      "name": "Anterior talofibular ligament",
+      "side": "right",
+      "layer": "joint",
+      "triangles": 2,
+      "vertexSlots": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.10152467583027917,
+          0.06039013389954395,
+          -0.04033723644588799
+        ],
+        [
+          -0.0907481654886997,
+          0.07128507018878479,
+          -0.03295273016662633
+        ]
+      ]
+    },
+    {
+      "id": "za-c17313116801",
+      "name": "Articular disc of acromioclavicular joint",
+      "side": "left",
+      "layer": "joint",
+      "triangles": 4,
+      "vertexSlots": 6,
+      "boundaryEdges": 6,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.14249424915347375,
+          1.4050776829492932,
+          -0.05305500865712377
+        ],
+        [
+          0.15777027005969047,
+          1.4235439511881838,
+          -0.0225708522273848
+        ]
+      ]
+    },
+    {
+      "id": "za-41a7661225ac",
+      "name": "Articular disc of acromioclavicular joint",
+      "side": "right",
+      "layer": "joint",
+      "triangles": 4,
+      "vertexSlots": 6,
+      "boundaryEdges": 6,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.15777032966433524,
+          1.4050776810404024,
+          -0.05305500858715495
+        ],
+        [
+          -0.14249430875811853,
+          1.4235439534394785,
+          -0.022570852366361915
+        ]
+      ]
+    },
+    {
+      "id": "za-76671b911ccb",
+      "name": "Articular disc of distal radio-ulnar joint",
+      "side": "left",
+      "layer": "joint",
+      "triangles": 7,
+      "vertexSlots": 8,
+      "boundaryEdges": 7,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.24428565613925457,
+          0.8595240262327063,
+          0.009759475561968798
+        ],
+        [
+          0.25859287194907665,
+          0.865442357661526,
+          0.02147562004351547
+        ]
+      ]
+    },
+    {
+      "id": "za-d7748ccf7a30",
+      "name": "Articular disc of distal radio-ulnar joint",
+      "side": "right",
+      "layer": "joint",
+      "triangles": 7,
+      "vertexSlots": 8,
+      "boundaryEdges": 7,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.2585929911583662,
+          0.8595240265130997,
+          0.009759475477039814
+        ],
+        [
+          -0.24428577534854412,
+          0.8654423565603793,
+          0.021475620567798615
+        ]
+      ]
+    },
+    {
+      "id": "za-eb3a5b3df5ad",
+      "name": "Articular disc of sternoclavicular joint",
+      "side": "left",
+      "layer": "joint",
+      "triangles": 4,
+      "vertexSlots": 6,
+      "boundaryEdges": 6,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.008044330403208733,
+          1.3890505024802133,
+          0.017509368566570906
+        ],
+        [
+          0.02699015848338604,
+          1.412888062442429,
+          0.056948950305736754
+        ]
+      ]
+    },
+    {
+      "id": "za-f6dee78bae20",
+      "name": "Articular disc of sternoclavicular joint",
+      "side": "right",
+      "layer": "joint",
+      "triangles": 4,
+      "vertexSlots": 6,
+      "boundaryEdges": 6,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.026990218088030815,
+          1.3890505032613873,
+          0.017509369179606438
+        ],
+        [
+          -0.008044390007853508,
+          1.4128880621865392,
+          0.05694895051419735
+        ]
+      ]
+    },
+    {
+      "id": "za-ee5019dbe021",
+      "name": "Calcaneofibular ligament",
+      "side": "left",
+      "layer": "joint",
+      "triangles": 2,
+      "vertexSlots": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.08659305096676692,
+          0.052968637722959115,
+          -0.06128009626585004
+        ],
+        [
+          0.1044815608682044,
+          0.06568769275644358,
+          -0.0555216828955877
+        ]
+      ]
+    },
+    {
+      "id": "za-95cebea24bd4",
+      "name": "Calcaneofibular ligament",
+      "side": "right",
+      "layer": "joint",
+      "triangles": 2,
+      "vertexSlots": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.10448166562203018,
+          0.05296863744186995,
+          -0.061280095135194834
+        ],
+        [
+          -0.08659315476197454,
+          0.06568769359761488,
+          -0.05552168453931219
+        ]
+      ]
+    },
+    {
+      "id": "za-ad4d8464ab41",
+      "name": "Iliocostalis colli muscle",
+      "side": null,
+      "layer": "muscle",
+      "triangles": 2050,
+      "vertexSlots": 1027,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.02449031896509668,
+          1.3155404013296392,
+          -0.09694802651121634
+        ],
+        [
+          0.07494421051612665,
+          1.4919352235908332,
+          -0.00999415930204807
+        ]
+      ]
+    },
+    {
+      "id": "za-07e8fccea637",
+      "name": "Iliocostalis colli muscle",
+      "side": "right",
+      "layer": "muscle",
+      "triangles": 2050,
+      "vertexSlots": 1027,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.07494423165917397,
+          1.3155402764678001,
+          -0.09694796055555344
+        ],
+        [
+          -0.02449033409357071,
+          1.4919351115822792,
+          -0.00999411940574646
+        ]
+      ]
+    },
+    {
+      "id": "za-5e590f3614ed",
+      "name": "Intra-articular ligament of head of rib",
+      "side": null,
+      "layer": "joint",
+      "triangles": 18,
+      "vertexSlots": 36,
+      "boundaryEdges": 36,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.013051916845142841,
+          1.2225129601627966,
+          -0.06725448631404081
+        ],
+        [
+          0.020464414730668068,
+          1.4259282970947098,
+          -0.0282054148247597
+        ]
+      ]
+    },
+    {
+      "id": "za-785300283e82",
+      "name": "Intra-articular ligament of head of rib",
+      "side": "right",
+      "layer": "joint",
+      "triangles": 18,
+      "vertexSlots": 36,
+      "boundaryEdges": 36,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.020464355126023293,
+          1.22251296043396,
+          -0.06725449115037918
+        ],
+        [
+          -0.013051857240498066,
+          1.4259282946586609,
+          -0.028205402195453644
+        ]
+      ]
+    },
+    {
+      "id": "za-ef71d29b63c0",
+      "name": "Ulnopisiform ligament",
+      "side": null,
+      "layer": "joint",
+      "triangles": 2,
+      "vertexSlots": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          -0.24248115451004834,
+          0.8490759138068693,
+          0.015318177923895832
+        ],
+        [
+          -0.2402204470112701,
+          0.8711172263300779,
+          0.029919464868822587
+        ]
+      ]
+    },
+    {
+      "id": "za-c0d361b230dc",
+      "name": "Ulnopisiform ligament",
+      "side": "left",
+      "layer": "joint",
+      "triangles": 2,
+      "vertexSlots": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "worldBounds": [
+        [
+          0.23906397553028952,
+          0.8480988685392395,
+          0.017233968163362527
+        ],
+        [
+          0.243711271892667,
+          0.8721937081287576,
+          0.02753512216557536
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1082 @@
+{
+  "integratedAt": "2026-10-28",
+  "reviewedBy": null,
+  "scope": "Educational claim/source comparisons, terminology and engineering source checks are separate. No per-region or whole-atlas clinical validation is claimed.",
+  "coverage": {
+    "individualFamilies": 8,
+    "individualMeshIds": 16,
+    "individualClaims": 39,
+    "catalogGeometryStatus": "source-only for all 1031 structures",
+    "terminologyReport": "2026-10-28-atlas-terminology-comparison.md",
+    "geometryReport": "2026-10-28-atlas-geometry-candidates.md"
+  },
+  "regions": [
+    {
+      "regionId": "cervical",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:cervical",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [],
+      "newIndividualCoverage": "No new individual muscle record in this batch; existing regional knowledge remains available.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "shoulder",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:shoulder",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [
+        {
+          "recordId": "structure:supraspinatus",
+          "name": "Cơ trên gai",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-0425424460a5",
+            "za-01cb75938da6"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-0425424460a5",
+              "side": "left"
+            },
+            {
+              "id": "za-01cb75938da6",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxShoulder"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaSupraspinatus",
+                "ttuhscMuscles"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaSupraspinatus"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaSupraspinatus"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaSupraspinatus"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxShoulder",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles That Move the Humerus,” running text, Figure 11.23 caption, Figure 11.24 alternative text for comparison. Exclude inconsistent alternative-text claims."
+            },
+            {
+              "id": "loyolaSupraspinatus",
+              "url": "https://www.lumen.luc.edu/lumen/meded/grossanatomy/dissector/muscles/sups.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            },
+            {
+              "id": "ttuhscMuscles",
+              "url": "https://anatomy.ttuhscep.edu/anatomytables/muscles_alpha.html",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: all seven relevant muscle rows and associated notes. University teaching table, not a peer-reviewed clinical study or source-to-mesh validation."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "Không dùng mô tả xoay khuỷu trong văn bản thay thế Hình 11.24 OpenStax làm bằng chứng chức năng; dạng cánh tay theo Loyola."
+          ]
+        },
+        {
+          "recordId": "structure:infraspinatus",
+          "name": "Cơ dưới gai",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-87ff24e3a85d",
+            "za-3eade513dbf4"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-87ff24e3a85d",
+              "side": "left"
+            },
+            {
+              "id": "za-3eade513dbf4",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxShoulder"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaInfraspinatus"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaInfraspinatus"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaInfraspinatus"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaInfraspinatus"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxShoulder",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles That Move the Humerus,” running text, Figure 11.23 caption, Figure 11.24 alternative text for comparison. Exclude inconsistent alternative-text claims."
+            },
+            {
+              "id": "loyolaInfraspinatus",
+              "url": "https://www.lumen.luc.edu/lumen/meded/grossanatomy/dissector/muscles/infs.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "Không dùng mô tả vùng bám không nhất quán trong chú thích Hình 11.23 OpenStax; vùng bám theo mục riêng Loyola."
+          ]
+        },
+        {
+          "recordId": "structure:subscapularis",
+          "name": "Cơ dưới vai",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-84c7d3654da9",
+            "za-bb19dc35992b"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-84c7d3654da9",
+              "side": "left"
+            },
+            {
+              "id": "za-bb19dc35992b",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxShoulder"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaSubscapularis"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaSubscapularis"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaSubscapularis"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaSubscapularis"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxShoulder",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles That Move the Humerus,” running text, Figure 11.23 caption, Figure 11.24 alternative text for comparison. Exclude inconsistent alternative-text claims."
+            },
+            {
+              "id": "loyolaSubscapularis",
+              "url": "https://www.meddean.luc.edu/lumen/meded/grossanatomy/dissector/mml/subs.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            },
+            {
+              "id": "ttuhscMuscles",
+              "url": "https://anatomy.ttuhscep.edu/anatomytables/muscles_alpha.html",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: all seven relevant muscle rows and associated notes. University teaching table, not a peer-reviewed clinical study or source-to-mesh validation."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "Không đưa động tác duỗi phụ trợ do TTUHSC nêu vào mô tả cốt lõi."
+          ]
+        },
+        {
+          "recordId": "structure:teres-minor",
+          "name": "Cơ tròn bé",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-a9f9cad10f26",
+            "za-fd5c02294b47"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-a9f9cad10f26",
+              "side": "left"
+            },
+            {
+              "id": "za-fd5c02294b47",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxShoulder",
+                "loyolaTeresMinor"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaTeresMinor"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaTeresMinor"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaTeresMinor"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaTeresMinor"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxShoulder",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-5-muscles-of-the-pectoral-girdle-and-upper-limbs",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles That Move the Humerus,” running text, Figure 11.23 caption, Figure 11.24 alternative text for comparison. Exclude inconsistent alternative-text claims."
+            },
+            {
+              "id": "loyolaTeresMinor",
+              "url": "https://www.lumen.luc.edu/lumen/meded/grossanatomy/dissector/muscles/tmn.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "Không đưa động tác duỗi phụ trợ do OpenStax nêu vào mô tả cốt lõi."
+          ]
+        }
+      ],
+      "newIndividualCoverage": "See explicitly listed records; does not cover all structures in region.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "thoracic_core",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:thoracic_core",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [
+        {
+          "recordId": "structure:internal-oblique",
+          "name": "Cơ chéo bụng trong",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-6ac590756567",
+            "za-11e8ab43abc3"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-6ac590756567",
+              "side": "left"
+            },
+            {
+              "id": "za-11e8ab43abc3",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxAbdomen"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaInternal",
+                "loyolaAbdomenTable"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaAbdomenTable"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaAbdomenTable"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaAbdomenTable"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxAbdomen",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles of the Abdomen,” Figure 11.16 caption and adjacent prose, plus Table 11.6 for comparison. Use layer relationships; exclude disputed abbreviated attachment entries."
+            },
+            {
+              "id": "loyolaInternal",
+              "url": "https://www.meddean.luc.edu/lumen/meded/grossanatomy/dissector/mml/inab.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            },
+            {
+              "id": "loyolaAbdomenTable",
+              "url": "https://www.stritch.luc.edu/lumen/meded/grossanatomy/homepage/muscletables/abdomenmuscletable.pdf",
+              "checkedAt": "2026-10-28",
+              "access": "Full public one-page PDF, Robert Frysztak, PhD; printed date 2015-07-16. External-oblique, internal-oblique and transversus rows read."
+            },
+            {
+              "id": "ttuhscMuscles",
+              "url": "https://anatomy.ttuhscep.edu/anatomytables/muscles_alpha.html",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: all seven relevant muscle rows and associated notes. University teaching table, not a peer-reviewed clinical study or source-to-mesh validation."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "Nguồn khác nhau về phần dây chằng bẹn bám nguyên ủy; mô tả giữ vị trí chung, không gán một tỷ lệ duy nhất. Bám sườn 10–12 theo bảng PDF Loyola; TTUHSC mô tả ba hoặc bốn xương sườn dưới.",
+            "Nguồn đã đọc chưa phân biệt rõ chiều xoay cùng bên và đối bên; không gán chiều xoay một bên.",
+            "OpenStax §11.4 chỉ hỗ trợ vị trí lớp; không dùng các hàng bám cơ rút gọn trong Bảng 11.6 vì khác các nguồn đại học."
+          ]
+        },
+        {
+          "recordId": "structure:external-oblique",
+          "name": "Cơ chéo bụng ngoài",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-a37e0a05a2d2",
+            "za-a0399c244657"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-a37e0a05a2d2",
+              "side": "left"
+            },
+            {
+              "id": "za-a0399c244657",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxAbdomen"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaAbdomenTable"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaAbdomenTable",
+                "ttuhscMuscles"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaExternal"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaExternal"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxAbdomen",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles of the Abdomen,” Figure 11.16 caption and adjacent prose, plus Table 11.6 for comparison. Use layer relationships; exclude disputed abbreviated attachment entries."
+            },
+            {
+              "id": "loyolaAbdomenTable",
+              "url": "https://www.stritch.luc.edu/lumen/meded/grossanatomy/homepage/muscletables/abdomenmuscletable.pdf",
+              "checkedAt": "2026-10-28",
+              "access": "Full public one-page PDF, Robert Frysztak, PhD; printed date 2015-07-16. External-oblique, internal-oblique and transversus rows read."
+            },
+            {
+              "id": "ttuhscMuscles",
+              "url": "https://anatomy.ttuhscep.edu/anatomytables/muscles_alpha.html",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: all seven relevant muscle rows and associated notes. University teaching table, not a peer-reviewed clinical study or source-to-mesh validation."
+            },
+            {
+              "id": "loyolaExternal",
+              "url": "https://www.meddean.luc.edu/lumen/meded/grossanatomy/dissector/mml/exab.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "TTUHSC nêu thêm thần kinh chậu–hạ vị và chậu–bẹn; mô tả T7–T12 theo mục riêng và bảng PDF Loyola, không khẳng định đã giải quyết khác biệt này.",
+            "Nguồn đã đọc chưa phân biệt rõ chiều xoay cùng bên và đối bên; không gán chiều xoay một bên.",
+            "OpenStax §11.4 chỉ hỗ trợ vị trí lớp; không dùng các hàng bám cơ rút gọn trong Bảng 11.6 vì khác các nguồn đại học."
+          ]
+        },
+        {
+          "recordId": "structure:transversus-abdominis",
+          "name": "Cơ ngang bụng",
+          "checkedAt": "2026-10-28",
+          "structureIds": [
+            "za-0f462c8829a0",
+            "za-67d5878d84fa"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-0f462c8829a0",
+              "side": "left"
+            },
+            {
+              "id": "za-67d5878d84fa",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [
+            {
+              "claimId": "position",
+              "sourceIds": [
+                "openstaxAbdomen"
+              ]
+            }
+          ],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "loyolaAbdomenTable"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "loyolaTransversus"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "loyolaTransversus",
+                "loyolaAbdomenTable"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "loyolaTransversus"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "openstaxAbdomen",
+              "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-4-axial-muscles-of-the-abdominal-wall-and-thorax",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: “Muscles of the Abdomen,” Figure 11.16 caption and adjacent prose, plus Table 11.6 for comparison. Use layer relationships; exclude disputed abbreviated attachment entries."
+            },
+            {
+              "id": "loyolaAbdomenTable",
+              "url": "https://www.stritch.luc.edu/lumen/meded/grossanatomy/homepage/muscletables/abdomenmuscletable.pdf",
+              "checkedAt": "2026-10-28",
+              "access": "Full public one-page PDF, Robert Frysztak, PhD; printed date 2015-07-16. External-oblique, internal-oblique and transversus rows read."
+            },
+            {
+              "id": "loyolaTransversus",
+              "url": "https://www.meddean.luc.edu/lumen/meded/grossanatomy/dissector/mml/trab.htm",
+              "checkedAt": "2026-10-28",
+              "access": "Full public short entry: origin, insertion, action and nerve."
+            },
+            {
+              "id": "ttuhscMuscles",
+              "url": "https://anatomy.ttuhscep.edu/anatomytables/muscles_alpha.html",
+              "checkedAt": "2026-10-28",
+              "access": "Public HTML: all seven relevant muscle rows and associated notes. University teaching table, not a peer-reviewed clinical study or source-to-mesh validation."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân.",
+            "Loyola và TTUHSC khác nhau về tỷ lệ mào chậu và dây chằng bẹn; mô tả chỉ giữ các vùng bám chung.",
+            "Chức năng theo Loyola; không đưa gấp hoặc nghiêng thân được nêu trong TTUHSC vào mô tả cốt lõi.",
+            "OpenStax §11.4 chỉ hỗ trợ vị trí lớp; không dùng các hàng bám cơ rút gọn trong Bảng 11.6 vì khác các nguồn đại học."
+          ]
+        }
+      ],
+      "newIndividualCoverage": "See explicitly listed records; does not cover all structures in region.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "lumbar",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:lumbar",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [],
+      "newIndividualCoverage": "No new individual muscle record in this batch; existing regional knowledge remains available.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "hip_pelvis",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:hip_pelvis",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [
+        {
+          "recordId": "structure:gluteus-medius",
+          "name": "Cơ mông nhỡ",
+          "checkedAt": "2026-10-22",
+          "structureIds": [
+            "za-98cfd2e47395",
+            "za-cc11824f98a0"
+          ],
+          "sourceMetadataSides": [
+            {
+              "id": "za-98cfd2e47395",
+              "side": "left"
+            },
+            {
+              "id": "za-cc11824f98a0",
+              "side": "right"
+            }
+          ],
+          "identity": "Named anatomical entity compared with cited sources; association with mesh IDs comes from source catalog, not independent mesh identification.",
+          "side": "Source metadata only; bilateral IDs are not independent spatial validation.",
+          "layerRelation": [],
+          "attachments": [
+            {
+              "claimId": "origin",
+              "sourceIds": [
+                "mcgraw"
+              ]
+            },
+            {
+              "claimId": "insertion",
+              "sourceIds": [
+                "uw",
+                "tsutsumi"
+              ]
+            }
+          ],
+          "innervationAndAction": [
+            {
+              "claimId": "innervation",
+              "sourceIds": [
+                "uw"
+              ]
+            },
+            {
+              "claimId": "action",
+              "sourceIds": [
+                "mcgraw",
+                "uw"
+              ]
+            }
+          ],
+          "tissue": "Gross muscle identity only; no histological or tissue measurement validation.",
+          "sources": [
+            {
+              "id": "mcgraw",
+              "url": "https://accessmedicine.mhmedical.com/Content.aspx?bookid=2478&sectionid=202021783",
+              "checkedAt": "2026-10-22",
+              "access": "Publisher-indexed public Table 35-1 excerpt rechecked; direct page returned 403. Gross attachments/action only; no complete chapter access claimed."
+            },
+            {
+              "id": "uw",
+              "url": "https://rad.uw.edu/muscle-atlas/gluteus-medius",
+              "checkedAt": "2026-10-22",
+              "access": "Full public entry: origin, insertion, action and innervation rechecked. Page displays ‘This is unpublished’; university teaching reference, not a peer-reviewed paper. No illustrations redistributed."
+            },
+            {
+              "id": "flack",
+              "url": "https://pubmed.ncbi.nlm.nih.gov/23625344/",
+              "checkedAt": "2026-10-22",
+              "access": "PubMed-indexed abstract rechecked; direct PubMed open was unavailable. Dissection of 12 cadavers, four architecture/innervation compartments; no full-text or source-to-mesh fiber-map claim."
+            },
+            {
+              "id": "tsutsumi",
+              "url": "https://pubmed.ncbi.nlm.nih.gov/30653048/",
+              "checkedAt": "2026-10-22",
+              "access": "PubMed-indexed abstract rechecked; direct PubMed open was unavailable. Twenty-five hips from 15 Japanese cadavers; two tendon parts and lateral/superoposterior facets. No full-text access or patient-specific measurements claimed."
+            }
+          ],
+          "limitations": [
+            "Nguồn hỗ trợ giải phẫu đại thể phục vụ học tập; không xác nhận tọa độ, hình dạng hay nhãn của từng mesh.",
+            "Vùng bám nêu ở mức đại thể, không phải bản đồ điểm bám, hướng bó sợi hay số đo mô của cá nhân.",
+            "Nội dung không xác định nguyên nhân đau, chẩn đoán tổn thương hoặc kế hoạch điều trị cá nhân."
+          ]
+        }
+      ],
+      "newIndividualCoverage": "See explicitly listed records; does not cover all structures in region.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "thigh_hamstring",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:thigh_hamstring",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [],
+      "newIndividualCoverage": "No new individual muscle record in this batch; existing regional knowledge remains available.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "knee",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:knee",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [],
+      "newIndividualCoverage": "No new individual muscle record in this batch; existing regional knowledge remains available.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    },
+    {
+      "regionId": "ankle_foot",
+      "regionalKnowledge": {
+        "evidenceRecordId": "anatomy:ankle_foot",
+        "sourceFile": "src/lib/clinical/evidence-anatomy.ts",
+        "scope": "Existing source comparisons retain their recorded dates/access. Movement citation corrections in cervical/thoracic/lumbar specifically read OpenStax 9.6 on 2026-10-28; other region sources have not been newly reread in this batch."
+      },
+      "individualComparisons": [],
+      "newIndividualCoverage": "No new individual muscle record in this batch; existing regional knowledge remains available.",
+      "meshAttachmentAndLayerValidation": "Not established in this batch. Source material groups, highlights and bounds do not validate anatomical depth, attachments or thickness."
+    }
+  ],
+  "catalogCorrectionComparisons": [
+    {
+      "id": "latin-flexor-digiti-minimi-pedis",
+      "structureIds": [
+        "za-0594168bc7e0",
+        "za-a71914347fd5"
+      ],
+      "fields": [
+        "latin"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "original-terminology-table",
+      "sources": [
+        {
+          "url": "https://cdn.dal.ca/content/dam/dalhousie/pdf/library/FIPAT/TA2/FIPAT-TA2-Part-2.pdf",
+          "checkedAt": "2026-10-27",
+          "access": "Bảng mục 2682, trang PDF 76 (thứ tự một-based), đã đọc trực tiếp trong audit 27/10; không ghi đã đọc toàn tài liệu. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+        }
+      ],
+      "scope": "Chỉ bỏ pedis lặp. Không bổ sung brevis: tên chính không có brevis và synonym dài hơn đều hợp lệ trong TA2."
+    },
+    {
+      "id": "latin-triceps-medial-head",
+      "structureIds": [
+        "za-f0a2b9e97a61",
+        "za-57697192a9ea"
+      ],
+      "fields": [
+        "latin"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "original-terminology-table",
+      "sources": [
+        {
+          "url": "https://cdn.dal.ca/content/dam/dalhousie/pdf/library/FIPAT/TA2/FIPAT-TA2-Part-2.pdf",
+          "checkedAt": "2026-10-27",
+          "access": "Bảng mục 2474, trang PDF 69 (thứ tự một-based), đã đọc trực tiếp trong audit 27/10; không ghi đã đọc toàn tài liệu. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+        }
+      ],
+      "scope": "Bỏ caput thừa trước brachii, theo mục tên đã đối chiếu."
+    },
+    {
+      "id": "latin-first-metacarpal",
+      "structureIds": [
+        "za-9df38dd0067f",
+        "za-0ca27c38f6ab"
+      ],
+      "fields": [
+        "latin"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "university-terminology-entry",
+      "sources": [
+        {
+          "url": "https://portal.fmed.uniba.sk/clanky.php?aid=301",
+          "checkedAt": "2026-10-27",
+          "access": "Mục tên trong HTML đầy đủ lấy qua HTTP trong audit; web reader trả 502 nhưng HTTP trực tiếp có nội dung. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+        }
+      ],
+      "scope": "Đối chiếu cách viết Latin ở mục tên liên quan, không xác nhận hình học mesh."
+    },
+    {
+      "id": "latin-fourth-metatarsal",
+      "structureIds": [
+        "za-a1dbeb10397d",
+        "za-ed21d2eab363"
+      ],
+      "fields": [
+        "latin"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "university-terminology-entry",
+      "sources": [
+        {
+          "url": "https://portal.fmed.uniba.sk/clanky.php?aid=300",
+          "checkedAt": "2026-10-27",
+          "access": "Mục tên trong HTML đầy đủ lấy qua HTTP trong audit; web reader trả 502 nhưng HTTP trực tiếp có nội dung. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+        }
+      ],
+      "scope": "Đối chiếu cách viết Latin ở mục tên liên quan, không xác nhận hình học mesh."
+    },
+    {
+      "id": "side-iliocostalis-colli",
+      "structureIds": [
+        "za-ad4d8464ab41"
+      ],
+      "fields": [
+        "side"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "paired-source-placement",
+      "sources": [
+        {
+          "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+          "checkedAt": "2026-10-27",
+          "access": "World bounds của GLB đã giải mã và metadata đối tác, xem docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md F3 và assets/2026-10-27-atlas-medical-audit/geometry-metrics.json. Không so với mẫu giải phẫu độc lập."
+        }
+      ],
+      "scope": "Khôi phục metadata bên theo vị trí cặp trong cùng hệ tọa độ nguồn; không phải kiểm chứng độc lập hình học hoặc phép đo y khoa."
+    },
+    {
+      "id": "side-rib-head-ligament",
+      "structureIds": [
+        "za-5e590f3614ed"
+      ],
+      "fields": [
+        "side"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "paired-source-placement",
+      "sources": [
+        {
+          "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+          "checkedAt": "2026-10-27",
+          "access": "World bounds của GLB đã giải mã và metadata đối tác, xem docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md F3 và assets/2026-10-27-atlas-medical-audit/geometry-metrics.json. Không so với mẫu giải phẫu độc lập."
+        }
+      ],
+      "scope": "Khôi phục metadata bên theo vị trí cặp trong cùng hệ tọa độ nguồn; không phải kiểm chứng độc lập hình học hoặc phép đo y khoa."
+    },
+    {
+      "id": "side-ulnopisiform-ligament",
+      "structureIds": [
+        "za-ef71d29b63c0"
+      ],
+      "fields": [
+        "side"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "paired-source-placement",
+      "sources": [
+        {
+          "url": "https://github.com/Z-Anatomy/Models-of-human-anatomy/tree/0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
+          "checkedAt": "2026-10-27",
+          "access": "World bounds của GLB đã giải mã và metadata đối tác, xem docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md F3 và assets/2026-10-27-atlas-medical-audit/geometry-metrics.json. Không so với mẫu giải phẫu độc lập."
+        }
+      ],
+      "scope": "Khôi phục metadata bên theo vị trí cặp trong cùng hệ tọa độ nguồn; không phải kiểm chứng độc lập hình học hoặc phép đo y khoa."
+    },
+    {
+      "id": "region-supraspinatus-shoulder",
+      "structureIds": [
+        "za-0425424460a5",
+        "za-01cb75938da6"
+      ],
+      "fields": [
+        "clinicalRegion"
+      ],
+      "checkedAt": "2026-10-28",
+      "basis": "textbook-regional-membership",
+      "sources": [
+        {
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+          "checkedAt": "2026-10-28",
+          "access": "Đọc lại đoạn Shoulder Joint về bốn cơ chóp xoay ngày 28/10, sau đối chiếu trong audit 27/10; không xác nhận vị trí từng vertex."
+        }
+      ],
+      "scope": "Liên kết ngữ cảnh học vùng vai vì cấu trúc thuộc chóp xoay; không kết luận cơ đặt sai vị trí trên mô hình."
+    },
+    {
+      "id": "region-infraspinatus-shoulder",
+      "structureIds": [
+        "za-87ff24e3a85d",
+        "za-3eade513dbf4"
+      ],
+      "fields": [
+        "clinicalRegion"
+      ],
+      "checkedAt": "2026-10-28",
+      "basis": "textbook-regional-membership",
+      "sources": [
+        {
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+          "checkedAt": "2026-10-28",
+          "access": "Đọc lại đoạn Shoulder Joint về bốn cơ chóp xoay ngày 28/10, sau đối chiếu trong audit 27/10; không xác nhận vị trí từng vertex."
+        }
+      ],
+      "scope": "Liên kết ngữ cảnh học vùng vai vì cấu trúc thuộc chóp xoay; không kết luận cơ đặt sai vị trí trên mô hình."
+    },
+    {
+      "id": "region-subscapularis-shoulder",
+      "structureIds": [
+        "za-84c7d3654da9",
+        "za-bb19dc35992b"
+      ],
+      "fields": [
+        "clinicalRegion"
+      ],
+      "checkedAt": "2026-10-28",
+      "basis": "textbook-regional-membership",
+      "sources": [
+        {
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/9-6-anatomy-of-selected-synovial-joints",
+          "checkedAt": "2026-10-28",
+          "access": "Đọc lại đoạn Shoulder Joint về bốn cơ chóp xoay ngày 28/10, sau đối chiếu trong audit 27/10; không xác nhận vị trí từng vertex."
+        }
+      ],
+      "scope": "Liên kết ngữ cảnh học vùng vai vì cấu trúc thuộc chóp xoay; không kết luận cơ đặt sai vị trí trên mô hình."
+    },
+    {
+      "id": "tissue-digastric-intermediate-tendon",
+      "structureIds": [
+        "za-09d8674ed113",
+        "za-d64d3d420b6c"
+      ],
+      "fields": [
+        "anatomicalTissueLabel"
+      ],
+      "checkedAt": "2026-10-28",
+      "basis": "terminology-entry-tissue-identity",
+      "sources": [
+        {
+          "url": "https://ifaa.unifr.ch/Public/TNAEntryPage/auto/unit/LAEN/TAH15240%20Unit%20EN.htm",
+          "checkedAt": "2026-10-28",
+          "access": "Đọc lại entry tên và taxonomy ngày 28/10, sau audit 27/10; trang ghi work in progress. Không dùng để xác nhận hình học GLB."
+        }
+      ],
+      "scope": "Danh tính gân của cấu trúc được đặt tên; material Ligament của nguồn giữ nguyên và không phải phân loại mô học."
+    },
+    {
+      "id": "tissue-distal-radioulnar-disc",
+      "structureIds": [
+        "za-76671b911ccb",
+        "za-d7748ccf7a30"
+      ],
+      "fields": [
+        "anatomicalTissueLabel"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "histology-abstract-tissue-distinction",
+      "sources": [
+        {
+          "url": "https://doi.org/10.1177/1753193415618391",
+          "checkedAt": "2026-10-27",
+          "access": "Abstract do publisher lập chỉ mục được đọc trong audit 27/10. Không đọc toàn bài. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+        }
+      ],
+      "scope": "Chỉ đĩa khớp quay–trụ dưới được đặt tên trong catalog, không phải toàn bộ TFCC; abstract phân biệt đĩa sụn sợi với mô dây chằng. Không phân đoạn mô học GLB."
+    },
+    {
+      "id": "tissue-iliotibial-tract-fascia",
+      "structureIds": [
+        "za-119decb9d97f",
+        "za-c50e8a3180cf"
+      ],
+      "fields": [
+        "anatomicalTissueLabel"
+      ],
+      "checkedAt": "2026-10-27",
+      "basis": "anatomy-abstract-fascia-relationship",
+      "sources": [
+        {
+          "url": "https://pubmed.ncbi.nlm.nih.gov/16533314/",
+          "checkedAt": "2026-10-27",
+          "access": "Abstract và mô tả hình được đọc trong audit 27/10; không ghi đã đọc toàn bài. Báo cáo: docs/superpowers/reviews/2026-10-27-atlas-3d-medical-detail-audit.md."
+        }
+      ],
+      "scope": "Ghi quan hệ dải chậu–chày với fascia lata; không đổi material Tendon hoặc suy bề dày/diện bám từ lưới."
+    },
+    {
+      "id": "tissue-thyroid-cartilage",
+      "structureIds": [
+        "za-9cf0878d5d75"
+      ],
+      "fields": [
+        "anatomicalTissueLabel"
+      ],
+      "checkedAt": "2026-10-28",
+      "basis": "textbook-tissue-identity",
+      "sources": [
+        {
+          "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/22-1-organs-and-structures-of-the-respiratory-system",
+          "checkedAt": "2026-10-28",
+          "access": "Đọc lại đoạn Larynx ngày 28/10, sau audit 27/10; danh tính sụn giáp, không phải kiểm chứng hình học."
+        }
+      ],
+      "scope": "Danh tính sụn của cấu trúc được đặt tên; bone vẫn là nhóm hiển thị theo hệ của nguồn."
+    }
+  ],
+  "nextBatch": {
+    "priorityRegions": [
+      "hip_pelvis",
+      "thigh_hamstring",
+      "knee",
+      "ankle_foot"
+    ],
+    "scope": "Future individual knowledge requires separate source comparison and review; not represented as completed here."
+  }
+}

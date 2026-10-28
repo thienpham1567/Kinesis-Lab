@@ -1,0 +1,216 @@
+{
+  "checkedAt": "2026-10-27",
+  "commit": "8fa995f79170bec73052418271f01d4ec4e52ad5",
+  "FrontSide": 0,
+  "DoubleSide": 2,
+  "bundles": [
+    {
+      "area": "full",
+      "materials": [
+        {
+          "name": "Kinesis_muscle",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_tendon",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_cartilage",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_ligament",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_bone",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_fat",
+          "doubleSided": true
+        }
+      ]
+    },
+    {
+      "area": "neck",
+      "materials": [
+        {
+          "name": "Kinesis_muscle",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_ligament",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_cartilage",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_tendon",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_bone",
+          "doubleSided": true
+        }
+      ]
+    },
+    {
+      "area": "upper",
+      "materials": [
+        {
+          "name": "Kinesis_muscle",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_tendon",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_ligament",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_cartilage",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_bone",
+          "doubleSided": true
+        }
+      ]
+    },
+    {
+      "area": "trunk",
+      "materials": [
+        {
+          "name": "Kinesis_muscle",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_tendon",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_ligament",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_cartilage",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_bone",
+          "doubleSided": true
+        }
+      ]
+    },
+    {
+      "area": "hip",
+      "materials": [
+        {
+          "name": "Kinesis_cartilage",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_ligament",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_bone",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_muscle",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_tendon",
+          "doubleSided": true
+        }
+      ]
+    },
+    {
+      "area": "lower",
+      "materials": [
+        {
+          "name": "Kinesis_muscle",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_tendon",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_cartilage",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_ligament",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_bone",
+          "doubleSided": true
+        },
+        {
+          "name": "Kinesis_fat",
+          "doubleSided": true
+        }
+      ]
+    }
+  ],
+  "replacementMaterials": [
+    {
+      "kind": "muscle",
+      "side": 0
+    },
+    {
+      "kind": "tendon",
+      "side": 0
+    },
+    {
+      "kind": "ligament",
+      "side": 0
+    },
+    {
+      "kind": "cartilage",
+      "side": 0
+    },
+    {
+      "kind": "bone",
+      "side": 0
+    },
+    {
+      "kind": "fat",
+      "side": 0
+    }
+  ],
+  "liveExample": {
+    "id": "za-975efd6a59c5",
+    "name": "Anterior talofibular ligament",
+    "side": "right",
+    "isolation": true,
+    "visibleView": [
+      -0.041887,
+      0.064845,
+      -0.037084,
+      -0.096597,
+      0.064845,
+      -0.037084
+    ],
+    "culledView": [
+      -0.151307,
+      0.064845,
+      -0.037084,
+      -0.096597,
+      0.064845,
+      -0.037084
+    ],
+    "highlightedIdsRemain": "za-975efd6a59c5",
+    "interpretation": "Opposite sides around the same target: open source sheet disappears with replacement FrontSide material."
+  }
+}
