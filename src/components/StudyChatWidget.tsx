@@ -15,8 +15,8 @@ const STORAGE_KEY = "kinesis-study-chat";
 const MODEL_KEY = "kinesis-study-chat-model";
 const MAX_QUOTE = 1500;
 const CHAT_MODELS = [
-  { id: "google/gemini-3.8-flash", label: "Gemini 3.8 Flash" },
-  { id: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash" },
+  { id: "google/gemini-3.8-flash", label: "Gemini 3.8 Flash", short: "Gemini 3.8" },
+  { id: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash", short: "Gemini 2.5" },
 ] as const;
 
 function loadChatModel(): (typeof CHAT_MODELS)[number]["id"] {
@@ -92,6 +92,7 @@ export function StudyChatWidget({
   const composerId = useId();
   const titleId = useId();
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const currentModel = CHAT_MODELS.find((item) => item.id === chatModel) ?? CHAT_MODELS[0];
 
   useEffect(() => {
     function onSelectionChange() {
@@ -279,14 +280,16 @@ export function StudyChatWidget({
               <div className="relative" ref={modelMenu}>
                 <button
                   type="button"
-                  aria-label="Chọn model"
+                  aria-label={`Chọn model, đang dùng ${currentModel.label}`}
                   aria-haspopup="menu"
                   aria-expanded={modelMenuOpen}
                   disabled={busy}
                   onClick={() => setModelMenuOpen((current) => !current)}
-                  className="flex size-9 items-center justify-center rounded-lg text-slate hover:bg-canvas hover:text-cobalt"
+                  className="inline-flex h-9 max-w-36 items-center gap-1 rounded-lg px-1.5 text-xs font-medium text-slate hover:bg-canvas hover:text-cobalt"
                 >
-                  <Icon name="chevron-down" className="size-4" />
+                  <Icon name="spark" className="size-3.5" />
+                  <span className="truncate">{currentModel.short}</span>
+                  <Icon name="chevron-down" className="size-3.5" />
                 </button>
                 {modelMenuOpen && (
                   <div

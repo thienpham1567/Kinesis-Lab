@@ -15,6 +15,8 @@ test("floating chat posts text only and does not offer image generation", () => 
   assert.equal(widget.includes("Đoạn tài liệu tham chiếu"), false);
   assert.equal(widget.includes("RAG:"), false);
   assert.match(widget, /aria-haspopup="menu"/);
+  assert.match(widget, /name="spark"/);
+  assert.match(widget, /currentModel\.short/);
   assert.match(widget, /Gemini 3\.8 Flash/);
   assert.match(widget, /Gemini 2\.5 Flash/);
   assert.doesNotMatch(widget, /role="group" aria-label="Chọn model"/);
