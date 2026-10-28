@@ -147,7 +147,7 @@ test("every translated term has scoped evidence without hiding partial or unreso
   const evidence = load("src/lib/clinical/atlas-terminology-evidence.ts");
   const comparisons = evidence.ATLAS_TERMINOLOGY_COMPARISONS;
   assert.deepEqual(Object.keys(comparisons).sort(), Object.keys(ATLAS_MUSCULAR_NAMES_VI).sort());
-  assert.equal(evidence.ATLAS_TERMINOLOGY_CHECKED_AT, "2026-10-23");
+  assert.equal(evidence.ATLAS_TERMINOLOGY_CHECKED_AT, "2026-10-28");
   assert.equal(evidence.ATLAS_TERMINOLOGY_REVIEWED_BY, null);
   const counts = { matched: 0, partial: 0, unresolved: 0 };
   for (const [english, comparison] of Object.entries(comparisons)) {
@@ -164,16 +164,25 @@ test("every translated term has scoped evidence without hiding partial or unreso
     for (const reference of comparison.references) {
       const source = evidence.ATLAS_TERMINOLOGY_SOURCES[reference.sourceId];
       assert.ok(source.title && source.authors && source.access && source.hostNote);
-      assert.ok(Number.isInteger(reference.page) && reference.page > 0);
+      assert.ok(source.checkedAt && source.format);
+      if (source.format === "pdf") assert.ok(Number.isInteger(reference.page) && reference.page > 0);
+      else {
+        assert.equal(reference.page, null);
+        assert.equal(reference.locator, "SNOMED CT 244872002");
+      }
       assert.ok(reference.sourceTerm);
       const url = new URL(evidence.atlasTerminologyReferenceUrl(reference));
       assert.equal(url.protocol, "https:");
-      assert.equal(url.hash, `#page=${reference.page}`);
-      const pageCount = { "hmu-2004": 329, phcn: 55, "pnt-2025": 11 };
-      assert.ok(reference.page <= pageCount[reference.sourceId]);
+      assert.equal(url.hash, source.format === "pdf" ? `#page=${reference.page}` : "");
+      const pageCount = { "hmu-2004": 329, phcn: 55, "pnt-2025": 11, "byt-2427-2025": 1441 };
+      if (source.format === "pdf") assert.ok(reference.page <= pageCount[reference.sourceId]);
     }
   }
-  assert.deepEqual(counts, { matched: 173, partial: 35, unresolved: 8 });
+  assert.deepEqual(counts, { matched: 193, partial: 22, unresolved: 1 });
+  const structureCounts = { matched: 0, partial: 0, unresolved: 0 };
+  for (const structure of manifest.structures)
+    if (structure.layer === "muscle") structureCounts[comparisons[structure.english].status]++;
+  assert.deepEqual(structureCounts, { matched: 383, partial: 44, unresolved: 2 });
   for (const unknown of ["Future unmapped structure", "toString", "__proto__"])
     assert.equal(evidence.getAtlasTerminologyComparison(unknown), null);
   assert.notEqual(ATLAS_MUSCULAR_NAMES_VI["Longissimus capitis muscle"], ATLAS_MUSCULAR_NAMES_VI["Longus capitis muscle"]);
@@ -339,4 +348,130 @@ test("source raycast acceleration preserves geometry, nearest hits and cleanup",
   assert.equal(mesh.geometry.boundsTree, undefined);
   mesh.geometry.dispose();
   mesh.material.dispose();
+});
+
+// Expected pairs and locators transcribed from the bounded 2026-10-28 research report.
+const terminologyBatch = [
+  ["Levatores breves costarum", "unresolved", "325", "6108535", "368051000", "Toàn bộ cơ nâng sườn ngắn", "Entire levator costae brevis muscle"],
+  ["Levatores longi costarum", "unresolved", "325", "6108536", "368050004", "Toàn bộ cơ nâng sườn dài", "Entire levator costae longus muscle"],
+  ["Rotatores", "unresolved", "489", "6112778", "244872002", "Toàn bộ cơ xoay", "Entire rotator muscle"],
+  ["Spinalis capitis muscle", "unresolved", "1289", "6132695", "50200003", "Cấu trúc cơ gai đầu", "Structure of spinalis capitis muscle"],
+  ["Spinalis colli muscle", "unresolved", "1289", "6132696", "90411004", "Cơ gai cổ", "Structure of spinalis cervicis muscle"],
+  ["Superficial transverse metacarpal ligament", "unresolved", "566", "6114727", "15324007", "Toàn bộ dây chằng ngang gan tay nông", "Entire superficial transverse metacarpal ligament"],
+  ["Superficial transverse metatarsal ligament", "unresolved", "566", "6114728", "42009009", "Toàn bộ dây chằng ngang nông bàn chân", "Entire superficial transverse metatarsal ligament"],
+  ["Humeral head of extensor carpi ulnaris", "partial", "258", "6106797", "368527004", "Toàn bộ đầu cánh tay của cơ duỗi cổ tay trụ", "Entire humeral head of extensor carpi ulnaris muscle"],
+  ["Ulnar head of extensor carpi ulnaris", "partial", "629", "6116352", "368528009", "Toàn bộ đầu trụ của cơ duỗi cổ tay trụ", "Entire ulnar head of extensor carpi ulnaris muscle"],
+  ["Iliocostalis lumborum muscle", "partial", "978", "6125231", "49178001", "Cấu trúc cơ chậu - sườn thắt lưng", "Structure of iliocostalis lumborum muscle"],
+  ["Iliocostalis thoracis muscle", "partial", "978", "6125233", "10921009", "Cấu trúc cơ chậu-sườn ngực", "Structure of iliocostalis thoracis muscle"],
+  ["Interspinales colli muscles", "partial", "282", "6107407", "246011001", "Cơ gian gai cổ", "Entire interspinalis cervicis muscle"],
+  ["Interspinales lumborum muscles", "partial", "282", "6107408", "246021009", "Toàn bộ cơ gian gai thắt lưng", "Entire interspinalis lumborum muscle"],
+  ["Interspinales thoracis muscles", "partial", "282", "6107410", "134197004", "Toàn bộ cơ gian gai ngực", "Entire interspinalis thoracis muscle"],
+  ["Longissimus capitis muscle", "partial", "1071", "6127470", "61134003", "Cấu trúc cơ longissimus đầu", "Structure of longissimus capitis muscle"],
+  ["Longissimus colli muscle", "partial", "1071", "6127471", "50059002", "Cấu trúc cơ dài cổ bên", "Structure of longissimus cervicis muscle"],
+  ["Longissimus thoracis muscle", "partial", "1071", "6127473", "24796008", "Cấu trúc cơ dài ngực", "Structure of longissimus thoracis muscle"],
+  ["Semispinalis colli muscle", "partial", "1266", "6132146", "44222009", "Cấu trúc cơ bán gai cổ", "Structure of semispinalis cervicis muscle"],
+  ["Semispinalis thoracis muscle", "partial", "1266", "6132148", "29385000", "Cấu trúc cơ bán gai ngực", "Structure of semispinalis thoracis muscle"],
+  ["Spinalis thoracis muscle", "partial", "1289", "6132698", "88769007", "Cơ gai ngực", "Structure of spinalis thoracis muscle"],
+];
+const remainingPartialTerms = [
+  "Acromial part of deltoid muscle",
+  "Clavicular part of deltoid muscle",
+  "Scapular spinal part of deltoid muscle",
+  "Ascending part of trapezius muscle",
+  "Descending part of trapezius muscle",
+  "Transverse part of trapezius muscle",
+  "Deep head of pronator teres",
+  "Superficial head of pronator teres",
+  "Dorsal parts of lateral intertransversarii lumborum muscles",
+  "Ventral parts of lateral intertransversarii lumborum muscles",
+  "Ary-epiglottic part of oblique arytenoid muscle",
+  "Thyro-epiglottic part of thyro-arytenoid muscle",
+  "External part of thyro-arytenoid muscle",
+  "Flexor digiti minimi of foot",
+  "Flexor digiti minimi of hand",
+  "Iliocostalis colli muscle",
+  "Multifidus colli muscle",
+  "Multifidus lumborum muscle",
+  "Multifidus thoracis muscle",
+  "Splenius capitis muscle",
+  "Splenius colli muscle",
+  "Tendon of extensor digitorum longus",
+];
+const preservedTerminologyReferences = {
+  "Humeral head of extensor carpi ulnaris": [117, "Cơ duỗi cổ tay-trụ (m. extensor carpi ulnaris)"],
+  "Ulnar head of extensor carpi ulnaris": [117, "Cơ duỗi cổ tay-trụ (m. extensor carpi ulnaris)"],
+  "Iliocostalis lumborum muscle": [90, "Cơ chậu sườn-thắt lưng"],
+  "Iliocostalis thoracis muscle": [90, "Cơ chậu sườn-ngực"],
+  "Interspinales colli muscles": [91, "Các cơ gian gai (musculi interspinales)"],
+  "Interspinales lumborum muscles": [91, "Các cơ gian gai (musculi interspinales)"],
+  "Interspinales thoracis muscles": [91, "Các cơ gian gai (musculi interspinales)"],
+  "Longissimus capitis muscle": [90, "Cơ dài đầu"],
+  "Longissimus colli muscle": [90, "Cơ dài cổ"],
+  "Longissimus thoracis muscle": [90, "Cơ dài ngực"],
+  "Semispinalis colli muscle": [90, "Cơ bán gai cổ"],
+  "Semispinalis thoracis muscle": [90, "Cơ bán gai ngực"],
+  "Spinalis thoracis muscle": [90, "Cơ gai ngực"],
+};
+
+test("the twenty sourced terminology upgrades retain exact bilingual pairs and source history", () => {
+  const evidence = load("src/lib/clinical/atlas-terminology-evidence.ts");
+  const comparisons = evidence.ATLAS_TERMINOLOGY_COMPARISONS;
+  const sources = evidence.ATLAS_TERMINOLOGY_SOURCES;
+  assert.equal(terminologyBatch.length, 20);
+  assert.equal(terminologyBatch.filter((row) => row[1] === "unresolved").length, 7);
+  const bytUrl = "https://hscv.dienbien.gov.vn/qlvb/vbpq.nsf/3d0f058120469ad34725726600365420/958EDD2F2512480F47258CD500065A0B/%24file/03%20Phu%20luc%2001%20%28Danh%20muc%20Cau%20truc%20co%20the%29.signed.pdf";
+  assert.ok(sources["byt-2427-2025"], "new BYT source is recorded");
+  assert.equal(sources["byt-2427-2025"].url, bytUrl);
+  assert.equal(sources["byt-2427-2025"].checkedAt, "2026-10-28");
+  assert.match(sources["byt-2427-2025"].hostNote, /không.*mọi dòng/);
+  for (const [english, , page, rowId, snomedCt, sourceTerm, sourceEnglishTerm] of terminologyBatch) {
+    const record = comparisons[english];
+    assert.equal(record.status, "matched", english);
+    assert.equal(record.checkedAt, "2026-10-28", english);
+    const ref = record.references.find((ref) => ref.sourceId === "byt-2427-2025");
+    assert.ok(ref, english);
+    assert.equal(ref.page, Number(page), english);
+    assert.equal(ref.rowId, rowId, english);
+    assert.equal(ref.snomedCt, snomedCt, english);
+    assert.equal(ref.sourceTerm, sourceTerm, english);
+    assert.equal(ref.sourceEnglishTerm, sourceEnglishTerm, english);
+    assert.equal(evidence.atlasTerminologyReferenceUrl(ref), `${bytUrl}#page=${page}`);
+    if (preservedTerminologyReferences[english]) {
+      const [oldPage, oldTerm] = preservedTerminologyReferences[english];
+      assert.ok(record.references.some((ref) => ref.sourceId === "hmu-2004" && ref.page === oldPage && ref.sourceTerm === oldTerm), english);
+      assert.match(record.note, /2004/);
+    }
+  }
+  const updatedKeys = new Set(terminologyBatch.map(([key]) => key));
+  for (const [key, record] of Object.entries(comparisons))
+    assert.equal(record.checkedAt, updatedKeys.has(key) ? "2026-10-28" : "2026-10-23", key);
+  assert.deepEqual(Object.entries(comparisons).filter(([, record]) => record.status === "partial").map(([key]) => key).sort(), remainingPartialTerms.sort());
+  assert.deepEqual(Object.entries(comparisons).filter(([, record]) => record.status === "unresolved").map(([key]) => key), ["Adductor minimus"]);
+  for (const id of ["hmu-2004", "phcn", "pnt-2025"]) assert.equal(sources[id].checkedAt, "2026-10-23");
+  assert.match(comparisons["Longissimus capitis muscle"].note, /longissimus đầu/);
+  assert.match(comparisons["Longissimus colli muscle"].note, /dài cổ bên/);
+  assert.match(comparisons["Longissimus thoracis muscle"].note, /dài ngực/);
+  assert.match(comparisons["Spinalis colli muscle"].note, /colli.*cervicis/);
+  assert.match(comparisons["Levatores breves costarum"].note, /số ít.*số nhiều/);
+  assert.match(comparisons["Superficial transverse metacarpal ligament"].note, /ngang gan tay nông/);
+});
+
+test("Rotatores uses the same SNOMED concept through a scoped HTML synonym bridge", () => {
+  const evidence = load("src/lib/clinical/atlas-terminology-evidence.ts");
+  const record = evidence.getAtlasTerminologyComparison("Rotatores");
+  const ref = record.references.find((ref) => ref.sourceId === "vt-sct-244872002");
+  assert.ok(ref, "Rotatores requires the HTML concept bridge");
+  const source = evidence.ATLAS_TERMINOLOGY_SOURCES[ref.sourceId];
+  assert.equal(source.format, "html");
+  assert.equal(source.checkedAt, "2026-10-28");
+  assert.equal(ref.page, null);
+  assert.equal(ref.locator, "SNOMED CT 244872002");
+  assert.equal(ref.snomedCt, record.references.find((ref) => ref.sourceId === "byt-2427-2025").snomedCt);
+  assert.equal(ref.sourceTerm, "Entire rotator muscle (body structure) / Entire Rotatores");
+  const url = new URL(evidence.atlasTerminologyReferenceUrl(ref));
+  assert.equal(url.hostname, "vtsl.vetmed.vt.edu");
+  assert.equal(url.searchParams.get("SCT_ConceptID"), "244872002");
+  assert.equal(url.hash, "");
+  assert.match(source.hostNote, /thú y/);
+  assert.match(source.hostNote, /không.*giải phẫu người/);
 });

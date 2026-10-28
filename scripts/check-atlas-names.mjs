@@ -159,3 +159,23 @@ assert.ok(sourceHtml.includes(pec.latin));
 console.log(
   `Atlas names: ${manifest.structures.length} structures; concise English, preserved Vietnamese/source names, distinctions and bilingual search passed.`,
 );
+
+const { AtlasTerminologySources } = load("src/components/atlas3d/AtlasTerminologySources.tsx");
+const terminologyHtml = (english) => renderToStaticMarkup(createElement(AtlasTerminologySources, { english, expanded: true }));
+const updatedTermHtml = terminologyHtml("Longissimus capitis muscle");
+assert.ok(updatedTermHtml.includes("28/10/2026"));
+assert.ok(updatedTermHtml.includes("Đã đọc nguồn: 23/10/2026"), "old HMU source keeps its access date within updated record");
+assert.ok(updatedTermHtml.includes("Đã đọc nguồn: 28/10/2026"));
+assert.ok(updatedTermHtml.includes("trang PDF 1071"));
+assert.ok(updatedTermHtml.includes("Structure of longissimus capitis muscle"));
+assert.ok(updatedTermHtml.includes("6127470"));
+const preservedTermHtml = terminologyHtml("Infraspinatus muscle");
+assert.ok(preservedTermHtml.includes("23/10/2026"));
+assert.ok(!preservedTermHtml.includes("28/10/2026"), "untouched term is not presented as newly checked");
+const rotatoresHtml = terminologyHtml("Rotatores");
+assert.ok(rotatoresHtml.includes("SNOMED CT 244872002"));
+assert.ok(rotatoresHtml.includes("Entire Rotatores"));
+assert.ok(!rotatoresHtml.includes("trang PDF null"));
+assert.ok(!rotatoresHtml.includes("#page=null"));
+assert.equal(terminologyHtml("__proto__"), "");
+console.log("Terminology cards: record/source dates, bilingual row metadata and HTML concept locator passed.");

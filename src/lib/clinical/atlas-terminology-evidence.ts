@@ -1,9 +1,13 @@
 /** Name comparison only; never upgrades catalog geometry or clinical evidence. */
-export const ATLAS_TERMINOLOGY_CHECKED_AT = "2026-10-23";
+/** Latest batch date; individual records and sources retain their own dates. */
+export const ATLAS_TERMINOLOGY_CHECKED_AT = "2026-10-28";
+const ORIGINAL_CHECKED_AT = "2026-10-23";
 export const ATLAS_TERMINOLOGY_REVIEWED_BY = null;
 
 export const ATLAS_TERMINOLOGY_SOURCES = {
   "hmu-2004": {
+    format: "pdf",
+    checkedAt: ORIGINAL_CHECKED_AT,
     title: "ĐH Y Hà Nội · Bài giảng Giải phẫu học (2004)",
     authors: "Bộ môn Giải phẫu; Nguyễn Văn Huy, Lê Hữu Hưng và cộng sự",
     url: "https://dienthaiduong.com.vn/upload/file/bai-giang-giai-phau-hocdh-y-ha-noi-1755658431-1762569650.pdf",
@@ -12,6 +16,8 @@ export const ATLAS_TERMINOLOGY_SOURCES = {
     bibliographyUrl: "https://phucvu.thuvientphcm.gov.vn/Item/ItemDetail/344751",
   },
   phcn: {
+    format: "pdf",
+    checkedAt: ORIGINAL_CHECKED_AT,
     title: "BV PHCN Trung ương · Giải phẫu một số cơ",
     authors: "BS. Cầm Bá Thức",
     url: "https://bvphcntw.gov.vn/uploads/news/2021_05/giai-phau-mot-so-co-bs-thuc.pdf",
@@ -20,6 +26,8 @@ export const ATLAS_TERMINOLOGY_SOURCES = {
     bibliographyUrl: null,
   },
   "pnt-2025": {
+    format: "pdf",
+    checkedAt: ORIGINAL_CHECKED_AT,
     title: "Y Dược học Phạm Ngọc Thạch · Các phương pháp đánh giá chất lượng giọng nói (2025)",
     authors: "Ngô Minh Cường, Lê Trần Quang Minh",
     url: "https://scholar.dlu.edu.vn/thuvienso/bitstream/DLU123456789/284374/1/107962-2641-218830-1-10-20250210.pdf",
@@ -27,20 +35,45 @@ export const ATLAS_TERMINOLOGY_SOURCES = {
     hostNote: "Bài báo 4(1):19–29, DOI 10.59715/pntjmp.4.1.3; bản lưu tại thư viện ĐH Đà Lạt. Chú thích hình ghi năm Gray’s Anatomy không nhất quán; không dùng chú thích đó để xác nhận ấn bản Gray’s đã đọc.",
     bibliographyUrl: "https://doi.org/10.59715/pntjmp.4.1.3",
   },
+  "byt-2427-2025": {
+    format: "pdf",
+    checkedAt: "2026-10-28",
+    title: "Bộ Y tế · Phụ lục 1: Danh mục mã dùng chung thuật ngữ lâm sàng – Đợt 1 (2427/QĐ-BYT, 25/07/2025)",
+    authors: "Bộ Y tế",
+    url: "https://hscv.dienbien.gov.vn/qlvb/vbpq.nsf/3d0f058120469ad34725726600365420/958EDD2F2512480F47258CD500065A0B/%24file/03%20Phu%20luc%2001%20%28Danh%20muc%20Cau%20truc%20co%20the%29.signed.pdf",
+    access: "Tìm văn bản trích xuất trong PDF 1.441 trang; xem trực tiếp các trang PDF 1, 258, 282, 325, 489, 566, 629, 978, 1071, 1266, 1289. Chỉ đối chiếu các cặp tên, mã dòng và SNOMED CT được dẫn; không khẳng định đã đọc trực quan toàn bộ tài liệu.",
+    hostNote: "Phụ lục có dấu Bộ Y tế trên dịch vụ văn bản chính quyền Điện Biên; đối chiếu thêm số/ngày quyết định tại CDC Khánh Hòa. Đây là bảng thuật ngữ lâm sàng song ngữ, không phải bản dịch FIPAT hay giáo trình giải phẫu. Một số dòng lân cận dịch không nhất quán; không xác nhận mọi dòng hoặc nhập toàn bộ bảng.",
+    bibliographyUrl: "https://www.ksbtkhanhhoa.vn/VanBan/ChiTiet/8847",
+  },
+  "vt-sct-244872002": {
+    format: "html",
+    checkedAt: "2026-10-28",
+    title: "Virginia Tech · SNOMED CT 244872002 — Entire rotator muscle / Entire Rotatores",
+    authors: "Veterinary Terminology & Standards, Virginia-Maryland College of Veterinary Medicine, Virginia Tech",
+    url: "https://vtsl.vetmed.vt.edu/Terminologymgt/RF2Viewer/display.cfm?SCT_ConceptID=244872002&hdr=Specimen+Source+Site&refset=332811000009101",
+    access: "Đọc HTML: tiêu đề khái niệm 244872002, mô tả và tên đồng nghĩa Entire Rotatores; các liên kết cha ghi cấu trúc cơ xoay và cơ ngang-gai. Chỉ dùng cầu nối tên đồng nghĩa cho cùng mã ở dòng BYT 6112778.",
+    hostNote: "Trình xem thuật ngữ trong bối cảnh thú y của Virginia Tech; chỉ dùng đồng nhất mã và tên Rotatores, không suy ra giải phẫu người hay tính đúng của mesh từ giải phẫu thú y.",
+    bibliographyUrl: null,
+  },
 } as const;
 
 export type AtlasTerminologySourceId = keyof typeof ATLAS_TERMINOLOGY_SOURCES;
 export type AtlasTerminologyStatus = "matched" | "partial" | "unresolved";
-export interface AtlasTerminologyReference {
+export type AtlasTerminologyReference = {
   sourceId: AtlasTerminologySourceId;
-  /** One-based PDF page, not printed pagination. */
-  page: number;
   /** Short term(s) actually seen in the source; display wording may differ. */
   sourceTerm: string;
-}
+  sourceEnglishTerm?: string;
+  rowId?: string;
+  snomedCt?: string;
+} & (
+  | { /** One-based PDF page, not printed pagination. */ page: number; locator?: never }
+  | { /** HTML concept locator; no fabricated PDF page. */ page: null; locator: string }
+);
 export interface AtlasTerminologyComparison {
   /** matched = full named entity found in context; not official certification. */
   status: AtlasTerminologyStatus;
+  checkedAt: string;
   references: readonly AtlasTerminologyReference[];
   note?: string;
 }
@@ -58,7 +91,30 @@ function comparison(
   sourceTerm: string,
   note?: string,
 ): AtlasTerminologyComparison {
-  return { status, references: [{ sourceId, page, sourceTerm }], ...(note ? { note } : {}) };
+  return { status, checkedAt: ORIGINAL_CHECKED_AT, references: [{ sourceId, page, sourceTerm }], ...(note ? { note } : {}) };
+}
+
+/** Add only the bounded bilingual comparison; earlier references keep their source dates. */
+function withBytComparison(
+  previous: AtlasTerminologyComparison,
+  page: number,
+  rowId: string,
+  snomedCt: string,
+  sourceTerm: string,
+  sourceEnglishTerm: string,
+  note: string,
+  additionalReferences: readonly AtlasTerminologyReference[] = [],
+): AtlasTerminologyComparison {
+  return {
+    status: "matched",
+    checkedAt: "2026-10-28",
+    references: [
+      ...previous.references,
+      { sourceId: "byt-2427-2025", page, rowId, snomedCt, sourceTerm, sourceEnglishTerm },
+      ...additionalReferences,
+    ],
+    note: `${note}${previous.note ? ` Phạm vi hồ sơ ngày 23/10/2026 (trước bổ sung): ${previous.note}` : ""}`,
+  };
 }
 
 const NOTE_1 = "Tài liệu gọi “phần”; danh mục English gọi head cho phần đòn và ức-sườn. Giữ đầu/phần theo tên nguồn; đây là biến thể danh pháp, không suy ra cơ được phân đoạn trên mesh.";
@@ -95,7 +151,7 @@ const NOTE_31 = "Chưa tìm được đối chiếu tiếng Việt cho dây ch�
 const NOTE_32 = "Chưa tìm được đối chiếu tiếng Việt cho dây chằng ngang nông đốt bàn chân; không lấy nguồn dây chằng ngang sâu thay thế.";
 const NOTE_33 = "Đã đối chiếu tên cơ mẹ; chưa tìm được cặp tên riêng cho gân trong những trang đã đọc. Từ “gân” là thành phần chuyển ngữ theo English nguồn.";
 
-/** Every current translated key has an explicit result, including eight gaps. */
+/** Every current translated key has an explicit result, including the remaining gaps. */
 export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTerminologyComparison>> = {
   "Abdominal part of pectoralis major muscle": comparison("matched", "phcn", 32, "Cơ ngực lớn / phần bụng", NOTE_1),
   "Abductor digiti minimi of foot": comparison("matched", "hmu-2004", 133, "Cơ giạng ngón chân út (m. abductor digiti minimi)"),
@@ -107,7 +163,7 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Adductor brevis": comparison("matched", "hmu-2004", 124, "Cơ khép ngắn (m. adductor brevis)"),
   "Adductor longus": comparison("matched", "hmu-2004", 124, "Cơ khép dài (m. adductor longus)"),
   "Adductor magnus": comparison("matched", "hmu-2004", 124, "Cơ khép lớn (m. adductor magnus)"),
-  "Adductor minimus": { status: "unresolved", references: [], note: NOTE_3 },
+  "Adductor minimus": { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_3 },
   "Anconeus muscle": comparison("matched", "hmu-2004", 117, "Cơ khuỷu (m. anconeus)"),
   "Anterior belly of digastric muscle": comparison("matched", "hmu-2004", 86, "Bụng trước cơ hai bụng"),
   "Ary-epiglottic part of oblique arytenoid muscle": comparison("partial", "hmu-2004", 184, "Cơ phễu-thượng thiệt", NOTE_4),
@@ -160,14 +216,38 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Gluteus medius muscle": comparison("matched", "hmu-2004", 121, "Cơ mông nhỡ (m. gluteus medius)"),
   "Gluteus minimus muscle": comparison("matched", "hmu-2004", 121, "Cơ mông bé (m. gluteus minimus)"),
   "Gracilis muscle": comparison("matched", "hmu-2004", 124, "Cơ thon (m. gracilis)"),
-  "Humeral head of extensor carpi ulnaris": comparison("partial", "hmu-2004", 117, "Cơ duỗi cổ tay-trụ (m. extensor carpi ulnaris)", NOTE_16),
+  "Humeral head of extensor carpi ulnaris": withBytComparison(
+    comparison("partial", "hmu-2004", 117, "Cơ duỗi cổ tay-trụ (m. extensor carpi ulnaris)", NOTE_16),
+    258,
+    "6106797",
+    "368527004",
+    "Toàn bộ đầu cánh tay của cơ duỗi cổ tay trụ",
+    "Entire humeral head of extensor carpi ulnaris muscle",
+    "BYT bổ sung cặp tên riêng đầu cánh tay của cơ duỗi cổ tay trụ; nguồn HMU 2004 trước đó chỉ đối chiếu cơ mẹ."
+  ),
   "Humeral head of flexor carpi ulnaris": comparison("matched", "phcn", 26, "Cơ gấp cổ tay trụ / đầu cánh tay"),
   "Humero-ulnar head of flexor digitorum superficialis": comparison("matched", "hmu-2004", 115, "Cơ gấp các ngón tay nông / đầu cánh tay trụ"),
   "Iliacus muscle": comparison("matched", "hmu-2004", 124, "Cơ chậu (m. iliacus)"),
   "Iliococcygeus muscle": comparison("matched", "hmu-2004", 99, "Cơ chậu-cụt (m. iliococcygeus)"),
   "Iliocostalis colli muscle": comparison("partial", "hmu-2004", 90, "Cơ chậu sườn cổ", NOTE_17),
-  "Iliocostalis lumborum muscle": comparison("partial", "hmu-2004", 90, "Cơ chậu sườn-thắt lưng", NOTE_17),
-  "Iliocostalis thoracis muscle": comparison("partial", "hmu-2004", 90, "Cơ chậu sườn-ngực", NOTE_17),
+  "Iliocostalis lumborum muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ chậu sườn-thắt lưng", NOTE_17),
+    978,
+    "6125231",
+    "49178001",
+    "Cấu trúc cơ chậu - sườn thắt lưng",
+    "Structure of iliocostalis lumborum muscle",
+    "BYT bổ sung cặp tên chậu - sườn thắt lưng / iliocostalis lumborum; nhãn Việt ở HMU 2004 được giữ làm đối chiếu trước đó."
+  ),
+  "Iliocostalis thoracis muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ chậu sườn-ngực", NOTE_17),
+    978,
+    "6125233",
+    "10921009",
+    "Cấu trúc cơ chậu-sườn ngực",
+    "Structure of iliocostalis thoracis muscle",
+    "BYT bổ sung cặp tên chậu-sườn ngực / iliocostalis thoracis; nhãn Việt ở HMU 2004 được giữ làm đối chiếu trước đó."
+  ),
   "Iliotibial tract": comparison("matched", "hmu-2004", 121, "Dải chậu-chày"),
   "Inferior extensor retinaculum of ankle": comparison("matched", "hmu-2004", 127, "Hãm gân duỗi dưới", NOTE_18),
   "Inferior fibular retinaculum": comparison("matched", "hmu-2004", 127, "Hãm cơ mác dưới", NOTE_18),
@@ -179,9 +259,33 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Intermediate tendon of digastric muscle": comparison("matched", "hmu-2004", 87, "Gân trung gian cơ hai bụng"),
   "Internal abdominal oblique muscle": comparison("matched", "hmu-2004", 94, "Cơ chéo bụng trong (m. obliquus internus abdominis)"),
   "Internal intercostal muscles": comparison("matched", "hmu-2004", 92, "Cơ gian sườn trong (Mm. intercostales interni)"),
-  "Interspinales colli muscles": comparison("partial", "hmu-2004", 91, "Các cơ gian gai (musculi interspinales)", NOTE_20),
-  "Interspinales lumborum muscles": comparison("partial", "hmu-2004", 91, "Các cơ gian gai (musculi interspinales)", NOTE_20),
-  "Interspinales thoracis muscles": comparison("partial", "hmu-2004", 91, "Các cơ gian gai (musculi interspinales)", NOTE_20),
+  "Interspinales colli muscles": withBytComparison(
+    comparison("partial", "hmu-2004", 91, "Các cơ gian gai (musculi interspinales)", NOTE_20),
+    282,
+    "6107407",
+    "246011001",
+    "Cơ gian gai cổ",
+    "Entire interspinalis cervicis muscle",
+    "BYT ghi interspinalis cervicis ở số ít; danh mục dùng Interspinales colli ở số nhiều. Ghi biến thể colli/cervicis, không xác nhận phân đoạn mesh. HMU 2004 chỉ nêu nhóm gian gai."
+  ),
+  "Interspinales lumborum muscles": withBytComparison(
+    comparison("partial", "hmu-2004", 91, "Các cơ gian gai (musculi interspinales)", NOTE_20),
+    282,
+    "6107408",
+    "246021009",
+    "Toàn bộ cơ gian gai thắt lưng",
+    "Entire interspinalis lumborum muscle",
+    "BYT ghi interspinalis lumborum ở số ít; danh mục dùng Interspinales lumborum ở số nhiều. HMU 2004 chỉ nêu nhóm gian gai; không suy ra số lượng mesh."
+  ),
+  "Interspinales thoracis muscles": withBytComparison(
+    comparison("partial", "hmu-2004", 91, "Các cơ gian gai (musculi interspinales)", NOTE_20),
+    282,
+    "6107410",
+    "134197004",
+    "Toàn bộ cơ gian gai ngực",
+    "Entire interspinalis thoracis muscle",
+    "BYT ghi interspinalis thoracis ở số ít; danh mục dùng Interspinales thoracis ở số nhiều. HMU 2004 chỉ nêu nhóm gian gai; không suy ra số lượng mesh."
+  ),
   "Lateral crico-arytenoid muscle": comparison("matched", "hmu-2004", 183, "Cơ nhẫn-phễu bên"),
   "Lateral head of flexor hallucis brevis": comparison("matched", "phcn", 48, "Cơ gấp ngắn ngón cái / bó ngoài", NOTE_21),
   "Lateral head of gastrocnemius": comparison("matched", "hmu-2004", 130, "Cơ bụng chân / đầu ngoài"),
@@ -189,15 +293,55 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Lateral patellar retinaculum": comparison("matched", "hmu-2004", 70, "Hãm bánh chè ngoài (retinaculum patellae laterale)", NOTE_22),
   "Latissimus dorsi muscle": comparison("matched", "hmu-2004", 110, "Cơ lưng rộng (m. latissimus dorsi)"),
   "Levator scapulae": comparison("matched", "hmu-2004", 111, "Cơ nâng vai (m. levator scapulae)"),
-  "Levatores breves costarum": { status: "unresolved", references: [], note: NOTE_23 },
-  "Levatores longi costarum": { status: "unresolved", references: [], note: NOTE_24 },
+  "Levatores breves costarum": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_23 },
+    325,
+    "6108535",
+    "368051000",
+    "Toàn bộ cơ nâng sườn ngắn",
+    "Entire levator costae brevis muscle",
+    "BYT ghi cặp tên đầy đủ; levator costae brevis là số ít, Levatores breves costarum là số nhiều trong danh mục. Biến thể danh pháp không xác nhận số lượng cấu trúc mesh."
+  ),
+  "Levatores longi costarum": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_24 },
+    325,
+    "6108536",
+    "368050004",
+    "Toàn bộ cơ nâng sườn dài",
+    "Entire levator costae longus muscle",
+    "BYT ghi cặp tên đầy đủ; levator costae longus là số ít, Levatores longi costarum là số nhiều trong danh mục. Biến thể danh pháp không xác nhận số lượng cấu trúc mesh."
+  ),
   "Linea alba": comparison("matched", "hmu-2004", 94, "Đường trắng"),
   "Long head of biceps brachii": comparison("matched", "hmu-2004", 113, "Cơ nhị đầu cánh tay / đầu dài"),
   "Long head of biceps femoris": comparison("matched", "hmu-2004", 125, "Cơ nhị đầu đùi / đầu dài"),
   "Long head of triceps brachii": comparison("matched", "hmu-2004", 113, "Cơ tam đầu cánh tay / đầu dài"),
-  "Longissimus capitis muscle": comparison("partial", "hmu-2004", 90, "Cơ dài đầu", NOTE_17),
-  "Longissimus colli muscle": comparison("partial", "hmu-2004", 90, "Cơ dài cổ", NOTE_17),
-  "Longissimus thoracis muscle": comparison("partial", "hmu-2004", 90, "Cơ dài ngực", NOTE_17),
+  "Longissimus capitis muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ dài đầu", NOTE_17),
+    1071,
+    "6127470",
+    "61134003",
+    "Cấu trúc cơ longissimus đầu",
+    "Structure of longissimus capitis muscle",
+    "BYT ghi “longissimus đầu”, không in nguyên văn toàn bộ nhãn Việt của app. Giữ Latin longissimus để phân biệt longus capitis; HMU 2004 chỉ có nhãn Việt trong hình."
+  ),
+  "Longissimus colli muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ dài cổ", NOTE_17),
+    1071,
+    "6127471",
+    "50059002",
+    "Cấu trúc cơ dài cổ bên",
+    "Structure of longissimus cervicis muscle",
+    "BYT ghi “dài cổ bên” / longissimus cervicis. Giữ biến thể colli/cervicis và Latin longissimus để phân biệt longus colli; không khẳng định nhãn app khớp nguyên văn. HMU 2004 chỉ có nhãn Việt trong hình."
+  ),
+  "Longissimus thoracis muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ dài ngực", NOTE_17),
+    1071,
+    "6127473",
+    "24796008",
+    "Cấu trúc cơ dài ngực",
+    "Structure of longissimus thoracis muscle",
+    "BYT ghi “dài ngực” / longissimus thoracis; giữ Latin phân biệt của app, không khẳng định toàn bộ nhãn app khớp nguyên văn. HMU 2004 chỉ có nhãn Việt trong hình."
+  ),
   "Longus capitis muscle": comparison("matched", "hmu-2004", 88, "Cơ dài đầu (m. longus capitis)"),
   "Longus colli muscle": comparison("matched", "hmu-2004", 88, "Cơ dài cổ (m. longus colli)"),
   "Lumbrical muscles of foot": comparison("matched", "hmu-2004", 133, "Các cơ giun (Mm. lumbricales)"),
@@ -213,7 +357,7 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Mylohyoid muscle": comparison("matched", "hmu-2004", 87, "Cơ hàm-móng (m. mylohyoideus)"),
   "Oblique head of adductor hallucis": comparison("matched", "hmu-2004", 133, "Cơ khép ngón cái / đầu chéo"),
   "Oblique head of adductor pollicis": comparison("matched", "hmu-2004", 119, "Cơ khép ngón tay cái / đầu chéo"),
-  "Oblique part of cricothyroid muscle": { status: "matched", references: [{ sourceId: "hmu-2004", page: 183, sourceTerm: "Cơ nhẫn-giáp / phần chéo" }, { sourceId: "pnt-2025", page: 3, sourceTerm: "Cơ nhẫn giáp / phần chếch" }], note: NOTE_26 },
+  "Oblique part of cricothyroid muscle": { status: "matched", checkedAt: ORIGINAL_CHECKED_AT, references: [{ sourceId: "hmu-2004", page: 183, sourceTerm: "Cơ nhẫn-giáp / phần chéo" }, { sourceId: "pnt-2025", page: 3, sourceTerm: "Cơ nhẫn giáp / phần chếch" }], note: NOTE_26 },
   "Obliquus inferior capitis muscle": comparison("matched", "hmu-2004", 89, "Cơ chéo đầu dưới", NOTE_27),
   "Obliquus superior capitis muscle": comparison("matched", "hmu-2004", 89, "Cơ chéo đầu trên", NOTE_27),
   "Obturator externus": comparison("matched", "hmu-2004", 121, "Cơ bịt ngoài"),
@@ -252,15 +396,40 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Rectus posterior minor capitis muscle": comparison("matched", "hmu-2004", 89, "Cơ thẳng đầu sau nhỏ", NOTE_27),
   "Rhomboid major muscle": comparison("matched", "hmu-2004", 111, "Cơ trám lớn (m. rhomboideus major)"),
   "Rhomboid minor muscle": comparison("matched", "hmu-2004", 111, "Cơ trám bé (m. rhomboideus minor)"),
-  "Rotatores": { status: "unresolved", references: [], note: NOTE_28 },
+  "Rotatores": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_28 },
+    489,
+    "6112778",
+    "244872002",
+    "Toàn bộ cơ xoay",
+    "Entire rotator muscle",
+    "BYT dòng 6112778 ghi cơ xoay / Entire rotator muscle, mã 244872002; trang HTML Virginia Tech xác nhận tên đồng nghĩa Entire Rotatores cùng mã. Chỉ nối danh tính thuật ngữ trong trình xem thú y; không suy ra giải phẫu người hoặc vị trí trên mesh.",
+    [{ sourceId: "vt-sct-244872002", page: null, locator: "SNOMED CT 244872002", snomedCt: "244872002", sourceTerm: "Entire rotator muscle (body structure) / Entire Rotatores" }]
+  ),
   "Sartorius muscle": comparison("matched", "hmu-2004", 124, "Cơ may (m. sartorius)"),
   "Scalenus anterior muscle": comparison("matched", "hmu-2004", 88, "Cơ bậc thang trước (m. scalenus anterior)"),
   "Scalenus medius muscle": comparison("matched", "hmu-2004", 88, "Cơ bậc thang giữa (m. scalenus medius)"),
   "Scalenus posterior muscle": comparison("matched", "hmu-2004", 88, "Cơ bậc thang sau (m. scalenus posterior)"),
   "Scapular spinal part of deltoid muscle": comparison("partial", "hmu-2004", 111, "Cơ delta (m. deltoideus)", NOTE_2),
   "Semimembranosus muscle": comparison("matched", "hmu-2004", 125, "Cơ bán màng (m. semimembranosus)"),
-  "Semispinalis colli muscle": comparison("partial", "hmu-2004", 90, "Cơ bán gai cổ", NOTE_17),
-  "Semispinalis thoracis muscle": comparison("partial", "hmu-2004", 90, "Cơ bán gai ngực", NOTE_17),
+  "Semispinalis colli muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ bán gai cổ", NOTE_17),
+    1266,
+    "6132146",
+    "44222009",
+    "Cấu trúc cơ bán gai cổ",
+    "Structure of semispinalis cervicis muscle",
+    "BYT bổ sung cặp cơ bán gai cổ / semispinalis cervicis. Giữ biến thể colli/cervicis; HMU 2004 chỉ có nhãn Việt trong hình."
+  ),
+  "Semispinalis thoracis muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ bán gai ngực", NOTE_17),
+    1266,
+    "6132148",
+    "29385000",
+    "Cấu trúc cơ bán gai ngực",
+    "Structure of semispinalis thoracis muscle",
+    "BYT bổ sung cặp cơ bán gai ngực / semispinalis thoracis; HMU 2004 chỉ có nhãn Việt trong hình."
+  ),
   "Semitendinosus muscle": comparison("matched", "hmu-2004", 125, "Cơ bán gân (m. semitendinosus)"),
   "Serratus anterior muscle": comparison("matched", "hmu-2004", 110, "Cơ răng trước (m. serratus anterior)"),
   "Serratus posterior inferior muscle": comparison("matched", "hmu-2004", 91, "Cơ răng sau dưới"),
@@ -268,24 +437,64 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Short head of biceps brachii": comparison("matched", "hmu-2004", 113, "Cơ nhị đầu cánh tay / đầu ngắn"),
   "Short head of biceps femoris": comparison("matched", "hmu-2004", 125, "Cơ nhị đầu đùi / đầu ngắn"),
   "Soleus muscle": comparison("matched", "hmu-2004", 130, "Cơ dép (m. soleus)"),
-  "Spinalis capitis muscle": { status: "unresolved", references: [], note: NOTE_29 },
-  "Spinalis colli muscle": { status: "unresolved", references: [], note: NOTE_30 },
-  "Spinalis thoracis muscle": comparison("partial", "hmu-2004", 90, "Cơ gai ngực", NOTE_17),
+  "Spinalis capitis muscle": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_29 },
+    1289,
+    "6132695",
+    "50200003",
+    "Cấu trúc cơ gai đầu",
+    "Structure of spinalis capitis muscle",
+    "BYT ghi trực tiếp cặp cơ gai đầu / spinalis capitis; không suy từ cơ gai ngực."
+  ),
+  "Spinalis colli muscle": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_30 },
+    1289,
+    "6132696",
+    "90411004",
+    "Cơ gai cổ",
+    "Structure of spinalis cervicis muscle",
+    "BYT ghi cơ gai cổ / spinalis cervicis. Giữ biến thể colli của danh mục và cervicis của nguồn; không sửa tên nguồn."
+  ),
+  "Spinalis thoracis muscle": withBytComparison(
+    comparison("partial", "hmu-2004", 90, "Cơ gai ngực", NOTE_17),
+    1289,
+    "6132698",
+    "88769007",
+    "Cơ gai ngực",
+    "Structure of spinalis thoracis muscle",
+    "BYT bổ sung cặp cơ gai ngực / spinalis thoracis; HMU 2004 chỉ có nhãn Việt trong hình."
+  ),
   "Splenius capitis muscle": comparison("partial", "hmu-2004", 90, "Cơ gối đầu", NOTE_17),
   "Splenius colli muscle": comparison("partial", "hmu-2004", 90, "Cơ gối cổ", NOTE_17),
   "Sternocleidomastoid muscle": comparison("matched", "hmu-2004", 85, "Cơ ức-đòn-chũm (m. sternocleidomastoideus)"),
   "Sternocostal head of pectoralis major muscle": comparison("matched", "phcn", 32, "Cơ ngực lớn / phần ức sườn", NOTE_1),
   "Sternohyoid muscle": comparison("matched", "hmu-2004", 87, "Cơ ức-móng (m. sternohyoideus)"),
   "Sternothyroid muscle": comparison("matched", "hmu-2004", 87, "Cơ ức-giáp (m. sternothyroideus)"),
-  "Straight part of cricothyroid muscle": { status: "matched", references: [{ sourceId: "hmu-2004", page: 183, sourceTerm: "Cơ nhẫn-giáp / phần thẳng" }, { sourceId: "pnt-2025", page: 3, sourceTerm: "Cơ nhẫn giáp / phần đứng" }], note: NOTE_26 },
+  "Straight part of cricothyroid muscle": { status: "matched", checkedAt: ORIGINAL_CHECKED_AT, references: [{ sourceId: "hmu-2004", page: 183, sourceTerm: "Cơ nhẫn-giáp / phần thẳng" }, { sourceId: "pnt-2025", page: 3, sourceTerm: "Cơ nhẫn giáp / phần đứng" }], note: NOTE_26 },
   "Stylohyoid muscle": comparison("matched", "hmu-2004", 87, "Cơ trâm-móng (m. stylohyoideus)"),
   "Stylopharyngeus muscle": comparison("matched", "hmu-2004", 180, "Cơ trâm hầu", NOTE_19),
   "Subclavius muscle": comparison("matched", "hmu-2004", 110, "Cơ dưới đòn (m. subclavius)"),
   "Subscapularis muscle": comparison("matched", "hmu-2004", 111, "Cơ dưới vai (m. subscapularis)"),
   "Superficial head of flexor pollicis brevis": comparison("matched", "hmu-2004", 119, "Cơ gấp ngón tay cái ngắn / đầu nông"),
   "Superficial head of pronator teres": comparison("partial", "phcn", 24, "Cơ sấp tròn (M. pronator teres) / đầu cánh tay", NOTE_8),
-  "Superficial transverse metacarpal ligament": { status: "unresolved", references: [], note: NOTE_31 },
-  "Superficial transverse metatarsal ligament": { status: "unresolved", references: [], note: NOTE_32 },
+  "Superficial transverse metacarpal ligament": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_31 },
+    566,
+    "6114727",
+    "15324007",
+    "Toàn bộ dây chằng ngang gan tay nông",
+    "Entire superficial transverse metacarpal ligament",
+    "BYT ghi “ngang gan tay nông”; giữ tên hiển thị hiện tại và ghi biến thể này, không lấy dây chằng ngang sâu hoặc ngang cổ tay thay thế."
+  ),
+  "Superficial transverse metatarsal ligament": withBytComparison(
+    { status: "unresolved", checkedAt: ORIGINAL_CHECKED_AT, references: [], note: NOTE_32 },
+    566,
+    "6114728",
+    "42009009",
+    "Toàn bộ dây chằng ngang nông bàn chân",
+    "Entire superficial transverse metatarsal ligament",
+    "BYT ghi “ngang nông bàn chân”; giữ tên hiển thị hiện tại và ghi biến thể này, không lấy dây chằng ngang sâu thay thế."
+  ),
   "Superior extensor retinaculum of ankle": comparison("matched", "hmu-2004", 127, "Hãm gân duỗi trên", NOTE_18),
   "Superior fibular retinaculum": comparison("matched", "hmu-2004", 127, "Hãm cơ mác trên", NOTE_18),
   "Superior gemellus muscle": comparison("matched", "hmu-2004", 121, "Cơ sinh đôi trên"),
@@ -301,13 +510,21 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
   "Thyrohyoid muscle": comparison("matched", "hmu-2004", 87, "Cơ giáp-móng (m. thyrohyoideus)"),
   "Tibialis anterior muscle": comparison("matched", "hmu-2004", 126, "Cơ chày trước (m. tibialis anterior)"),
   "Tibialis posterior muscle": comparison("matched", "hmu-2004", 130, "Cơ chày sau (m. tibialis posterior)"),
-  "Transverse arytenoid muscle": { status: "matched", references: [{ sourceId: "hmu-2004", page: 183, sourceTerm: "Cơ phễu ngang" }, { sourceId: "pnt-2025", page: 3, sourceTerm: "Cơ ngang phễu" }], note: NOTE_26 },
+  "Transverse arytenoid muscle": { status: "matched", checkedAt: ORIGINAL_CHECKED_AT, references: [{ sourceId: "hmu-2004", page: 183, sourceTerm: "Cơ phễu ngang" }, { sourceId: "pnt-2025", page: 3, sourceTerm: "Cơ ngang phễu" }], note: NOTE_26 },
   "Transverse head of adductor hallucis": comparison("matched", "hmu-2004", 133, "Cơ khép ngón cái / đầu ngang"),
   "Transverse head of adductor pollicis": comparison("matched", "hmu-2004", 119, "Cơ khép ngón tay cái / đầu ngang"),
   "Transverse part of trapezius muscle": comparison("partial", "hmu-2004", 110, "Cơ thang (m. trapezius)", NOTE_5),
   "Transversus abdominis muscle": comparison("matched", "hmu-2004", 94, "Cơ ngang bụng"),
   "Transversus thoracis muscle": comparison("matched", "hmu-2004", 92, "Cơ ngang ngực (m. transversus thoracis)"),
-  "Ulnar head of extensor carpi ulnaris": comparison("partial", "hmu-2004", 117, "Cơ duỗi cổ tay-trụ (m. extensor carpi ulnaris)", NOTE_16),
+  "Ulnar head of extensor carpi ulnaris": withBytComparison(
+    comparison("partial", "hmu-2004", 117, "Cơ duỗi cổ tay-trụ (m. extensor carpi ulnaris)", NOTE_16),
+    629,
+    "6116352",
+    "368528009",
+    "Toàn bộ đầu trụ của cơ duỗi cổ tay trụ",
+    "Entire ulnar head of extensor carpi ulnaris muscle",
+    "BYT bổ sung cặp tên riêng đầu trụ của cơ duỗi cổ tay trụ; nguồn HMU 2004 trước đó chỉ đối chiếu cơ mẹ."
+  ),
   "Ulnar head of flexor carpi ulnaris": comparison("matched", "phcn", 26, "Cơ gấp cổ tay trụ / đầu trụ"),
   "Vastus intermedius muscle": comparison("matched", "hmu-2004", 124, "Cơ rộng giữa (m. vastus intermedius)"),
   "Vastus lateralis muscle": comparison("matched", "hmu-2004", 124, "Cơ rộng ngoài (m. vastus lateralis)"),
@@ -322,5 +539,8 @@ export function getAtlasTerminologyComparison(english: string): AtlasTerminology
 }
 
 export function atlasTerminologyReferenceUrl(reference: AtlasTerminologyReference): string {
-  return `${ATLAS_TERMINOLOGY_SOURCES[reference.sourceId].url}#page=${reference.page}`;
+  const source = ATLAS_TERMINOLOGY_SOURCES[reference.sourceId];
+  return source.format === "pdf" && reference.page !== null
+    ? `${source.url}#page=${reference.page}`
+    : source.url;
 }

@@ -1,5 +1,4 @@
 import {
-  ATLAS_TERMINOLOGY_CHECKED_AT,
   ATLAS_TERMINOLOGY_SOURCES,
   ATLAS_TERMINOLOGY_STATUS_LABELS,
   atlasTerminologyReferenceUrl,
@@ -26,7 +25,7 @@ export function AtlasTerminologySources({
       <p className="break-words font-medium text-ink">{english}</p>
       <p>
         {ATLAS_TERMINOLOGY_STATUS_LABELS[comparison.status]} ·{" "}
-        {ATLAS_TERMINOLOGY_CHECKED_AT.split("-").reverse().join("/")}
+        {comparison.checkedAt.split("-").reverse().join("/")}
       </p>
       {comparison.note && <p>{comparison.note}</p>}
       {comparison.references.length > 0 ? (
@@ -38,16 +37,26 @@ export function AtlasTerminologySources({
             {comparison.references.map((reference) => {
               const source = ATLAS_TERMINOLOGY_SOURCES[reference.sourceId];
               return (
-                <li key={`${reference.sourceId}-${reference.page}`}>
+                <li key={`${reference.sourceId}-${reference.page ?? reference.locator}`}>
                   <a
                     href={atlasTerminologyReferenceUrl(reference)}
                     target="_blank"
                     rel="noreferrer"
                     className="font-semibold text-cobalt underline underline-offset-2"
                   >
-                    {source.title} · trang PDF {reference.page} ↗
+                    {source.title} · {reference.page === null
+                      ? reference.locator
+                      : `trang PDF ${reference.page}`} ↗
                   </a>
                   <p className="mt-1 text-ink">Tên trong nguồn: {reference.sourceTerm}.</p>
+                  {reference.sourceEnglishTerm && (
+                    <p className="mt-1 text-ink" lang="en">{reference.sourceEnglishTerm}</p>
+                  )}
+                  {reference.rowId && (
+                    <p>Dòng {reference.rowId} · SNOMED CT {reference.snomedCt}</p>
+                  )}
+                  <p>Đã đọc nguồn: {source.checkedAt.split("-").reverse().join("/")}</p>
+                  <p>{source.access}</p>
                   <p className="mt-1">{source.hostNote}</p>
                 </li>
               );
@@ -58,7 +67,7 @@ export function AtlasTerminologySources({
         <p>Tên Việt hiện là chuyển ngữ biên soạn của app. Giữ English bên cạnh để tra cứu.</p>
       )}
       <p className="border-t border-rule pt-2">
-        Hồ sơ ngày {ATLAS_TERMINOLOGY_CHECKED_AT} chỉ đối chiếu thuật ngữ;
+        Hồ sơ ngày {comparison.checkedAt} chỉ đối chiếu thuật ngữ;
         không xác nhận nhãn, hình học hay điểm bám trên mô hình.
       </p>
       <a
