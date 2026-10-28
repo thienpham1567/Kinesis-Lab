@@ -56,3 +56,5 @@ Phụ thuộc: đợt 1 xong để không nhầm lỗi cull với thiếu geomet
 ## Kết quả có điều kiện của batch đầu — 2026-10-28
 
 Inventory đã hoàn tất với baseline không đổi. Đã tải và kiểm hash nguồn pinned, đọc/evaluate cả mười modifier stack trong Blender với autoexec tắt, so sánh các dataset học thuật/nguồn mở và ghi phạm vi thực tế. Chưa có ứng viên đạt bằng chứng cải thiện giải phẫu, nên **không chọn tài sản thay thế và không thực hiện Task 3**. Những checkbox thay mesh/registration/đo chi phí mesh mới còn để trống có chủ đích; không được mô tả chúng là hoàn tất. Các bề mặt cũ được giữ kèm ghi chú sơ đồ và inventory có nguồn. Xem `docs/research/2026-10-28-atlas-geometry-candidates.md`, các JSON/script đính kèm và QA log. Browser thực 687×877; 390/1280 chưa kiểm vì không có khả năng đặt viewport. Phát hành batch inventory/annotation được ghi sau khi xác minh production.
+
+Batch inventory/annotation đã có trên production sau push `e668bd3`, đối chiếu hash artifact công khai và UI thực. Không có mesh mới nào được phát hành.

@@ -145,10 +145,12 @@ Nguồn và expected raw values lấy đúng từ audit: FIPAT TA2 PDF69/76; Com
 - [x] Chạy `check:atlas-corrections`, `check:atlas-search`, `check:atlas-render`, `check:atlas-learning`, `check:atlas-evidence`, `check:atlas-study`, `check:atlas-detail`, `check:atlas-context`, `check:atlas-names`; `node scripts/check-atlas-surfaces.mjs`; `node scripts/check-evidence-coverage.mjs`; build và lint.
 - [x] Browser xác minh: ATFL/CFL hai phía; sụn giáp không bị dạy là xương; Latin tám mesh; ba bên; vùng vai đủ chóp xoay; search Internal Oblique vẫn nguyên body; thẻ sửa tên có thể truy nguồn.
 - [x] Review diff và nguồn. So với các ảnh audit; không chỉ xem số test.
-- [ ] Khi thực hiện phát hành: push các commit đã kiểm lên master, deploy Vercel và xác minh URL chính bằng search, nhóm mô, hai phía dây chằng. Lưu deployment/commit và ảnh; rollback nếu có lỗi mới.
+- [x] Khi thực hiện phát hành: push các commit đã kiểm lên master, deploy Vercel và xác minh URL chính bằng search, nhóm mô, hai phía dây chằng. Lưu deployment/commit và ảnh; rollback nếu có lỗi mới.
 
 **Done:** F1–F7 không còn tái hiện trong phạm vi đã xác nhận; geometry source-only vẫn giữ đúng trạng thái. Chưa gọi việc này là nâng chi tiết hình học hoặc hoàn tất kiến thức mọi cấu trúc.
 
 ## Trạng thái thực thi 2026-10-28
 
 Các bước được đánh dấu đã có kiểm tra mã/dữ liệu và review độc lập. Browser đã kiểm tại viewport thực 687×877; công cụ không cung cấp đặt viewport 390/1280 nên hai kích thước đó vẫn chưa được xác minh. Kết quả, ảnh và giới hạn được ghi trong `docs/research/2026-10-28-atlas-remediation-qa.md`. Phát hành được ghi riêng sau khi push/deploy/xác minh URL chính.
+
+Phát hành batch đầu đã được xác minh trên https://kinesis-lab.vercel.app/atlas sau push `e668bd3`; bằng chứng ảnh/hash/giới hạn trong QA log. Các batch tương lai và việc thay mesh chưa đủ nguồn không được tính là đã hoàn tất.

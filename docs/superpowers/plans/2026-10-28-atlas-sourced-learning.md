@@ -60,10 +60,12 @@ Batch đầu gồm bảy họ cơ, hai bên: Internal abdominal oblique, Externa
 - [x] Với từng vùng cổ, vai/chi trên, ngực, thắt lưng, hông, đùi, gối và cổ chân: liệt kê các cấu trúc đã xem; danh tính, bên, quan hệ lớp, attachment đại thể và loại mô; source IDs và giới hạn của từng kết luận.
 - [x] Đếm riêng coverage thuật ngữ, kiến thức cá thể và hình học. Chỉ có thẻ kiến thức không làm mesh thành medically-verified.
 - [x] Sau batch đầu, chọn batch kế theo nhu cầu học: hông/đùi/gối/cổ chân; mỗi batch là một diff có thể review, không đợi phủ đủ 921 lựa chọn còn lại mới phát hành kiến thức đã có nguồn.
-- [ ] Mỗi batch chạy checks bị tác động, build/lint và browser chính xác các record mới; review nguồn rồi phát hành, lưu commit/deployment và cập nhật coverage thực.
+- [x] Mỗi batch chạy checks bị tác động, build/lint và browser chính xác các record mới; review nguồn rồi phát hành, lưu commit/deployment và cập nhật coverage thực.
 
 **Done của batch đầu:** bảy họ cơ/hai bên có kiến thức cá thể đủ nguồn; mông nhỡ giữ hồ sơ; group context không bị trình bày như claim cá thể; các vùng chưa làm không bị gắn nhãn xác nhận giả.
 
 ## Trạng thái thực thi 2026-10-28
 
 Các bước được đánh dấu đã có kiểm tra mã/dữ liệu và review độc lập. Browser đã kiểm tại viewport thực 687×877; công cụ không cung cấp đặt viewport 390/1280 nên hai kích thước đó vẫn chưa được xác minh. Kết quả, ảnh và giới hạn được ghi trong `docs/research/2026-10-28-atlas-remediation-qa.md`. Phát hành được ghi riêng sau khi push/deploy/xác minh URL chính.
+
+Phát hành batch đầu đã được xác minh trên https://kinesis-lab.vercel.app/atlas sau push `e668bd3`; bằng chứng ảnh/hash/giới hạn trong QA log. Các batch tương lai và việc thay mesh chưa đủ nguồn không được tính là đã hoàn tất.
