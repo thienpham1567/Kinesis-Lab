@@ -15,8 +15,8 @@ const STORAGE_KEY = "kinesis-study-chat";
 const MODEL_KEY = "kinesis-study-chat-model";
 const MAX_QUOTE = 1500;
 const CHAT_MODELS = [
-  { id: "google/gemini-3.8-flash", label: "Gemini 3.8" },
-  { id: "google/gemini-2.5-flash", label: "Gemini 2.5" },
+  { id: "google/gemini-3.8-flash", label: "Gemini 3.8 Flash" },
+  { id: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash" },
 ] as const;
 
 function loadChatModel(): (typeof CHAT_MODELS)[number]["id"] {
@@ -77,11 +77,14 @@ export function StudyChatWidget({
   const [messages, setMessages] = useState<StudyChatMessage[]>(initial.messages);
   const [input, setInput] = useState("");
   const [chatModel, setChatModel] = useState(loadChatModel);
+  const [modelMenuOpen, setModelMenuOpen] = useState(false);
+  const modelMenuOpenRef = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const inFlight = useRef(false);
   const [selection, setSelection] = useState("");
   const panel = useRef<HTMLDivElement>(null);
+  const modelMenu = useRef<HTMLDivElement>(null);
   const launcher = useRef<HTMLButtonElement>(null);
   const composer = useRef<HTMLTextAreaElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -108,12 +111,30 @@ export function StudyChatWidget({
     composer.current?.focus();
     function onKey(e: KeyboardEvent) {
       if (e.key !== "Escape") return;
+      if (modelMenuOpenRef.current) {
+        setModelMenuOpen(false);
+        return;
+      }
       setOpen(false);
       launcher.current?.focus();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
+
+  useEffect(() => {
+    modelMenuOpenRef.current = modelMenuOpen;
+  }, [modelMenuOpen]);
+
+  useEffect(() => {
+    if (!modelMenuOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (modelMenu.current?.contains(event.target as Node)) return;
+      setModelMenuOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [modelMenuOpen]);
 
   useEffect(() => {
     if (!busy) saveStore(conversationId, messages);
@@ -128,6 +149,16 @@ export function StudyChatWidget({
     setInput((current) => quote + current);
     setSelection("");
     composer.current?.focus();
+  }
+
+  function chooseChatModel(id: (typeof CHAT_MODELS)[number]["id"]) {
+    setChatModel(id);
+    setModelMenuOpen(false);
+    try {
+      sessionStorage.setItem(MODEL_KEY, id);
+    } catch {
+      /* private mode */
+    }
   }
 
   function reset() {
@@ -245,6 +276,42 @@ export function StudyChatWidget({
               </div>
             </div>
             <div className="flex shrink-0 items-center">
+              <div className="relative" ref={modelMenu}>
+                <button
+                  type="button"
+                  aria-label="Chọn model"
+                  aria-haspopup="menu"
+                  aria-expanded={modelMenuOpen}
+                  disabled={busy}
+                  onClick={() => setModelMenuOpen((current) => !current)}
+                  className="flex size-9 items-center justify-center rounded-lg text-slate hover:bg-canvas hover:text-cobalt"
+                >
+                  <Icon name="chevron-down" className="size-4" />
+                </button>
+                {modelMenuOpen && (
+                  <div
+                    role="menu"
+                    aria-label="Chọn model"
+                    className="absolute right-0 top-full z-10 mt-1 w-44 rounded-xl border border-rule bg-sheet p-1 shadow-lg"
+                  >
+                    {CHAT_MODELS.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={chatModel === item.id}
+                        onClick={() => chooseChatModel(item.id)}
+                        className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-xs ${chatModel === item.id ? "bg-cobalt-soft font-semibold text-cobalt" : "text-ink hover:bg-canvas"}`}
+                      >
+                        {item.label}
+                        {chatModel === item.id && (
+                          <Icon name="check" className="size-3.5" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               {messages.length > 0 && (
                 <button
                   type="button"
@@ -258,6 +325,7 @@ export function StudyChatWidget({
               <button
                 type="button"
                 onClick={() => {
+                  setModelMenuOpen(false);
                   setOpen(false);
                   launcher.current?.focus();
                 }}
@@ -267,27 +335,6 @@ export function StudyChatWidget({
                 <Icon name="close" className="size-4" />
               </button>
             </div>
-          </div>
-          <div className="tab-bar mx-4 mb-2 flex" role="group" aria-label="Chọn model">
-            {CHAT_MODELS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-pressed={chatModel === item.id}
-                disabled={busy}
-                onClick={() => {
-                  setChatModel(item.id);
-                  try {
-                    sessionStorage.setItem(MODEL_KEY, item.id);
-                  } catch {
-                    /* private mode */
-                  }
-                }}
-                className="tab-button min-h-8 flex-1 px-2 text-xs"
-              >
-                {item.label}
-              </button>
-            ))}
           </div>
 
           <div
