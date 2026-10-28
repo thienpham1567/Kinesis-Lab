@@ -23,6 +23,7 @@ import {
 } from "@/lib/clinical/training-observation";
 import { Icon } from "../WorkspaceUI";
 import { initialObservation, reconcileObservation } from "./observation-state";
+import { AtlasStructureName, AtlasSourceNames } from "../atlas3d/AtlasStructureName";
 const Canvas = dynamic(() => import("../atlas3d/Atlas3DCanvas"), {
   ssr: false,
   loading: () => (
@@ -374,17 +375,9 @@ export function TrainingAnatomyViewer({
         </div>
         {selected && (
           <div className="rounded-lg border border-cobalt/20 bg-cobalt-soft/40 p-3">
-            <p className="text-xs font-semibold text-ink">
-              Đang chọn: {selected.label}
-            </p>
-            <p className="mt-1 text-xs text-slate">
-              {selected.english}
-              {selected.side === "left"
-                ? " · trái"
-                : selected.side === "right"
-                  ? " · phải"
-                  : ""}
-            </p>
+            <p className="mb-1 text-xs text-slate">Đang chọn</p>
+            <AtlasStructureName structure={selected} className="text-sm font-semibold text-ink" />
+            <AtlasSourceNames structure={selected} />
             {selectedGroup && (
               <Link
                 className="mt-2 inline-flex min-h-9 items-center text-xs font-semibold text-cobalt underline"

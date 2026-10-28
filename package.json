@@ -17,6 +17,8 @@
     "check:atlas-detail": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-tissue-detail.mjs",
     "check:atlas-evidence": "node scripts/check-atlas-evidence.mjs",
     "check:atlas-context": "node scripts/check-contextual-anatomy.mjs && node scripts/check-anatomy-load.mjs",
+    "check:atlas-names": "node scripts/check-atlas-names.mjs",
+    "check:atlas-search": "node --test scripts/check-atlas-search-highlight.mjs",
     "rea": "bash scripts/rea.sh",
     "check:ncsf-runtime": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/check-ncsf-quiz-runtime.mjs scripts/check-ncsf-coverage.test.mjs",
     "check:ncsf-quiz": "npm run check:ncsf-runtime && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-ncsf-quiz.mjs && node scripts/ncsf-coverage.mjs && node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/ncsf-figures.mjs",

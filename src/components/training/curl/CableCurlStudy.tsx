@@ -5,6 +5,8 @@ import { ClinicalEvidencePanel } from '@/components/ClinicalEvidencePanel';
 import { captureCycle } from './capture-cycle';
 import type { CurlInfo, CurlPlayback, CurlView } from './curl-types';
 import type { CurlStage } from './curl-stage';
+import { atlasStructureName } from '@/lib/clinical/atlas-names';
+import { AtlasStructureName, AtlasSourceNames } from '@/components/atlas3d/AtlasStructureName';
 
 const VIEWS: { id: CurlView; label: string }[] = [
   { id: 'oblique', label: 'Góc chéo' },
@@ -92,6 +94,7 @@ export function CableCurlStudy() {
   const ready = loadState === 'ready';
   const disabled = !ready || exporting;
   const flexors = info?.structures.filter((structure) => structure.role === 'elbow-flexor') ?? [];
+  const selectedStructure = info?.structures.find((structure) => structure.id === selectedId);
 
   const retry = () => {
     setLoadState('loading');
@@ -251,7 +254,7 @@ export function CableCurlStudy() {
                 }
               }}>
                 <option value="">Chọn cơ gập khuỷu</option>
-                {flexors.map((structure) => <option key={structure.id} value={structure.id}>{structure.english} · trái</option>)}
+                {flexors.map((structure) => <option key={structure.id} value={structure.id}>{atlasStructureName(structure)} · trái</option>)}
               </select>
               <button type="button" className="button-secondary" disabled={!selectedId} aria-pressed={isolated} onClick={() => {
                 setIsolated(true);
@@ -264,6 +267,8 @@ export function CableCurlStudy() {
             </div>
           </div>
         </fieldset>
+
+        {selectedStructure && <div className="space-y-1"><AtlasStructureName structure={selectedStructure} className="text-sm font-semibold text-ink" /><AtlasSourceNames structure={selectedStructure} /></div>}
 
         {info && (
           <div className="space-y-3 text-xs leading-5 text-slate">

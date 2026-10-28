@@ -102,6 +102,7 @@ export type PubMedPaper = {
 export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
+  citations?: import("./chat/answer-citations").ChatAnswerCitation[];
 };
 
 export type LabMetric = {

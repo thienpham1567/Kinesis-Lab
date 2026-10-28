@@ -1,25 +1,26 @@
 import * as THREE from "three";
-import {
-  atlasStructureName,
-  atlasVietnameseName,
-} from "@/lib/clinical/atlas-names";
+import { atlasDisplayNames, atlasSourceName } from "@/lib/clinical/atlas-names";
 import type { AtlasStructure } from "@/lib/clinical/atlas-3d";
 import type { AtlasCamera } from "./atlas-camera";
 import { surfaceLabelPoint } from "./surface-label-layout.mjs";
 
 type LabelBounds = { x: number; y: number; width: number; height: number };
+const LABEL_STYLE =
+  "max-width:min(240px,65%);white-space:normal;overflow-wrap:anywhere;line-height:1.35;text-align:left;";
 const overlaps = (a: LabelBounds, b: LabelBounds) =>
   a.x < b.x + b.width + 8 &&
   a.x + a.width + 8 > b.x &&
   a.y < b.y + b.height + 8 &&
   a.y + a.height + 8 > b.y;
 
-/** Whole source-structure names; mesh hits are display anchors, never landmarks. */
+/** Concise bilingual labels; mesh hits are display anchors, never landmarks. */
 export class StructureCallouts {
   private root = document.createElement("div");
   private items: {
     button: HTMLButtonElement;
     line: HTMLDivElement;
+    primary: HTMLSpanElement;
+    english: HTMLSpanElement;
     id: string;
     click: () => void;
   }[];
@@ -33,13 +34,25 @@ export class StructureCallouts {
     this.items = Array.from({ length: 3 }, () => {
       const button = document.createElement("button");
       const line = document.createElement("div");
-      const item = { button, line, id: "", click: () => select(item.id) };
+      const primary = document.createElement("span");
+      const english = document.createElement("span");
+      primary.className = "block";
+      english.className = "mt-0.5 block text-xs font-normal text-slate";
+      english.lang = "en";
+      button.append(primary, english);
+      const item = {
+        button,
+        line,
+        primary,
+        english,
+        id: "",
+        click: () => select(item.id),
+      };
       button.type = "button";
       button.hidden = line.hidden = true;
       button.className =
-        "absolute pointer-events-auto rounded-full border border-rule bg-sheet/95 px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm backdrop-blur-sm focus-visible:outline-2 focus-visible:outline-cobalt";
-      button.style.cssText =
-        "max-width:min(180px,55%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;text-align:left;";
+        "absolute pointer-events-auto rounded-xl border border-rule bg-sheet/95 px-2.5 py-2 text-xs font-semibold text-ink shadow-sm backdrop-blur-sm focus-visible:outline-2 focus-visible:outline-cobalt";
+      button.style.cssText = LABEL_STYLE;
       button.title =
         "Tên cấu trúc từ danh mục mô hình nguồn. Điểm nối chỉ dùng đặt nhãn; không phải mốc bám giải phẫu đã đo.";
       line.style.cssText =
@@ -60,12 +73,15 @@ export class StructureCallouts {
     width: number,
     height: number,
     occupied: LabelBounds[],
+    targetIds?: ReadonlySet<string>,
   ) {
     for (const item of this.items) item.button.hidden = item.line.hidden = true;
     if (!enabled || width < 240 || height < 200) return;
-    const visible = [...meshes.values()].flat().filter((mesh) => mesh.visible);
+    // Match the deep-tissue colour overlay: covering body surfaces do not hide its labels.
+    const visible = [...meshes.values()].flat().filter((mesh) => mesh.visible && (!targetIds?.size || targetIds.has(mesh.userData.structureId)));
     // Bound raycasting and DOM work independently of the full catalog size.
     const candidates = structures.flatMap((structure) => {
+      if (targetIds?.size && !targetIds.has(structure.id)) return [];
       const own =
         meshes.get(structure.id)?.filter((mesh) => mesh.visible) ?? [];
       if (!own.length) return [];
@@ -124,22 +140,41 @@ export class StructureCallouts {
           : structure.side === "right"
             ? " · Phải"
             : "";
-      item.button.textContent =
-        (atlasVietnameseName(structure) ?? structure.english) + side;
-      item.button.title = `${atlasStructureName(structure)}${side} — tên cấu trúc từ danh mục mô hình nguồn. Điểm nối chỉ dùng đặt nhãn; không phải mốc bám giải phẫu đã đo.`;
+      const names = atlasDisplayNames(structure);
+      const primary = names.vietnamese ?? names.english;
+      if (item.primary.textContent !== primary)
+        item.primary.textContent = primary;
+      item.primary.lang = names.vietnamese ? "vi" : "en";
+      if (item.english.textContent !== names.english)
+        item.english.textContent = names.english;
+      item.english.hidden = !names.vietnamese;
+      item.button.title = `${atlasSourceName(structure)}${side} — tên cấu trúc từ danh mục mô hình nguồn. Điểm nối chỉ dùng đặt nhãn; không phải mốc bám giải phẫu đã đo.`;
       item.button.setAttribute(
         "aria-label",
-        `${atlasStructureName(structure)}${side} — cấu trúc mô hình nguồn`,
+        `${primary}${names.vietnamese ? ` · ${names.english}` : ""}`,
       );
       item.button.setAttribute(
         "aria-pressed",
         String(structure.id === selectedId),
       );
       item.button.dataset.selected = String(structure.id === selectedId);
+      item.button.dataset.structureId = structure.id;
+      // A reused absolute slot must measure at a stable origin. Otherwise its
+      // previous left position changes shrink-to-fit width before placement.
+      item.button.style.cssText = `${LABEL_STYLE}left:0;top:0;`;
       item.button.hidden = false;
       const w = item.button.offsetWidth;
+      // Lock rounded pixel width before reading height: a fractional natural
+      // width can gain a wrapped line when offsetWidth is rounded down.
+      item.button.style.width = `${w}px`;
       const h = item.button.offsetHeight;
-      const labelSide = point.x < width / 2 ? 1 : -1;
+      if (w > width - 24 || h > height - 24) {
+        item.button.hidden = true;
+        continue;
+      }
+      const labelSide = targetIds?.size
+        ? point.x < width / 2 ? -1 : 1
+        : point.x < width / 2 ? 1 : -1;
       const x = THREE.MathUtils.clamp(
         point.x + labelSide * 30 - (labelSide < 0 ? w : 0),
         12,
@@ -152,7 +187,7 @@ export class StructureCallouts {
         continue;
       }
       bounds.push(rect);
-      item.button.style.cssText = `max-width:min(180px,55%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;text-align:left;left:${x}px;top:${y}px;border-color:${structure.id === selectedId ? "var(--cobalt)" : "var(--rule)"};`;
+      item.button.style.cssText = `${LABEL_STYLE}width:${w}px;left:${x}px;top:${y}px;border-color:${structure.id === selectedId ? "var(--cobalt)" : "var(--rule)"};`;
       const endX = labelSide > 0 ? x : x + w;
       const endY = y + h / 2;
       item.line.hidden = false;

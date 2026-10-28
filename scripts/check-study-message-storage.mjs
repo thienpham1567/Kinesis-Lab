@@ -3,12 +3,14 @@ import { test } from "node:test";
 import { createAppLoader } from "./lib/load-app-module.mjs";
 
 const load = createAppLoader({ globals: { crypto } });
+const { answerCitationsFromEvidence, parseAnswerCitations } = load("src/lib/chat/answer-citations.ts");
 const {
   upgradeStudyMessages,
   toChatMessages,
   parseStudyChatStore,
   serializeStudyChatStore,
   illustrationContextFromChat,
+  imagePromptMessageId,
 } = load("src/lib/chat/study-messages.ts");
 
 const v1 = [
@@ -101,4 +103,61 @@ test("sources stay on the originating message", () => {
   assert.equal(upgraded[0].sources[0].id, "upper");
   assert.equal(upgraded[2].sources[0].id, "squat");
   assert.equal(upgraded[1].sources.length, 0);
+});
+
+test("selecting a user prompt keeps its exact text and never borrows a later answer", () => {
+  const prompt = `Đoạn tôi đang đọc:\n"${"Thuật ngữ về vị trí. ".repeat(110)}"\n\nVẽ sơ đồ giúp tôi.`;
+  const messages = upgradeStudyMessages([
+    { role: "user", content: prompt },
+    { role: "assistant", content: "Câu trả lời cho đoạn đọc." },
+    { role: "user", content: "Một câu hỏi khác." },
+    { role: "assistant", content: "Câu trả lời mới nhất không liên quan." },
+  ]);
+  const chosen = illustrationContextFromChat(messages, messages[0].id);
+  assert.equal(chosen.sourceMessageId, messages[0].id);
+  assert.equal(chosen.instruction, prompt);
+  assert.ok(chosen.selectedContext.includes(prompt));
+  assert.equal(chosen.selectedContext.includes("không liên quan"), false);
+});
+
+test("a prompt can be illustrated before an assistant has answered", () => {
+  const messages = upgradeStudyMessages([{ role: "user", content: "Vẽ sơ đồ các hướng trên cơ thể." }]);
+  const chosen = illustrationContextFromChat(messages, messages[0].id);
+  assert.equal(chosen.sourceMessageId, messages[0].id);
+  assert.equal(chosen.instruction, messages[0].content);
+  assert.equal(illustrationContextFromChat(messages).instruction, messages[0].content);
+  assert.equal(illustrationContextFromChat(messages, "missing").sourceMessageId, null);
+});
+
+test("edit and retry restore the image's submitted prompt after customization", () => {
+  const messages = upgradeStudyMessages([
+    { role: "user", content: "Câu hỏi ban đầu." },
+    { role: "assistant", content: "Câu trả lời." },
+    { role: "user", content: "Vẽ hai ô, giữ đúng tiêu đề tôi sửa." },
+    { role: "assistant", content: "", attachments: [{ imageId: "image-1", sourceMessageId: "old-question", state: "failed" }] },
+    { role: "user", content: "Câu hỏi mới hơn." },
+  ]);
+  const id = imagePromptMessageId(messages, "image-1");
+  assert.equal(id, messages[2].id);
+  assert.equal(illustrationContextFromChat(messages, id).instruction, messages[2].content);
+  assert.equal(imagePromptMessageId(messages, "missing"), null);
+});
+
+test("each answer retains its own readable citations after reload, without sending metadata to chat", () => {
+  const citations = answerCitationsFromEvidence([{
+    id: "handbook:patterns", label: "Mẫu vận động cơ bản",
+    evidence: { sources: [{ title: "Nguồn đối chiếu", url: "https://example.org/source", checkedAt: "2026-10-26", access: "Phần đã đọc" }] },
+  }]);
+  const messages = upgradeStudyMessages([
+    { role: "user", content: "Giải thích bài học." },
+    { role: "assistant", content: "Nội dung [APP:handbook:patterns].", citations },
+    { role: "user", content: "Câu hỏi khác." },
+    { role: "assistant", content: "Không có nguồn APP trong lượt này." },
+  ]);
+  const restored = parseStudyChatStore(serializeStudyChatStore({ conversationId: crypto.randomUUID(), messages }));
+  assert.equal(restored.messages[1].citations[0].label, "Mẫu vận động cơ bản");
+  assert.equal(restored.messages[3].citations.length, 0);
+  assert.equal(JSON.stringify(toChatMessages(restored.messages)).includes("citations"), false);
+  const parsed = parseAnswerCitations([{ ...citations[0], sources: [{ ...citations[0].sources[0], url: "javascript:alert(1)" }] }]);
+  assert.equal(parsed[0].sources.length, 0);
 });

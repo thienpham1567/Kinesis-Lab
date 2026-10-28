@@ -9,7 +9,7 @@ export function createAppLoader({ mocks = {}, globals = {} } = {}) {
   const cache = new Map();
   function load(relative) {
     let file = path.resolve(relative);
-    if (!existsSync(file) && !path.extname(file)) file += '.ts';
+    if (!existsSync(file) && existsSync(`${file}.ts`)) file += '.ts';
     if (cache.has(file)) return cache.get(file);
     if (file.endsWith('.json')) return JSON.parse(readFileSync(file, 'utf8'));
     const exports = {}; cache.set(file, exports);
