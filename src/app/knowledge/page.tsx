@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { NcsfQuiz } from "@/components/NcsfQuiz";
+import { NcsfPageCorrections } from "@/components/NcsfCorrections";
 import { Icon, PageHeading } from "@/components/WorkspaceUI";
 import { NCSF_CPT, NCSF_LESSONS, NCSF_SOURCE, lessonOf } from "@/lib/ncsf-cpt";
 import type { PdfReaderHandle } from "@/components/PdfReader";
@@ -87,6 +88,7 @@ export default function NcsfLibraryPage() {
 
 function NcsfContent({ heading }: { heading: React.ReactNode }) {
   const [view, setView] = useState<"read" | "quiz">("read");
+  const [quizAttempt, setQuizAttempt] = useState(0);
   const [slug, setSlug] = useState<string>(NCSF_CPT[0].slug);
   const [startPage, setStartPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,13 +121,13 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
         <button type="button" aria-pressed={view === "read"} className="tab-button" onClick={() => setView("read")}>
           Đọc giáo trình
         </button>
-        <button type="button" aria-pressed={view === "quiz"} className="tab-button" onClick={() => setView("quiz")}>
+        <button type="button" aria-pressed={view === "quiz"} className="tab-button" onClick={() => { setQuizAttempt(attempt => attempt + 1); setView("quiz"); }}>
           Đề thi nhỏ
         </button>
       </div>
       {view === "quiz" ? (
         <section className="panel p-4 sm:p-5" aria-label="Đề thi nhỏ">
-          <NcsfQuiz onOpenPage={open} />
+          <NcsfQuiz key={quizAttempt} onOpenPage={open} />
         </section>
       ) : (
         <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
@@ -206,6 +208,7 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
           </div>
           <section className="panel min-w-0 p-4 sm:p-5" aria-label={current.title}>
             <h2 className="mb-3 text-base font-semibold text-ink">{current.title}</h2>
+            {chapterIndex >= 0 && chapterIndex < 8 && <NcsfPageCorrections chapter={chapterIndex + 1} page={currentPage} />}
             <PdfReader
               key={slug}
               file={`/api/ncsf/${slug}`}
