@@ -1,0 +1,277 @@
+{
+  "checkedAt": "2026-10-28",
+  "blenderVersion": "5.2.2 LTS",
+  "autoexecDisabled": true,
+  "records": [
+    {
+      "id": "za-acb77fda82d0",
+      "sourceName": "Anterior talofibular ligament.l",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 2,
+      "evaluatedTriangles": 32,
+      "evaluatedVertices": 18,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          0.09060278534889221,
+          0.03295271098613739,
+          0.06039002165198326
+        ],
+        [
+          0.10152449458837509,
+          0.04075158014893532,
+          0.07152034342288971
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-975efd6a59c5",
+      "sourceName": "Anterior talofibular ligament.r",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 2,
+      "evaluatedTriangles": 32,
+      "evaluatedVertices": 18,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          -0.10152459889650345,
+          0.03295271098613739,
+          0.06039001792669296
+        ],
+        [
+          -0.09060288965702057,
+          0.04075157642364502,
+          0.07152034342288971
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-c17313116801",
+      "sourceName": "Articular disc of acromioclavicular joint.l",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 4,
+      "evaluatedTriangles": 176,
+      "evaluatedVertices": 90,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          0.14448705315589905,
+          0.023547861725091934,
+          1.4077752828598022
+        ],
+        [
+          0.1562010794878006,
+          0.05178746581077576,
+          1.4218312501907349
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-41a7661225ac",
+      "sourceName": "Articular disc of acromioclavicular joint.r",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 4,
+      "evaluatedTriangles": 176,
+      "evaluatedVertices": 90,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          -0.15620113909244537,
+          0.023547861725091934,
+          1.4077752828598022
+        ],
+        [
+          -0.14448711276054382,
+          0.05178746581077576,
+          1.4218312501907349
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-76671b911ccb",
+      "sourceName": "Articular disc of distal radio-ulnar joint.l",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 7,
+      "evaluatedTriangles": 28,
+      "evaluatedVertices": 16,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          0.24428565800189972,
+          -0.02162344381213188,
+          0.859063982963562
+        ],
+        [
+          0.25870630145072937,
+          -0.009759475477039814,
+          0.8654426336288452
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-d7748ccf7a30",
+      "sourceName": "Articular disc of distal radio-ulnar joint.r",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 7,
+      "evaluatedTriangles": 28,
+      "evaluatedVertices": 16,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          -0.2587064206600189,
+          -0.02162344381213188,
+          0.859063982963562
+        ],
+        [
+          -0.24428577721118927,
+          -0.009759475477039814,
+          0.8654426336288452
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-eb3a5b3df5ad",
+      "sourceName": "Articular disc of sternoclavicular joint.l",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 4,
+      "evaluatedTriangles": 176,
+      "evaluatedVertices": 90,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          0.00919867493212223,
+          -0.053843919187784195,
+          1.390498161315918
+        ],
+        [
+          0.024759497493505478,
+          -0.022828184068202972,
+          1.410367727279663
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-f6dee78bae20",
+      "sourceName": "Articular disc of sternoclavicular joint.r",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 4,
+      "evaluatedTriangles": 176,
+      "evaluatedVertices": 90,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          -0.024759557098150253,
+          -0.053843919187784195,
+          1.390498161315918
+        ],
+        [
+          -0.009198734536767006,
+          -0.022828184068202972,
+          1.410367727279663
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-ee5019dbe021",
+      "sourceName": "Calcaneofibular ligament.l",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 2,
+      "evaluatedTriangles": 32,
+      "evaluatedVertices": 18,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          0.08659309893846512,
+          0.055521804839372635,
+          0.05293600261211395
+        ],
+        [
+          0.10465258359909058,
+          0.06176453083753586,
+          0.06568776071071625
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    },
+    {
+      "id": "za-95cebea24bd4",
+      "sourceName": "Calcaneofibular ligament.r",
+      "evaluation": "viewport modifier settings, original stack unchanged",
+      "baseTriangles": 2,
+      "evaluatedTriangles": 32,
+      "evaluatedVertices": 18,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "blenderWorldBounds": [
+        [
+          -0.10465268045663834,
+          0.055521804839372635,
+          0.05293600261211395
+        ],
+        [
+          -0.08659320324659348,
+          0.06176453083753586,
+          0.06568776071071625
+        ]
+      ],
+      "limitations": [
+        "Original authored modifiers; not measured thickness or verified anatomical volume",
+        "Blender coordinates; not yet registered or exported into app coordinates",
+        "Closed topology does not establish anatomical correctness"
+      ]
+    }
+  ]
+}

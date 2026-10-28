@@ -30,6 +30,7 @@ import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import type { RenderQuality } from "./render-policy";
 import type { CameraCommand } from "./types";
 import AnatomyEvidenceCard from "./AnatomyEvidenceCard";
+import { AtlasGeometryNote } from "./AtlasGeometryNote";
 import { MuscleStudyCard } from "@/components/training/MuscleStudyCard";
 import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
 import { getCatalogEvidence } from "@/lib/clinical/evidence-registry";
@@ -585,6 +586,7 @@ export default function Atlas3DExplorer({
           </div>
           <AtlasTerminologySources key={selected.english} english={selected.english} />
           <AtlasCatalogCorrectionDetails structure={selected} />
+          <AtlasGeometryNote structureId={selected.id} />
           {!learningActive && (
             <ClinicalEvidencePanel
               evidence={getCatalogEvidence(selected.id)}
