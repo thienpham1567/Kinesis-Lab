@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { NCSF_CPT, NCSF_LESSONS, lessonOf } from "@/lib/ncsf-cpt";
-import { parseNcsfQuiz, shuffleNcsfQuestionIndices, QUESTION_KINDS, type NcsfQuestion as Question, type NcsfChapter as Chapter, type QuestionKind } from "@/lib/ncsf-quiz";
+import { parseNcsfQuiz, shuffleNcsfQuestionIndices, type NcsfQuestion as Question, type NcsfChapter as Chapter } from "@/lib/ncsf-quiz";
 import { NcsfQuestionFigure } from "./NcsfQuestionFigure";
 import { NcsfSourceLinks } from "./NcsfCorrections";
 
@@ -24,7 +24,6 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
   const [error, setError] = useState(false);
   const [ch, setCh] = useState(1);
   const [lesson, setLesson] = useState(-1); // -1 = cả chương
-  const [kind, setKind] = useState<QuestionKind | "all">("all");
   const [only, setOnly] = useState<number[] | null>(null); // retry-wrong subset
   const [orders, setOrders] = useState<number[][]>([]);
   const [questionOrder, setQuestionOrder] = useState<number[]>([]);
@@ -58,10 +57,10 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
   const lessons = NCSF_LESSONS[ch - 1];
   const items = questionOrder
     .map(idx => ({ q: chapter.questions[idx], idx, lesson: lessonOf(ch, chapter.questions[idx].page) }))
-    .filter((it) => (lesson < 0 || it.lesson === lesson) && (kind === "all" || it.q.kind === kind) && (!only || only.includes(it.idx)));
+    .filter((it) => (lesson < 0 || it.lesson === lesson) && (!only || only.includes(it.idx)));
   const wrong = items.filter((it) => picked[it.idx] !== it.q.answer).map((it) => it.idx);
 
-  const start = (nextCh: number, nextLesson: number, subset: number[] | null, nextKind: QuestionKind | "all" = kind) => {
+  const start = (nextCh: number, nextLesson: number, subset: number[] | null) => {
     const nextChapter = chapters.find(c => c.ch === nextCh);
     if (!nextChapter) {
       setError(true);
@@ -69,7 +68,6 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
     }
     setCh(nextCh);
     setLesson(nextLesson);
-    setKind(nextKind);
     setOnly(subset);
     setOrders(shuffled(nextChapter.questions));
     setQuestionOrder(shuffleNcsfQuestionIndices(nextChapter.questions.length));
@@ -81,7 +79,7 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
     <div className="space-y-5">
       <div className="flex flex-wrap gap-2" role="group" aria-label="Chọn chương">
         {chapters.map((c) => (
-          <button key={c.ch} onClick={() => start(c.ch, -1, null, "all")} aria-pressed={c.ch === ch} className={c.ch === ch ? "button-primary" : "button-secondary"}>
+          <button key={c.ch} onClick={() => start(c.ch, -1, null)} aria-pressed={c.ch === ch} className={c.ch === ch ? "button-primary" : "button-secondary"}>
             Chương {c.ch}
           </button>
         ))}
@@ -97,15 +95,8 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
           ))}
         </select>
       </label>
-      <label className="block max-w-xl">
-        <span className="field-label">Dạng câu hỏi</span>
-        <select value={kind} onChange={e => start(ch, lesson, null, e.target.value as QuestionKind | "all")} className="min-h-11 w-full px-3 text-sm">
-          <option value="all">Tất cả các dạng</option>
-          {Object.entries(QUESTION_KINDS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select>
-      </label>
       {only && <p className="text-sm font-semibold text-caution">Đang làm lại {only.length} câu sai.</p>}
-      {items.length === 0 && <p className="text-sm text-slate" role="status">Bài này chưa có câu thuộc dạng đã chọn. Chọn “Tất cả các dạng” hoặc đổi bài.</p>}
+      {items.length === 0 && <p className="text-sm text-slate" role="status">Bài này chưa có câu hỏi. Hãy chọn bài khác.</p>}
 
       <ol className="space-y-4">
         {items.map(({ q, idx }, n) => {
@@ -116,7 +107,6 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
                 <legend className="px-1 text-sm font-semibold text-ink">
                   Câu {n + 1}. {q.q}
                 </legend>
-                {q.kind && <p className="text-xs font-medium text-slate">{QUESTION_KINDS[q.kind]}</p>}
                 {q.figure && <NcsfQuestionFigure key={`${ch}-${idx}-${q.figure.page}`} chapter={ch} page={q.figure.page} alt={q.figure.alt} />}
                 <div className="mt-2 space-y-1.5">
                   {order.map((j, pos) => {
