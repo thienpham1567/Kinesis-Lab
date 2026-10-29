@@ -411,17 +411,22 @@ select:focus {
 .workspace-content {
   min-width: 0;
   margin-left: 0;
-  background-image: radial-gradient(
-    1100px 360px at 50% -140px,
-    color-mix(in srgb, var(--cobalt) 6%, transparent),
-    transparent
-  );
 }
 .workspace-main {
   width: 100%;
   max-width: 1600px;
   margin-inline: auto;
   padding: 26px 20px 36px;
+}
+@media (min-width: 1024px) {
+  .workspace-main .lg\:sticky {
+    top: 1.25rem !important;
+  }
+}
+@media (min-width: 1280px) {
+  .workspace-main .xl\:sticky {
+    top: 1.25rem !important;
+  }
 }
 .workspace-mobile-nav {
   position: fixed;
@@ -697,5 +702,5 @@ select:focus {
   min-height: 0;
 }
 .pdf-reader-wrap:fullscreen > .sticky {
-  top: 0;
+  top: 0 !important;
 }

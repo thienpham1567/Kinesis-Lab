@@ -161,15 +161,9 @@ export function PageHeading({
   children?: ReactNode;
 }) {
   return (
-    <div className="page-heading border-b border-rule pb-5">
+    <div className="page-heading">
       <div className="min-w-0">
-        <p className="eyebrow inline-flex items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="size-1.5 rounded-full bg-cobalt ring-4 ring-cobalt-soft"
-          />
-          {eyebrow}
-        </p>
+        <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         <p className="page-description">{description}</p>
       </div>
