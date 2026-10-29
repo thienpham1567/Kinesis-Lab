@@ -118,6 +118,37 @@ export function contextSideStructures(
   return side === "both" ? structures : structures.filter(s => s.side === null || s.side === side);
 }
 
+export function contextViewArea(
+  manifest: AtlasManifest,
+  related: AtlasStructure[],
+  wholeBody = false,
+): AtlasArea | null {
+  if (wholeBody && manifest.bundles.full) return "full";
+  return completeContextBundle(manifest, related);
+}
+
+export function contextViewHidden(
+  structures: AtlasStructure[],
+  related: readonly { id: string }[],
+  side: "both" | "left" | "right",
+  options: {
+    wholeBody?: boolean;
+    surroundings?: boolean;
+    kind: AnatomyContext["kind"];
+  },
+): string[] {
+  const onSide = new Set(contextSideStructures(structures, side).map(s => s.id));
+  if (options.wholeBody) return structures.filter(s => !onSide.has(s.id)).map(s => s.id);
+  const relatedIds = new Set(related.map(s => s.id));
+  return structures
+    .filter(s =>
+      !onSide.has(s.id) ||
+      (!options.surroundings &&
+        (options.kind === "region" || s.layer !== "bone") &&
+        !relatedIds.has(s.id)))
+    .map(s => s.id);
+}
+
 // A symptom selection opens a neutral region. It does not identify a pain source.
 export function triggerPainRegion(siteId: string): string | null {
   return Object.hasOwn(PAIN_REGIONS, siteId) ? PAIN_REGIONS[siteId as PainSiteId] : null;

@@ -161,6 +161,7 @@ export function TriggerPointExplorer({
             {lookupMode === "muscle_to_pain" ? (
               <div className="space-y-3">
                 <ContextualAnatomyViewer
+                  wholeBody
                   context={{ kind: "trigger", id: activeMuscle.id }}
                   title={activeMuscle.shortName}
                   onNavigate={(id) => {
@@ -177,6 +178,7 @@ export function TriggerPointExplorer({
               <div className="space-y-3">
                 <TriggerPainLocator selectedId={selectedPainSiteId} side={bodySide} onSide={setBodySide} onSelect={selectPainSite}/>
                 <ContextualAnatomyViewer
+                  wholeBody
                   context={{ kind: "region", id: triggerPainRegion(selectedPainSiteId) ?? "" }}
                   title={`Giải phẫu vùng · ${getPainSite(selectedPainSiteId).shortName}`}
                 />

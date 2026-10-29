@@ -33,7 +33,7 @@ function load(relative) {
 const adapterFile = 'src/lib/clinical/contextual-anatomy.ts';
 const adapter = existsSync(path.join(root, adapterFile)) ? load(adapterFile) : {};
 assert.equal(typeof adapter.contextStructures, 'function', 'context catalog adapter must exist');
-const { contextStructures, contextForStructure, completeContextBundle, contextSideStructures, triggerPainRegion } = adapter;
+const { contextStructures, contextForStructure, completeContextBundle, contextSideStructures, contextViewArea, contextViewHidden, triggerPainRegion } = adapter;
 const manifest = JSON.parse(readFileSync(path.join(root, 'public/anatomy/3d/manifest.json'), 'utf8'));
 const { structures } = manifest;
 const ids = list => Array.from(list, s => s.id).sort();
@@ -121,6 +121,30 @@ const fixture = {
 assert.equal(completeContextBundle(fixture, fixture.structures), 'hip', 'cheaper partial bundle must not clip requested context');
 assert.equal(completeContextBundle(fixture, [{ id: 'a' }]), 'lower', 'choose by bytes rather than area order');
 assert.equal(completeContextBundle({ ...fixture, bundles: { lower: { bytes: 10 } } }, fixture.structures), null);
+assert.equal(contextViewArea(manifest, trapezius, true), 'full', 'whole body uses the full musculoskeletal bundle');
+assert.equal(contextViewArea(fixture, fixture.structures, true), 'full');
+assert.equal(contextViewArea(manifest, trapezius, false), completeContextBundle(manifest, trapezius), 'regional framing stays on the smallest bundle');
+assert.equal(contextViewArea({ ...fixture, bundles: { lower: { bytes: 10 } } }, fixture.structures, true), null);
+const infraspinatus = contextStructures(structures, { kind: 'trigger', id: 'infraspinatus' });
+const wholeHidden = new Set(contextViewHidden(structures, infraspinatus, 'both', { wholeBody: true, kind: 'trigger' }));
+const otherMuscle = structures.find(s => s.layer === 'muscle' && !infraspinatus.some(item => item.id === s.id));
+assert(otherMuscle, 'a muscle outside the trigger case exists');
+assert.equal(wholeHidden.size, 0, 'whole body keeps every structure when both sides are shown');
+assert(!wholeHidden.has(otherMuscle.id), 'whole body does not clip muscles outside the case');
+const leftHidden = new Set(contextViewHidden(structures, infraspinatus, 'left', { wholeBody: true, kind: 'trigger' }));
+assert(structures.some(s => s.side === 'right' && leftHidden.has(s.id)), 'whole body still hides the other side');
+assert(structures.filter(s => s.side === 'left' || s.side === null).every(s => !leftHidden.has(s.id)));
+const regionalHidden = new Set(contextViewHidden(structures, infraspinatus, 'both', { wholeBody: false, surroundings: false, kind: 'trigger' }));
+assert(regionalHidden.has(otherMuscle.id), 'trigger framing still hides muscles outside the case');
+assert(infraspinatus.every(s => !regionalHidden.has(s.id)));
+assert(structures.some(s => s.layer === 'bone' && !regionalHidden.has(s.id)), 'trigger framing keeps bone context');
+const knee = contextStructures(structures, { kind: 'region', id: 'knee' });
+const kneeHidden = new Set(contextViewHidden(structures, knee, 'both', { wholeBody: false, surroundings: false, kind: 'region' }));
+assert(knee.every(s => !kneeHidden.has(s.id)));
+assert(structures.some(s => s.clinicalRegion !== 'knee' && kneeHidden.has(s.id)), 'region framing still hides other regions');
+assert.equal(contextViewArea(manifest, knee, false), completeContextBundle(manifest, knee));
+const chest = contextStructures(structures, { kind: 'training', id: 'chest' });
+assert.equal(contextViewArea(manifest, chest, false), completeContextBundle(manifest, chest), 'training keeps its regional bundle');
 
 const painRegions = {
   anterior_shoulder: 'shoulder', neck_temple: 'cervical', between_scapulae: 'thoracic_core',
@@ -140,4 +164,4 @@ assert.equal(hidden.isolatedId, null);
 const changed = stateHelpers.reconcileObservation(initial, 'trigger/infraspinatus/both', 'front-oblique', new Set([selectedId]));
 assert.equal(changed.selectedId, null);
 assert.equal(changed.isolatedId, null);
-console.log('Contextual anatomy: 10 trigger teaching groups, 11 training groups, 8 regions, exact source membership, bilateral navigation, smallest complete bundles and hidden selection resets passed.');
+console.log('Contextual anatomy: 10 trigger teaching groups, 11 training groups, 8 regions, exact source membership, bilateral navigation, smallest complete bundles, whole-body framing and hidden selection resets passed.');

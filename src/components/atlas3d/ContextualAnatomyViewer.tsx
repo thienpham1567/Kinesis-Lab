@@ -8,10 +8,10 @@ import type { AtlasLayer, AtlasManifest } from "@/lib/clinical/atlas-3d";
 import { atlasStructureName } from "@/lib/clinical/atlas-names";
 import { AtlasStructureName, AtlasSourceNames } from "./AtlasStructureName";
 import {
-  completeContextBundle,
   contextForStructure,
-  contextSideStructures,
   contextStructures,
+  contextViewArea,
+  contextViewHidden,
   type AnatomyContext,
 } from "@/lib/clinical/contextual-anatomy";
 import { Icon } from "../WorkspaceUI";
@@ -35,6 +35,7 @@ export type ContextualAnatomyProps = {
   context: AnatomyContext;
   title: string;
   onNavigate?: (id: string) => void;
+  wholeBody?: boolean;
 };
 
 export function ContextualAnatomyViewer(props: ContextualAnatomyProps) {
@@ -104,7 +105,7 @@ export function ContextualAnatomyViewer(props: ContextualAnatomyProps) {
     );
   return (
     <ContextualAnatomyPanel
-      key={`${props.context.kind}/${props.context.id}`}
+      key={props.wholeBody ? "body" : `${props.context.kind}/${props.context.id}`}
       {...props}
       manifest={manifest}
     />
@@ -116,18 +117,21 @@ function ContextualAnatomyPanel({
   title,
   onNavigate,
   manifest,
+  wholeBody = false,
 }: ContextualAnatomyProps & { manifest: AtlasManifest }) {
   const related = useMemo(
     () => contextStructures(manifest.structures, context),
     [manifest, context],
   );
-  const area = completeContextBundle(manifest, related);
+  const area = contextViewArea(manifest, related, wholeBody);
+  const showMuscle = wholeBody || context.kind !== "region";
+  const showJoint = !wholeBody && context.kind === "region";
   const [side, setSide] = useState<"both" | "left" | "right">("both");
   const [surroundings, setSurroundings] = useState(false);
   const [layers, setLayers] = useState<Record<AtlasLayer, boolean>>({
     bone: true,
-    muscle: context.kind !== "region",
-    joint: context.kind === "region",
+    muscle: showMuscle,
+    joint: showJoint,
   });
   const defaultView: CameraCommand["type"] =
     (context.kind === "trigger" &&
@@ -148,40 +152,45 @@ function ContextualAnatomyPanel({
     ...initialObservation(context.id, defaultView),
     selectedId: context.kind === "region" ? null : (related[0]?.id ?? null),
   }));
-  const relatedIds = new Set(related.map((s) => s.id));
   const areaStructures = manifest.structures.filter(
     (s) => area === "full" || (area && s.areas.includes(area)),
   );
-  const sideIds = new Set(
-    contextSideStructures(areaStructures, side).map((s) => s.id),
-  );
   const hiddenIds = new Set(
-    areaStructures
-      .filter(
-        (s) =>
-          !sideIds.has(s.id) ||
-          (!surroundings &&
-            (context.kind === "region" || s.layer !== "bone") &&
-            !relatedIds.has(s.id)),
-      )
-      .map((s) => s.id),
+    contextViewHidden(areaStructures, related, side, {
+      wholeBody,
+      surroundings,
+      kind: context.kind,
+    }),
   );
   const visible = areaStructures.filter(
     (s) => layers[s.layer] && !hiddenIds.has(s.id),
   );
   const visibleIds = new Set(visible.map((s) => s.id));
-  const observation = reconcileObservation(
+  const reconciled = reconcileObservation(
     stored,
     context.id,
     defaultView,
     visibleIds,
   );
+  const caseSelection =
+    wholeBody && context.kind !== "region" && reconciled.selectedId === null
+      ? (related.find((s) => visibleIds.has(s.id))?.id ?? null)
+      : reconciled.selectedId;
+  const observation =
+    caseSelection === reconciled.selectedId
+      ? reconciled
+      : { ...reconciled, selectedId: caseSelection };
   if (observation !== stored) setObservation(observation);
   const selected = visible.find((s) => s.id === observation.selectedId);
-  const options = visible;
-  const frameIds = new Set(
-    related.filter((s) => visibleIds.has(s.id)).map((s) => s.id),
-  );
+  const options = wholeBody
+    ? related.filter((s) => layers[s.layer] && !hiddenIds.has(s.id))
+    : visible;
+  const frameIds = wholeBody
+    ? undefined
+    : new Set(related.filter((s) => visibleIds.has(s.id)).map((s) => s.id));
+  const markIds = wholeBody
+    ? related.filter((s) => visibleIds.has(s.id)).map((s) => s.id)
+    : [];
   const send = (type: CameraCommand["type"]) =>
     setObservation((state) => ({
       ...state,
@@ -202,11 +211,7 @@ function ContextualAnatomyPanel({
   function reset() {
     setSide("both");
     setSurroundings(false);
-    setLayers({
-      bone: true,
-      muscle: context.kind !== "region",
-      joint: context.kind === "region",
-    });
+    setLayers({ bone: true, muscle: showMuscle, joint: showJoint });
     setObservation((state) => ({
       ...initialObservation(
         context.id,
@@ -258,13 +263,20 @@ function ContextualAnatomyPanel({
           </button>
         ))}
       </div>
-      <div className="relative h-[360px] min-w-0 bg-surface sm:h-[460px]">
+      <div
+        className={
+          wholeBody
+            ? "relative h-[640px] min-w-0 bg-surface"
+            : "relative h-[360px] min-w-0 bg-surface sm:h-[460px]"
+        }
+      >
         <Canvas
           bundleUrl={manifest.bundles[area].url}
           structures={manifest.structures}
           layers={layers}
           hiddenIds={hiddenIds}
           frameIds={frameIds}
+          searchTargetIds={markIds.length ? new Set(markIds) : undefined}
           isolatedId={observation.isolatedId}
           selectedId={selected?.id ?? null}
           thicknessId={null}
@@ -376,14 +388,16 @@ function ContextualAnatomyPanel({
               {["Xương", "Cơ", "Khớp & dây chằng"][index]}
             </label>
           ))}
-          <label className="flex min-h-10 items-center gap-2">
-            <input
-              type="checkbox"
-              checked={surroundings}
-              onChange={(e) => setSurroundings(e.target.checked)}
-            />
-            Cấu trúc xung quanh
-          </label>
+          {!wholeBody && (
+            <label className="flex min-h-10 items-center gap-2">
+              <input
+                type="checkbox"
+                checked={surroundings}
+                onChange={(e) => setSurroundings(e.target.checked)}
+              />
+              Cấu trúc xung quanh
+            </label>
+          )}
         </div>
         <details className="border-t border-rule pt-3 text-xs leading-5 text-slate">
           <summary className="cursor-pointer font-semibold text-ink">
@@ -394,6 +408,13 @@ function ContextualAnatomyPanel({
             catalog để tra cứu; không xác nhận hình học, số đo, tình trạng đau
             hoặc tổn thương cá nhân.
           </p>
+          {wholeBody && (
+            <p className="mt-2">
+              Hình là toàn bộ hệ cơ–xương của atlas. Cơ hoặc vùng đang tra được
+              đánh dấu. Không có đầu, da, nội tạng. Đây không phải vị trí điểm
+              kích hoạt.
+            </p>
+          )}
           {context.kind === "trigger" && (
             <p className="mt-2">
               Không hiển thị tọa độ điểm kích hoạt hoặc vùng đau lan khi chưa có
