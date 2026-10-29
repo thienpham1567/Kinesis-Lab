@@ -106,6 +106,36 @@ export function mockAnsweredCount(
   ).length;
 }
 
+export type NcsfMockOrder = { questions: number[]; options: number[][] };
+
+export function shuffleMockExam(
+  exam: NcsfMockExam,
+  previous?: NcsfMockOrder,
+  random = Math.random,
+): NcsfMockOrder {
+  const shuffle = (length: number, old?: number[]) => {
+    const indices = Array.from({ length }, (_, i) => i);
+    for (let i = length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    if (length > 1 && old && indices.every((v, i) => v === old[i]))
+      [indices[0], indices[1]] = [indices[1], indices[0]];
+    return indices;
+  };
+  return {
+    questions: shuffle(exam.questions.length, previous?.questions),
+    options: exam.questions.map((q, i) =>
+      shuffle(q.options.length, previous?.options[i]),
+    ),
+  };
+}
+
+export const mockQuestionText = (title: string) =>
+  title.replace(/^\s*Câu\s*\d+\s*[:.]\s*/iu, "");
+export const mockOptionText = (option: string) =>
+  option.replace(/^\s*[A-H][.):]\s*/u, "");
+
 type Dependencies = {
   isAuthed: () => Promise<boolean>;
   download: (key: string) => Promise<{ data: Blob | null; error: unknown }>;

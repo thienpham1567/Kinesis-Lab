@@ -139,3 +139,53 @@ test("assets require auth before reads, keep cache private, validate data and hi
   assert.equal(failed.status, 503);
   assert.doesNotMatch(await failed.text(), /credential/);
 });
+
+test("shuffle preserves every source question, choice and image without changing the bank", async () => {
+  const helpers = await import("../src/lib/ncsf-mock-exams.ts");
+  assert.equal(typeof helpers.shuffleMockExam, "function");
+  const exam = bank().exams[0];
+  const original = structuredClone(exam);
+  const first = helpers.shuffleMockExam(exam, undefined, () => 0.25);
+  const previous = structuredClone(first);
+  const next = helpers.shuffleMockExam(exam, first, () => 0.25);
+  assert.notDeepEqual(next.questions, first.questions);
+  for (let i = 0; i < 150; i++) assert.notDeepEqual(next.options[i], first.options[i]);
+  for (const order of [first, next]) {
+    assert.deepEqual(
+      [...order.questions].sort((a, b) => a - b),
+      Array.from({ length: 150 }, (_, i) => i),
+    );
+    assert.equal(order.options.length, 150);
+    for (const sourceIndex of order.questions) {
+      const source = exam.questions[sourceIndex];
+      assert.deepEqual(
+        [...order.options[sourceIndex]].sort((a, b) => a - b),
+        source.options.map((_, i) => i),
+      );
+      const selected = 1;
+      const displayedSelection = order.options[sourceIndex].indexOf(selected);
+      assert.equal(
+        source.options[order.options[sourceIndex][displayedSelection]],
+        original.questions[sourceIndex].options[selected],
+      );
+      assert.deepEqual(source.images, original.questions[sourceIndex].images);
+    }
+    assert.equal(order.options[123].length, 3);
+  }
+  assert.deepEqual(exam, original);
+  assert.deepEqual(first, previous);
+});
+test("shuffled labels renumber only prefixes and preserve the source text body", async () => {
+  const helpers = await import("../src/lib/ncsf-mock-exams.ts");
+  assert.equal(typeof helpers.mockQuestionText, "function");
+  assert.equal(typeof helpers.mockOptionText, "function");
+  assert.equal(
+    helpers.mockQuestionText("Câu 150: Nội dung câu hỏi\nDòng hai"),
+    "Nội dung câu hỏi\nDòng hai",
+  );
+  assert.equal(
+    helpers.mockOptionText("C. Nội dung lựa chọn A và cơ B"),
+    "Nội dung lựa chọn A và cơ B",
+  );
+  assert.equal(helpers.mockOptionText("Không có nhãn"), "Không có nhãn");
+});

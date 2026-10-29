@@ -1,9 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+  type Ref,
+} from "react";
 import {
   mockAnsweredCount,
+  mockQuestionText,
+  mockOptionText,
+  shuffleMockExam,
+  type NcsfMockOrder,
   NCSF_MOCK_SOURCES,
   parseNcsfMockExams,
   type NcsfMockBank,
@@ -71,7 +81,13 @@ function MockImage({
   );
 }
 
-export function NcsfMockExams() {
+export type NcsfMockExamsHandle = { reshuffle: () => void };
+
+export function NcsfMockExams({
+  apiRef,
+}: {
+  apiRef?: Ref<NcsfMockExamsHandle>;
+}) {
   const [bank, setBank] = useState<NcsfMockBank | null>(null);
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
@@ -79,6 +95,7 @@ export function NcsfMockExams() {
   const [answers, setAnswers] = useState<
     Record<number, Record<number, number>>
   >({ 1: {}, 2: {} });
+  const [orders, setOrders] = useState<Record<number, NcsfMockOrder>>({});
   const [finished, setFinished] = useState<Record<number, boolean>>({});
   useEffect(() => {
     const controller = new AbortController();
@@ -95,7 +112,14 @@ export function NcsfMockExams() {
           );
         const data = parseNcsfMockExams(await r.json());
         if (!data) throw new Error("Dữ liệu đề thi chưa đầy đủ.");
-        if (!controller.signal.aborted) setBank(data);
+        if (!controller.signal.aborted) {
+          setOrders(
+            Object.fromEntries(
+              data.exams.map((e) => [e.id, shuffleMockExam(e)]),
+            ),
+          );
+          setBank(data);
+        }
       })
       .catch((e) => {
         if (!controller.signal.aborted)
@@ -105,6 +129,19 @@ export function NcsfMockExams() {
       });
     return () => controller.abort();
   }, [reload]);
+  const reshuffle = useCallback(
+    (examId?: number) => {
+      if (!bank) return;
+      const updated = Object.fromEntries(
+        bank.exams
+          .filter((e) => examId === undefined || e.id === examId)
+          .map((e) => [e.id, shuffleMockExam(e, orders[e.id])]),
+      );
+      setOrders({ ...orders, ...updated });
+    },
+    [bank, orders],
+  );
+  useImperativeHandle(apiRef, () => ({ reshuffle }), [reshuffle]);
   if (error)
     return (
       <div className="space-y-3" role="alert">
@@ -120,13 +157,14 @@ export function NcsfMockExams() {
         </button>
       </div>
     );
-  if (!bank)
+  if (!bank || !orders[active])
     return (
       <p className="text-sm text-slate" role="status">
         Đang tải hai bộ đề thi thử…
       </p>
     );
   const exam = bank.exams[active - 1];
+  const order = orders[active];
   const selections = answers[active];
   const count = mockAnsweredCount(exam, selections);
   const done = !!finished[active];
@@ -139,7 +177,10 @@ export function NcsfMockExams() {
             type="button"
             className="tab-button"
             aria-pressed={active === e.id}
-            onClick={() => setActive(e.id)}
+            onClick={() => {
+              reshuffle(e.id);
+              setActive(e.id);
+            }}
           >
             Bộ đề {e.id} · {e.questions.length} câu
           </button>
@@ -150,8 +191,9 @@ export function NcsfMockExams() {
           Đề thi thử NCSF · Bộ {active}
         </h2>
         <p>
-          Giữ nguyên câu hỏi, thứ tự lựa chọn và cách đánh số theo đề gốc. Đối
-          chiếu ngày {bank.checkedAt.split("-").reverse().join("/")}.
+          Câu hỏi và lựa chọn được xáo trộn mỗi lần mở đề. Nội dung và hình giữ
+          nguyên từ đề gốc. Đối chiếu ngày{" "}
+          {bank.checkedAt.split("-").reverse().join("/")}.
         </p>
         <p>Chưa có khóa đáp án chính thức; bài này chưa chấm đúng/sai.</p>
         <a
@@ -174,6 +216,7 @@ export function NcsfMockExams() {
             onClick={(event) => {
               // This node becomes the submit control after reset; cancel the original click first.
               event.preventDefault();
+              reshuffle(active);
               setAnswers((v) => ({ ...v, [active]: {} }));
               setFinished((v) => ({ ...v, [active]: false }));
             }}
@@ -207,53 +250,64 @@ export function NcsfMockExams() {
         }}
         className="space-y-5"
       >
-        {exam.questions.map((q, i) => (
-          <fieldset
-            key={`${active}-${q.position}`}
-            data-position={q.position}
-            className="min-w-0 rounded-lg border border-rule px-4 pb-4 pt-2 sm:px-5"
-          >
-            <legend className="max-w-full whitespace-pre-wrap break-words px-1 text-sm font-semibold leading-6 text-ink">
-              {q.title}
-            </legend>
-            {q.images.map((image) => (
-              <MockImage
-                key={`${active}-${q.position}-${image.index}`}
-                exam={active}
-                position={q.position}
-                image={image}
-              />
-            ))}
-            <div className="mt-2 space-y-1">
-              {q.options.map((option, j) => (
-                <label
-                  key={j}
-                  className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${selections[i] === j ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
-                >
-                  <input
-                    type="radio"
-                    disabled={done}
-                    className="mt-1 shrink-0 accent-cobalt"
-                    name={`mock-${active}-${q.position}`}
-                    checked={selections[i] === j}
-                    onChange={() =>
-                      setAnswers((v) => ({
-                        ...v,
-                        [active]: { ...v[active], [i]: j },
-                      }))
-                    }
-                  />
-                  <span className="min-w-0 whitespace-pre-wrap break-words">
-                    {option}
-                  </span>
-                </label>
+        {order.questions.map((sourceIndex, displayIndex) => {
+          const q = exam.questions[sourceIndex];
+          return (
+            <fieldset
+              key={`${active}-${q.position}`}
+              data-position={q.position}
+              data-source-title={q.title}
+              className="min-w-0 rounded-lg border border-rule px-4 pb-4 pt-2 sm:px-5"
+            >
+              <legend className="max-w-full whitespace-pre-wrap break-words px-1 text-sm font-semibold leading-6 text-ink">
+                Câu {displayIndex + 1}: {mockQuestionText(q.title)}
+              </legend>
+              {q.images.map((image) => (
+                <MockImage
+                  key={`${active}-${q.position}-${image.index}`}
+                  exam={active}
+                  position={q.position}
+                  image={image}
+                />
               ))}
-            </div>
-            {done && selections[i] === undefined && (
-              <p className="mt-2 text-sm text-slate">Chưa trả lời</p>
-            )}
-          </fieldset>
-        ))}
+              <div className="mt-2 space-y-1">
+                {order.options[sourceIndex].map(
+                  (optionIndex, displayOptionIndex) => (
+                    <label
+                      key={optionIndex}
+                      className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
+                    >
+                      <input
+                        type="radio"
+                        disabled={done}
+                        className="mt-1 shrink-0 accent-cobalt"
+                        name={`mock-${active}-${q.position}`}
+                        value={optionIndex}
+                        checked={selections[sourceIndex] === optionIndex}
+                        onChange={() =>
+                          setAnswers((v) => ({
+                            ...v,
+                            [active]: {
+                              ...v[active],
+                              [sourceIndex]: optionIndex,
+                            },
+                          }))
+                        }
+                      />
+                      <span className="min-w-0 whitespace-pre-wrap break-words">
+                        {String.fromCharCode(65 + displayOptionIndex)}.{" "}
+                        {mockOptionText(q.options[optionIndex])}
+                      </span>
+                    </label>
+                  ),
+                )}
+              </div>
+              {done && selections[sourceIndex] === undefined && (
+                <p className="mt-2 text-sm text-slate">Chưa trả lời</p>
+              )}
+            </fieldset>
+          );
+        })}
         {!done && (
           <button type="submit" className="button-primary">
             Hoàn thành bài

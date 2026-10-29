@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { NcsfMockExams } from "@/components/NcsfMockExams";
+import { NcsfMockExams, type NcsfMockExamsHandle } from "@/components/NcsfMockExams";
 import { NcsfQuiz } from "@/components/NcsfQuiz";
 import { NcsfPageCorrections } from "@/components/NcsfCorrections";
 import { Icon, PageHeading } from "@/components/WorkspaceUI";
@@ -91,6 +91,7 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
   const [view, setView] = useState<"read" | "quiz" | "mock">("read");
   const [quizAttempt, setQuizAttempt] = useState(0);
   const [mockOpened, setMockOpened] = useState(false);
+  const mockRef = useRef<NcsfMockExamsHandle | null>(null);
   const [slug, setSlug] = useState<string>(NCSF_CPT[0].slug);
   const [startPage, setStartPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,13 +127,13 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
         <button type="button" aria-pressed={view === "quiz"} className="tab-button" onClick={() => { setQuizAttempt(attempt => attempt + 1); setView("quiz"); }}>
           Đề thi nhỏ
         </button>
-        <button type="button" aria-pressed={view === "mock"} className="tab-button" onClick={() => { setMockOpened(true); setView("mock"); }}>
+        <button type="button" aria-pressed={view === "mock"} className="tab-button" onClick={() => { mockRef.current?.reshuffle(); setMockOpened(true); setView("mock"); }}>
           Đề thi thử
         </button>
       </div>
       {mockOpened && (
         <section hidden={view !== "mock"} className="panel min-w-0 p-4 sm:p-5" aria-label="Đề thi thử">
-          <NcsfMockExams />
+          <NcsfMockExams apiRef={mockRef} />
         </section>
       )}
       {view === "mock" ? null : view === "quiz" ? (
