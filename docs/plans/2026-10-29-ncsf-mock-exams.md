@@ -16,3 +16,5 @@ Implementation steps:
 Limit: the two forms expose questions and choices, not an official answer key. Cloning preserves source wording and does not establish clinical validation or correct known source errors.
 
 Review: an independent code reviewer verified source fidelity, private storage and API boundaries. A reproduced tab-unmount bug was fixed by lazily mounting the mock component once and hiding it while consulting other library tabs. Attempts remain in memory until the library page is left or reloaded. React Doctor’s preventDefault warning is intentional client form handling; tiny fixed key arrays are not a material performance issue. Async fetch state is guarded by AbortController.
+
+Final browser regression: select an answer, complete, restart by mouse, then repeat by Enter. Both restarts must show 0/150, clear choices and enable all radios. React reuses the toolbar button as the submit control after reset; cancel the restart click’s default action before changing state to prevent immediate resubmission. Verified failing on the first production release, then passing locally with mouse and keyboard.

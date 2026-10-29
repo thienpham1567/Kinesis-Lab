@@ -171,7 +171,9 @@ export function NcsfMockExams() {
           <button
             type="button"
             className="button-secondary"
-            onClick={() => {
+            onClick={(event) => {
+              // This node becomes the submit control after reset; cancel the original click first.
+              event.preventDefault();
               setAnswers((v) => ({ ...v, [active]: {} }));
               setFinished((v) => ({ ...v, [active]: false }));
             }}
