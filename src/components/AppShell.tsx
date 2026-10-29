@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useId } from "react";
 import { StudyChatWidget } from "./StudyChatWidget";
 import { Icon, type IconName } from "./WorkspaceUI";
 
@@ -10,50 +10,48 @@ const NAV: {
   href: string;
   label: string;
   short: string;
-  icon: IconName;
   description: string;
+  icon: IconName;
 }[] = [
   {
     href: "/consult",
     label: "Bàn tư vấn",
     short: "Tư vấn",
-    icon: "message",
     description: "Lâm sàng & vận động",
+    icon: "message",
   },
   {
     href: "/atlas",
     label: "Atlas giải phẫu",
     short: "Atlas",
-    icon: "atlas",
     description: "Cơ, khớp & bài tập",
+    icon: "atlas",
   },
   {
     href: "/clients",
     label: "Hồ sơ học viên",
     short: "Học viên",
-    icon: "users",
     description: "Theo dõi & sàng lọc",
+    icon: "users",
   },
   {
     href: "/movement",
     label: "Sổ tay vận động",
     short: "Sổ tay",
-    icon: "activity",
     description: "4 nền tảng đánh giá",
+    icon: "activity",
   },
   {
     href: "/knowledge",
     label: "Giáo trình NCSF",
     short: "NCSF",
-    icon: "book",
     description: "Đọc giáo trình & làm đề",
+    icon: "book",
   },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  /* Trang chủ là trang giới thiệu, đứng độc lập ngoài khung làm việc */
-  if (path === "/") return <>{children}</>;
   const isActive = (href: string) =>
     path === href || path.startsWith(href + "/");
   const current = NAV.find((item) => isActive(item.href)) ?? NAV[0];
@@ -63,72 +61,69 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <a href="#main-content" className="skip-link">
         Đến nội dung chính
       </a>
-      <aside className="workspace-sidebar">
-        <Link
-          href="/"
-          className="flex items-center gap-3 px-6 py-7"
-          aria-label="Kinesis Lab — Trang chủ"
-        >
-          <KinesisLogo className="size-10" />
-          <div>
-            <span className="block text-base font-bold tracking-tight text-ink">
-              Kinesis Lab<span className="text-cobalt">.</span>
-            </span>
-            <span className="mt-0.5 block whitespace-nowrap font-mono text-[8px] tracking-[.08em] text-slate">
-              MOVEMENT · SCIENCE
-            </span>
-          </div>
-        </Link>
-        <div className="mx-6 border-t border-rule" />
-        <p className="px-6 pb-3 pt-7 font-mono text-[9px] font-medium tracking-[.14em] text-slate">
-          KHÔNG GIAN LÀM VIỆC
-        </p>
-        <nav aria-label="Điều hướng chính" className="space-y-2 px-3">
-          {NAV.map((item) => (
+      <div className="workspace-content flex min-h-dvh flex-col">
+        <header className="sticky top-0 z-30 border-b border-rule bg-sheet/95 shadow-[0_2px_14px_-4px_rgb(26_45_64/0.05)] backdrop-blur-md">
+          <div className="mx-auto flex min-h-[76px] max-w-[1600px] items-center justify-between gap-4 px-5 py-2.5 sm:px-7 lg:px-8">
             <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
-              className={`group flex items-center gap-3 rounded-xl border px-3 py-3.5 transition-colors ${isActive(item.href) ? "border-cobalt/10 bg-cobalt-soft text-cobalt" : "border-transparent text-slate hover:bg-canvas hover:text-ink"}`}
+              href="/atlas"
+              className="group flex shrink-0 items-center gap-3 pr-2"
+              aria-label="Kinesis Lab — Trang chủ"
             >
-              <Icon name={item.icon} className="size-5" />
+              <KinesisLogo className="size-10 shrink-0 rounded-[14px] shadow-[0_4px_12px_rgb(13_70_150/0.22)] transition-transform duration-150 group-hover:scale-[1.02]" />
               <div>
-                <span className="block text-[13px] font-semibold">
-                  {item.label}
+                <span className="block whitespace-nowrap text-[15px] font-bold tracking-tight text-ink">
+                  Kinesis Lab<span className="text-cobalt">.</span>
                 </span>
-                <span className="mt-0.5 block text-[10px] opacity-80">
-                  {item.description}
+                <span className="mt-0.5 block whitespace-nowrap font-mono text-[9px] font-medium tracking-[.14em] text-slate">
+                  MOVEMENT · SCIENCE
                 </span>
               </div>
             </Link>
-          ))}
-        </nav>
-      </aside>
-      <div className="workspace-content flex min-h-dvh flex-col">
-        <header className="sticky top-0 z-30 border-b border-rule bg-sheet/95 backdrop-blur-md">
-          <div className="mx-auto flex min-h-[72px] max-w-[1600px] items-center justify-between gap-3 px-5 sm:px-7 xl:px-8">
-            <Link
-              href="/"
-              className="flex shrink-0 items-center gap-2.5 xl:hidden"
-              aria-label="Kinesis Lab — Trang chủ"
+            <nav
+              aria-label="Điều hướng chính"
+              className="ml-auto hidden max-w-[1080px] flex-1 grid-cols-5 gap-1.5 rounded-2xl border border-rule bg-surface/80 p-1.5 shadow-[inset_0_1px_2px_rgb(26_45_64/0.04)] lg:grid"
             >
-              <KinesisLogo className="size-9 shrink-0" />
-              <span className="whitespace-nowrap text-sm font-bold tracking-tight text-ink">
-                Kinesis Lab<span className="text-cobalt">.</span>
-              </span>
-            </Link>
-            <div className="hidden items-center gap-2 text-xs text-slate xl:flex">
-              <span>Không gian làm việc</span>
-              <span className="text-rule-strong">/</span>
-              <span className="font-medium text-ink">{current.label}</span>
-              {path.startsWith("/clients/") && (
-                <>
-                  <span className="text-rule-strong">/</span>
-                  <span>Chi tiết hồ sơ</span>
-                </>
-              )}
-            </div>
-            <ConnectionStatus />
+              {NAV.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`group relative flex min-h-12 min-w-0 items-center gap-2.5 rounded-xl border px-3 py-2 transition-all duration-150 ${
+                      active
+                        ? "border-cobalt/25 bg-sheet text-ink shadow-[0_2px_10px_-2px_rgb(36_84_203/0.12)]"
+                        : "border-transparent text-slate hover:border-rule/80 hover:bg-sheet/75 hover:text-ink"
+                    }`}
+                  >
+                    <span
+                      className={`inline-flex size-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${
+                        active
+                          ? "border-cobalt bg-cobalt text-white shadow-[0_2px_6px_rgb(36_84_203/0.28)]"
+                          : "border-rule bg-sheet text-slate group-hover:border-cobalt/25 group-hover:bg-cobalt-soft group-hover:text-cobalt"
+                      }`}
+                    >
+                      <Icon name={item.icon} className="size-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-semibold leading-tight">
+                        <span className="xl:hidden">{item.short}</span>
+                        <span className="hidden xl:inline">{item.label}</span>
+                      </span>
+                      <span className="mt-0.5 hidden truncate text-[10px] leading-tight text-slate xl:block">
+                        {item.description}
+                      </span>
+                    </span>
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-3.5 -bottom-[1px] h-0.5 rounded-full bg-cobalt"
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
         </header>
         <main
@@ -138,94 +133,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           {children}
         </main>
-        <footer className="workspace-footer mx-5 border-t border-rule pt-5 text-xs leading-5 text-slate sm:mx-7 xl:mx-8">
-          <div className="flex flex-wrap items-center justify-between gap-2">
+        <footer className="workspace-footer mx-auto w-full max-w-[1600px] px-5 pt-4 text-xs leading-5 text-slate sm:px-7 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-4">
             <span>
               Kinesis Lab <span className="mx-1.5 text-rule-strong">/</span>{" "}
               Giải phẫu · Cơ sinh học · Lâm sàng
             </span>
-            <span>
-              Phạm vi PT: sàng lọc vận động, điều chỉnh tải & bài tập — không
-              chẩn đoán, không kê đơn.
-            </span>
           </div>
         </footer>
       </div>
-      {/* Bàn tư vấn đã có khung chat đầy đủ, không cần thêm chat nổi */}
       {!isActive("/consult") && (
         <StudyChatWidget pathname={path} pageLabel={current.label} />
       )}
       <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">
-        {NAV.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={isActive(item.href) ? "page" : undefined}
-            className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-lg text-[10px] font-semibold ${isActive(item.href) ? "bg-cobalt-soft text-cobalt" : "text-slate"}`}
-          >
-            <Icon name={item.icon} className="size-5" />
-            {item.short}
-          </Link>
-        ))}
+        {NAV.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border text-[10px] font-semibold transition-colors ${
+                active
+                  ? "border-cobalt/20 bg-cobalt-soft text-cobalt"
+                  : "border-transparent text-slate hover:bg-surface hover:text-ink"
+              }`}
+            >
+              <Icon name={item.icon} className="size-5" />
+              <span>{item.short}</span>
+            </Link>
+          );
+        })}
       </nav>
-    </div>
-  );
-}
-
-function ConnectionStatus() {
-  const [health, setHealth] = useState<{
-    openrouter: boolean;
-    supabase: boolean;
-  } | null>(null);
-  const [healthError, setHealthError] = useState(false);
-  useEffect(() => {
-    let ignore = false;
-    fetch("/api/health")
-      .then((r) => {
-        if (!r.ok) throw new Error("health");
-        return r.json();
-      })
-      .then((data) => {
-        if (!ignore) setHealth(data);
-      })
-      .catch(() => {
-        if (!ignore) setHealthError(true);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, []);
-  return (
-    <div
-      className="flex flex-wrap items-center justify-end gap-2"
-      aria-live="polite"
-    >
-      <StatusPill
-        tone={
-          healthError
-            ? "warning"
-            : !health
-              ? "neutral"
-              : health.openrouter
-                ? "success"
-                : "warning"
-        }
-        label={
-          healthError
-            ? "Chưa rõ kết nối"
-            : !health
-              ? "Kiểm tra kết nối…"
-              : health.openrouter
-                ? "AI đã kết nối"
-                : "AI chưa kết nối"
-        }
-      />
-      {health && (
-        <StatusPill
-          tone="neutral"
-          label={health.supabase ? "Lưu trên Cloud" : "Lưu trên máy"}
-        />
-      )}
     </div>
   );
 }
@@ -338,27 +277,5 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
       />
       <circle cx="22" cy="32" r="2" fill="#ffffff" />
     </svg>
-  );
-}
-
-function StatusPill({
-  tone,
-  label,
-}: {
-  tone: "success" | "warning" | "neutral";
-  label: string;
-}) {
-  const colors = {
-    success: "text-cleared",
-    warning: "text-caution",
-    neutral: "text-slate",
-  };
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-md border border-rule bg-sheet px-2 py-1 text-[10px] font-medium sm:text-[11px] ${colors[tone]}`}
-    >
-      <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-      {label}
-    </span>
   );
 }

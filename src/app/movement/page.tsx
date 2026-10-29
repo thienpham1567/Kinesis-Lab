@@ -20,7 +20,7 @@ export default function MovementHandbookPage() {
 /* Khi tải, giữ nguyên tiêu đề và hàng tab để trang không nhảy hình. */
 function HandbookFallback() {
   return (
-    <div className="mx-auto max-w-6xl space-y-5" aria-busy="true">
+    <div className="space-y-5" aria-busy="true">
       <PageHeading
         eyebrow="Hiểu · Quan sát · Áp dụng"
         title="Sổ tay vận động"
@@ -59,7 +59,7 @@ function HandbookInner() {
     );
   }
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="space-y-5">
       <PageHeading
         eyebrow="Hiểu · Quan sát · Áp dụng"
         title="Sổ tay vận động"

@@ -15,7 +15,7 @@ export default async function ConsultPage({
 }) {
   const params = await searchParams;
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="space-y-6">
       <PageHeading
         eyebrow="Lâm sàng & khoa học vận động"
         title="Bàn tư vấn chuyên môn"

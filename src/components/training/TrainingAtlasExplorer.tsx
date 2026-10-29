@@ -21,7 +21,6 @@ import { EmptyState, Icon } from "../WorkspaceUI";
 import { MuscleStudyCard } from "./MuscleStudyCard";
 import { TrainingAnatomyViewer } from "./TrainingAnatomyViewer";
 import { ContextualAnatomyViewer } from "../atlas3d/ContextualAnatomyViewer";
-import { CurlExercisePreview } from "./curl/CurlExercisePreview";
 import type { Client } from "@/lib/types";
 const ROLE_STYLE = {
   primary: "border-crimson/30 bg-crimson-soft text-crimson",
@@ -327,11 +326,7 @@ export function TrainingAtlasExplorer({
                 </section>
               )}
               <div className="grid min-w-0 items-start gap-4 2xl:grid-cols-[minmax(0,1.15fr)_minmax(250px,.85fr)]">
-                {exercise.id === "bayesian-incline-curl" ? (
-                  <CurlExercisePreview exercise={exercise} />
-                ) : (
-                  <TrainingAnatomyViewer exercise={exercise} />
-                )}
+                <TrainingAnatomyViewer exercise={exercise} />
                 <section
                   className="panel space-y-3 p-4 sm:p-5"
                   aria-label="Các cơ tham gia"

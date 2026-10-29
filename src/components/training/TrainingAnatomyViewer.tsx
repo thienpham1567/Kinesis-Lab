@@ -80,36 +80,52 @@ export function TrainingAnatomyViewer({
     ),
     "http://localhost",
   ).searchParams.get("area") as AtlasArea;
+  const person = Boolean(manifest?.bundles.full);
+  const viewArea: AtlasArea = person ? "full" : area;
   const relatedIds = useMemo(
     () => new Set(exercise.targets.map((t) => t.muscleId)),
     [exercise],
   );
-  const frameIds = useMemo(
+  const markedIds = useMemo(
     () =>
       new Set(
         (manifest?.structures ?? [])
           .filter((s) => {
             const g = trainingGroupForStructure(s);
-            return (
-              (area === "full" || s.areas.includes(area)) &&
-              g &&
-              (activeGroup === "all" ? relatedIds.has(g) : g === activeGroup)
-            );
+            if (!g) return false;
+            return activeGroup === "all" ? relatedIds.has(g) : g === activeGroup;
           })
           .map((s) => s.id),
       ),
-    [manifest, area, activeGroup, relatedIds],
+    [manifest, activeGroup, relatedIds],
+  );
+  const frameIds = useMemo(
+    () =>
+      person
+        ? markedIds
+        : new Set(
+            [...markedIds].filter((id) => {
+              const structure = manifest?.structures.find((s) => s.id === id);
+              return structure
+                ? area === "full" || structure.areas.includes(area)
+                : false;
+            }),
+          ),
+    [person, markedIds, manifest, area],
   );
   const hiddenIds = useMemo(
     () =>
-      new Set(
-        (manifest?.structures ?? [])
-          .filter(
-            (s) => s.layer === "muscle" && !allMuscles && !frameIds.has(s.id),
-          )
-          .map((s) => s.id),
-      ),
-    [manifest, allMuscles, frameIds],
+      person
+        ? new Set<string>()
+        : new Set(
+            (manifest?.structures ?? [])
+              .filter(
+                (s) =>
+                  s.layer === "muscle" && !allMuscles && !frameIds.has(s.id),
+              )
+              .map((s) => s.id),
+          ),
+    [person, manifest, allMuscles, frameIds],
   );
   const context = `${exercise.id}/${activeGroup}`;
   const defaultView = preferredTrainingView(
@@ -122,14 +138,14 @@ export function TrainingAnatomyViewer({
         (manifest?.structures ?? [])
           .filter(
             (s) =>
-              (area === "full" || s.areas.includes(area)) &&
+              (viewArea === "full" || s.areas.includes(viewArea)) &&
               !hiddenIds.has(s.id) &&
               (s.layer !== "bone" || bones) &&
               s.layer !== "joint",
           )
           .map((s) => s.id),
       ),
-    [manifest, area, hiddenIds, bones],
+    [manifest, viewArea, hiddenIds, bones],
   );
   const observation = reconcileObservation(
     storedObservation,
@@ -142,7 +158,7 @@ export function TrainingAnatomyViewer({
   if (observation !== storedObservation) setObservation(observation);
   const isolatedId = observation.isolatedId;
   const selected = visibleObservationSelection(manifest?.structures ?? [], {
-    area,
+    area: viewArea,
     bones,
     hiddenIds,
     selectedId: observation.selectedId,
@@ -223,7 +239,9 @@ export function TrainingAnatomyViewer({
               setGroup(e.target.value);
             }}
           >
-            <option value="all">Các nhóm liên quan trong vùng</option>
+            <option value="all">
+              {person ? "Các nhóm của bài" : "Các nhóm liên quan trong vùng"}
+            </option>
             {exercise.targets.map((t) => (
               <option key={t.muscleId} value={t.muscleId}>
                 {MUSCLE_GROUP_ATLAS.find((m) => m.id === t.muscleId)?.name}
@@ -240,15 +258,20 @@ export function TrainingAnatomyViewer({
         </p>
       </div>
       <div
-        className="relative h-[440px] min-w-0 bg-surface sm:h-[560px]"
+        className={
+          person
+            ? "relative h-[640px] min-w-0 bg-surface"
+            : "relative h-[440px] min-w-0 bg-surface sm:h-[560px]"
+        }
         data-anatomy-exercise={exercise.id}
       >
         <Canvas
-          bundleUrl={manifest.bundles[area].url}
+          bundleUrl={manifest.bundles[viewArea].url}
           structures={manifest.structures}
           layers={layers}
           hiddenIds={hiddenIds}
-          frameIds={frameIds}
+          frameIds={person ? undefined : frameIds}
+          searchTargetIds={person && markedIds.size ? markedIds : undefined}
           isolatedId={isolatedId}
           selectedId={selected?.id ?? null}
           thicknessId={null}
@@ -366,14 +389,16 @@ export function TrainingAnatomyViewer({
             />
             Xương làm mốc
           </label>
-          <label className="flex min-h-10 items-center gap-2">
-            <input
-              type="checkbox"
-              checked={allMuscles}
-              onChange={(e) => setAllMuscles(e.target.checked)}
-            />
-            Toàn bộ cơ trong vùng
-          </label>
+          {!person && (
+            <label className="flex min-h-10 items-center gap-2">
+              <input
+                type="checkbox"
+                checked={allMuscles}
+                onChange={(e) => setAllMuscles(e.target.checked)}
+              />
+              Toàn bộ cơ trong vùng
+            </label>
+          )}
         </div>
         {selected && (
           <div className="rounded-lg border border-cobalt/20 bg-cobalt-soft/40 p-3">
@@ -391,9 +416,9 @@ export function TrainingAnatomyViewer({
           </div>
         )}
         <p className="text-xs leading-5 text-slate">
-          Kéo để xoay · Cuộn/chụm để phóng to · Nhấp cơ để tra cứu. Các mesh
-          được liên kết theo nhóm giáo dục. Màu nhóm không đo hoạt động cơ;
-          mô hình tĩnh không thể hiện lực cơ hoặc chuyển động bài tập.
+          {person
+            ? "Hình là toàn bộ hệ cơ–xương của atlas. Cơ của bài được đánh dấu. Không có đầu, da, nội tạng. Màu đánh dấu không đo hoạt động cơ; mô hình không thể hiện lực hay chuyển động bài tập."
+            : "Kéo để xoay · Cuộn/chụm để phóng to · Nhấp cơ để tra cứu. Các mesh được liên kết theo nhóm giáo dục. Màu nhóm không đo hoạt động cơ; mô hình tĩnh không thể hiện lực cơ hoặc chuyển động bài tập."}
         </p>
       </div>
     </section>
