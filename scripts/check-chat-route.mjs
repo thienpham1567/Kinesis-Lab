@@ -1,12 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createAppLoader } from './lib/load-app-module.mjs';
+import * as anatomyEvidence from '../src/lib/clinical/anatomy-evidence.mjs';
+import * as catalogCorrections from '../src/lib/clinical/atlas-catalog-corrections.mjs';
 
 function fixture({ wire, upstreamError, literatureError = false } = {}) {
   const calls = { model: 0, retrieval: [], public: [], messages: [] };
   const load = createAppLoader({
     globals: { process: { env: { OPENROUTER_API_KEY: 'synthetic-only' } } },
     mocks: {
+      './anatomy-evidence.mjs': anatomyEvidence,
+      './atlas-catalog-corrections.mjs': catalogCorrections,
       '@/lib/supabase/server': { hasSupabase: () => false },
       '@/lib/local-store': { readLocalStore: () => ({ clients: [], biomarkers: [] }) },
       '@/lib/ai/openrouter': {

@@ -20,8 +20,14 @@ export function pubmedQuery(userText: string) {
   return `(${core}) AND (exercise OR "resistance training" OR rehabilitation)`;
 }
 
-export async function searchPubMed(userText: string, retmax = 5): Promise<PubMedPaper[]> {
-  const term = pubmedQuery(userText);
+export async function searchPubMed(
+  userText: string,
+  retmax = 5,
+  options?: { queryMode: "trusted" },
+): Promise<PubMedPaper[]> {
+  // Only server-owned catalog names and fixed facets may opt out of the legacy
+  // question translation/exercise filter. Never pass raw request text in this mode.
+  const term = options?.queryMode === "trusted" ? userText : pubmedQuery(userText);
   const params = new URLSearchParams({
     db: "pubmed",
     retmode: "json",

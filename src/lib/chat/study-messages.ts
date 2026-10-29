@@ -6,6 +6,8 @@ import type {
 import type { ChatMessage } from "@/lib/types";
 import { parseAnswerCitations } from "./answer-citations";
 
+import { parseStudyMeta } from "./study-meta";
+
 const UUID = /^[0-9a-f-]{36}$/i;
 const ROLES = new Set(["user", "assistant"]);
 
@@ -82,6 +84,7 @@ export function upgradeStudyMessages(raw: unknown): StudyChatMessage[] {
         attachments: asAttachments(row.attachments),
         sources: asSources(row.sources),
         citations: parseAnswerCitations(row.citations),
+        study: parseStudyMeta(row.study),
       },
     ];
   });
@@ -141,6 +144,7 @@ export function serializeStudyChatStore(input: {
       })),
       sources: message.sources,
       citations: message.citations,
+      study: message.study,
     })),
   });
 }

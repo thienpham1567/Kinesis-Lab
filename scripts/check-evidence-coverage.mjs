@@ -5,6 +5,8 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import vm from "node:vm";
 import * as originalAnatomyEvidence from "../src/lib/clinical/anatomy-evidence.mjs";
+import * as catalogCorrections from "../src/lib/clinical/atlas-catalog-corrections.mjs";
+import { createAppLoader } from "./lib/load-app-module.mjs";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
@@ -136,7 +138,9 @@ const db = { from: (table) => {
   };
   return chain;
 } };
+const studyModule = createAppLoader({ mocks: { "./anatomy-evidence.mjs": originalAnatomyEvidence, "./atlas-catalog-corrections.mjs": catalogCorrections } })("src/lib/chat/study-context-server.ts");
 const adapters = {
+  "@/lib/chat/study-context-server": studyModule,
   "@/lib/clinical/evidence-registry": registry,
   "@/lib/ai/prompts/clinical-pt-system": load("src/lib/ai/prompts/clinical-pt-system.ts"),
   "@/lib/ai/openrouter": {

@@ -1,5 +1,7 @@
 "use client";
 
+import { publishStudyContext } from "@/lib/chat/study-context";
+import { atlasDisplayNames } from "@/lib/clinical/atlas-names";
 import dynamic from "next/dynamic";
 import { resolveAtlasManifest } from "@/lib/clinical/atlas-catalog";
 import Link from "next/link";
@@ -242,6 +244,18 @@ export default function Atlas3DExplorer({
   const muscleGroup = MUSCLE_GROUP_ATLAS.find(
     (entry) => selected && entry.id === trainingGroupForStructure(selected),
   );
+  useEffect(() => {
+    publishStudyContext(selected ? {
+      structureId: selected.id,
+      name: atlasDisplayNames(selected).vietnamese ?? atlasDisplayNames(selected).english,
+      english: selected.english,
+      side: selected.side === "left" || selected.side === "right" ? selected.side : null,
+      area,
+      groupId: trainingGroupForStructure(selected),
+    } : null);
+    return () => publishStudyContext(null);
+  }, [selected, area]);
+
   const selectedVisible =
     selected && isStructureVisible(selected, layers, hiddenIds, isolatedId);
 
@@ -1047,7 +1061,8 @@ export default function Atlas3DExplorer({
               </div>
             )}
             <div
-              className={`relative bg-surface ${learningActive ? "h-[58svh] min-h-[360px] max-h-[680px] sm:min-h-[420px]" : "min-h-[480px] sm:min-h-[620px]"}`}
+              id="atlas-3d-stage"
+              className={`scroll-mt-20 relative bg-surface ${learningActive ? "h-[58svh] min-h-[360px] max-h-[680px] sm:min-h-[420px]" : "min-h-[480px] sm:min-h-[620px]"}`}
             >
               <Atlas3DCanvas
                 bundleUrl={bundle.url}

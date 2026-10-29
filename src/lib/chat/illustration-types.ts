@@ -64,6 +64,7 @@ export type StudyChatMessage = {
   attachments: ChatImageAttachment[];
   sources: ChatImageSource[];
   citations?: import("./answer-citations").ChatAnswerCitation[];
+  study?: import("./study-types").StudyAnswerMeta;
 };
 
 export type ChatImageErrorCode =
