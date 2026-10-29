@@ -202,7 +202,9 @@ export class AtlasStage {
         bounds.height,
       );
       this.callouts.update(
-        (!!this.props.learningMode || !!this.props.searchTargetIds?.size) && !!this.props.showStructureLabels,
+        (!!this.props.learningMode ||
+          !!this.props.searchTargetIds?.size ||
+          !!this.props.selectedId) && !!this.props.showStructureLabels,
         this.props.selectedId,
         this.props.structures,
         this.meshes,

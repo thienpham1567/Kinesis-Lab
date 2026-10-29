@@ -56,8 +56,11 @@ export class StructureCallouts {
       button.title =
         "Tên cấu trúc từ danh mục mô hình nguồn. Điểm nối chỉ dùng đặt nhãn; không phải mốc bám giải phẫu đã đo.";
       line.style.cssText =
-        "position:absolute;height:1px;background:var(--slate);transform-origin:0 50%;pointer-events:none;";
+        "position:absolute;height:2px;background:var(--cobalt);transform-origin:0 50%;pointer-events:none;";
       line.setAttribute("aria-hidden", "true");
+      const dot = document.createElement("span");
+      dot.style.cssText = "position:absolute;width:7px;height:7px;left:-3px;top:-2.5px;border-radius:50%;background:var(--cobalt);box-shadow:0 0 0 1.5px var(--sheet);";
+      line.appendChild(dot);
       button.addEventListener("click", item.click);
       this.root.append(line, button);
       return item;
@@ -89,10 +92,10 @@ export class StructureCallouts {
       for (const mesh of own) box.expandByObject(mesh);
       const center = box.getCenter(new THREE.Vector3()).project(camera);
       if (
-        center.z < -1 ||
-        center.z > 1 ||
-        Math.abs(center.x) > 1.2 ||
-        Math.abs(center.y) > 1.2
+        structure.id !== selectedId && (
+          center.z < -1 || center.z > 1 ||
+          Math.abs(center.x) > 1.2 || Math.abs(center.y) > 1.2
+        )
       )
         return [];
       const size = box.getSize(new THREE.Vector3());
@@ -130,6 +133,7 @@ export class StructureCallouts {
         camera,
         width,
         height,
+        { sampleSurface: structure.id === selectedId },
       );
       if (!point) continue;
       const item = this.items[count];
@@ -175,23 +179,34 @@ export class StructureCallouts {
       const labelSide = targetIds?.size
         ? point.x < width / 2 ? -1 : 1
         : point.x < width / 2 ? 1 : -1;
-      const x = THREE.MathUtils.clamp(
-        point.x + labelSide * 30 - (labelSide < 0 ? w : 0),
-        12,
-        width - w - 12,
+      // Clamping a wide label to a narrow viewport can put it over its own
+      // anchor. Try both sides, then above/below, and keep the pointer exposed.
+      const placements = [
+        { x: point.x + labelSide * 30 - (labelSide < 0 ? w : 0), y: point.y - h / 2 },
+        { x: point.x - labelSide * 30 - (labelSide > 0 ? w : 0), y: point.y - h / 2 },
+        { x: point.x - w / 2, y: point.y - h - 30 },
+        { x: point.x - w / 2, y: point.y + 30 },
+      ].map(({ x, y }) => ({
+        x: THREE.MathUtils.clamp(x, 12, width - w - 12),
+        y: THREE.MathUtils.clamp(y, 12, height - h - 12),
+        width: w,
+        height: h,
+      }));
+      const rect = placements.find((candidate) =>
+        !bounds.some((other) => overlaps(candidate, other)) &&
+        !overlaps(candidate, { x: point.x - 4, y: point.y - 4, width: 8, height: 8 }),
       );
-      const y = THREE.MathUtils.clamp(point.y - h / 2, 12, height - h - 12);
-      const rect = { x, y, width: w, height: h };
-      if (bounds.some((other) => overlaps(rect, other))) {
+      if (!rect) {
         item.button.hidden = true;
         continue;
       }
+      const { x, y } = rect;
       bounds.push(rect);
       item.button.style.cssText = `${LABEL_STYLE}width:${w}px;left:${x}px;top:${y}px;border-color:${structure.id === selectedId ? "var(--cobalt)" : "var(--rule)"};`;
-      const endX = labelSide > 0 ? x : x + w;
-      const endY = y + h / 2;
+      const endX = THREE.MathUtils.clamp(point.x, x, x + w);
+      const endY = THREE.MathUtils.clamp(point.y, y, y + h);
       item.line.hidden = false;
-      item.line.style.cssText = `position:absolute;height:1px;background:var(--slate);transform-origin:0 50%;pointer-events:none;left:${point.x}px;top:${point.y}px;width:${Math.hypot(endX - point.x, endY - point.y)}px;transform:rotate(${Math.atan2(endY - point.y, endX - point.x)}rad);`;
+      item.line.style.cssText = `position:absolute;height:2px;background:var(--cobalt);transform-origin:0 50%;pointer-events:none;left:${point.x}px;top:${point.y}px;width:${Math.hypot(endX - point.x, endY - point.y)}px;transform:rotate(${Math.atan2(endY - point.y, endX - point.x)}rad);`;
       count++;
     }
   }
