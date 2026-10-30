@@ -22,7 +22,9 @@ $impeccable critique trang Atlas hiện tại
 $impeccable polish bộ chọn bảng màu, giữ thiết kế hiện có
 ```
 
-Đã cài skill và lệnh kiểm tra thủ công. Chưa cấu hình hook tự động. `PRODUCT.md` và `DESIGN.md` chưa được khởi tạo theo quy trình phỏng vấn của upstream; kiểm tra hoặc tinh chỉnh hẹp có thể dùng mã nguồn hiện có làm căn cứ. Khi cần tạo màn hình mới hoặc thiết kế lại, chạy `$impeccable init` để xác nhận ngữ cảnh sản phẩm trước, rồi `$impeccable document` để ghi lại hệ thống thiết kế.
+Đã cài skill và lệnh kiểm tra thủ công. Chưa cấu hình hook tự động. `PRODUCT.md` và `DESIGN.md` đã có trong project, ghi nhận ưu tiên cân bằng học tập/tư vấn và nhận diện Clinical Field Notes. Dùng chúng làm căn cứ cho refinement; không khởi tạo lại dữ kiện đã xác nhận.
+
+Lượt nâng cấp tiếp theo: [đối chiếu đủ 24 lệnh và phạm vi áp dụng](research/2026-10-30-impeccable-applicability.md), [kết quả nâng cấp toàn app](superpowers/reviews/2026-10-30-impeccable-app-upgrade.md). Tài liệu upstream ở commit `df3a4abe7d0840d5f60324812c432e00b66a4e75` trùng bản đang cài; không cần cài lại.
 
 ## Ngữ cảnh đã có trong repo
 

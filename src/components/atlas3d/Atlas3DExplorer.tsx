@@ -768,20 +768,25 @@ export default function Atlas3DExplorer({
       )}
       <div className="flex flex-wrap items-end justify-between gap-3 rounded-xl border border-rule bg-sheet px-4 py-3">
         <div className="min-w-0 flex-1 basis-64">
-          <p className="eyebrow text-cobalt">Atlas / Learning Studio</p>
-          <label className="field-label mt-2 block max-w-md">
-            Vùng học giải phẫu
-            <select
-              value={area}
-              onChange={(event) => changeArea(validArea(event.target.value))}
-            >
-              {ATLAS_AREAS.map((entry) => (
-                <option key={entry.id} value={entry.id}>
-                  {entry.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="flex flex-wrap items-center justify-between gap-x-3">
+            <label htmlFor="atlas-learning-area" className="field-label">Vùng học giải phẫu</label>
+            <a href="#atlas-3d-model" className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-cobalt underline underline-offset-4">
+              Đến mô hình 3D
+              <Icon name="arrow-right" className="size-3.5" />
+            </a>
+          </div>
+          <select
+            id="atlas-learning-area"
+            className="min-h-11 w-full px-3 text-sm"
+            value={area}
+            onChange={(event) => changeArea(validArea(event.target.value))}
+          >
+            {ATLAS_AREAS.map((entry) => (
+              <option key={entry.id} value={entry.id}>
+                {entry.label}
+              </option>
+            ))}
+          </select>
         </div>
         <button
           type="button"
@@ -867,26 +872,12 @@ export default function Atlas3DExplorer({
       </div>
       <details
         className="panel overflow-hidden"
-        open={learningActive ? undefined : true}
       >
         <summary className="min-h-12 cursor-pointer px-4 py-3 text-xs font-semibold text-slate">
-          Vùng hiển thị, lớp cấu trúc & chất lượng
+          Góc nhìn, lớp cấu trúc & chất lượng
         </summary>
         <div className="border-t border-rule p-4 sm:p-5">
           <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(200px,1fr)_auto] sm:items-end">
-            <label className="field-label min-w-0">
-              Vùng giải phẫu
-              <select
-                value={area}
-                onChange={(event) => changeArea(validArea(event.target.value))}
-              >
-                {ATLAS_AREAS.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
-                    {entry.label}
-                  </option>
-                ))}
-              </select>
-            </label>
             <div
               className="flex flex-wrap gap-1.5"
               role="group"
@@ -981,7 +972,7 @@ export default function Atlas3DExplorer({
         className={`grid min-w-0 items-start gap-4 ${learningActive ? "xl:grid-cols-[minmax(0,1fr)_340px]" : "xl:grid-cols-[minmax(0,1fr)_300px]"}`}
       >
         <div className="min-w-0 space-y-3">
-          <div className="panel min-w-0 overflow-hidden">
+          <div id="atlas-3d-model" tabIndex={-1} className="panel min-w-0 scroll-mt-5 overflow-hidden">
             {learningActive && (
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule bg-sheet px-4 py-3">
                 <div className="min-w-0 flex-1 basis-48">

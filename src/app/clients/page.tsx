@@ -39,10 +39,16 @@ export default function ClientsPage() {
   const [createdClient, setCreatedClient] = useState<Pick<Client, "id" | "name"> | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const nameInput = useRef<HTMLInputElement>(null);
+  const formTrigger = useRef<HTMLButtonElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
 
   const openForm = () => {
     setFormOpen(true);
     window.setTimeout(() => nameInput.current?.focus(), 60);
+  };
+  const closeForm = () => {
+    setFormOpen(false);
+    formTrigger.current?.focus();
   };
 
   useEffect(() => {
@@ -147,14 +153,16 @@ export default function ClientsPage() {
     <div className="space-y-7">
       <PageHeading
 
-        title="Hiểu học viên. Tập luyện phù hợp."
+        title="Hồ sơ học viên"
         description="Tập hợp mục tiêu, bệnh lý và kết quả sàng lọc để chuẩn bị cho từng buổi tập."
       >
         <button
+          ref={formTrigger}
           type="button"
           className="button-primary"
           aria-expanded={formOpen}
-          onClick={() => (formOpen ? setFormOpen(false) : openForm())}
+          aria-controls="new-client-form"
+          onClick={() => (formOpen ? closeForm() : openForm())}
         >
           <Icon name="plus" className="size-4" />
           Thêm học viên
@@ -233,24 +241,34 @@ export default function ClientsPage() {
         >
           <SectionHeading number="01" title="Danh sách học viên">
             <span className="font-mono text-xs text-slate">
-              {matchingClients.length} / {clients.length}
+              {loading ? "Đang tải…" : listError ? "Chưa tải được danh sách" : `${matchingClients.length} / ${clients.length} hồ sơ`}
             </span>
           </SectionHeading>
-          <label className="block">
-            <span id="client-list-heading" className="sr-only">
+          <div className="relative">
+            <label htmlFor="client-search" id="client-list-heading" className="sr-only">
               Tìm hồ sơ học viên
-            </span>
+            </label>
             <span className="input-with-icon block">
               <Icon name="search" className="size-4 text-slate" />
               <input
-                className="min-h-11 w-full min-w-0 text-sm"
+                ref={searchInput}
+                id="client-search"
+                type="search"
+                className="min-h-11 w-full min-w-0 pr-12 text-sm"
+                style={{ paddingRight: "3.25rem" }}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Tìm theo tên, bệnh lý hoặc mục tiêu…"
                 aria-label="Tìm theo tên, bệnh lý hoặc mục tiêu"
               />
             </span>
-          </label>
+            {query && (
+              <button type="button" className="absolute right-0 top-0 flex min-h-11 min-w-11 items-center justify-center rounded-r-lg text-slate hover:text-cobalt" aria-label="Xóa từ khóa tìm học viên" onClick={() => { setQuery(""); searchInput.current?.focus(); }}>
+                <Icon name="close" className="size-4" />
+              </button>
+            )}
+          </div>
+          {query.trim() && !loading && !listError && <p role="status" className="text-xs text-slate">Tìm thấy {matchingClients.length} hồ sơ cho “{query.trim()}”.</p>}
           <div aria-live="polite">
             {listError && (
               <div className="alert-error mb-4">
@@ -320,10 +338,16 @@ export default function ClientsPage() {
 
         {formOpen && (
         <section
+          id="new-client-form"
           className="panel min-w-0 p-5 sm:p-6 xl:sticky xl:top-24"
           aria-label="Tạo hồ sơ học viên"
         >
-          <SectionHeading number="02" title="Học viên mới" />
+          <SectionHeading number="02" title="Học viên mới">
+            <button type="button" className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-slate hover:text-cobalt" onClick={closeForm}>
+              <Icon name="close" className="size-4" />
+              Đóng biểu mẫu
+            </button>
+          </SectionHeading>
           <p className="mt-3 text-sm leading-6 text-slate">
             Bắt đầu với thông tin cơ bản. Bổ sung chi tiết lâm sàng sau khi tạo
             hồ sơ.

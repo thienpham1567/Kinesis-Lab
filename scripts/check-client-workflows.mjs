@@ -191,3 +191,24 @@ test("newly created profile has a direct link even when list refresh fails", asy
   assert.ok(text(links[0]).includes(client.name));
   assert.equal(nodes(ui.render(), n => n.type === "input" && n.props["aria-label"] === "Tìm theo tên, bệnh lý hoặc mục tiêu")[0].props.value, "Tên học viên khác", "Creating a profile preserves the user's active search");
 });
+
+test("closing a client form returns focus to its trigger and retains the draft", async () => {
+  const ui = mount(listFile, "default", {}, async () => response({ clients: [] }));
+  ui.render(); await tick();
+  let tree = ui.render();
+  const heading = nodes(tree, n => n.type === "PageHeading")[0];
+  const trigger = button(heading, "Thêm học viên");
+  assert.ok(trigger.props["aria-controls"], "Trigger identifies the inline form");
+  let focused = false;
+  trigger.props.ref.current = { focus() { focused = true; } };
+  trigger.props.onClick(); tree = ui.render();
+  nodes(tree, n => n.type === "input" && n.props.autoComplete === "name")[0].props.onChange({ target: { value: "Bản nháp thử" } });
+  tree = ui.render();
+  const close = button(tree, "Đóng biểu mẫu");
+  assert.ok(close, "The autofocus destination needs a nearby exit");
+  close.props.onClick(); tree = ui.render();
+  assert.equal(nodes(tree, n => n.type === "form").length, 0);
+  assert.equal(focused, true);
+  button(nodes(tree, n => n.type === "PageHeading")[0], "Thêm học viên").props.onClick();
+  assert.equal(nodes(ui.render(), n => n.type === "input" && n.props.autoComplete === "name")[0].props.value, "Bản nháp thử");
+});

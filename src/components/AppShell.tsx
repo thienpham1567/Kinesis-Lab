@@ -134,6 +134,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </header>
         <div
           ref={scrollRef}
+          data-workspace-scroll
           onScroll={() => window.dispatchEvent(new Event("scroll"))}
           className="flex min-h-0 flex-1 flex-col overflow-y-auto"
         >

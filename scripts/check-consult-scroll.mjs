@@ -9,6 +9,7 @@ const scrollRules = createAppLoader()("src/lib/chat/study-scroll.ts");
 
 function setup() {
   const slots = [], effects = [];
+  const requests = [];
   let cursor = 0, release;
   const gate = new Promise(resolve => { release = resolve; });
   const jsx = (type, props) => ({ type, props: props ?? {} });
@@ -35,7 +36,10 @@ function setup() {
   };
   const exports = {};
   const output = ts.transpileModule(readFileSync("src/components/ChatPanel.tsx", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
-  vm.runInNewContext(output, { exports, AbortController, console, fetch: async url => url === "/api/clients" ? { ok: true, json: async () => ({ clients: [] }) } : { ok: true, body: {} }, require: id => { assert.ok(id in mocks, `Unexpected import ${id}`); return mocks[id]; } });
+  vm.runInNewContext(output, { exports, AbortController, console, fetch: async (url, options) => {
+    requests.push({ url, method: options?.method ?? "GET" });
+    return url === "/api/clients" ? { ok: true, json: async () => ({ clients: [] }) } : { ok: true, body: {} };
+  }, require: id => { assert.ok(id in mocks, `Unexpected import ${id}`); return mocks[id]; } });
   const metrics = { scrollHeight: 2000, clientHeight: 400, scrollTop: 1600, calls: 0, focused: false, scrollTo({ top }) { this.scrollTop = top; this.calls++; }, focus() { this.focused = true; } };
   const render = () => {
     cursor = 0;
@@ -45,8 +49,26 @@ function setup() {
     for (const run of effects.splice(0)) run();
     return tree;
   };
-  return { render, metrics, release };
+  return { render, metrics, release, requests };
 }
+
+test("consultation starters prepare an editable draft and focus without sending", async () => {
+  const ui = setup();
+  let tree = ui.render(); await tick(); tree = ui.render();
+  const starter = find(tree, n => n.type === "button" && text(n).trim() === "Phân tích bài tập");
+  assert.ok(starter, "An empty consultation needs an actionable draft starter");
+  const textarea = find(tree, n => n.type === "textarea");
+  let focused = false;
+  textarea.props.ref.current = { focus() { focused = true; } };
+  starter.props.onClick();
+  tree = ui.render();
+  assert.match(find(tree, n => n.type === "textarea").props.value, /bài tập/i);
+  assert.equal(focused, true);
+  assert.equal(find(tree, n => n.props.role === "log").props["aria-busy"], false);
+  assert.equal(all(tree).filter(n => n.type === "article").length, 0, "A starter must not send a question");
+  assert.equal(ui.requests.some(request => request.method !== "GET"), false, "Preparing a draft must not call the chat API");
+  assert.equal(find(tree, n => n.type === "button" && text(n).trim() === "Phân tích bài tập"), undefined, "Existing drafts must not be replaced by starters");
+});
 function all(tree) {
   if (!tree || typeof tree !== "object") return [];
   if (Array.isArray(tree)) return tree.flatMap(all);

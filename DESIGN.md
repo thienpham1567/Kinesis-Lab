@@ -153,7 +153,7 @@ The sidecar's derived tonal ramps are preview metadata, not new production token
 
 - **Headline:** the frontmatter headline role is the shared page heading; balanced wrapping and tight tracking provide hierarchy without a decorative kicker.
 - **Title:** the frontmatter title role describes the shared section heading. Empty-state headings use a larger size (16px) at weight (600).
-- **Body:** the frontmatter body role captures reusable workspace support copy. Global body line-height is (1.55); page descriptions use (1.75) with a maximum width (720px), empty-state copy uses (14px/24px), and rendered answers use (1.7). Preserve these context-specific settings.
+- **Body:** the frontmatter body role captures reusable workspace support copy. Global body line-height is (1.55); page descriptions use (1.75) with a maximum width (720px), empty-state copy uses (14px/24px), and rendered answers use (1.7). Preserve these context-specific settings. Long-form handbook paragraphs and lists use (16px/1.8) with a maximum (72ch) measure. At widths below (640px), editable text inputs, selects and textareas use (16px); page descriptions use (14px).
 - **Label:** the frontmatter label role is the shared field label. Buttons use (13px), weight (600), line-height (1.5); tabs use (12.5px), weight (600); badges use (11px), weight (500), line-height (1.5).
 - **Mono:** the frontmatter mono role captures section-number typography. Do not turn monospace technical references into a new decorative heading tier.
 
@@ -171,13 +171,13 @@ Exact shadow expressions are recorded in the sidecar from `globals.css`. State t
 
 ## Shapes
 
-The frontmatter radius scale describes the shared badge, section number, control, alert, tab group and panel. Controls use the same gentle corners across buttons and fields. Borders are generally (1px), with quiet container rules and stronger field rules. The theme picker is an intentionally circular control (36px); the source logo also has its own rounded SVG geometry. Some Atlas and client-detail containers have a source override (16px); they do not replace the shared panel radius.
+The frontmatter radius scale describes the shared badge, section number, control, alert, tab group and panel. Controls use the same gentle corners across buttons and fields. Borders are generally (1px), with quiet container rules and stronger field rules. The theme picker is an intentionally circular control (44px); the source logo also has its own rounded SVG geometry. Some Atlas and client-detail containers have a source override (16px); they do not replace the shared panel radius.
 
 ## Components
 
 ### Buttons
 
-Primary and secondary buttons share inline-flex alignment, icon gap, minimum height (42px) and the frontmatter padding. Primary uses action/text pairs with a compact shadow and changes to ink on hover; disabled primary uses surface/slate and no shadow. Secondary uses paper/ink, changing to primary tonal surface and primary ink on hover; disabled secondary opacity is (0.6). Icon buttons have minimum dimensions (40px), quiet borders and primary-toned hover. Keyboard focus uses a primary outline (3px) with offset (3px).
+Primary and secondary buttons share inline-flex alignment, icon gap, minimum height (44px) and the frontmatter padding. Primary uses action/text pairs with a compact shadow and changes to ink on hover; disabled primary uses surface/slate and no shadow. Secondary uses paper/ink, changing to primary tonal surface and primary ink on hover; disabled secondary opacity is (0.6). Icon buttons have minimum dimensions (44px), quiet borders and primary-toned hover. Keyboard focus uses a primary outline (3px) with offset (3px).
 
 ### Chips
 
@@ -197,7 +197,7 @@ Desktop links share a dark toolbar, secondary toolbar ink at rest and white text
 
 ### Page Heading and Feedback
 
-`PageHeading` renders the title, description and optional wrapping actions. It does not render an eyebrow. The heading ends in a quiet highlight-mixed divider. `SectionHeading` uses a bordered monospace section number beside a sans-serif title. Loading feedback uses a status region and spinner; empty states pair an outline SVG, clear title, supporting copy and optional action. The native theme selector keeps its accessible label while showing the current palette as a circular conic swatch.
+`PageHeading` renders the title, description and optional wrapping actions. It does not render an eyebrow. The heading ends in a quiet highlight-mixed divider. `SectionHeading` uses a bordered monospace section number beside a sans-serif title. Loading feedback uses a status region and spinner; empty states pair an outline SVG, clear title, supporting copy and optional action. The native theme selector keeps its accessible label while showing the current palette as a circular conic swatch. Atlas advanced view controls and consultation anatomy references use native disclosure. Consultation starters fill an editable draft and focus the composer without sending. The handbook contents marks the current section, with a (44px) link target; its percentage describes scroll position in the workspace, not verified reading or comprehension.
 
 ## Do's and Don'ts
 

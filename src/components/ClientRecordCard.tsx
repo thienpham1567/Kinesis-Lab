@@ -14,6 +14,9 @@ export function clientStatus(client: Client) {
     (client.medications?.length ?? 0) > 0 ||
     (client.orthopedic_issues?.length ?? 0) > 0 ||
     PARQ_ITEMS.some((question) => parq[question.id] === true);
+  const screeningComplete = PARQ_ITEMS.every(
+    (question) => typeof parq[question.id] === "boolean",
+  );
 
   return redNight
     ? {
@@ -29,9 +32,15 @@ export function clientStatus(client: Client) {
           className: "border-caution/25 bg-caution-soft text-ink",
           icon: "activity" as const,
         }
+      : !screeningComplete ? {
+          level: "incomplete",
+          label: "Chưa hoàn tất sàng lọc",
+          className: "border-rule bg-canvas text-slate",
+          icon: "clock" as const,
+        }
       : {
           level: "standard",
-          label: "Đủ điều kiện tập tiêu chuẩn",
+          label: "Chưa ghi nhận cảnh báo trong hồ sơ",
           className: "border-cleared/25 bg-cleared-soft text-ink",
           icon: "check" as const,
         };

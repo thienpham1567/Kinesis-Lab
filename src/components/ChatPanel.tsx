@@ -32,6 +32,21 @@ const REGION_CHIP: Record<AnatomyRegionId, string> = {
   ankle_foot: "Cổ chân",
 };
 
+const DRAFT_STARTERS = [
+  {
+    label: "Phân tích bài tập",
+    prompt: "Tôi muốn phân tích một bài tập. Hãy hỏi tôi tên bài, mục tiêu và cách thực hiện, rồi giúp tôi đối chiếu cơ sinh học với nguồn phù hợp.",
+  },
+  {
+    label: "Chuẩn bị tư vấn",
+    prompt: "Tôi muốn chuẩn bị một buổi tư vấn cho học viên. Hãy giúp tôi xác định thông tin còn thiếu trong hồ sơ và các câu hỏi cần làm rõ trước khi trao đổi về tập luyện.",
+  },
+  {
+    label: "Đọc hiểu y văn",
+    prompt: "Tôi muốn đọc hiểu một tài liệu khoa học. Hãy hỏi tôi tài liệu hoặc đoạn trích cần đọc, rồi giúp tôi phân biệt kết quả, phạm vi áp dụng và giới hạn của nguồn.",
+  },
+];
+
 export function ChatPanel({
   clientId: lockedClientId,
   initialClientId,
@@ -222,7 +237,7 @@ export function ChatPanel({
 
   return (
     <section
-      className="panel flex min-h-[660px] flex-col overflow-hidden"
+      className="consultation-panel panel flex flex-col overflow-hidden"
       aria-label="Phiên tư vấn chuyên môn"
     >
       <div className="px-5 pt-4"><ClinicalEvidencePanel evidence={ASSISTANT_EVIDENCE} title="Nguồn, phạm vi và giới hạn trợ lý" /></div>
@@ -318,11 +333,13 @@ export function ChatPanel({
         </div>
       )}
 
-      <div className="border-b border-rule px-5 py-3.5 sm:px-6">
-        <div className="mb-2.5 flex items-center justify-between gap-2">
-          <span className="text-[11px] font-medium text-slate">
-            Tham chiếu giải phẫu
-          </span>
+      <details className="consultation-reference border-b border-rule px-5 sm:px-6">
+        <summary className="py-3 text-xs font-semibold text-cobalt">
+          Tham chiếu giải phẫu
+          {activeVisualRegion && <span className="font-normal"> · {activeVisualRegion.name}</span>}
+        </summary>
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3">
+          <p className="text-xs text-slate">Chọn vùng để mở sơ đồ tham khảo.</p>
           <Link
             href="/atlas"
             className="inline-flex min-h-7 items-center gap-1 text-[11px] font-medium text-cobalt"
@@ -340,7 +357,7 @@ export function ChatPanel({
               onClick={() =>
                 setVisualRegionId(visualRegionId === r.id ? null : r.id)
               }
-              className={`min-h-9 rounded-lg border px-2.5 text-[11px] font-medium transition-colors ${activeVisualRegion?.id === r.id ? "border-cobalt/20 bg-cobalt-soft text-cobalt" : "border-rule bg-sheet text-slate hover:border-cobalt/40 hover:text-cobalt"}`}
+              className={`min-h-11 min-w-11 rounded-lg border px-3 text-xs font-medium transition-colors ${activeVisualRegion?.id === r.id ? "border-cobalt bg-cobalt-soft text-cobalt" : "border-rule bg-sheet text-slate hover:border-cobalt/40 hover:text-cobalt"}`}
             >
               {REGION_CHIP[r.id]}
             </button>
@@ -349,7 +366,7 @@ export function ChatPanel({
         {activeVisualRegion && (
           <details
             key={activeVisualRegion.id}
-            className="mt-3 rounded-xl border border-rule bg-canvas px-3.5"
+            className="my-3 rounded-xl border border-rule bg-canvas px-3.5"
           >
             <summary className="py-3 text-xs font-medium text-cobalt">
               Xem sơ đồ · {activeVisualRegion.name}
@@ -362,7 +379,8 @@ export function ChatPanel({
             </div>
           </details>
         )}
-      </div>
+        <div className="h-3" />
+      </details>
 
       <div
         ref={scroller}
@@ -376,18 +394,6 @@ export function ChatPanel({
         }}
         className={`flex-1 space-y-5 overflow-y-auto px-5 py-2 sm:px-6 ${messages.length > 0 ? "max-h-[62dvh] min-h-[320px] py-6" : ""}`}
       >
-        {messages.length === 0 && (
-          <div className="flex h-full min-h-[190px] flex-col items-center justify-center gap-2 px-4 py-10 text-center">
-            <span className="flex size-11 items-center justify-center rounded-full bg-cobalt-soft text-cobalt">
-              <Icon name="message" className="size-5" />
-            </span>
-            <p className="text-sm font-semibold text-ink">Phiên chưa có nội dung</p>
-            <p className="max-w-sm text-xs leading-6 text-slate">
-              Nhập tình huống lâm sàng, triệu chứng đau cơ học, chỉ số xét
-              nghiệm hoặc bài tập cần kiểm tra ở ô bên dưới.
-            </p>
-          </div>
-        )}
         {messages.map((m, idx) =>
           m.role === "assistant" && !m.content && !busy ? null : (
             <article
@@ -545,7 +551,7 @@ export function ChatPanel({
         }}
         className="mt-auto border-t border-rule bg-canvas/50 px-4 py-4 sm:px-5"
       >
-        <label htmlFor={composerId} className="sr-only">
+        <label htmlFor={composerId} className="mb-2 block text-xs font-semibold text-ink">
           Nội dung câu hỏi chuyên môn
         </label>
         <div className="chat-composer overflow-hidden rounded-xl border border-rule-strong bg-sheet p-3 transition-shadow">
@@ -586,6 +592,26 @@ export function ChatPanel({
             </button>
           </div>
         </div>
+        {messages.length === 0 && !input.trim() && (
+          <div className="mt-4">
+            <p className="text-xs leading-6 text-slate">Chọn gợi ý để soạn bản nháp; bạn có thể sửa trước khi gửi.</p>
+            <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Gợi ý soạn câu hỏi">
+              {DRAFT_STARTERS.map((starter) => (
+                <button
+                  key={starter.label}
+                  type="button"
+                  className="button-secondary px-3 text-left"
+                  onClick={() => {
+                    setInput(starter.prompt);
+                    composer.current?.focus();
+                  }}
+                >
+                  {starter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <p className="mt-2.5 flex flex-wrap items-center justify-between gap-1 text-xs leading-5 text-slate">
           <span>Luôn đối chiếu kết quả với đánh giá trực tiếp học viên.</span>
           {model && (

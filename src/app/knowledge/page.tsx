@@ -17,32 +17,54 @@ function LoginForm({ onDone }: { onDone: () => void }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   return (
-    <form
-      className="panel max-w-md space-y-4 p-5"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setBusy(true);
-        setError("");
-        const res = await fetch("/api/ncsf/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password }),
-        }).catch(() => null);
-        setBusy(false);
-        if (res?.ok) onDone();
-        else setError(res?.status === 401 ? "Sai mật khẩu." : "Không kết nối được máy chủ.");
-      }}
-    >
-      <p className="text-sm text-slate">Tài liệu NCSF chỉ dành cho người có quyền truy cập. Nhập mật khẩu để tiếp tục.</p>
-      <label className="block">
-        <span className="field-label">Mật khẩu</span>
-        <input type="password" autoComplete="current-password" required className="min-h-11 w-full px-3 text-sm" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      {error && <p className="alert-error" role="alert">{error}</p>}
-      <button className="button-primary" disabled={busy}>
-        {busy ? "Đang kiểm tra…" : "Đăng nhập"}
-      </button>
-    </form>
+    <section className="panel grid max-w-5xl overflow-hidden lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)]" aria-label="Truy cập thư viện NCSF">
+      <form
+        className="space-y-4 self-start p-5 sm:p-7"
+        aria-label="Đăng nhập thư viện NCSF"
+        aria-busy={busy}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          setError("");
+          const res = await fetch("/api/ncsf/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password }),
+          }).catch(() => null);
+          setBusy(false);
+          if (res?.ok) onDone();
+          else setError(res?.status === 401 ? "Sai mật khẩu." : "Không kết nối được máy chủ.");
+        }}
+      >
+        <h2 className="text-base font-semibold text-ink">Đăng nhập để học</h2>
+        <p className="text-sm leading-6 text-slate">Tài liệu NCSF chỉ dành cho người có quyền truy cập. Nhập mật khẩu để tiếp tục.</p>
+        <label className="block">
+          <span className="field-label">Mật khẩu</span>
+          <input type="password" autoComplete="current-password" required disabled={busy} className="min-h-11 w-full px-3 text-sm" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
+        </label>
+        {error && <p className="alert-error" role="alert">{error}</p>}
+        <button type="submit" className="button-primary w-full" disabled={busy}>
+          <Icon name={busy ? "spinner" : "book"} className={`size-4 ${busy ? "animate-spin" : ""}`} />
+          {busy ? "Đang kiểm tra…" : "Đăng nhập"}
+        </button>
+      </form>
+      <div className="border-t border-rule bg-cobalt-soft/40 p-5 sm:p-7 lg:border-l lg:border-t-0">
+        <h2 className="text-xl font-semibold tracking-tight text-ink">Một chỗ để đọc, ôn và tự kiểm tra.</h2>
+        <p className="mt-3 max-w-prose text-sm leading-7 text-slate">Chọn cách học phù hợp sau khi đăng nhập. Tài liệu và đề thi được mở trong thư viện riêng tư.</p>
+        <dl className="mt-5 divide-y divide-rule text-sm">
+          {[
+            ["Đọc giáo trình", "Chọn chương, bài và mở trang cần tra cứu."],
+            ["Đề thi nhỏ", "Ôn theo chương và xem lại trang được trích dẫn."],
+            ["Đề thi thử", "Luyện tập với bộ đề trong thư viện."],
+          ].map(([title, detail]) => (
+            <div key={title} className="py-3 first:pt-0 last:pb-0">
+              <dt className="font-semibold text-ink">{title}</dt>
+              <dd className="mt-1 leading-6 text-slate">{detail}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
   );
 }
 
@@ -107,7 +129,7 @@ export default function NcsfLibraryPage() {
             <p className="alert-error" role="alert">{sessionError}</p>
             <button type="button" className="button-secondary" onClick={() => { setSessionError(""); setSessionCheckAttempt(attempt => attempt + 1); }}>Kiểm tra lại quyền truy cập</button>
           </div>
-        ) : <p className="text-sm text-slate" role="status">Đang kiểm tra quyền truy cập…</p> : <LoginForm onDone={() => { setSessionError(""); setAuthed(true); }} />}
+        ) : <div className="flex min-h-40 items-center gap-3 text-sm text-slate" role="status"><Icon name="spinner" className="size-5 animate-spin" />Đang kiểm tra quyền truy cập…</div> : <LoginForm onDone={() => { setSessionError(""); setAuthed(true); }} />}
       </div>
     );
   return <NcsfContent heading={heading} onSessionExpired={() => setAuthed(false)} />;

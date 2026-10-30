@@ -9,7 +9,7 @@
     "lint": "eslint",
     "design:check": ".agents/skills/impeccable/scripts/impeccable detect src/",
     "design:check:page": ".agents/skills/impeccable/scripts/impeccable detect",
-    "check:ui": "node --test scripts/check-client-workflows.mjs scripts/check-ncsf-study-continuity.mjs scripts/check-consult-scroll.mjs scripts/check-atlas-loading.mjs",
+    "check:ui": "node --test scripts/check-client-workflows.mjs scripts/check-client-status.mjs scripts/check-reading-position.mjs scripts/check-ncsf-study-continuity.mjs scripts/check-consult-scroll.mjs scripts/check-atlas-loading.mjs",
     "check:markdown": "node scripts/check-markdown-answer.mjs",
     "check:safety": "node --experimental-strip-types src/lib/clinical/safety.check.ts",
     "check:rom": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON src/lib/clinical/rom-norms.check.ts",

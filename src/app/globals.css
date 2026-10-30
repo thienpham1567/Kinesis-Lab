@@ -714,7 +714,7 @@ select:focus {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    min-height: 42px;
+    min-height: 44px;
     padding: 10px 16px;
     border-radius: 10px;
     font-size: 13px;
@@ -759,8 +759,8 @@ select:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     border: 1px solid var(--rule);
     border-radius: 10px;
     color: var(--slate);
@@ -821,7 +821,7 @@ select:focus {
     justify-content: center;
     gap: 8px;
     padding: 10px 15px;
-    min-height: 42px;
+    min-height: 44px;
     border: 1px solid transparent;
     border-radius: 10px;
     font-size: 12.5px;
@@ -959,10 +959,10 @@ select:focus {
 }
 header.workspace-toolbar .theme-picker-trigger {
   display: block;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   overflow: hidden;
   appearance: none;
@@ -1036,6 +1036,32 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
 .chat-composer textarea:focus {
   outline: none;
 }
+.consultation-panel select {
+  min-height: 44px;
+}
+.consultation-reference > summary {
+  min-height: 44px;
+}
+#client-search::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+.movement-article :where(p.text-sm, ul.text-sm) {
+  font-size: 1rem;
+  line-height: 1.8;
+  max-width: 72ch;
+}
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select {
+    font-size: 1rem;
+  }
+  .page-description {
+    font-size: 14px;
+    max-width: 65ch;
+  }
+}
 .atlas-workspace > div {
   min-width: 0;
 }
@@ -1054,6 +1080,12 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
 }
 .client-detail-workspace .rounded-lg.border.bg-sheet {
   border-radius: 16px;
+}
+@media (pointer: coarse) {
+  .atlas-workspace button,
+  .client-detail-workspace button {
+    min-height: 44px;
+  }
 }
 
 .md-answer {
