@@ -7,6 +7,7 @@ import { supabase } from "./supabase/server";
 export async function downloadNcsfMock(key: string) {
   if (
     key !== "mock-exams.json" &&
+    key !== "mock-answers.json" &&
     !/^mock-exams\/e[12]-q(?:[1-9]|[1-9]\d|1[0-4]\d|150)-i[1-4]\.png$/.test(key)
   )
     throw new Error("Invalid object key");

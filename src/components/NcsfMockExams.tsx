@@ -16,9 +16,14 @@ import {
   type NcsfMockOrder,
   NCSF_MOCK_SOURCES,
   parseNcsfMockExams,
-  type NcsfMockBank,
   type NcsfMockImage,
 } from "@/lib/ncsf-mock-exams";
+import {
+  gradeMockExam,
+  mockFeedbackText,
+  prepareMockPractice,
+  type MockPracticeBank,
+} from "@/lib/ncsf-mock-answers";
 
 function MockImage({
   exam,
@@ -88,7 +93,7 @@ export function NcsfMockExams({
 }: {
   apiRef?: Ref<NcsfMockExamsHandle>;
 }) {
-  const [bank, setBank] = useState<NcsfMockBank | null>(null);
+  const [bank, setBank] = useState<MockPracticeBank | null>(null);
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
   const [active, setActive] = useState(1);
@@ -99,19 +104,25 @@ export function NcsfMockExams({
   const [finished, setFinished] = useState<Record<number, boolean>>({});
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/ncsf/mock-exams", {
-      signal: controller.signal,
-      cache: "no-store",
-    })
-      .then(async (r) => {
-        if (!r.ok)
+    Promise.all(
+      ["/api/ncsf/mock-exams", "/api/ncsf/mock-answers"].map(async (url) => {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        if (!response.ok)
           throw new Error(
-            r.status === 401
+            response.status === 401
               ? "Phiên truy cập đã hết hạn. Hãy đăng nhập lại thư viện."
-              : "Không tải được đề thi thử.",
+              : "Không tải được đề thi và đáp án. Hãy thử lại.",
           );
-        const data = parseNcsfMockExams(await r.json());
-        if (!data) throw new Error("Dữ liệu đề thi chưa đầy đủ.");
+        return response.json();
+      }),
+    )
+      .then(([source, key]) => {
+        const original = parseNcsfMockExams(source);
+        const data = original && prepareMockPractice(original, key);
+        if (!data) throw new Error("Đề thi và đáp án chưa khớp. Hãy tải lại trước khi làm bài.");
         if (!controller.signal.aborted) {
           setOrders(
             Object.fromEntries(
@@ -168,6 +179,8 @@ export function NcsfMockExams({
   const selections = answers[active];
   const count = mockAnsweredCount(exam, selections);
   const done = !!finished[active];
+  const grade = gradeMockExam(exam, selections);
+  const clarified = exam.questions.filter((q) => q.original).length;
   return (
     <div className="min-w-0 space-y-5">
       <div className="flex flex-wrap gap-2" aria-label="Chọn bộ đề thi thử">
@@ -191,11 +204,15 @@ export function NcsfMockExams({
           Đề thi thử NCSF · Bộ {active}
         </h2>
         <p>
-          Câu hỏi và lựa chọn được xáo trộn mỗi lần mở đề. Nội dung và hình giữ
-          nguyên từ đề gốc. Đối chiếu ngày{" "}
+          Câu hỏi và lựa chọn được xáo trộn mỗi lần mở đề; đáp án đi cùng nội dung.
+          Đáp án được đối chiếu nguồn ngày{" "}
           {bank.checkedAt.split("-").reverse().join("/")}.
         </p>
-        <p>Chưa có khóa đáp án chính thức; bài này chưa chấm đúng/sai.</p>
+        <p>
+          Đây là đáp án biên soạn để luyện tập, chưa phải khóa đáp án chính thức của NCSF.
+          Bộ này có {clarified} câu đã làm rõ để chấm một đáp án; bạn có thể xem câu gốc bên dưới.
+          Giải thích và nguồn đối chiếu xuất hiện sau khi hoàn thành bài.
+        </p>
         <a
           className="font-semibold text-cobalt underline underline-offset-4"
           href={NCSF_MOCK_SOURCES[active - 1]}
@@ -207,7 +224,7 @@ export function NcsfMockExams({
       </div>
       <div className="sticky top-20 z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rule bg-sheet p-3 shadow-sm">
         <p className="text-sm font-semibold text-ink" role="status">
-          {done ? "Đã hoàn thành" : "Đã trả lời"} · {count}/150 câu
+          {done ? `Đúng ${grade.correct}/${grade.total} câu` : `Đã trả lời · ${count}/${grade.total} câu`}
         </p>
         {done ? (
           <button
@@ -238,8 +255,9 @@ export function NcsfMockExams({
           className="rounded-lg border border-rule bg-surface p-3 text-sm"
           role="status"
         >
-          Bạn đã trả lời {count}/150 câu, còn {150 - count} câu chưa trả lời.
-          Các lựa chọn của bạn được giữ bên dưới để xem lại.
+          Kết quả luyện tập: {grade.correct} câu đúng, {grade.wrong} câu sai,
+          {" "}{grade.unanswered} câu chưa trả lời. Điểm tính trên toàn bộ {grade.total} câu.
+          Xem đáp án, giải thích và nguồn bên dưới.
         </p>
       )}
       <form
@@ -256,12 +274,27 @@ export function NcsfMockExams({
             <fieldset
               key={`${active}-${q.position}`}
               data-position={q.position}
-              data-source-title={q.title}
+              data-source-title={q.original?.title ?? q.title}
+              data-clarified={q.original ? "true" : undefined}
               className="min-w-0 rounded-lg border border-rule px-4 pb-4 pt-2 sm:px-5"
             >
               <legend className="max-w-full whitespace-pre-wrap break-words px-1 text-sm font-semibold leading-6 text-ink">
                 Câu {displayIndex + 1}: {mockQuestionText(q.title)}
               </legend>
+              {q.original && (
+                <details className="my-2 rounded-lg border border-rule bg-surface px-3 py-2 text-sm">
+                  <summary className="cursor-pointer font-semibold text-cobalt">
+                    Câu đã làm rõ · Xem câu gốc
+                  </summary>
+                  <div className="mt-3 space-y-2 whitespace-pre-wrap break-words text-slate">
+                    <p>{q.original.title}</p>
+                    <ul className="space-y-1 pl-4">
+                      {q.original.options.map((option, index) => <li key={index}>{option}</li>)}
+                    </ul>
+                    {done && <p className="border-t border-rule pt-2">Đối chiếu câu gốc: {q.original.reason}</p>}
+                  </div>
+                </details>
+              )}
               {q.images.map((image) => (
                 <MockImage
                   key={`${active}-${q.position}-${image.index}`}
@@ -275,7 +308,7 @@ export function NcsfMockExams({
                   (optionIndex, displayOptionIndex) => (
                     <label
                       key={optionIndex}
-                      className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
+                      className={`flex min-h-11 items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${done ? "cursor-default" : "cursor-pointer"} ${done && optionIndex === q.answer ? "bg-emerald-50 text-ink" : done && selections[sourceIndex] === optionIndex ? "bg-rose-50 text-ink" : selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
                     >
                       <input
                         type="radio"
@@ -297,13 +330,40 @@ export function NcsfMockExams({
                       <span className="min-w-0 whitespace-pre-wrap break-words">
                         {String.fromCharCode(65 + displayOptionIndex)}.{" "}
                         {mockOptionText(q.options[optionIndex])}
+                        {done && optionIndex === q.answer && <span className="ml-2 font-semibold text-emerald-800">✓ Đáp án đúng</span>}
+                        {done && selections[sourceIndex] === optionIndex && <span className="ml-2 font-semibold">· Bạn chọn</span>}
                       </span>
                     </label>
                   ),
                 )}
               </div>
-              {done && selections[sourceIndex] === undefined && (
-                <p className="mt-2 text-sm text-slate">Chưa trả lời</p>
+              {done && (
+                <div className="mt-3 space-y-3 border-t border-rule pt-3 text-sm leading-6" data-feedback>
+                  <p className="font-semibold text-ink">
+                    {selections[sourceIndex] === undefined ? "Chưa trả lời" : selections[sourceIndex] === q.answer ? "✓ Đúng" : "✕ Sai"}
+                    {" · Đáp án "}{String.fromCharCode(65 + order.options[sourceIndex].indexOf(q.answer))}
+                    {": "}{mockOptionText(q.options[q.answer])}
+                  </p>
+                  <p className="whitespace-pre-wrap break-words text-ink">{mockFeedbackText(q.explanation, order.options[sourceIndex])}</p>
+                  {(q.qualified || q.notes) && (
+                    <div className="rounded-lg bg-surface p-3 text-slate">
+                      {q.qualified && <p className="font-semibold text-ink">Lưu ý phạm vi áp dụng</p>}
+                      {q.notes && <p className="whitespace-pre-wrap break-words">{mockFeedbackText(q.notes, order.options[sourceIndex])}</p>}
+                    </div>
+                  )}
+                  <details className="text-slate">
+                    <summary className="cursor-pointer font-semibold text-cobalt">Nguồn đối chiếu ({q.sources.length})</summary>
+                    <ul className="mt-2 space-y-3 pl-4">
+                      {q.sources.map((source, index) => (
+                        <li key={index} className="break-words">
+                          <a href={source.url} target="_blank" rel="noreferrer" className="text-cobalt underline underline-offset-4">{source.title}</a>
+                          <p>{source.locator}</p>
+                          <p>{source.scope} · Đọc ngày {source.checkedAt.split("-").reverse().join("/")}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </div>
               )}
             </fieldset>
           );
