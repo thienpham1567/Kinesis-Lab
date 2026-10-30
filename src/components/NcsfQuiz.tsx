@@ -19,9 +19,13 @@ const shuffled = (qs: Question[]) =>
     return o;
   });
 
-export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: number) => void }) {
+export function NcsfQuiz({ onOpenPage, onSessionExpired }: {
+  onOpenPage: (slug: string, page: number) => void;
+  onSessionExpired?: () => void;
+}) {
   const [chapters, setChapters] = useState<Chapter[] | null>(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<"load" | "session" | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [ch, setCh] = useState(1);
   const [lesson, setLesson] = useState(-1); // -1 = cả chương
   const [only, setOnly] = useState<number[] | null>(null); // retry-wrong subset
@@ -33,7 +37,7 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/ncsf/quiz", { signal: controller.signal })
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status === 401 ? "session" : "load")))
       .then((value: unknown) => {
         if (controller.signal.aborted) return;
         const d = parseNcsfQuiz(value);
@@ -44,12 +48,23 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
         setOrders(shuffled(firstChapter.questions));
         setQuestionOrder(shuffleNcsfQuestionIndices(firstChapter.questions.length));
       })
-      .catch(() => { if (!controller.signal.aborted) setError(true); });
+      .catch((reason: unknown) => { if (!controller.signal.aborted) setError(reason === "session" ? "session" : "load"); });
     return () => controller.abort();
-  }, []);
+  }, [loadAttempt]);
 
-  if (error) return <p className="alert-error">Không tải được đề. Thử tải lại trang hoặc đăng nhập lại.</p>;
-  if (!chapters) return <p className="text-sm text-slate">Đang tải đề…</p>;
+  if (error) return (
+    <div className="space-y-3">
+      <p className="alert-error" role="alert">
+        {error === "session" ? "Phiên truy cập đã hết hạn. Đăng nhập lại để tải đề." : "Không tải được đề. Kiểm tra kết nối rồi thử lại."}
+      </p>
+      {error === "session" && onSessionExpired ? (
+        <button type="button" className="button-secondary" onClick={onSessionExpired}>Đăng nhập lại</button>
+      ) : (
+        <button type="button" className="button-secondary" onClick={() => { setError(null); setLoadAttempt(attempt => attempt + 1); }}>Tải lại đề</button>
+      )}
+    </div>
+  );
+  if (!chapters) return <p className="text-sm text-slate" role="status">Đang tải đề…</p>;
 
   const chapter = chapters.find((c) => c.ch === ch);
   if (!chapter) return <p className="alert-error">Không tìm thấy chương đã chọn. Hãy tải lại đề.</p>;
@@ -63,7 +78,7 @@ export function NcsfQuiz({ onOpenPage }: { onOpenPage: (slug: string, page: numb
   const start = (nextCh: number, nextLesson: number, subset: number[] | null) => {
     const nextChapter = chapters.find(c => c.ch === nextCh);
     if (!nextChapter) {
-      setError(true);
+      setError("load");
       return;
     }
     setCh(nextCh);

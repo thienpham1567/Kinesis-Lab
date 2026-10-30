@@ -17,7 +17,7 @@ export default async function ConsultPage({
   return (
     <div className="space-y-6">
       <PageHeading
-        eyebrow="Lâm sàng & khoa học vận động"
+
         title="Bàn tư vấn chuyên môn"
         description="Kết nối hồ sơ học viên, cơ sinh học và y văn để thiết kế bài tập có cơ sở."
       />

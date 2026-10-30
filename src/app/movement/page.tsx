@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Icon, PageHeading } from "@/components/WorkspaceUI";
+import { LoadingState, PageHeading } from "@/components/WorkspaceUI";
 import { MovementTopic } from "@/components/movement/MovementTopic";
 import {
   HANDBOOK,
@@ -22,7 +22,7 @@ function HandbookFallback() {
   return (
     <div className="space-y-5" aria-busy="true">
       <PageHeading
-        eyebrow="Hiểu · Quan sát · Áp dụng"
+
         title="Sổ tay vận động"
         description="Bốn nền tảng cho PT, với kiến thức trọng tâm, ví dụ thực hành và đường dẫn về tài liệu gốc ngay cạnh nhận định."
       />
@@ -40,10 +40,9 @@ function HandbookFallback() {
           </span>
         ))}
       </div>
-      <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
-        <Icon name="spinner" className="size-5 animate-spin" />
+      <LoadingState className="panel">
         Đang mở sổ tay…
-      </div>
+      </LoadingState>
     </div>
   );
 }
@@ -61,7 +60,7 @@ function HandbookInner() {
   return (
     <div className="space-y-5">
       <PageHeading
-        eyebrow="Hiểu · Quan sát · Áp dụng"
+
         title="Sổ tay vận động"
         description="Bốn nền tảng cho PT, với kiến thức trọng tâm, ví dụ thực hành và đường dẫn về tài liệu gốc ngay cạnh nhận định."
       />

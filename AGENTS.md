@@ -13,3 +13,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 The user requires medically accurate knowledge grounded in reputable sources. Follow `docs/medical-evidence-policy.md` for new anatomical/medical content. Keep claim-level citations and access/review dates. Source comparison, code tests and visual realism do not establish clinical validation. Do not present mesh-derived or AI-generated fiber directions, landmarks or tissue measurements as verified anatomy. Keep reviewer metadata truthful; do not invent professional approval.
 
 User decision 2026-10-22: use reputable-source comparison as the Atlas content acceptance criterion. Independent expert signoff is optional and is not a product/release gate. Do not show a universal “waiting for expert approval” badge or withhold supported educational knowledge for that reason. Keep reviewer metadata truthful (`reviewedBy: null` when no review occurred), and retain specific source, simulation, measurement and personal-treatment limits. This does not remove symptom-based medical referral guidance.
+
+## Frontend quality with Impeccable
+
+Impeccable is installed at `.agents/skills/impeccable/`. For UI design, critique, audit or refinement, read its `SKILL.md` and the relevant command reference. Project context and reproducible commands are in `docs/impeccable.md`.
+
+Preserve the existing Clinical Field Notes identity, Vietnamese typography, theme selection and medical evidence policy during refinement. Review detector findings in context; a detector warning is not proof of a usability defect. Run `npm run design:check` after UI work, and scan affected rendered routes with `npm run design:check:page -- <local-url>` when possible. Record unresolved findings and checks that did not run. These checks do not establish medical accuracy or clinical validation.

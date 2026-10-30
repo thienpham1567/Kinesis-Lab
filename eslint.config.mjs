@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     ".claude/worktrees/**",
     // Unmodified third-party Draco runtime; notices are shipped beside it.
     "public/anatomy/3d/draco/*.js",
+    // Vendored Impeccable tooling has its own lint/build environment.
+    ".agents/skills/impeccable/scripts/**",
   ]),
 ]);
 

@@ -10,7 +10,7 @@ import {
 import { normalizeLabExtraction } from "@/lib/clinical/lab-extraction";
 import { compressImageForUpload, MAX_UPLOAD_BYTES } from "@/lib/image-compress";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { TrainingLog } from "@/components/training/TrainingLog";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
 import { ChatPanel } from "@/components/ChatPanel";
@@ -48,13 +48,17 @@ export default function ClientDetailPage() {
         </p>
       }
     >
-      <ClientDetailPageInner />
+      <ClientDetailRoute />
     </Suspense>
   );
 }
 
-function ClientDetailPageInner() {
+function ClientDetailRoute() {
   const { id } = useParams<{ id: string }>();
+  return <ClientDetailPageInner key={id} id={id} />;
+}
+
+function ClientDetailPageInner({ id }: { id: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const requestedTab = searchParams.get("tab");
@@ -80,40 +84,55 @@ function ClientDetailPageInner() {
   const [biomarkers, setBiomarkers] = useState<BiomarkerRecord[]>([]);
   const [chatPrompt, setChatPrompt] = useState<string>("");
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedToast, setSavedToast] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const loadRequest = useRef<AbortController | null>(null);
 
-  function applyPayload(
-    ok: boolean,
-    data: { error?: string; client?: Client; biomarkers?: BiomarkerRecord[] },
-  ) {
-    if (!ok) setError(data.error ?? "Không tải được hồ sơ");
-    else {
-      setClient(data.client ?? null);
-      setBiomarkers(data.biomarkers ?? []);
-    }
-  }
-
-  function load() {
-    return fetch(`/api/clients/${id}`)
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => applyPayload(ok, data));
-  }
-
-  useEffect(() => {
-    let ignore = false;
-    fetch(`/api/clients/${id}`)
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ignore) applyPayload(ok, data);
+  const load = useCallback(() => {
+    loadRequest.current?.abort();
+    const controller = new AbortController();
+    loadRequest.current = controller;
+    return fetch(`/api/clients/${encodeURIComponent(id)}`, { signal: controller.signal })
+      .then(async (res) => {
+        if (controller.signal.aborted) return false;
+        if (res.status === 404) {
+          setClient(null);
+          setNotFound(true);
+          setLoadError("Không tìm thấy học viên. Hồ sơ có thể đã được xóa.");
+          return false;
+        }
+        const data = await res.json();
+        if (controller.signal.aborted) return false;
+        if (!res.ok || !data.client) throw new Error("Không tải được hồ sơ");
+        setClient(data.client);
+        setBiomarkers(data.biomarkers ?? []);
+        setLoadError("");
+        setNotFound(false);
+        return true;
       })
       .catch(() => {
-        if (!ignore) setError("Không tải được hồ sơ");
+        if (!controller.signal.aborted)
+          setLoadError("Không tải được hồ sơ. Kiểm tra kết nối và thử tải lại.");
+        return false;
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
       });
-    return () => {
-      ignore = true;
-    };
   }, [id]);
+
+  useEffect(() => {
+    void load();
+    return () => loadRequest.current?.abort();
+  }, [load]);
+
+  function retryLoad() {
+    setLoading(true);
+    setLoadError("");
+    return load();
+  }
 
   async function save(patch: Partial<Client>) {
     if (!client || saving) return;
@@ -143,11 +162,16 @@ function ClientDetailPageInner() {
     return (
       <div className="panel p-8 text-center text-sm text-slate" role="status">
         <Icon
-          name={error ? "alert" : "spinner"}
-          className={`mx-auto mb-4 size-6 ${error ? "text-crimson" : "animate-spin text-cobalt"}`}
+          name={loadError ? "alert" : "spinner"}
+          className={`mx-auto mb-4 size-6 ${loadError ? "text-crimson" : "animate-spin text-cobalt"}`}
         />
-        <p>{error || "Đang mở hồ sơ học viên…"}</p>
-        {error && (
+        <p>{loadError || "Đang mở hồ sơ học viên…"}</p>
+        {loadError && !notFound && (
+          <button type="button" className="button-primary mt-5" disabled={loading} onClick={retryLoad}>
+            {loading ? "Đang tải hồ sơ…" : "Thử tải lại"}
+          </button>
+        )}
+        {loadError && (
           <Link href="/clients" className="button-secondary mt-5">
             Về danh sách học viên
           </Link>
@@ -238,9 +262,15 @@ function ClientDetailPageInner() {
       </div>
 
       {error ? (
-        <p className="alert-error" role="alert">
-          {error}
-        </p>
+        <p className="alert-error" role="alert">{error}</p>
+      ) : null}
+      {loadError ? (
+        <div className="alert-error" role="alert">
+          <p>{loadError}</p>
+          <button type="button" className="button-secondary mt-3" disabled={loading || saving} onClick={retryLoad}>
+            {loading ? "Đang tải hồ sơ…" : "Thử tải lại hồ sơ"}
+          </button>
+        </div>
       ) : null}
 
       <div
@@ -553,13 +583,39 @@ function Labs({
 }: {
   clientId: string;
   records: BiomarkerRecord[];
-  onChange: () => void;
+  onChange: () => Promise<boolean>;
 }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
   const [draft, setDraft] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const deleteRequest = useRef(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteStatus, setDeleteStatus] = useState("");
+
+  async function deleteRecord(recordId: string) {
+    if (deleteRequest.current) return;
+    deleteRequest.current = true;
+    setDeletingId(recordId);
+    setDeleteError("");
+    setDeleteStatus("");
+    try {
+      const res = await fetch(`/api/biomarkers?id=${encodeURIComponent(recordId)}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Không xóa được bản ghi");
+      const refreshed = await onChange().catch(() => false);
+      setDeleteStatus(refreshed
+        ? "Đã xóa bản ghi."
+        : "Đã xóa bản ghi; chưa tải lại được danh sách. Hãy thử tải lại hồ sơ.");
+    } catch {
+      setDeleteError("Không xóa được bản ghi. Kiểm tra kết nối và thử lại.");
+    } finally {
+      deleteRequest.current = false;
+      setDeletingId(null);
+    }
+  }
 
   async function upload(file: File) {
     setBusy(true);
@@ -623,7 +679,7 @@ function Labs({
         throw new Error((await res.json()).error ?? "Không lưu được");
       setDraft("");
       setConfirmed(false);
-      onChange();
+      await onChange();
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Không lưu được bản chép");
     } finally {
@@ -695,34 +751,38 @@ function Labs({
               Ratio).
             </p>
           </div>
-          <label className="cursor-pointer rounded-md bg-cobalt px-4 py-2.5 font-display text-xs font-semibold text-on-cobalt hover:opacity-95">
+          <button type="button" className="button-primary" disabled={busy} onClick={() => fileInput.current?.click()}>
             {busy
               ? "Đang phân tích phiếu..."
               : "Tải ảnh / PDF phiếu xét nghiệm"}
-            <input
-              type="file"
-              accept="image/*,application/pdf"
-              className="hidden"
-              disabled={busy}
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) void upload(f);
-              }}
-            />
-          </label>
+          </button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept="image/*,application/pdf"
+            className="hidden"
+            disabled={busy}
+            onChange={(e) => {
+              const f = e.currentTarget.files?.[0];
+              e.currentTarget.value = "";
+              if (f) void upload(f);
+            }}
+          />
         </div>
         {msg ? (
-          <p className="mt-3 text-xs font-medium text-crimson">{msg}</p>
+          <p className="mt-3 text-xs font-medium text-crimson" role="alert">{msg}</p>
         ) : null}
       </div>
 
+      {deleteError && <p className="alert-error" role="alert">{deleteError}</p>}
+      {deleteStatus && <p className="text-sm text-ink" role="status">{deleteStatus}</p>}
       <div className="grid gap-4 lg:grid-cols-2">
         {records.map((r) => (
           <article
             key={r.id}
             className="rounded-lg border border-rule bg-sheet p-5 shadow-xs"
           >
-            <div className="flex items-center justify-between border-b border-rule pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-3">
               <div>
                 <span
                   className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
@@ -741,15 +801,12 @@ function Labs({
               </div>
               <button
                 type="button"
-                className="text-xs font-medium text-crimson hover:underline"
-                onClick={async () => {
-                  await fetch(`/api/biomarkers?id=${r.id}`, {
-                    method: "DELETE",
-                  });
-                  onChange();
-                }}
+                className="min-h-11 shrink-0 text-xs font-medium text-crimson hover:underline disabled:opacity-50"
+                disabled={deletingId !== null}
+                aria-label={`Xóa bản ghi ${r.kind === "inbody" ? "InBody" : "xét nghiệm"} ngày ${r.recorded_at}`}
+                onClick={() => deleteRecord(r.id)}
               >
-                Xóa bản ghi
+                {deletingId === r.id ? "Đang xóa bản ghi…" : "Xóa bản ghi"}
               </button>
             </div>
 

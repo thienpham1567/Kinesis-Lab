@@ -13,7 +13,7 @@ import {
 } from "./RegionLearningOverview";
 import { RegionLearningRail } from "./RegionLearningRail";
 import { atlasAreaHref, regionLearningSteps } from "./region-learning";
-import { EmptyState, Icon } from "@/components/WorkspaceUI";
+import { EmptyState, Icon, LoadingState } from "@/components/WorkspaceUI";
 import { AtlasStructureName } from "./AtlasStructureName";
 import { AtlasTerminologySources } from "./AtlasTerminologySources";
 import { AtlasCatalogCorrectionDetails } from "./AtlasCatalogCorrectionDetails";
@@ -483,13 +483,9 @@ export default function Atlas3DExplorer({
 
   if (!manifest) {
     return (
-      <div
-        className="panel flex min-h-80 items-center justify-center gap-3 p-6 text-sm text-slate"
-        role="status"
-      >
-        <Icon name="spinner" className="size-5 animate-spin" />
+      <LoadingState className="panel min-h-80">
         Đang tải danh mục hệ vận động…
-      </div>
+      </LoadingState>
     );
   }
 

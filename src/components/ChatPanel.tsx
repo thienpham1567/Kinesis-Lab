@@ -5,6 +5,7 @@ import { ASSISTANT_EVIDENCE } from "@/lib/clinical/evidence-assessment";
 import type { EvidenceIndexEntry } from "@/lib/clinical/evidence-registry";
 import { answerCitationsFromEvidence, type ChatAnswerCitation } from "@/lib/chat/answer-citations";
 import { readNdjson } from "@/lib/ai/stream-events";
+import { isNearStudyBottom } from "@/lib/chat/study-scroll";
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
@@ -66,6 +67,14 @@ export function ChatPanel({
   const [clientsError, setClientsError] = useState(false);
   const requestRef = useRef<AbortController | null>(null);
   const inFlight = useRef(false);
+  const followLatest = useRef(true);
+  const [newContent, setNewContent] = useState(false);
+
+  useEffect(() => {
+    if (followLatest.current) {
+      scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
+    }
+  }, [messages]);
 
   useEffect(() => () => { requestRef.current?.abort(); }, []);
 
@@ -110,6 +119,8 @@ export function ChatPanel({
     : null;
 
   function resetConversation() {
+    followLatest.current = true;
+    setNewContent(false);
     setMessages([]);
     setInput("");
     setRag([]);
@@ -127,6 +138,8 @@ export function ChatPanel({
     const text = rawText.trim();
     if (!text || inFlight.current) return;
     inFlight.current = true;
+    followLatest.current = true;
+    setNewContent(false);
     const failedTurn = messages
       .map((message) => message.role)
       .lastIndexOf("user");
@@ -187,6 +200,7 @@ export function ChatPanel({
           } else if (evt.type === "token") {
             assistant += evt.text ?? "";
             setMessages([...next, { role: "assistant", content: assistant, citations: nextCitations }]);
+            if (!followLatest.current) setNewContent(true);
           } else if (evt.type === "error") {
             streamError = true;
             setError(evt.error ?? "Lỗi xử lý");
@@ -195,7 +209,6 @@ export function ChatPanel({
           } else if (evt.type === "done") {
             complete = true;
           }
-        scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
       }
       if (!complete && !streamError) throw new Error("Kết nối bị gián đoạn; câu trả lời có thể chưa đầy đủ. Vui lòng thử lại.");
     } catch (err) {
@@ -241,7 +254,7 @@ export function ChatPanel({
           )}
         </div>
         {!lockedClientId && (
-          <div className="mt-4 rounded-xl border border-rule bg-canvas px-3.5 py-3">
+          <div className="mt-4">
             <label className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:gap-3">
               <span className="flex shrink-0 items-center gap-2 font-medium text-slate">
                 <Icon name="users" className="size-4" />
@@ -356,6 +369,11 @@ export function ChatPanel({
         role="log"
         aria-label="Nội dung phiên tư vấn"
         aria-busy={busy}
+        tabIndex={-1}
+        onScroll={(event) => {
+          followLatest.current = isNearStudyBottom(event.currentTarget);
+          if (followLatest.current) setNewContent(false);
+        }}
         className={`flex-1 space-y-5 overflow-y-auto px-5 py-2 sm:px-6 ${messages.length > 0 ? "max-h-[62dvh] min-h-[320px] py-6" : ""}`}
       >
         {messages.length === 0 && (
@@ -378,7 +396,7 @@ export function ChatPanel({
             >
               <div className="mb-2 flex items-center gap-2 text-xs">
                 <span
-                  className={`flex size-6 items-center justify-center rounded-md text-[9px] font-semibold ${m.role === "user" ? "bg-cobalt/10 text-cobalt" : "bg-cleared-soft text-cleared"}`}
+                  className={`flex size-6 items-center justify-center rounded-md text-[11px] font-semibold ${m.role === "user" ? "bg-cobalt/10 text-cobalt" : "bg-cleared-soft text-ink"}`}
                 >
                   {m.role === "user" ? (
                     "PT"
@@ -411,6 +429,23 @@ export function ChatPanel({
           ),
         )}
       </div>
+      {newContent && (
+        <div className="flex justify-center px-5 py-2">
+          <button
+            type="button"
+            className="button-secondary catch-up-button"
+            onClick={() => {
+              followLatest.current = true;
+              scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
+              setNewContent(false);
+              scroller.current?.focus({ preventScroll: true });
+            }}
+          >
+            <Icon name="chevron-down" className="size-4" />
+            Đến nội dung mới nhất
+          </button>
+        </div>
+      )}
       {error && (
         <div role="alert" className="alert-error mx-5 my-3 sm:mx-6">
           <p className="flex items-center gap-2 font-semibold">
@@ -463,22 +498,22 @@ export function ChatPanel({
                 key={h.id}
                 className="rounded-lg border border-rule bg-sheet p-3"
               >
-                <p className="mb-1 break-all font-mono text-[10px] text-slate">RAG:{h.id}</p>
+                <p className="mb-1 break-all font-mono text-[11px] text-slate">RAG:{h.id}</p>
                 <p className="font-medium text-ink">
                   {h.url ? <a href={h.url} target="_blank" rel="noreferrer" className="text-cobalt underline underline-offset-2">{h.title} ↗</a> : h.title}
                   {h.page != null ? ` · Trang ${h.page}` : ""}
                 </p>
                 <p className="mt-1 text-[11px] leading-5 text-slate">{h.chapter} · {h.year} · {h.licenseUrl ? <a href={h.licenseUrl} target="_blank" rel="noreferrer" className="underline">{h.license}</a> : h.license}</p>
-                {h.authors?.length ? <p className="mt-1 text-[10px] leading-4 text-slate">{h.authors.length > 3 ? `${h.authors.slice(0, 3).join(", ")} et al.` : h.authors.join(", ")}</p> : null}
+                {h.authors?.length ? <p className="mt-1 text-xs leading-5 text-slate">{h.authors.length > 3 ? `${h.authors.slice(0, 3).join(", ")} et al.` : h.authors.join(", ")}</p> : null}
                 <p className="mt-1 line-clamp-2 leading-5 text-slate">
                   {h.content}
                 </p>
-                {h.checkedAt && <p className="mt-1 text-[10px] text-slate">Nguồn kiểm tra {h.checkedAt} · Đoạn toàn văn, chưa xác nhận từng câu trả lời AI.</p>}
+                {h.checkedAt && <p className="mt-1 text-xs text-slate">Nguồn kiểm tra {h.checkedAt} · Đoạn toàn văn, chưa xác nhận từng câu trả lời AI.</p>}
               </div>
             ))}
             {curated.map(item => (
               <div key={item.id} className="min-w-0 rounded-lg border border-rule bg-sheet p-3">
-                <p className="mb-2 break-all font-mono text-[10px] text-slate">APP:{item.id}</p>
+                <p className="mb-2 break-all font-mono text-[11px] text-slate">APP:{item.id}</p>
                 <ClinicalEvidencePanel evidence={item.evidence} title={item.label} />
               </div>
             ))}
@@ -490,7 +525,7 @@ export function ChatPanel({
                 rel="noreferrer"
                 className="block rounded-lg border border-rule bg-sheet p-3 hover:border-cobalt"
               >
-                <span className="flex items-center justify-between gap-2 font-mono text-[10px] text-cobalt">
+                <span className="flex items-center justify-between gap-2 font-mono text-[11px] text-cobalt">
                   PMID {p.pmid} · {p.year}
                   <Icon name="external" className="size-3" />
                 </span>
@@ -534,7 +569,7 @@ export function ChatPanel({
             className="block w-full resize-y px-1 py-1 text-[13px] leading-6"
           />
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-3">
-            <span className="text-[10px] leading-5 text-slate">
+            <span className="text-xs leading-5 text-slate">
               Enter để gửi <span className="mx-1">·</span> Shift + Enter xuống
               dòng
             </span>

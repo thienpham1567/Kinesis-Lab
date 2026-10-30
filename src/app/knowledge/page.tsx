@@ -48,48 +48,75 @@ function LoginForm({ onDone }: { onDone: () => void }) {
 
 export default function NcsfLibraryPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
+  const [sessionError, setSessionError] = useState("");
+  const [sessionCheckAttempt, setSessionCheckAttempt] = useState(0);
+  const [loggingOut, setLoggingOut] = useState(false);
   useEffect(() => {
-    fetch("/api/ncsf/session")
-      .then((r) => r.json())
-      .then((d) => setAuthed(Boolean(d.authed)))
-      .catch(() => setAuthed(false));
-  }, []);
+    const controller = new AbortController();
+    fetch("/api/ncsf/session", { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((data: unknown) => {
+        if (controller.signal.aborted) return;
+        if (!data || typeof data !== "object" || !("authed" in data) || typeof data.authed !== "boolean") throw new Error("Invalid session response");
+        setAuthed(data.authed);
+      })
+      .catch(() => { if (!controller.signal.aborted) setSessionError("Không kiểm tra được quyền truy cập. Kiểm tra kết nối rồi thử lại."); });
+    return () => controller.abort();
+  }, [sessionCheckAttempt]);
   const logout = async () => {
-    await fetch("/api/ncsf/session", { method: "DELETE" });
-    setAuthed(false);
+    setLoggingOut(true);
+    setSessionError("");
+    try {
+      const response = await fetch("/api/ncsf/session", { method: "DELETE" });
+      if (!response.ok) throw new Error("Logout failed");
+      setAuthed(false);
+    } catch {
+      setSessionError("Chưa đăng xuất được. Kiểm tra kết nối rồi chọn Đăng xuất lần nữa.");
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   const heading = (
-    <PageHeading
-      eyebrow="THƯ VIỆN / NCSF CPT"
-      title="Giáo trình NCSF CPT tiếng Việt."
-      description="Tài liệu học viên từ NCSF Việt Nam, lưu riêng tư và chỉ mở sau khi đăng nhập."
-    >
-      <a href={NCSF_SOURCE} target="_blank" rel="noreferrer" className="button-secondary">
-        Nguồn gốc
-        <Icon name="external" className="size-4" />
-      </a>
-      {authed && (
-        <button className="button-secondary" onClick={logout}>
-          Đăng xuất
-        </button>
-      )}
-    </PageHeading>
+    <>
+      <PageHeading
+
+        title="Giáo trình NCSF CPT tiếng Việt."
+        description="Tài liệu học viên từ NCSF Việt Nam, lưu riêng tư và chỉ mở sau khi đăng nhập."
+      >
+        <a href={NCSF_SOURCE} target="_blank" rel="noreferrer" className="button-secondary">
+          Nguồn gốc
+          <Icon name="external" className="size-4" />
+        </a>
+        {authed && (
+          <button className="button-secondary" disabled={loggingOut} onClick={logout}>
+            {loggingOut ? "Đang đăng xuất…" : "Đăng xuất"}
+          </button>
+        )}
+      </PageHeading>
+      {authed && sessionError && <p className="alert-error" role="alert">{sessionError}</p>}
+    </>
   );
 
   if (!authed)
     return (
       <div className="space-y-7">
         {heading}
-        {authed === null ? <p className="text-sm text-slate">Đang kiểm tra quyền truy cập…</p> : <LoginForm onDone={() => setAuthed(true)} />}
+        {authed === null ? sessionError ? (
+          <div className="space-y-3">
+            <p className="alert-error" role="alert">{sessionError}</p>
+            <button type="button" className="button-secondary" onClick={() => { setSessionError(""); setSessionCheckAttempt(attempt => attempt + 1); }}>Kiểm tra lại quyền truy cập</button>
+          </div>
+        ) : <p className="text-sm text-slate" role="status">Đang kiểm tra quyền truy cập…</p> : <LoginForm onDone={() => { setSessionError(""); setAuthed(true); }} />}
       </div>
     );
-  return <NcsfContent heading={heading} />;
+  return <NcsfContent heading={heading} onSessionExpired={() => setAuthed(false)} />;
 }
 
-function NcsfContent({ heading }: { heading: React.ReactNode }) {
+function NcsfContent({ heading, onSessionExpired }: { heading: React.ReactNode; onSessionExpired?: () => void }) {
   const [view, setView] = useState<"read" | "quiz" | "mock">("read");
-  const [quizAttempt, setQuizAttempt] = useState(0);
+  const [quizOpened, setQuizOpened] = useState(false);
+  const [readingCitation, setReadingCitation] = useState(false);
   const [mockOpened, setMockOpened] = useState(false);
   const mockRef = useRef<NcsfMockExamsHandle | null>(null);
   const [slug, setSlug] = useState<string>(NCSF_CPT[0].slug);
@@ -114,6 +141,8 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
   const open = (s: string, p = 1) => {
     setSlug(s);
     setStartPage(p);
+    setCurrentPage(p);
+    setReadingCitation(true);
     setView("read");
   };
 
@@ -124,7 +153,7 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
         <button type="button" aria-pressed={view === "read"} className="tab-button" onClick={() => setView("read")}>
           Đọc giáo trình
         </button>
-        <button type="button" aria-pressed={view === "quiz"} className="tab-button" onClick={() => { setQuizAttempt(attempt => attempt + 1); setView("quiz"); }}>
+        <button type="button" aria-pressed={view === "quiz"} className="tab-button" onClick={() => { setQuizOpened(true); setView("quiz"); }}>
           Đề thi nhỏ
         </button>
         <button type="button" aria-pressed={view === "mock"} className="tab-button" onClick={() => { mockRef.current?.reshuffle(); setMockOpened(true); setView("mock"); }}>
@@ -136,98 +165,107 @@ function NcsfContent({ heading }: { heading: React.ReactNode }) {
           <NcsfMockExams apiRef={mockRef} />
         </section>
       )}
-      {view === "mock" ? null : view === "quiz" ? (
-        <section className="panel p-4 sm:p-5" aria-label="Đề thi nhỏ">
-          <NcsfQuiz key={quizAttempt} onOpenPage={open} />
+      {quizOpened && (
+        <section hidden={view !== "quiz"} className="panel min-w-0 p-4 sm:p-5" aria-label="Đề thi nhỏ">
+          <NcsfQuiz onOpenPage={open} onSessionExpired={onSessionExpired} />
         </section>
-      ) : (
-        <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-          <div className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
-            <label className="block lg:hidden">
-              <span className="field-label">Chương</span>
-              <select
-                value={slug}
-                onChange={(e) => openChapter(e.target.value)}
-                className="min-h-11 w-full px-3 text-sm"
-              >
-                {NCSF_CPT.map((c) => (
-                  <option key={c.slug} value={c.slug}>
-                    {c.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <nav className="panel hidden p-2 lg:block" aria-label="Chương">
-              <ul className="space-y-1">
-                {NCSF_CPT.map((c) => (
-                  <li key={c.slug}>
-                    <button
-                      onClick={() => openChapter(c.slug)}
-                      aria-current={c.slug === slug ? "page" : undefined}
-                      className={`w-full rounded-lg px-3 py-2 text-left text-sm leading-5 ${
-                        c.slug === slug ? "bg-cobalt-soft font-semibold text-cobalt" : "text-ink hover:bg-surface"
-                      }`}
-                    >
+      )}
+      {view === "read" && (
+        <div className="space-y-4">
+          {readingCitation && (
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm text-slate">Đáp án và kết quả của bài đang làm vẫn được giữ trong phiên này.</p>
+              <button type="button" className="button-primary" onClick={() => setView("quiz")}>Quay lại bài đang làm</button>
+            </div>
+          )}
+          <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+            <div className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
+              <label className="block lg:hidden">
+                <span className="field-label">Chương</span>
+                <select
+                  value={slug}
+                  onChange={(e) => openChapter(e.target.value)}
+                  className="min-h-11 w-full px-3 text-sm"
+                >
+                  {NCSF_CPT.map((c) => (
+                    <option key={c.slug} value={c.slug}>
                       {c.title}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            {lessons && (
-              <section className="panel p-3" aria-label="Bài trong chương">
-                <h3 className="px-1 text-sm font-semibold text-ink">Bài trong chương</h3>
-                <label className="mt-2 block lg:hidden">
-                  <span className="sr-only">Chọn bài</span>
-                  <select
-                    value={activeLesson}
-                    onChange={(e) => {
-                      const lesson = lessons[Number(e.target.value)];
-                      if (lesson) jumpToPage(lesson.from);
-                    }}
-                    className="min-h-11 w-full px-3 text-sm"
-                  >
-                    {lessons.map((l, i) => (
-                      <option key={l.title} value={i}>
-                        Bài {i + 1} · {l.title} (trang {l.from})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <ul className="mt-2 hidden space-y-1 lg:block">
-                  {lessons.map((l, i) => (
-                    <li key={l.title}>
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <nav className="panel hidden p-2 lg:block" aria-label="Chương">
+                <ul className="space-y-1">
+                  {NCSF_CPT.map((c) => (
+                    <li key={c.slug}>
                       <button
-                        onClick={() => jumpToPage(l.from)}
-                        aria-current={i === activeLesson ? "page" : undefined}
+                        onClick={() => openChapter(c.slug)}
+                        aria-current={c.slug === slug ? "page" : undefined}
                         className={`w-full rounded-lg px-3 py-2 text-left text-sm leading-5 ${
-                          i === activeLesson
-                            ? "bg-cobalt-soft font-semibold text-cobalt"
-                            : "text-ink hover:bg-surface"
+                          c.slug === slug ? "bg-cobalt-soft font-semibold text-cobalt" : "text-ink hover:bg-surface"
                         }`}
                       >
-                        Bài {i + 1} · {l.title}
-                        <span className="block text-xs font-normal text-slate">
-                          Từ trang {l.from}
-                        </span>
+                        {c.title}
                       </button>
                     </li>
                   ))}
                 </ul>
-              </section>
-            )}
+              </nav>
+              {lessons && (
+                <section className="panel p-3" aria-label="Bài trong chương">
+                  <h3 className="px-1 text-sm font-semibold text-ink">Bài trong chương</h3>
+                  <label className="mt-2 block lg:hidden">
+                    <span className="sr-only">Chọn bài</span>
+                    <select
+                      value={activeLesson}
+                      onChange={(e) => {
+                        const lesson = lessons[Number(e.target.value)];
+                        if (lesson) jumpToPage(lesson.from);
+                      }}
+                      className="min-h-11 w-full px-3 text-sm"
+                    >
+                      {lessons.map((l, i) => (
+                        <option key={l.title} value={i}>
+                          Bài {i + 1} · {l.title} (trang {l.from})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <ul className="mt-2 hidden space-y-1 lg:block">
+                    {lessons.map((l, i) => (
+                      <li key={l.title}>
+                        <button
+                          onClick={() => jumpToPage(l.from)}
+                          aria-current={i === activeLesson ? "page" : undefined}
+                          className={`w-full rounded-lg px-3 py-2 text-left text-sm leading-5 ${
+                            i === activeLesson
+                              ? "bg-cobalt-soft font-semibold text-cobalt"
+                              : "text-ink hover:bg-surface"
+                          }`}
+                        >
+                          Bài {i + 1} · {l.title}
+                          <span className="block text-xs font-normal text-slate">
+                            Từ trang {l.from}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </div>
+            <section className="panel min-w-0 p-4 sm:p-5" aria-label={current.title}>
+              <h2 className="mb-3 text-base font-semibold text-ink">{current.title}</h2>
+              {chapterIndex >= 0 && chapterIndex < 8 && <NcsfPageCorrections chapter={chapterIndex + 1} page={currentPage} />}
+              <PdfReader
+                key={slug}
+                file={`/api/ncsf/${slug}`}
+                startPage={startPage}
+                apiRef={readerRef}
+                onPageChange={setCurrentPage}
+              />
+            </section>
           </div>
-          <section className="panel min-w-0 p-4 sm:p-5" aria-label={current.title}>
-            <h2 className="mb-3 text-base font-semibold text-ink">{current.title}</h2>
-            {chapterIndex >= 0 && chapterIndex < 8 && <NcsfPageCorrections chapter={chapterIndex + 1} page={currentPage} />}
-            <PdfReader
-              key={slug}
-              file={`/api/ncsf/${slug}`}
-              startPage={startPage}
-              apiRef={readerRef}
-              onPageChange={setCurrentPage}
-            />
-          </section>
         </div>
       )}
     </div>

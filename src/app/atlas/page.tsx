@@ -3,19 +3,29 @@
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { BodyMapExplorer } from "@/components/BodyMapExplorer";
-import { TrainingAtlasExplorer } from "@/components/training/TrainingAtlasExplorer";
-import { TriggerPointExplorer } from "@/components/TriggerPointExplorer";
 import type { Client } from "@/lib/types";
-import { Icon, PageHeading, type IconName } from "@/components/WorkspaceUI";
+import { Icon, LoadingState, PageHeading, type IconName } from "@/components/WorkspaceUI";
+
+const BodyMapExplorer = dynamic(
+  () => import("@/components/BodyMapExplorer").then((module) => module.BodyMapExplorer),
+  { loading: () => <LoadingState className="panel">Đang mở không gian khớp…</LoadingState> },
+);
+const TrainingAtlasExplorer = dynamic(
+  () => import("@/components/training/TrainingAtlasExplorer").then((module) => module.TrainingAtlasExplorer),
+  { loading: () => <LoadingState className="panel">Đang mở Atlas huấn luyện…</LoadingState> },
+);
+const TriggerPointExplorer = dynamic(
+  () => import("@/components/TriggerPointExplorer").then((module) => module.TriggerPointExplorer),
+  { loading: () => <LoadingState className="panel">Đang mở tra cứu Trigger Point…</LoadingState> },
+);
 
 const Atlas3DExplorer = dynamic(
   () => import("@/components/atlas3d/Atlas3DExplorer"),
   {
     loading: () => (
-      <div className="panel p-8 text-sm text-slate" role="status">
+      <LoadingState className="panel">
         Đang mở Atlas 3D…
-      </div>
+      </LoadingState>
     ),
   },
 );
@@ -68,7 +78,7 @@ function AtlasFallback() {
   return (
     <div className="atlas-workspace space-y-5" aria-busy="true">
       <PageHeading
-        eyebrow="Cấu trúc · Chuyển động · Ứng dụng"
+
         title="Atlas giải phẫu"
         description={TAB_COPY["3d"].subtitle}
       />
@@ -91,10 +101,9 @@ function AtlasFallback() {
           </span>
         ))}
       </div>
-      <div className="panel flex min-h-64 items-center justify-center gap-3 text-sm text-slate">
-        <Icon name="spinner" className="size-5 animate-spin" />
+      <LoadingState className="panel">
         Đang mở Atlas…
-      </div>
+      </LoadingState>
     </div>
   );
 }
@@ -105,6 +114,8 @@ function AtlasPageInner() {
   const atlasTab = parseAtlasTab(searchParams.get("tab"));
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string>("");
+  const [clientsState, setClientsState] = useState<"idle" | "ready" | "error">("idle");
+  const [clientsRetry, setClientsRetry] = useState(0);
 
   function selectTab(id: AtlasTab) {
     const next = new URLSearchParams(searchParams.toString());
@@ -115,24 +126,28 @@ function AtlasPageInner() {
   }
 
   useEffect(() => {
-    let ignore = false;
-    fetch("/api/clients")
+    if (atlasTab !== "clinical_rehab") return;
+    const controller = new AbortController();
+    fetch("/api/clients", { signal: controller.signal })
       .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
-        if (!ignore && ok) setClients(data.clients ?? []);
+        if (controller.signal.aborted) return;
+        if (!ok) throw new Error("Client records unavailable");
+        setClients(Array.isArray(data.clients) ? data.clients : []);
+        setClientsState("ready");
       })
-      .catch(() => {});
-    return () => {
-      ignore = true;
-    };
-  }, []);
+      .catch(() => {
+        if (!controller.signal.aborted) setClientsState("error");
+      });
+    return () => controller.abort();
+  }, [atlasTab, clientsRetry]);
 
   const activeClient = clients.find((c) => c.id === selectedClientId) ?? null;
 
   return (
     <div className="atlas-workspace space-y-5">
       <PageHeading
-        eyebrow="Cấu trúc · Chuyển động · Ứng dụng"
+
         title="Atlas giải phẫu"
         description={TAB_COPY[atlasTab].subtitle}
       />
@@ -184,13 +199,30 @@ function AtlasPageInner() {
           }
         />
       ) : (
-        <BodyMapExplorer
-          showAnatomy3D
-          mode="full"
-          clients={clients}
-          client={activeClient}
-          onSelectClient={setSelectedClientId}
-        />
+        <div className="space-y-4">
+          {clientsState === "error" && (
+            <div className="alert-error" role="alert">
+              <p>Chưa tải được hồ sơ học viên. Bạn vẫn có thể tra cứu khớp mà chưa gắn hồ sơ.</p>
+              <button
+                type="button"
+                className="button-secondary mt-3"
+                onClick={() => {
+                  setClientsState("idle");
+                  setClientsRetry((value) => value + 1);
+                }}
+              >
+                <Icon name="refresh" className="size-4" /> Thử tải lại hồ sơ
+              </button>
+            </div>
+          )}
+          <BodyMapExplorer
+            showAnatomy3D
+            mode="full"
+            clients={clients}
+            client={activeClient}
+            onSelectClient={setSelectedClientId}
+          />
+        </div>
       )}
     </div>
   );

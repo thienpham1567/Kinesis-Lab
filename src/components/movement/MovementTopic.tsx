@@ -47,7 +47,7 @@ function Attribution({ block, topic }: { block: Cited; topic: HandbookTopic }) {
   return (
     <>
       {block.authored ? (
-        <span className="ml-1 text-[10px] font-medium text-slate">
+        <span className="ml-1 text-xs font-medium text-slate">
           {" "}
           · Ví dụ / quy ước của app
         </span>
@@ -105,7 +105,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
     <article
       id={`movement-article-${topic.id}`}
       aria-labelledby={`movement-${topic.id}-title`}
-      className="space-y-7"
+      className="movement-article space-y-7"
     >
       <header className="panel space-y-3 p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -149,7 +149,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
                 <span className="pt-0.5 font-mono text-xs text-cobalt">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 max-w-[72ch]">
                   <h3 className="text-sm font-semibold text-ink">
                     {point.title}
                   </h3>
@@ -329,7 +329,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
                 <p className="mt-2 text-sm leading-6 text-ink">{m.say}</p>
               </div>
               <div className="p-4">
-                <p className="eyebrow text-cleared">Cách đọc bằng chứng</p>
+                <p className="eyebrow text-ink">Cách đọc bằng chứng</p>
                 <p className="mt-2 text-sm leading-6 text-ink">
                   {m.real}
                   <Attribution block={m} topic={topic} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   EmptyState,
   Icon,
@@ -35,6 +36,7 @@ export default function ClientsPage() {
   const [listError, setListError] = useState("");
   const [formError, setFormError] = useState("");
   const [message, setMessage] = useState("");
+  const [createdClient, setCreatedClient] = useState<Pick<Client, "id" | "name"> | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const nameInput = useRef<HTMLInputElement>(null);
 
@@ -89,6 +91,7 @@ export default function ClientsPage() {
     setBusy(true);
     setFormError("");
     setMessage("");
+    setCreatedClient(null);
     try {
       const res = await fetch("/api/clients", {
         method: "POST",
@@ -101,6 +104,7 @@ export default function ClientsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Không tạo được hồ sơ.");
+      if (data.client?.id) setCreatedClient(data.client);
       setName("");
       setAge("");
       setGoals("");
@@ -142,7 +146,7 @@ export default function ClientsPage() {
   return (
     <div className="space-y-7">
       <PageHeading
-        eyebrow="HỒ SƠ / CLIENT RECORDS"
+
         title="Hiểu học viên. Tập luyện phù hợp."
         description="Tập hợp mục tiêu, bệnh lý và kết quả sàng lọc để chuẩn bị cho từng buổi tập."
       >
@@ -373,9 +377,14 @@ export default function ClientsPage() {
                 </p>
               )}
               {message && (
-                <p className="rounded-lg bg-cleared-soft p-3 text-sm leading-6 text-cleared">
-                  {message}
-                </p>
+                <div className="rounded-lg bg-cleared-soft p-3 text-sm leading-6 text-ink">
+                  <p>{message}</p>
+                  {createdClient && (
+                    <Link href={`/clients/${encodeURIComponent(createdClient.id)}`} className="mt-2 inline-flex min-h-11 items-center font-semibold text-cobalt underline underline-offset-4">
+                      Mở hồ sơ {createdClient.name}
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
             <button

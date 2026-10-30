@@ -59,6 +59,10 @@ Skill `frontend-design` được cài tại `.agents/skills/frontend-design/` t�
 
 Giao diện dùng hướng **Clinical Field Notes**, với Be Vietnam Pro, IBM Plex Mono và các token trong `src/app/globals.css`. Icon, tiêu đề và trạng thái trống dùng chung tại `src/components/WorkspaceUI.tsx`.
 
+Đã tích hợp thêm [Impeccable](https://github.com/pbakaus/impeccable) `4.8.0` ở `.agents/skills/impeccable/` để audit và tinh chỉnh UI. Dùng `$impeccable audit` trong Codex hoặc `npm run design:check` để quét source; kiểm tra trang đã render bằng `npm run design:check:page -- http://127.0.0.1:3000/atlas`. Xem [hướng dẫn và phiên bản ghim](docs/impeccable.md), cùng [kết quả kiểm tra ban đầu](docs/superpowers/reviews/2026-10-30-impeccable-audit.md). Detector không thay thế kiểm tra tương tác hoặc xác nhận nội dung y khoa.
+
+Đã sửa các nhãn nhỏ, tương phản nhãn bằng chứng và bàn phím/focus/khôi phục theme của bộ chọn màu. Xem [xác minh sau sửa](docs/superpowers/reviews/2026-10-30-impeccable-ui-fixes.md).
+
 Cài lại đúng skill và phiên bản:
 
 ```bash

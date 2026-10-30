@@ -160,12 +160,10 @@ export function Icon({
 }
 
 export function PageHeading({
-  eyebrow,
   title,
   description,
   children,
 }: {
-  eyebrow: string;
   title: string;
   description: string;
   children?: ReactNode;
@@ -173,7 +171,6 @@ export function PageHeading({
   return (
     <div className="page-heading">
       <div className="min-w-0">
-        <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         <p className="page-description">{description}</p>
       </div>
@@ -202,6 +199,21 @@ export function SectionHeading({
         {title}
       </h2>
       {children}
+    </div>
+  );
+}
+
+export function LoadingState({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div role="status" className={`loading-state ${className}`}>
+      <Icon name="spinner" className="size-5 shrink-0 animate-spin" />
+      <span>{children}</span>
     </div>
   );
 }
