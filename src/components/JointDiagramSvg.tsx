@@ -529,7 +529,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule bg-surface/60 px-4 py-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="rounded bg-cobalt px-2 py-0.5 font-mono text-[10px] font-bold text-white">
+            <span className="rounded bg-cobalt px-2 py-0.5 font-mono text-[10px] font-bold text-on-cobalt">
               HÌNH MINH HỌA CÓ NGUỒN
             </span>
             <span className="text-[11px] font-medium text-slate">
@@ -550,7 +550,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
                 onClick={() => setPlateIdx(idx)}
                 className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
                   idx === plateIdx
-                    ? "bg-cobalt text-white"
+                    ? "bg-cobalt text-on-cobalt"
                     : "border border-rule bg-sheet text-slate hover:text-ink"
                 }`}
               >
@@ -600,7 +600,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
                 className="rounded-md border border-rule bg-canvas/60 p-3 text-xs transition-colors hover:border-cobalt/50"
               >
                 <div className="flex items-start gap-2.5">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded bg-cobalt font-mono text-[11px] font-bold text-white">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded bg-cobalt font-mono text-[11px] font-bold text-on-cobalt">
                     {lm.code}
                   </span>
                   <div className="space-y-1">
@@ -659,7 +659,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
               <button
                 type="button"
                 onClick={() => setZoomOpen(false)}
-                className="rounded-md bg-ink px-3 py-1.5 text-xs font-semibold text-white"
+                className="rounded-md bg-ink px-3 py-1.5 text-xs font-semibold text-on-cobalt"
               >
                 Đóng (ESC)
               </button>

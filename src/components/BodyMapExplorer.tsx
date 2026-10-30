@@ -593,7 +593,7 @@ export function BodyMapExplorer({
                 aria-pressed={groupFilter === g}
                 className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
                   groupFilter === g
-                    ? "bg-cobalt text-white"
+                    ? "bg-cobalt text-on-cobalt"
                     : "bg-surface text-slate hover:text-ink"
                 }`}
               >
@@ -814,7 +814,7 @@ export function BodyMapExplorer({
                     Ghi nhận trong hồ sơ
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-caution" />
                     Trùng từ khóa hồ sơ
                   </span>
                 </div>
@@ -855,7 +855,7 @@ export function BodyMapExplorer({
               <button
                 type="button"
                 onClick={() => onAskRegion(activeRegion.sampleAiPrompt, activeRegion)}
-                className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-white hover:opacity-95"
+                className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-on-cobalt hover:opacity-95"
               >
                 Hỏi AI chuyên sâu vùng này
               </button>
@@ -864,7 +864,7 @@ export function BodyMapExplorer({
                 href={`/consult?prompt=${encodeURIComponent(activeRegion.sampleAiPrompt)}${
                   client?.id ? `&clientId=${encodeURIComponent(client.id)}` : ""
                 }`}
-                className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-white hover:opacity-95"
+                className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-on-cobalt hover:opacity-95"
               >
                 Đưa vào Bàn Tư vấn AI
               </Link>
@@ -1030,7 +1030,7 @@ export function BodyMapExplorer({
                   className="grid gap-3 rounded-md border border-rule bg-canvas/40 p-3.5 text-xs md:grid-cols-2"
                 >
                   <div className="rounded border border-crimson/25 bg-crimson-soft/40 p-2.5">
-                    <span className="inline-block rounded bg-crimson px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    <span className="inline-block rounded bg-crimson px-1.5 py-0.5 text-[10px] font-bold text-on-crimson">
                       CẦN THẬN TRỌNG
                     </span>
                     <p className="mt-1.5 font-display font-bold text-ink">{p.avoid}</p>
@@ -1038,7 +1038,7 @@ export function BodyMapExplorer({
                   </div>
 
                   <div className="rounded border border-cleared/30 bg-cleared-soft/40 p-2.5">
-                    <span className="inline-block rounded bg-cleared px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    <span className="inline-block rounded bg-cleared px-1.5 py-0.5 text-[10px] font-bold text-on-cleared">
                       HƯỚNG THAY THẾ · TRAO ĐỔI VỚI CHUYÊN VIÊN
                     </span>
                     <p className="mt-1.5 font-display font-bold text-ink">

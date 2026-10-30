@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef } from "react";
 import { StudyChatWidget } from "./StudyChatWidget";
+import { ThemePicker } from "./ThemePicker";
 import { Icon, type IconName } from "./WorkspaceUI";
 
 const NAV: {
@@ -61,31 +62,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         Đến nội dung chính
       </a>
       <div className="workspace-content flex h-dvh flex-col overflow-hidden">
-        <header className="z-30 shrink-0 border-b border-[#1e3346] bg-[#12202b] text-white shadow-[0_1px_0_rgb(255_255_255/0.06),0_10px_28px_-10px_rgb(10_22_32/0.45)]">
-          <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-7 lg:px-8">
-            <div className="flex min-w-0 items-center gap-3.5">
-              <Link
-                href="/atlas"
-                className="group flex shrink-0 items-center gap-3 rounded-lg focus-visible:outline-[#60a5fa]"
-                aria-label="Kinesis Lab — Trang chủ"
-              >
-                <KinesisLogo className="size-9 shrink-0 rounded-xl ring-1 ring-white/15 transition-transform duration-150 group-hover:scale-[1.03]" />
-                <span className="whitespace-nowrap text-[15px] font-bold tracking-tight text-white">
-                  Kinesis Lab<span className="text-[#34d399]">.</span>
-                </span>
-              </Link>
-              <span
-                aria-hidden="true"
-                className="hidden h-4 w-px bg-white/15 sm:block"
-              />
-              <span className="hidden truncate text-xs text-[#8fa6bc] sm:block">
-                Giải phẫu & Cơ sinh học
+        <header className="workspace-toolbar z-30 shrink-0">
+          <div className="relative flex h-16 w-full items-center gap-3 px-5 sm:px-7 lg:px-8">
+            <Link
+              href="/atlas"
+              className="group flex shrink-0 items-center gap-3 rounded-lg"
+              aria-label="Kinesis Lab — Trang chủ"
+            >
+              <KinesisLogo className="size-9 max-w-none shrink-0 rounded-xl ring-1 ring-white/15 transition-transform duration-150 group-hover:scale-[1.03]" />
+              <span className="hidden whitespace-nowrap text-[15px] font-bold tracking-tight text-white lg:inline">
+                Kinesis Lab<span className="text-[var(--mark)]">.</span>
               </span>
-            </div>
+            </Link>
 
             <nav
               aria-label="Điều hướng chính"
-              className="hidden h-full items-stretch gap-1 lg:flex"
+              className="hidden h-full min-w-0 flex-1 items-stretch justify-center overflow-hidden lg:flex"
             >
               {NAV.map((item) => {
                 const active = isActive(item.href);
@@ -94,14 +86,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`group relative inline-flex items-center gap-2.5 px-3.5 text-[13px] font-semibold transition-colors focus-visible:outline-[#60a5fa] focus-visible:-outline-offset-2 xl:px-4 ${
+                    className={`group relative inline-flex min-w-0 items-center px-1.5 text-[13px] font-semibold transition-colors xl:px-2 ${
                       active
                         ? "text-white"
-                        : "text-[#9cb2c7] hover:text-white"
+                        : "text-[var(--toolbar-muted)] hover:text-white"
                     }`}
                   >
                     <span
-                      className={`inline-flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors ${
+                      className={`inline-flex items-center gap-2 rounded-lg px-2.5 py-2 transition-colors xl:gap-2.5 xl:px-3 ${
                         active
                           ? "bg-white/[0.1] shadow-[inset_0_1px_0_rgb(255_255_255/0.14)]"
                           : "group-hover:bg-white/[0.05]"
@@ -109,10 +101,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     >
                       <Icon
                         name={item.icon}
-                        className={`size-4 transition-colors ${
+                        className={`size-4 shrink-0 transition-colors ${
                           active
-                            ? "text-[#60a5fa]"
-                            : "text-[#6f89a3] group-hover:text-[#b8cce0]"
+                            ? "text-[var(--mark)]"
+                            : "text-[var(--toolbar-muted)] group-hover:text-white"
                         }`}
                       />
                       <span className="whitespace-nowrap">{item.label}</span>
@@ -120,7 +112,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     {active && (
                       <span
                         aria-hidden="true"
-                        className="absolute inset-x-4 bottom-0 h-[2px] rounded-t-full bg-gradient-to-r from-[#60a5fa] to-[#34d399]"
+                        className="absolute inset-x-3 bottom-0 h-[2px] rounded-t-full bg-gradient-to-r from-[var(--mark)] to-[var(--cleared)]"
                       />
                     )}
                   </Link>
@@ -128,9 +120,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1.5 text-xs font-medium text-[#d5e3f0] lg:hidden">
-              <Icon name={current.icon} className="size-3.5 text-[#60a5fa]" />
-              <span>{current.label}</span>
+            <p className="pointer-events-none absolute inset-x-16 top-1/2 flex -translate-y-1/2 items-center justify-center gap-2 lg:hidden">
+              <Icon name={current.icon} className="size-3.5 text-[var(--mark)]" />
+              <span className="truncate text-[13px] font-semibold tracking-tight text-white">
+                {current.label}
+              </span>
+            </p>
+
+            <div className="ml-auto flex shrink-0 items-center">
+              <ThemePicker />
             </div>
           </div>
         </header>
@@ -202,8 +200,8 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
           y2="60"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stopColor="#122024" />
-          <stop offset="1" stopColor="#0d4696" />
+          <stop offset="0" stopColor="var(--p1)" />
+          <stop offset="1" stopColor="var(--p3)" />
         </linearGradient>
         <linearGradient
           id={vectorId}
@@ -213,8 +211,8 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
           y2="50"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stopColor="#60a5fa" />
-          <stop offset="1" stopColor="#34d399" />
+          <stop offset="0" stopColor="var(--p6)" />
+          <stop offset="1" stopColor="var(--p4)" />
         </linearGradient>
       </defs>
       <rect
@@ -237,7 +235,7 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
       />
       <path
         d="M 38 20 A 16 16 0 0 1 38 44"
-        stroke="#93c5fd"
+        stroke="var(--p6)"
         strokeOpacity="0.55"
         strokeWidth="2"
         strokeDasharray="2.5 2.5"
@@ -265,23 +263,23 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
         cx="45"
         cy="16"
         r="3.5"
-        fill="#60a5fa"
-        stroke="#122024"
+        fill="var(--p6)"
+        stroke="var(--p1)"
         strokeWidth="1.5"
       />
       <circle
         cx="45"
         cy="48"
         r="3.5"
-        fill="#34d399"
-        stroke="#122024"
+        fill="var(--p4)"
+        stroke="var(--p1)"
         strokeWidth="1.5"
       />
       <circle
         cx="22"
         cy="32"
         r="6"
-        fill="#0b6a51"
+        fill="var(--p5)"
         stroke="#ffffff"
         strokeWidth="2.5"
       />

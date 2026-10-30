@@ -676,7 +676,7 @@ export function StudyChatWidget({
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={open ? "Đóng khung hỏi nhanh" : "Mở khung hỏi nhanh"}
-        className="study-chat-launcher flex items-center justify-center rounded-full bg-cobalt text-sheet shadow-lg transition-transform hover:scale-105"
+        className="study-chat-launcher flex items-center justify-center rounded-full bg-cobalt text-on-cobalt shadow-lg transition-transform hover:scale-105"
       >
         <Icon name={open ? "close" : "message"} className="size-6" />
         {hydrated && !open && messages.length > 0 && (

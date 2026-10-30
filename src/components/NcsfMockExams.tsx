@@ -308,7 +308,7 @@ export function NcsfMockExams({
                   (optionIndex, displayOptionIndex) => (
                     <label
                       key={optionIndex}
-                      className={`flex min-h-11 items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${done ? "cursor-default" : "cursor-pointer"} ${done && optionIndex === q.answer ? "bg-emerald-50 text-ink" : done && selections[sourceIndex] === optionIndex ? "bg-rose-50 text-ink" : selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
+                      className={`flex min-h-11 items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${done ? "cursor-default" : "cursor-pointer"} ${done && optionIndex === q.answer ? "bg-cleared-soft text-ink" : done && selections[sourceIndex] === optionIndex ? "bg-crimson-soft text-ink" : selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
                     >
                       <input
                         type="radio"
@@ -330,7 +330,7 @@ export function NcsfMockExams({
                       <span className="min-w-0 whitespace-pre-wrap break-words">
                         {String.fromCharCode(65 + displayOptionIndex)}.{" "}
                         {mockOptionText(q.options[optionIndex])}
-                        {done && optionIndex === q.answer && <span className="ml-2 font-semibold text-emerald-800">✓ Đáp án đúng</span>}
+                        {done && optionIndex === q.answer && <span className="ml-2 font-semibold text-cleared">✓ Đáp án đúng</span>}
                         {done && selections[sourceIndex] === optionIndex && <span className="ml-2 font-semibold">· Bạn chọn</span>}
                       </span>
                     </label>

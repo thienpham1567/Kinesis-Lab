@@ -23,9 +23,9 @@ import { TrainingAnatomyViewer } from "./TrainingAnatomyViewer";
 import { ContextualAnatomyViewer } from "../atlas3d/ContextualAnatomyViewer";
 import type { Client } from "@/lib/types";
 const ROLE_STYLE = {
-  primary: "border-crimson/30 bg-crimson-soft text-crimson",
-  synergist: "border-caution/30 bg-caution-soft text-caution",
-  stabilizer: "border-cobalt/30 bg-cobalt-soft text-cobalt",
+  primary: "border-crimson/30 bg-crimson-soft text-ink",
+  synergist: "border-caution/30 bg-caution-soft text-ink",
+  stabilizer: "border-cobalt/30 bg-cobalt-soft text-ink",
 };
 export function TrainingAtlasExplorer({
   initialExerciseId,

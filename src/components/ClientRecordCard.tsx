@@ -19,20 +19,20 @@ export function clientStatus(client: Client) {
     ? {
         level: "referral",
         label: "Cần chuyển khám BS",
-        className: "border-crimson/25 bg-crimson-soft text-crimson",
+        className: "border-crimson/25 bg-crimson-soft text-ink",
         icon: "alert" as const,
       }
     : hasCaution
       ? {
           level: "caution",
           label: "Cần điều chỉnh tải / bài tập",
-          className: "border-caution/25 bg-caution-soft text-caution",
+          className: "border-caution/25 bg-caution-soft text-ink",
           icon: "activity" as const,
         }
       : {
           level: "standard",
           label: "Đủ điều kiện tập tiêu chuẩn",
-          className: "border-cleared/25 bg-cleared-soft text-cleared",
+          className: "border-cleared/25 bg-cleared-soft text-ink",
           icon: "check" as const,
         };
 }

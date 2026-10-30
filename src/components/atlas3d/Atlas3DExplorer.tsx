@@ -1105,7 +1105,7 @@ export default function Atlas3DExplorer({
                     Độ dày ước lượng · cấu trúc đã chọn
                   </p>
                   <div
-                    className="mt-2 h-2 rounded-full bg-[linear-gradient(to_right,#0946d2,#05dfe9,#ffbd34,#d12b27)]"
+                    className="mt-2 h-2 rounded-full bg-[linear-gradient(to_right,var(--p3),var(--p4),var(--p6),var(--p8),var(--p10))]"
                     aria-hidden="true"
                   />
                   <div className="mt-1 flex justify-between font-mono text-[10px]">

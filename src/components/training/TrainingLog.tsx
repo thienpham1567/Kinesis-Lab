@@ -180,7 +180,7 @@ function TrainingLogWorkspace({ clientId, initialExerciseId }: TrainingLogProps)
               <p className="text-sm text-crimson">Xóa mục nhật ký này khỏi lịch sử?</p>
               <div className="mt-2 flex flex-wrap gap-3">
                 <button type="button" className="button-secondary min-h-11" disabled={Boolean(deleting)} onClick={() => setPendingDelete(null)}>Giữ lại</button>
-                <button type="button" className="min-h-11 rounded-lg bg-crimson px-4 text-sm font-semibold text-white" disabled={Boolean(deleting)} onClick={() => void remove(record.id)}>{deleting === record.id ? "Đang xóa…" : "Xác nhận xóa"}</button>
+                <button type="button" className="min-h-11 rounded-lg bg-crimson px-4 text-sm font-semibold text-on-crimson" disabled={Boolean(deleting)} onClick={() => void remove(record.id)}>{deleting === record.id ? "Đang xóa…" : "Xác nhận xóa"}</button>
               </div>
             </div>}
           </li>)}

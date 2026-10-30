@@ -78,10 +78,10 @@ export function TriggerPointExplorer({
               className={`rounded px-3 py-1.5 text-xs font-bold transition-colors ${
                 lookupMode === mode.id
                   ? mode.id === "pain_to_muscle"
-                    ? "bg-caution text-white"
+                    ? "bg-caution text-on-caution"
                     : mode.id === "handbook"
                       ? "bg-ink text-white"
-                      : "bg-crimson text-white"
+                      : "bg-crimson text-on-crimson"
                   : "text-slate hover:text-ink"
               }`}
             >
@@ -123,7 +123,7 @@ export function TriggerPointExplorer({
               aria-pressed={m.id === selectedMuscleId}
               className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                 m.id === selectedMuscleId
-                  ? "border-crimson bg-crimson text-white"
+                  ? "border-crimson bg-crimson text-on-crimson"
                   : "border-rule bg-sheet text-slate hover:border-crimson hover:text-ink"
               }`}
             >
@@ -143,7 +143,7 @@ export function TriggerPointExplorer({
                   aria-pressed={selectedPainSiteId === site.id}
               className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                 site.id === selectedPainSiteId
-                  ? "border-caution bg-caution text-white"
+                  ? "border-caution bg-caution text-on-caution"
                   : "border-rule bg-sheet text-slate hover:border-caution hover:text-ink"
               }`}
             >
@@ -237,7 +237,7 @@ function MuscleClinicalPanel({
         </div>
         <Link
           href={`/consult?prompt=${encodeURIComponent(muscle.sampleAiPrompt)}`}
-          className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-white hover:opacity-95"
+          className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-on-cobalt hover:opacity-95"
         >
           Trao đổi với AI
         </Link>
@@ -330,7 +330,7 @@ function MuscleClinicalPanel({
           <p className="mt-2 text-slate">{muscle.chain.biomechanicalReason}</p>
           <div className="mt-3 grid gap-2.5 md:grid-cols-2">
             <div className="rounded border border-cleared/30 bg-cleared-soft/50 p-2.5">
-              <span className="inline-block rounded bg-cleared px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
+              <span className="inline-block rounded bg-cleared px-1.5 py-0.5 font-mono text-[10px] font-bold text-on-cleared">
                 Vận động/bài tập có thể cân nhắc sau đánh giá
               </span>
               <p className="mt-1.5 font-display font-bold text-ink">
@@ -656,10 +656,10 @@ function ProtocolStep({
     cobalt: "border-cobalt/30 bg-cobalt-soft/50",
   }[tone];
   const badgeCls = {
-    crimson: "bg-crimson text-white",
-    caution: "bg-caution text-white",
-    cleared: "bg-cleared text-white",
-    cobalt: "bg-cobalt text-white",
+    crimson: "bg-crimson text-on-crimson",
+    caution: "bg-caution text-on-caution",
+    cleared: "bg-cleared text-on-cleared",
+    cobalt: "bg-cobalt text-on-cobalt",
   }[tone];
 
   return (

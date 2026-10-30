@@ -26,7 +26,8 @@ export type IconName =
   | "target"
   | "clock"
   | "expand"
-  | "spark";
+  | "spark"
+  | "palette";
 
 const paths: Record<IconName, ReactNode> = {
   copy: <><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V3H3v13h5" /></>,
@@ -123,6 +124,15 @@ const paths: Record<IconName, ReactNode> = {
   ),
   spark: (
     <path d="M12 2.5 13.6 8.4 19.5 10 13.6 11.6 12 17.5 10.4 11.6 4.5 10 10.4 8.4 12 2.5Z" />
+  ),
+  palette: (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18h1.2a2.4 2.4 0 0 0 2.2-3.4 2.4 2.4 0 0 1 2.1-3.6H19a4 4 0 0 0 0-8A9 9 0 0 0 12 3Z" />
+      <circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="10" cy="7.2" r="1" fill="currentColor" stroke="none" />
+      <circle cx="14.2" cy="7.6" r="1" fill="currentColor" stroke="none" />
+      <circle cx="8.2" cy="14.2" r="1" fill="currentColor" stroke="none" />
+    </>
   ),
 };
 

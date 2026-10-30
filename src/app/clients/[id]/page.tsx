@@ -514,9 +514,9 @@ function RedFlagForm({
                   className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
                     answers[q.id] === v
                       ? v === true
-                        ? "bg-crimson text-white"
+                        ? "bg-crimson text-on-crimson"
                         : v === false
-                          ? "bg-cleared text-white"
+                          ? "bg-cleared text-on-cleared"
                           : "bg-ink text-white"
                       : "bg-surface text-slate hover:text-ink"
                   }`}
@@ -695,7 +695,7 @@ function Labs({
               Ratio).
             </p>
           </div>
-          <label className="cursor-pointer rounded-md bg-cobalt px-4 py-2.5 font-display text-xs font-semibold text-white hover:opacity-95">
+          <label className="cursor-pointer rounded-md bg-cobalt px-4 py-2.5 font-display text-xs font-semibold text-on-cobalt hover:opacity-95">
             {busy
               ? "Đang phân tích phiếu..."
               : "Tải ảnh / PDF phiếu xét nghiệm"}
@@ -860,7 +860,7 @@ function JsonList<T extends object>({
         </div>
         <button
           type="button"
-          className="rounded border border-cobalt bg-cobalt-soft px-3 py-1 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-white"
+          className="rounded border border-cobalt bg-cobalt-soft px-3 py-1 text-xs font-semibold text-cobalt hover:bg-cobalt hover:text-on-cobalt"
           onClick={() =>
             onChange([
               ...list,

@@ -69,7 +69,7 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
           aria-valuenow={pct}
         >
           <div
-            className="h-full bg-cobalt transition-[width] duration-150"
+            className="h-full bg-gradient-to-r from-cobalt via-mark to-ember transition-[width] duration-150"
             style={{ width: `${pct}%` }}
           />
         </div>

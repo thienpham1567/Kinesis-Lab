@@ -1,22 +1,499 @@
 @import "tailwindcss";
 
-:root {
-  --canvas: #f5f7f9;
-  --sheet: #ffffff;
-  --surface: #edf1f5;
-  --ink: #1a2d40;
-  --slate: #56687a;
-  --cobalt: #2454cb;
-  --cobalt-soft: #edf2ff;
-  --cleared: #176b58;
-  --cleared-soft: #e7f4ee;
-  --caution: #8c4d0e;
-  --caution-soft: #fff4e2;
-  --crimson: #b33132;
-  --crimson-soft: #fdefee;
-  --rule: #dfe5ed;
-  --rule-strong: #bdc9d6;
+:root,
+html[data-theme="tide"] {
+  --p1: #001219;
+  --p2: #005f73;
+  --p3: #0a9396;
+  --p4: #94d2bd;
+  --p5: #e9d8a6;
+  --p6: #ee9b00;
+  --p7: #ca6702;
+  --p8: #bb3e03;
+  --p9: #ae2012;
+  --p10: #9b2226;
+  --canvas: color-mix(in srgb, var(--p5) 38%, #fff8ea);
+  --sheet: #fff8ea;
+  --surface: var(--p5);
+  --ink: var(--p1);
+  --slate: var(--p2);
+  --cobalt: var(--p2);
+  --cobalt-soft: color-mix(in srgb, var(--p4) 42%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p3);
+  --cleared-soft: color-mix(in srgb, var(--p4) 38%, var(--sheet));
+  --on-cleared: var(--ink);
+  --caution: var(--p7);
+  --caution-soft: color-mix(in srgb, var(--p6) 22%, var(--sheet));
+  --on-caution: var(--ink);
+  --crimson: var(--p10);
+  --crimson-soft: color-mix(in srgb, var(--p10) 16%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: color-mix(in srgb, var(--p4) 42%, var(--p5));
+  --rule-strong: color-mix(in srgb, var(--p2) 28%, var(--p5));
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p4);
+  --mark: var(--p6);
+  --mark-soft: color-mix(in srgb, var(--p6) 22%, var(--sheet));
+  --ember: var(--p8);
+  --flare: var(--p9);
   --header-h: 4.5rem;
+}
+
+html[data-theme="pacific"] {
+  --p1: #03045e;
+  --p2: #023e8a;
+  --p3: #0077b6;
+  --p4: #0096c7;
+  --p5: #00b4d8;
+  --p6: #48cae4;
+  --p7: #90e0ef;
+  --p8: #ade8f4;
+  --p9: #caf0f8;
+  --p10: #caf0f8;
+  --canvas: var(--p9);
+  --sheet: color-mix(in srgb, var(--p9) 28%, #ffffff);
+  --surface: var(--p8);
+  --ink: var(--p1);
+  --slate: var(--p2);
+  --cobalt: var(--p2);
+  --cobalt-soft: var(--p8);
+  --on-cobalt: #ffffff;
+  --cleared: var(--p3);
+  --cleared-soft: var(--p7);
+  --on-cleared: #ffffff;
+  --caution: var(--p2);
+  --caution-soft: var(--p8);
+  --on-caution: #ffffff;
+  --crimson: var(--p1);
+  --crimson-soft: color-mix(in srgb, var(--p1) 12%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: var(--p7);
+  --rule-strong: var(--p4);
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p7);
+  --mark: var(--p6);
+  --mark-soft: var(--p8);
+  --ember: var(--p4);
+  --flare: var(--p5);
+}
+
+html[data-theme="canopy"] {
+  --p1: #582f0e;
+  --p2: #7f4f24;
+  --p3: #936639;
+  --p4: #a68a64;
+  --p5: #b6ad90;
+  --p6: #c2c5aa;
+  --p7: #a4ac86;
+  --p8: #656d4a;
+  --p9: #414833;
+  --p10: #333d29;
+  --canvas: color-mix(in srgb, var(--p6) 42%, #f6f4ea);
+  --sheet: #f6f4ea;
+  --surface: var(--p6);
+  --ink: var(--p10);
+  --slate: var(--p9);
+  --cobalt: var(--p9);
+  --cobalt-soft: color-mix(in srgb, var(--p7) 48%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p8);
+  --cleared-soft: color-mix(in srgb, var(--p7) 44%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p2);
+  --caution-soft: color-mix(in srgb, var(--p3) 28%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p1);
+  --crimson-soft: color-mix(in srgb, var(--p1) 16%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: var(--p5);
+  --rule-strong: var(--p3);
+  --toolbar: var(--p10);
+  --toolbar-muted: var(--p6);
+  --mark: var(--p4);
+  --mark-soft: color-mix(in srgb, var(--p4) 28%, var(--sheet));
+  --ember: var(--p3);
+  --flare: var(--p2);
+}
+
+html[data-theme="sunny-beach"] {
+  --p1: #264653;
+  --p2: #2a9d8f;
+  --p3: #e9c46a;
+  --p4: #f4a261;
+  --p5: #e76f51;
+  --p6: #e9c46a;
+  --p7: #f4a261;
+  --p8: #e76f51;
+  --p9: #2a9d8f;
+  --p10: #264653;
+  --canvas: color-mix(in srgb, var(--p3) 28%, #fffaf2);
+  --sheet: #fffaf2;
+  --surface: color-mix(in srgb, var(--p3) 42%, var(--sheet));
+  --ink: var(--p1);
+  --slate: var(--p1);
+  --cobalt: var(--p1);
+  --cobalt-soft: color-mix(in srgb, var(--p2) 22%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p2);
+  --cleared-soft: color-mix(in srgb, var(--p2) 18%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p4);
+  --caution-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
+  --on-caution: var(--ink);
+  --crimson: var(--p5);
+  --crimson-soft: color-mix(in srgb, var(--p5) 16%, var(--sheet));
+  --on-crimson: var(--ink);
+  --rule: color-mix(in srgb, var(--p1) 18%, var(--p3));
+  --rule-strong: color-mix(in srgb, var(--p1) 32%, var(--p3));
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p3);
+  --mark: var(--p3);
+  --mark-soft: color-mix(in srgb, var(--p3) 28%, var(--sheet));
+  --ember: var(--p4);
+  --flare: var(--p5);
+}
+
+html[data-theme="summer-ocean"] {
+  --p1: #e63946;
+  --p2: #f1faee;
+  --p3: #a8dadc;
+  --p4: #457b9d;
+  --p5: #1d3557;
+  --p6: #a8dadc;
+  --p7: #457b9d;
+  --p8: #e63946;
+  --p9: #f1faee;
+  --p10: #1d3557;
+  --canvas: var(--p2);
+  --sheet: #ffffff;
+  --surface: var(--p3);
+  --ink: var(--p5);
+  --slate: var(--p5);
+  --cobalt: var(--p5);
+  --cobalt-soft: color-mix(in srgb, var(--p3) 55%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p4);
+  --cleared-soft: var(--p3);
+  --on-cleared: #ffffff;
+  --caution: var(--p1);
+  --caution-soft: color-mix(in srgb, var(--p1) 14%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p1);
+  --crimson-soft: color-mix(in srgb, var(--p1) 14%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: color-mix(in srgb, var(--p3) 70%, var(--p4));
+  --rule-strong: color-mix(in srgb, var(--p4) 38%, var(--p3));
+  --toolbar: var(--p5);
+  --toolbar-muted: var(--p3);
+  --mark: var(--p3);
+  --mark-soft: var(--p3);
+  --ember: var(--p1);
+  --flare: var(--p1);
+}
+
+html[data-theme="earthy-forest"] {
+  --p1: #dad7cd;
+  --p2: #a3b18a;
+  --p3: #588157;
+  --p4: #3a5a40;
+  --p5: #344e41;
+  --p6: #dad7cd;
+  --p7: #a3b18a;
+  --p8: #588157;
+  --p9: #3a5a40;
+  --p10: #344e41;
+  --canvas: color-mix(in srgb, var(--p1) 70%, #f7f6f1);
+  --sheet: #f7f6f1;
+  --surface: var(--p1);
+  --ink: var(--p5);
+  --slate: var(--p4);
+  --cobalt: var(--p4);
+  --cobalt-soft: color-mix(in srgb, var(--p2) 42%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p3);
+  --cleared-soft: color-mix(in srgb, var(--p2) 38%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p4);
+  --caution-soft: color-mix(in srgb, var(--p2) 32%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p5);
+  --crimson-soft: color-mix(in srgb, var(--p5) 14%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: var(--p2);
+  --rule-strong: color-mix(in srgb, var(--p4) 38%, var(--p2));
+  --toolbar: var(--p5);
+  --toolbar-muted: var(--p1);
+  --mark: var(--p2);
+  --mark-soft: color-mix(in srgb, var(--p2) 28%, var(--sheet));
+  --ember: var(--p3);
+  --flare: var(--p4);
+}
+
+html[data-theme="olive-garden"] {
+  --p1: #606c38;
+  --p2: #283618;
+  --p3: #fefae0;
+  --p4: #dda15e;
+  --p5: #bc6c25;
+  --p6: #dda15e;
+  --p7: #bc6c25;
+  --p8: #606c38;
+  --p9: #fefae0;
+  --p10: #283618;
+  --canvas: var(--p3);
+  --sheet: #fffcf3;
+  --surface: color-mix(in srgb, var(--p4) 28%, var(--sheet));
+  --ink: var(--p2);
+  --slate: var(--p2);
+  --cobalt: var(--p2);
+  --cobalt-soft: color-mix(in srgb, var(--p1) 16%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p1);
+  --cleared-soft: color-mix(in srgb, var(--p1) 14%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p5);
+  --caution-soft: color-mix(in srgb, var(--p4) 32%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p5);
+  --crimson-soft: color-mix(in srgb, var(--p5) 16%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: color-mix(in srgb, var(--p4) 55%, var(--p3));
+  --rule-strong: color-mix(in srgb, var(--p5) 42%, var(--p3));
+  --toolbar: var(--p2);
+  --toolbar-muted: var(--p4);
+  --mark: var(--p4);
+  --mark-soft: color-mix(in srgb, var(--p4) 24%, var(--sheet));
+  --ember: var(--p5);
+  --flare: var(--p5);
+}
+
+html[data-theme="summer-fun"] {
+  --p1: #8ecae6;
+  --p2: #219ebc;
+  --p3: #023047;
+  --p4: #ffb703;
+  --p5: #fb8500;
+  --p6: #8ecae6;
+  --p7: #219ebc;
+  --p8: #ffb703;
+  --p9: #fb8500;
+  --p10: #023047;
+  --canvas: color-mix(in srgb, var(--p1) 32%, #f4fbfe);
+  --sheet: #f7fcfe;
+  --surface: var(--p1);
+  --ink: var(--p3);
+  --slate: var(--p3);
+  --cobalt: var(--p3);
+  --cobalt-soft: color-mix(in srgb, var(--p1) 55%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p2);
+  --cleared-soft: var(--p1);
+  --on-cleared: var(--ink);
+  --caution: var(--p4);
+  --caution-soft: color-mix(in srgb, var(--p4) 28%, var(--sheet));
+  --on-caution: var(--ink);
+  --crimson: var(--p5);
+  --crimson-soft: color-mix(in srgb, var(--p5) 16%, var(--sheet));
+  --on-crimson: var(--ink);
+  --rule: var(--p1);
+  --rule-strong: color-mix(in srgb, var(--p3) 28%, var(--p1));
+  --toolbar: var(--p3);
+  --toolbar-muted: var(--p1);
+  --mark: var(--p4);
+  --mark-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
+  --ember: var(--p5);
+  --flare: var(--p5);
+}
+
+html[data-theme="autumn-glow"] {
+  --p1: #003049;
+  --p2: #d62828;
+  --p3: #f77f00;
+  --p4: #fcbf49;
+  --p5: #eae2b7;
+  --p6: #fcbf49;
+  --p7: #f77f00;
+  --p8: #d62828;
+  --p9: #eae2b7;
+  --p10: #003049;
+  --canvas: color-mix(in srgb, var(--p5) 70%, #fffdf6);
+  --sheet: #fffdf6;
+  --surface: var(--p5);
+  --ink: var(--p1);
+  --slate: var(--p1);
+  --cobalt: var(--p1);
+  --cobalt-soft: color-mix(in srgb, var(--p1) 10%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p1);
+  --cleared-soft: color-mix(in srgb, var(--p4) 28%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p3);
+  --caution-soft: color-mix(in srgb, var(--p4) 32%, var(--sheet));
+  --on-caution: var(--ink);
+  --crimson: var(--p2);
+  --crimson-soft: color-mix(in srgb, var(--p2) 14%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: color-mix(in srgb, var(--p1) 16%, var(--p5));
+  --rule-strong: color-mix(in srgb, var(--p1) 28%, var(--p5));
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p4);
+  --mark: var(--p4);
+  --mark-soft: color-mix(in srgb, var(--p4) 28%, var(--sheet));
+  --ember: var(--p3);
+  --flare: var(--p2);
+}
+
+html[data-theme="black-gold"] {
+  --p1: #000000;
+  --p2: #14213d;
+  --p3: #fca311;
+  --p4: #e5e5e5;
+  --p5: #ffffff;
+  --p6: #fca311;
+  --p7: #e5e5e5;
+  --p8: #14213d;
+  --p9: #ffffff;
+  --p10: #000000;
+  --canvas: var(--p4);
+  --sheet: var(--p5);
+  --surface: var(--p4);
+  --ink: var(--p2);
+  --slate: var(--p2);
+  --cobalt: var(--p2);
+  --cobalt-soft: var(--p4);
+  --on-cobalt: #ffffff;
+  --cleared: var(--p2);
+  --cleared-soft: var(--p4);
+  --on-cleared: #ffffff;
+  --caution: var(--p3);
+  --caution-soft: color-mix(in srgb, var(--p3) 18%, var(--sheet));
+  --on-caution: var(--ink);
+  --crimson: var(--p1);
+  --crimson-soft: color-mix(in srgb, var(--p1) 10%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: var(--p4);
+  --rule-strong: color-mix(in srgb, var(--p2) 28%, var(--p4));
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p4);
+  --mark: var(--p3);
+  --mark-soft: color-mix(in srgb, var(--p3) 18%, var(--sheet));
+  --ember: var(--p3);
+  --flare: var(--p3);
+}
+
+html[data-theme="deep-sea"] {
+  --p1: #0d1321;
+  --p2: #1d2d44;
+  --p3: #3e5c76;
+  --p4: #748cab;
+  --p5: #f0ebd8;
+  --p6: #748cab;
+  --p7: #3e5c76;
+  --p8: #1d2d44;
+  --p9: #f0ebd8;
+  --p10: #0d1321;
+  --canvas: color-mix(in srgb, var(--p5) 62%, #fbf8ef);
+  --sheet: #fbf8ef;
+  --surface: var(--p5);
+  --ink: var(--p1);
+  --slate: var(--p2);
+  --cobalt: var(--p2);
+  --cobalt-soft: color-mix(in srgb, var(--p4) 28%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p3);
+  --cleared-soft: color-mix(in srgb, var(--p4) 24%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p2);
+  --caution-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p1);
+  --crimson-soft: color-mix(in srgb, var(--p1) 10%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: color-mix(in srgb, var(--p4) 32%, var(--p5));
+  --rule-strong: color-mix(in srgb, var(--p2) 28%, var(--p5));
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p4);
+  --mark: var(--p4);
+  --mark-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
+  --ember: var(--p3);
+  --flare: var(--p2);
+}
+
+html[data-theme="earthy-green"] {
+  --p1: #cad2c5;
+  --p2: #84a98c;
+  --p3: #52796f;
+  --p4: #354f52;
+  --p5: #2f3e46;
+  --p6: #cad2c5;
+  --p7: #84a98c;
+  --p8: #52796f;
+  --p9: #354f52;
+  --p10: #2f3e46;
+  --canvas: color-mix(in srgb, var(--p1) 58%, #f5f7f3);
+  --sheet: #f5f7f3;
+  --surface: var(--p1);
+  --ink: var(--p5);
+  --slate: var(--p4);
+  --cobalt: var(--p4);
+  --cobalt-soft: color-mix(in srgb, var(--p2) 38%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p3);
+  --cleared-soft: color-mix(in srgb, var(--p2) 32%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p4);
+  --caution-soft: color-mix(in srgb, var(--p2) 24%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p5);
+  --crimson-soft: color-mix(in srgb, var(--p5) 12%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: var(--p2);
+  --rule-strong: color-mix(in srgb, var(--p4) 32%, var(--p2));
+  --toolbar: var(--p5);
+  --toolbar-muted: var(--p1);
+  --mark: var(--p2);
+  --mark-soft: color-mix(in srgb, var(--p2) 26%, var(--sheet));
+  --ember: var(--p3);
+  --flare: var(--p4);
+}
+
+html[data-theme="fresh-greens"] {
+  --p1: #386641;
+  --p2: #6a994e;
+  --p3: #a7c957;
+  --p4: #f2e8cf;
+  --p5: #bc4749;
+  --p6: #a7c957;
+  --p7: #6a994e;
+  --p8: #bc4749;
+  --p9: #f2e8cf;
+  --p10: #386641;
+  --canvas: var(--p4);
+  --sheet: #fbf7ec;
+  --surface: color-mix(in srgb, var(--p3) 32%, var(--sheet));
+  --ink: var(--p1);
+  --slate: var(--p1);
+  --cobalt: var(--p1);
+  --cobalt-soft: color-mix(in srgb, var(--p3) 28%, var(--sheet));
+  --on-cobalt: #ffffff;
+  --cleared: var(--p2);
+  --cleared-soft: color-mix(in srgb, var(--p3) 32%, var(--sheet));
+  --on-cleared: #ffffff;
+  --caution: var(--p5);
+  --caution-soft: color-mix(in srgb, var(--p5) 14%, var(--sheet));
+  --on-caution: #ffffff;
+  --crimson: var(--p5);
+  --crimson-soft: color-mix(in srgb, var(--p5) 14%, var(--sheet));
+  --on-crimson: #ffffff;
+  --rule: color-mix(in srgb, var(--p1) 18%, var(--p4));
+  --rule-strong: color-mix(in srgb, var(--p1) 32%, var(--p4));
+  --toolbar: var(--p1);
+  --toolbar-muted: var(--p4);
+  --mark: var(--p3);
+  --mark-soft: color-mix(in srgb, var(--p3) 28%, var(--sheet));
+  --ember: var(--p5);
+  --flare: var(--p5);
 }
 
 @theme inline {
@@ -35,6 +512,16 @@
   --color-crimson-soft: var(--crimson-soft);
   --color-rule: var(--rule);
   --color-rule-strong: var(--rule-strong);
+  --color-toolbar: var(--toolbar);
+  --color-toolbar-muted: var(--toolbar-muted);
+  --color-mark: var(--mark);
+  --color-mark-soft: var(--mark-soft);
+  --color-ember: var(--ember);
+  --color-flare: var(--flare);
+  --color-on-cobalt: var(--on-cobalt);
+  --color-on-caution: var(--on-caution);
+  --color-on-crimson: var(--on-crimson);
+  --color-on-cleared: var(--on-cleared);
   --font-sans: var(--font-body);
   --font-display: var(--font-body);
   --font-mono: var(--font-lab);
@@ -81,14 +568,14 @@ h3 {
 }
 
 ::selection {
-  background: var(--cobalt);
-  color: #ffffff;
+  background: var(--mark);
+  color: var(--ink);
 }
 
 /* Thanh cuộn mảnh và lặng: chỉ hiện rõ khi người dùng chạm vào vùng cuộn. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgb(86 104 122 / 0.35) transparent;
+  scrollbar-color: color-mix(in srgb, var(--slate) 45%, transparent) transparent;
 }
 *::-webkit-scrollbar {
   width: 10px;
@@ -98,13 +585,13 @@ h3 {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgb(86 104 122 / 0.32);
+  background: color-mix(in srgb, var(--slate) 38%, transparent);
   border: 3px solid transparent;
   border-radius: 999px;
   background-clip: padding-box;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgb(36 84 203 / 0.55);
+  background: color-mix(in srgb, var(--cobalt) 55%, transparent);
   border: 3px solid transparent;
   background-clip: padding-box;
 }
@@ -162,8 +649,8 @@ select:focus {
     border-radius: 18px;
     background: var(--sheet);
     box-shadow:
-      0 1px 2px rgb(26 45 64 / 0.03),
-      0 8px 24px -8px rgb(26 45 64 / 0.045);
+      0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent),
+      0 8px 24px -8px color-mix(in srgb, var(--ink) 8%, transparent);
     min-width: 0;
   }
   .panel-header {
@@ -176,7 +663,7 @@ select:focus {
     border-bottom: 1px solid var(--rule);
   }
   .eyebrow {
-    color: var(--cobalt);
+    color: var(--slate);
     font-family: var(--font-lab), monospace;
     font-size: 10px;
     font-weight: 600;
@@ -192,7 +679,7 @@ select:focus {
     gap: 20px;
     margin-bottom: 24px;
     padding-bottom: 20px;
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 1px solid color-mix(in srgb, var(--mark) 28%, var(--rule));
   }
   .page-heading h1 {
     margin-top: 8px;
@@ -240,12 +727,14 @@ select:focus {
   }
   .button-primary {
     background: var(--cobalt);
-    color: var(--sheet);
+    color: var(--on-cobalt);
     border: 1px solid var(--cobalt);
-    box-shadow: 0 2px 3px rgb(36 84 203 / 0.1);
+    box-shadow: 0 2px 3px color-mix(in srgb, var(--cobalt) 18%, transparent);
   }
   .button-primary:hover:not(:disabled) {
-    filter: brightness(0.93);
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--on-cobalt);
   }
   .button-primary:disabled {
     background: var(--surface);
@@ -324,7 +813,7 @@ select:focus {
     border-radius: 14px;
     background: color-mix(in srgb, var(--surface) 88%, var(--sheet));
     padding: 5px;
-    box-shadow: inset 0 1px 2px rgb(26 45 64 / 0.04);
+    box-shadow: inset 0 1px 2px color-mix(in srgb, var(--ink) 6%, transparent);
   }
   .tab-button {
     display: inline-flex;
@@ -346,15 +835,16 @@ select:focus {
   }
   .tab-button:hover {
     color: var(--ink);
-    background: rgb(255 255 255 / 0.55);
+    background: color-mix(in srgb, var(--sheet) 70%, transparent);
   }
   .tab-button[aria-pressed="true"] {
-    color: var(--cobalt);
+    color: var(--ink);
     background: var(--sheet);
-    border-color: color-mix(in srgb, var(--cobalt) 20%, var(--rule));
+    border-color: color-mix(in srgb, var(--mark) 35%, var(--rule));
     box-shadow:
-      0 1px 2px rgb(26 45 64 / 0.05),
-      0 3px 8px -2px rgb(36 84 203 / 0.08);
+      inset 0 -2px 0 var(--mark),
+      0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent),
+      0 3px 8px -2px color-mix(in srgb, var(--cobalt) 16%, transparent);
   }
   .badge {
     display: inline-flex;
@@ -368,7 +858,7 @@ select:focus {
     font-weight: 500;
   }
   .alert-error {
-    border: 1px solid color-mix(in srgb, var(--crimson) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--flare) 40%, transparent);
     border-radius: 12px;
     background: var(--crimson-soft);
     color: var(--crimson);
@@ -402,7 +892,7 @@ select:focus {
   transform: translateY(-150%);
   padding: 12px 18px;
   border-radius: 8px;
-  color: var(--sheet);
+  color: var(--on-cobalt);
   background: var(--cobalt);
 }
 .skip-link:focus {
@@ -411,6 +901,102 @@ select:focus {
 .workspace-content {
   min-width: 0;
   margin-left: 0;
+}
+.workspace-toolbar {
+  position: relative;
+  border-bottom: 0;
+  background: linear-gradient(
+    180deg,
+    var(--toolbar) 0%,
+    color-mix(in srgb, var(--toolbar) 82%, var(--slate)) 100%
+  );
+  color: #fff;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.06),
+    0 10px 28px -10px color-mix(in srgb, var(--toolbar) 55%, transparent);
+}
+.workspace-toolbar::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--p1) 0%,
+    var(--p2) 11%,
+    var(--p3) 22%,
+    var(--p4) 33%,
+    var(--p5) 44%,
+    var(--p6) 55%,
+    var(--p7) 66%,
+    var(--p8) 77%,
+    var(--p9) 88%,
+    var(--p10) 100%
+  );
+}
+header.workspace-toolbar .theme-picker-trigger {
+  display: block;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+  overflow: hidden;
+  appearance: none;
+  border: 2px solid rgb(255 255 255 / 0.34);
+  border-radius: 999px;
+  background-color: var(--toolbar);
+  background-size: cover;
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.22),
+    0 0 0 1px rgb(0 0 0 / 0.12);
+}
+header.workspace-toolbar .theme-picker-trigger:hover {
+  border-color: rgb(255 255 255 / 0.55);
+  transform: scale(1.06);
+}
+.theme-picker-swatch {
+  display: block;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: 1px solid rgb(0 0 0 / 0.18);
+  border-radius: 999px;
+}
+.theme-picker-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 40;
+  min-width: 268px;
+  max-height: min(70vh, 28rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--sheet);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 16%, transparent);
+}
+.theme-picker-option {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  white-space: nowrap;
+  gap: 10px;
+  padding: 8px 12px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+.theme-picker-option:hover,
+.theme-picker-option.is-selected {
+  background: var(--cobalt-soft);
+  color: var(--ink);
 }
 .workspace-main {
   width: 100%;
@@ -441,7 +1027,7 @@ select:focus {
   background: color-mix(in srgb, var(--sheet) 94%, var(--canvas));
   backdrop-filter: blur(12px);
   padding: 6px 8px max(6px, env(safe-area-inset-bottom));
-  box-shadow: 0 -4px 20px rgb(26 45 64 / 0.05);
+  box-shadow: 0 -4px 20px color-mix(in srgb, var(--ink) 8%, transparent);
 }
 .workspace-footer {
   padding-bottom: 86px;
@@ -621,7 +1207,7 @@ select:focus {
   z-index: 45;
   width: 52px;
   height: 52px;
-  box-shadow: 0 8px 24px rgb(36 84 203 / 0.32);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--cobalt) 38%, transparent);
 }
 .study-chat-panel {
   position: fixed;
@@ -630,7 +1216,7 @@ select:focus {
   bottom: calc(146px + env(safe-area-inset-bottom));
   z-index: 45;
   height: min(560px, calc(100dvh - 160px - env(safe-area-inset-bottom)));
-  box-shadow: 0 18px 48px rgb(26 45 64 / 0.18);
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--ink) 18%, transparent);
 }
 @media (min-width: 640px) {
   .study-chat-launcher {

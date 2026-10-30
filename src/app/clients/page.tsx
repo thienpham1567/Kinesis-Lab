@@ -183,19 +183,19 @@ export default function ClientsPage() {
             label: "Hồ sơ học viên",
             value: clients.length,
             icon: "users" as const,
-            color: "text-cobalt bg-cobalt-soft",
+            color: "text-ink bg-cobalt-soft",
           },
           {
             label: "Cần điều chỉnh tập luyện",
             value: cautionCount,
             icon: "activity" as const,
-            color: "text-caution bg-caution-soft",
+            color: "text-ink bg-caution-soft",
           },
           {
             label: "Cần chuyển khám bác sĩ",
             value: referralCount,
             icon: "shield" as const,
-            color: "text-crimson bg-crimson-soft",
+            color: "text-ink bg-crimson-soft",
           },
         ].map((item) => (
           <div
