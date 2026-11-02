@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  DEFAULT_THEME_ID,
   THEME_STORAGE_KEY,
   THEMES,
   isThemeId,
@@ -21,7 +22,7 @@ type ThemeContextValue = {
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "tide",
+  theme: DEFAULT_THEME_ID,
   setTheme: () => {},
 });
 
@@ -30,10 +31,10 @@ function applyTheme(id: ThemeId) {
 }
 
 function readTheme(): ThemeId {
-  if (typeof document === "undefined") return "tide";
+  if (typeof document === "undefined") return DEFAULT_THEME_ID;
   const current = document.documentElement.dataset.theme ?? null;
   if (isThemeId(current)) return current;
-  return "tide";
+  return DEFAULT_THEME_ID;
 }
 
 const THEME_CHANGE_EVENT = "kinesis-theme-change";
@@ -41,7 +42,7 @@ const THEME_CHANGE_EVENT = "kinesis-theme-change";
 function subscribeToTheme(onChange: () => void) {
   const onStorage = (event: StorageEvent) => {
     if (event.key !== THEME_STORAGE_KEY && event.key !== null) return;
-    applyTheme(isThemeId(event.newValue) ? event.newValue : "tide");
+    applyTheme(isThemeId(event.newValue) ? event.newValue : DEFAULT_THEME_ID);
     onChange();
   };
   window.addEventListener(THEME_CHANGE_EVENT, onChange);
@@ -53,7 +54,7 @@ function subscribeToTheme(onChange: () => void) {
 }
 
 function getServerTheme(): ThemeId {
-  return "tide";
+  return DEFAULT_THEME_ID;
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
