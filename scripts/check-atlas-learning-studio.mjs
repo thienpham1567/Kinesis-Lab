@@ -122,24 +122,28 @@ test("all muscular-layer source names have paired display names and both-languag
   assert.equal(names.atlasStructureName(unknown), unknown.english);
 });
 
-test("six lesson configurations select actual local source examples and reset layer presets", () => {
+test("three viewing steps reset layer presets without isolating a sample structure", () => {
   for (const { id: area } of atlas.ATLAS_AREAS) {
     const steps = learning.regionLearningSteps(area, manifest.structures);
-    assert.equal(steps.length, 5);
-    assert.equal(new Set(steps.map((s) => s.id)).size, 5);
-    const target = manifest.structures.find(
-      (s) => s.id === steps[3].structureId,
+    assert.equal(steps.length, 3);
+    assert.equal(
+      steps.map((s) => s.id).join(","),
+      "overview,bones,muscles",
     );
-    assert.ok(target && (area === "full" || target.areas.includes(area)), area);
-    assert.equal(target.english, learning.LEARNING_REGIONS[area].example);
-    assert.equal(target.side, "left");
+    const target = manifest.structures.find(
+      (s) =>
+        s.english === learning.LEARNING_REGIONS[area].example &&
+        s.side === "left" &&
+        (area === "full" || s.areas.includes(area)),
+    );
+    assert.ok(target, area);
     assert.equal(steps[1].layers.bone, true);
     assert.equal(steps[1].layers.muscle, false);
     assert.equal(steps[2].layers.muscle, true);
-    assert.equal(steps[4].layers.joint, false);
+    assert.equal(steps[2].layers.bone, true);
+    assert.ok(steps.every((s) => !s.structureId));
     const empty = learning.regionLearningSteps(area, []);
-    assert.equal(empty[3].structureId, undefined);
-    assert.equal(empty[3].camera, "reset");
+    assert.equal(empty.length, 3);
   }
 });
 

@@ -13,11 +13,9 @@ import { AtlasTerminologySources } from "./AtlasTerminologySources";
 export function RegionLearningOverview({
   area,
   areaLabel,
-  selfCheck,
 }: {
   area: AtlasArea;
   areaLabel: string;
-  selfCheck: boolean;
 }) {
   const [answer, setAnswer] = useState(false);
   const config = LEARNING_REGIONS[area];
@@ -29,8 +27,8 @@ export function RegionLearningOverview({
           Đọc cấu trúc qua từng lớp.
         </h3>
         <p className="mt-2 text-xs leading-6 text-slate">
-          Tra tên ở thanh tìm kiếm phía trên mô hình. Chọn một bước bên dưới
-          để quan sát theo lớp, hoặc mở Kiến thức để đọc về cấu trúc đã chọn.
+          Tra tên ở thanh tìm kiếm phía trên mô hình. Chọn lớp quan sát trên
+          mô hình, hoặc mở Kiến thức để đọc về cấu trúc đã chọn.
         </p>
       </div>
       <div className="space-y-4 border-t border-rule pt-4">
@@ -79,7 +77,7 @@ export function RegionLearningOverview({
       </div>
       <div className="rounded-lg border border-rule bg-canvas p-3">
         <p className="text-xs font-semibold text-ink">
-          {selfCheck ? "Đến lượt bạn" : "Một câu hỏi trước khi tiếp tục"}
+          Một câu hỏi trước khi tiếp tục
         </p>
         <p className="mt-2 text-xs leading-6 text-slate">
           Ẩn lớp cơ để thấy xương có đồng nghĩa hình học và điểm bám trên mô

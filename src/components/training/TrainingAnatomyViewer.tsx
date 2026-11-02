@@ -16,10 +16,8 @@ import {
   trainingHref,
 } from "@/lib/clinical/training-atlas";
 import type { CameraCommand } from "../atlas3d/types";
-import type { RenderQuality } from "../atlas3d/render-policy";
 import {
   preferredTrainingView,
-  sourceStructureLabel,
   visibleObservationSelection,
 } from "@/lib/clinical/training-observation";
 import { Icon } from "../WorkspaceUI";
@@ -47,7 +45,6 @@ export function TrainingAnatomyViewer({
   const [group, setGroup] = useState("all");
   const [bones, setBones] = useState(true);
   const [allMuscles, setAllMuscles] = useState(false);
-  const [quality, setQuality] = useState<RenderQuality>("auto");
   const [storedObservation, setObservation] = useState(() =>
     initialObservation("", "front-oblique"),
   );
@@ -156,18 +153,14 @@ export function TrainingAnatomyViewer({
   // Adjust this component's state before its children commit. Unlike masking old
   // state, this prevents an old exercise's isolation from returning on Back.
   if (observation !== storedObservation) setObservation(observation);
-  const isolatedId = observation.isolatedId;
   const selected = visibleObservationSelection(manifest?.structures ?? [], {
     area: viewArea,
     bones,
     hiddenIds,
     selectedId: observation.selectedId,
-    isolatedId,
+    isolatedId: null,
   });
   const selectedGroup = selected ? trainingGroupForStructure(selected) : null;
-  const sourceOptions = (manifest?.structures ?? []).filter((s) =>
-    frameIds.has(s.id),
-  );
   const canvasCommand = observation.command;
   const layers: Record<AtlasLayer, boolean> = {
     bone: bones,
@@ -188,10 +181,6 @@ export function TrainingAnatomyViewer({
         ? s.command
         : { type: defaultView, revision: s.command.revision + 1 },
     }));
-  const restore = () =>
-    setObservation((s) =>
-      initialObservation(context, defaultView, s.command.revision + 1),
-    );
   if (failed)
     return (
       <section className="panel space-y-3 p-6">
@@ -227,35 +216,88 @@ export function TrainingAnatomyViewer({
       className="panel min-w-0 overflow-hidden"
       aria-label="Giải phẫu 3D liên quan bài tập"
     >
-      <div className="space-y-3 p-4 sm:p-5">
-        <h4 className="text-lg font-semibold text-ink">
-          Cấu trúc cơ–xương của bài tập
-        </h4>
-        <label className="field-label">
-          Nhóm cơ quan sát
-          <select
-            value={activeGroup}
-            onChange={(e) => {
-              setGroup(e.target.value);
-            }}
+      <div className="border-b border-rule bg-sheet">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+          <p className="min-w-0 flex-1 basis-40 break-words text-sm font-semibold leading-6 text-ink">
+            {selected ? (
+              <AtlasStructureName structure={selected} />
+            ) : (
+              "Chọn một cấu trúc để bắt đầu"
+            )}
+          </p>
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="group"
+            aria-label="Góc nhìn giải phẫu bài tập"
           >
-            <option value="all">
-              {person ? "Các nhóm của bài" : "Các nhóm liên quan trong vùng"}
-            </option>
-            {exercise.targets.map((t) => (
-              <option key={t.muscleId} value={t.muscleId}>
-                {MUSCLE_GROUP_ATLAS.find((m) => m.id === t.muscleId)?.name}
-              </option>
+            {(
+              [
+                ["front", "Trước"],
+                ["back", "Sau"],
+                ["left", "Trái"],
+                ["right", "Phải"],
+              ] as const
+            ).map(([type, label]) => (
+              <button
+                key={type}
+                type="button"
+                className="button-secondary"
+                onClick={() => send(type)}
+              >
+                {label}
+              </button>
             ))}
-          </select>
-        </label>
-      </div>
-      <div className="border-t border-rule bg-surface/50 px-4 py-3">
-        <p className="text-xs text-slate" aria-live="polite">
-          {isolatedId
-            ? "Đang tách riêng cấu trúc"
-            : `${sourceOptions.length} cấu trúc cơ trong nhóm quan sát`}
-        </p>
+            <button
+              type="button"
+              className="icon-button"
+              aria-label="Đặt lại góc nhìn"
+              onClick={() => send("reset")}
+            >
+              <Icon name="refresh" className="size-4" />
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-rule px-4 py-2">
+          <label className="flex min-h-11 items-center gap-2 text-xs font-medium text-ink">
+            Nhóm cơ
+            <select
+              className="!min-h-11 !w-auto"
+              value={activeGroup}
+              onChange={(e) => {
+                setGroup(e.target.value);
+              }}
+            >
+              <option value="all">
+                {person ? "Các nhóm của bài" : "Các nhóm liên quan trong vùng"}
+              </option>
+              {exercise.targets.map((t) => (
+                <option key={t.muscleId} value={t.muscleId}>
+                  {MUSCLE_GROUP_ATLAS.find((m) => m.id === t.muscleId)?.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium text-ink">
+            <input
+              type="checkbox"
+              checked={bones}
+              onChange={(e) => setBones(e.target.checked)}
+              className="size-4 accent-cobalt"
+            />
+            Xương làm mốc
+          </label>
+          {!person && (
+            <label className="flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium text-ink">
+              <input
+                type="checkbox"
+                checked={allMuscles}
+                onChange={(e) => setAllMuscles(e.target.checked)}
+                className="size-4 accent-cobalt"
+              />
+              Toàn bộ cơ trong vùng
+            </label>
+          )}
+        </div>
       </div>
       <div
         className={
@@ -272,7 +314,7 @@ export function TrainingAnatomyViewer({
           hiddenIds={hiddenIds}
           frameIds={person ? undefined : frameIds}
           searchTargetIds={person && markedIds.size ? markedIds : undefined}
-          isolatedId={isolatedId}
+          isolatedId={null}
           selectedId={selected?.id ?? null}
           thicknessId={null}
           materialStudy={false}
@@ -280,147 +322,25 @@ export function TrainingAnatomyViewer({
           studyRetry={0}
           onStudyStatus={() => {}}
           muscleOpacity={1}
-          quality={quality}
+          quality="detailed"
           presentation="dark"
           command={canvasCommand}
           onSelect={choose}
         />
       </div>
-      <div className="space-y-3 border-t border-rule p-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div
-            className="flex flex-wrap gap-1.5"
-            role="group"
-            aria-label="Góc nhìn giải phẫu bài tập"
-          >
-            {(
-              [
-                "front-oblique",
-                "back-oblique",
-                "front",
-                "back",
-                "left",
-                "right",
-              ] as const
-            ).map((v, i) => (
-              <button
-                className="button-secondary min-h-10 px-3"
-                key={v}
-                onClick={() => send(v)}
-              >
-                {["3/4 trước", "3/4 sau", "Trước", "Sau", "Trái", "Phải"][i]}
-              </button>
-            ))}
-          </div>
-          <label className="flex items-center gap-2 text-xs text-slate">
-            Chất lượng
-            <select
-              className="!min-h-10 !w-auto"
-              value={quality}
-              onChange={(e) => setQuality(e.target.value as RenderQuality)}
+      {selected && (
+        <div className="space-y-1 border-t border-rule px-4 py-3">
+          <AtlasSourceNames structure={selected} />
+          {selectedGroup && (
+            <Link
+              className="inline-flex min-h-9 items-center text-xs font-semibold text-cobalt underline"
+              href={trainingHref("muscle", selectedGroup)}
             >
-              <option value="auto">Tự động</option>
-              <option value="detailed">Chi tiết</option>
-              <option value="fast">Nhanh</option>
-            </select>
-          </label>
-        </div>
-        <label className="field-label">
-          Chọn cấu trúc cơ
-          <select
-            value={selected && frameIds.has(selected.id) ? selected.id : ""}
-            onChange={(e) => choose(e.target.value || null)}
-          >
-            <option value="">Chọn cơ từ dữ liệu nguồn…</option>
-            {sourceOptions.map((s) => (
-              <option key={s.id} value={s.id}>
-                {sourceStructureLabel(s)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div
-          className="flex flex-wrap gap-2"
-          role="group"
-          aria-label="Quan sát cấu trúc"
-        >
-          <button
-            type="button"
-            className="button-secondary min-h-10"
-            disabled={!selected}
-            onClick={() => send("focus")}
-          >
-            Tập trung
-          </button>
-          <button
-            type="button"
-            className="button-secondary min-h-10"
-            disabled={!selected}
-            aria-pressed={Boolean(isolatedId)}
-            onClick={() => {
-              if (selected) {
-                setObservation((s) => ({
-                  ...s,
-                  isolatedId: s.isolatedId ? null : selected.id,
-                  command: {
-                    type: s.isolatedId ? defaultView : "focus",
-                    revision: s.command.revision + 1,
-                  },
-                }));
-              }
-            }}
-          >
-            {isolatedId ? "Thôi tách riêng" : "Tách riêng"}
-          </button>
-          <button
-            type="button"
-            className="button-secondary min-h-10"
-            onClick={restore}
-          >
-            Về nhóm cơ
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-ink">
-          <label className="flex min-h-10 items-center gap-2">
-            <input
-              type="checkbox"
-              checked={bones}
-              onChange={(e) => setBones(e.target.checked)}
-            />
-            Xương làm mốc
-          </label>
-          {!person && (
-            <label className="flex min-h-10 items-center gap-2">
-              <input
-                type="checkbox"
-                checked={allMuscles}
-                onChange={(e) => setAllMuscles(e.target.checked)}
-              />
-              Toàn bộ cơ trong vùng
-            </label>
+              Tra cứu nhóm & bài liên quan →
+            </Link>
           )}
         </div>
-        {selected && (
-          <div className="rounded-lg border border-cobalt/20 bg-cobalt-soft/40 p-3">
-            <p className="mb-1 text-xs text-slate">Đang chọn</p>
-            <AtlasStructureName structure={selected} className="text-sm font-semibold text-ink" />
-            <AtlasSourceNames structure={selected} />
-            {selectedGroup && (
-              <Link
-                className="mt-2 inline-flex min-h-9 items-center text-xs font-semibold text-cobalt underline"
-                href={trainingHref("muscle", selectedGroup)}
-              >
-                Tra cứu nhóm & bài liên quan →
-              </Link>
-            )}
-          </div>
-        )}
-        <p className="text-xs leading-5 text-slate">
-          {person
-            ? "Hình là toàn bộ hệ cơ–xương của atlas. Cơ của bài được đánh dấu. Không có đầu, da, nội tạng. Màu đánh dấu không đo hoạt động cơ; mô hình không thể hiện lực hay chuyển động bài tập."
-            : "Kéo để xoay · Cuộn/chụm để phóng to · Nhấp cơ để tra cứu. Các mesh được liên kết theo nhóm giáo dục. Màu nhóm không đo hoạt động cơ; mô hình tĩnh không thể hiện lực cơ hoặc chuyển động bài tập."}
-        </p>
-      </div>
+      )}
     </section>
   );
 }

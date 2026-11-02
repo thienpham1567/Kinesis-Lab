@@ -11,7 +11,6 @@ import {
   RegionLearningOverview,
   RegionLearningSources,
 } from "./RegionLearningOverview";
-import { RegionLearningRail } from "./RegionLearningRail";
 import { atlasAreaHref, regionLearningSteps } from "./region-learning";
 import { EmptyState, Icon, LoadingState } from "@/components/WorkspaceUI";
 import { AtlasStructureName } from "./AtlasStructureName";
@@ -29,13 +28,10 @@ import {
   type AtlasStructure,
 } from "@/lib/clinical/atlas-3d";
 import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
-import type { RenderQuality } from "./render-policy";
 import type { CameraCommand } from "./types";
 import AnatomyEvidenceCard from "./AnatomyEvidenceCard";
 import { AtlasGeometryNote } from "./AtlasGeometryNote";
 import { MuscleStudyCard } from "@/components/training/MuscleStudyCard";
-import { ClinicalEvidencePanel } from "@/components/ClinicalEvidencePanel";
-import { getCatalogEvidence } from "@/lib/clinical/evidence-registry";
 import {
   matchingGroupStructures,
   trainingGroupForStructure,
@@ -96,11 +92,10 @@ export default function Atlas3DExplorer({
   initialGroup?: string | null;
 }) {
   const [learning, setLearning] = useState<{
-    enabled: boolean;
     step: number;
     labels: boolean;
     projection: "perspective" | "orthographic";
-  }>({ enabled: true, step: 0, labels: true, projection: "orthographic" });
+  }>({ step: 0, labels: true, projection: "orthographic" });
   const [manifest, setManifest] = useState<AtlasManifest | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [retry, setRetry] = useState(0);
@@ -110,7 +105,6 @@ export default function Atlas3DExplorer({
   const [isolatedId, setIsolatedId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [thicknessId, setThicknessId] = useState<string | null>(null);
-  const [quality, setQuality] = useState<RenderQuality>("auto");
   const [showSurfaceLabels, setShowSurfaceLabels] = useState(true);
   const [materialStudy, setMaterialStudy] = useState(false);
   const [studyStatus, setStudyStatus] = useState<StudyStatus>("idle");
@@ -259,7 +253,6 @@ export default function Atlas3DExplorer({
   const selectedVisible =
     selected && isStructureVisible(selected, layers, hiddenIds, isolatedId);
 
-  const learningActive = learning.enabled;
   const areaLabel =
     ATLAS_AREAS.find((entry) => entry.id === area)?.label ?? "Atlas giải phẫu";
   const learningSteps = useMemo(
@@ -350,7 +343,7 @@ export default function Atlas3DExplorer({
     setIsolatedId((current) => (current ? id : null));
     setShareStatus("");
     setManualShareUrl("");
-    if (learningActive) sendCommand("focus");
+    sendCommand("focus");
   }
 
   function changeArea(nextArea: AtlasArea) {
@@ -427,7 +420,7 @@ export default function Atlas3DExplorer({
             (area === "full" || structure.areas.includes(area)),
         )
       : undefined;
-    setLearning((current) => ({ ...current, enabled: true, step: index }));
+    setLearning((current) => ({ ...current, step: index }));
     setLayers({ ...step.layers });
     setHiddenIds(new Set());
     setIsolatedId(target?.id ?? null);
@@ -551,7 +544,7 @@ export default function Atlas3DExplorer({
     </>
   );
   const searchPanel = (
-    <div className={learningActive ? "overflow-hidden" : "panel overflow-hidden"}>
+    <div className="overflow-hidden">
       <div className="border-b border-rule p-4">
         <h3 className="text-sm font-semibold text-ink">Danh mục cấu trúc</h3>
         <p className="mt-1 text-xs text-slate">{results.length} kết quả{query.trim() ? ` cho “${query.trim()}”` : " trong vùng"}</p>
@@ -561,7 +554,7 @@ export default function Atlas3DExplorer({
   );
   const knowledgePanel = (
     <div
-      className={learningActive ? "min-w-0" : "panel p-4"}
+      className="min-w-0"
       aria-live="polite"
     >
       {selected ? (
@@ -597,12 +590,6 @@ export default function Atlas3DExplorer({
           <AtlasTerminologySources key={selected.english} english={selected.english} />
           <AtlasCatalogCorrectionDetails structure={selected} />
           <AtlasGeometryNote structureId={selected.id} />
-          {!learningActive && (
-            <ClinicalEvidencePanel
-              evidence={getCatalogEvidence(selected.id)}
-              title="Nguồn mô hình & phạm vi đối chiếu"
-            />
-          )}
           <AnatomyEvidenceCard structureId={selected.id} />
           {muscleGroup && (
             <section className="space-y-3" aria-label="Nhóm cơ liên quan">
@@ -663,21 +650,6 @@ export default function Atlas3DExplorer({
               </p>
             )}
           </div>
-          {!learningActive && (
-            <details className="border-t border-rule pt-3">
-              <summary className="min-h-9 text-xs font-semibold text-ink">
-                Kiến thức nền theo vùng học · {areaLabel}
-              </summary>
-              <div className="mt-3">
-                <RegionLearningOverview
-                  key={area}
-                  area={area}
-                  areaLabel={areaLabel}
-                  selfCheck={false}
-                />
-              </div>
-            </details>
-          )}
           <div className="space-y-2 border-t border-rule pt-3">
             <Link
               href={`/consult?prompt=${encodeURIComponent(prompt)}`}
@@ -788,23 +760,6 @@ export default function Atlas3DExplorer({
             ))}
           </select>
         </div>
-        <button
-          type="button"
-          className="button-secondary"
-          aria-pressed={learningActive}
-          onClick={() => {
-            if (!learning.enabled) applyLearningStep(learning.step);
-            else {
-              setLearning((current) => ({ ...current, enabled: false }));
-              restoreVisibility();
-              sendCommand("reset");
-            }
-          }}
-        >
-          {learningActive
-            ? "Chuyển sang khám phá tự do"
-            : "Mở bàn học theo bước"}
-        </button>
       </div>
       <div
         ref={searchContainer}
@@ -870,126 +825,22 @@ export default function Atlas3DExplorer({
           </div>
         )}
       </div>
-      <details
-        className="panel overflow-hidden"
-      >
-        <summary className="min-h-12 cursor-pointer px-4 py-3 text-xs font-semibold text-slate">
-          Góc nhìn, lớp cấu trúc & chất lượng
-        </summary>
-        <div className="border-t border-rule p-4 sm:p-5">
-          <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(200px,1fr)_auto] sm:items-end">
-            <div
-              className="flex flex-wrap gap-1.5"
-              role="group"
-              aria-label="Góc nhìn mô hình"
-            >
-              {CAMERA_VIEWS.map((view) => (
-                <button
-                  key={view.type}
-                  type="button"
-                  className="button-secondary min-h-11 px-3"
-                  onClick={() => sendCommand(view.type)}
-                >
-                  {view.label}
-                </button>
-              ))}
-              <button
-                type="button"
-                className="icon-button min-h-11 min-w-11"
-                title="Đặt lại góc nhìn"
-                aria-label="Đặt lại góc nhìn"
-                onClick={() => sendCommand("reset")}
-              >
-                <Icon name="refresh" className="size-4" />
-              </button>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-rule pt-3">
-            <fieldset className="flex flex-wrap gap-x-4 gap-y-1">
-              <legend className="sr-only">Nhóm hiển thị của nguồn</legend>
-              {ATLAS_LAYERS.map((layer) => (
-                <label
-                  key={layer.id}
-                  className="flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium text-ink"
-                >
-                  <input
-                    type="checkbox"
-                    checked={layers[layer.id]}
-                    onChange={(event) =>
-                      setLayers((current) => ({
-                        ...current,
-                        [layer.id]: event.target.checked,
-                      }))
-                    }
-                    className="size-4 accent-cobalt"
-                  />
-                  {layer.label}
-                </label>
-              ))}
-            </fieldset>
-            <div className="flex min-h-11 min-w-0 flex-wrap items-center gap-3 text-xs text-slate">
-              <label htmlFor="atlas-muscle-opacity">Độ đậm cơ</label>
-              <input
-                id="atlas-muscle-opacity"
-                type="range"
-                min="15"
-                max="100"
-                step="5"
-                value={Math.round(muscleOpacity * 100)}
-                onChange={(event) =>
-                  setMuscleOpacity(Number(event.target.value) / 100)
-                }
-                className="!min-h-11 !w-28 !border-0 !bg-transparent !p-0 accent-cobalt"
-              />
-              <output
-                htmlFor="atlas-muscle-opacity"
-                className="w-8 font-mono text-ink"
-              >
-                {Math.round(muscleOpacity * 100)}%
-              </output>
-            </div>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-rule pt-3">
-            <label className="flex min-h-11 flex-wrap items-center gap-3 text-xs font-medium text-ink">
-              Chất lượng hình ảnh
-              <select
-                value={quality}
-                onChange={(event) =>
-                  setQuality(event.target.value as RenderQuality)
-                }
-                className="min-h-11 !w-auto !min-w-32 px-3 py-2"
-              >
-                <option value="auto">Tự động</option>
-                <option value="fast">Nhanh</option>
-                <option value="detailed">Chi tiết</option>
-              </select>
-            </label>
-          </div>
-        </div>
-      </details>
-
-      <div
-        className={`grid min-w-0 items-start gap-4 ${learningActive ? "xl:grid-cols-[minmax(0,1fr)_340px]" : "xl:grid-cols-[minmax(0,1fr)_300px]"}`}
-      >
+      <div className="grid min-w-0 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-3">
           <div id="atlas-3d-model" tabIndex={-1} className="panel min-w-0 scroll-mt-5 overflow-hidden">
-            {learningActive && (
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule bg-sheet px-4 py-3">
-                <div className="min-w-0 flex-1 basis-48">
-                  <p className="eyebrow text-cobalt">
-                    {String(learning.step + 1).padStart(2, "0")} /{" "}
-                    {learningSteps[learning.step].short}
-                  </p>
-                  <p className="mt-1 break-words text-sm font-semibold leading-6 text-ink">
-                    {selected
-                      ? <AtlasStructureName structure={selected} />
-                      : "Chọn một cấu trúc để bắt đầu"}
-                  </p>
-                </div>
+            <div className="border-b border-rule bg-sheet">
+              <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                <p className="min-w-0 flex-1 basis-40 break-words text-sm font-semibold leading-6 text-ink">
+                  {selected ? (
+                    <AtlasStructureName structure={selected} />
+                  ) : (
+                    "Chọn một cấu trúc để bắt đầu"
+                  )}
+                </p>
                 <div
                   className="flex flex-wrap gap-1.5"
                   role="group"
-                  aria-label="Công cụ bàn học 3D"
+                  aria-label="Góc nhìn mô hình"
                 >
                   <button
                     type="button"
@@ -1022,34 +873,88 @@ export default function Atlas3DExplorer({
                   >
                     Nhãn
                   </button>
-                  <button
-                    type="button"
-                    className="button-secondary"
-                    onClick={() => sendCommand("front")}
-                  >
-                    Trước
-                  </button>
-                  <button
-                    type="button"
-                    className="button-secondary"
-                    onClick={() => sendCommand("back")}
-                  >
-                    Sau
-                  </button>
+                  {CAMERA_VIEWS.map((view) => (
+                    <button
+                      key={view.type}
+                      type="button"
+                      className="button-secondary"
+                      onClick={() => sendCommand(view.type)}
+                    >
+                      {view.label}
+                    </button>
+                  ))}
                   <button
                     type="button"
                     className="icon-button"
-                    aria-label="Đặt lại góc nhìn bàn học"
+                    aria-label="Đặt lại góc nhìn"
                     onClick={() => sendCommand("reset")}
                   >
                     <Icon name="refresh" className="size-4" />
                   </button>
                 </div>
               </div>
-            )}
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-rule px-4 py-2">
+                <div
+                  className="flex flex-wrap gap-1.5"
+                  role="group"
+                  aria-label={`Lớp quan sát · ${areaLabel}`}
+                >
+                  {learningSteps.map((item, index) => {
+                    const current = index === learning.step;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        title={item.instruction}
+                        aria-pressed={current}
+                        onClick={() => applyLearningStep(index)}
+                        className={`button-secondary ${current ? "!bg-cobalt-soft !text-cobalt" : ""}`}
+                      >
+                        {item.short}
+                      </button>
+                    );
+                  })}
+                </div>
+                <label className="flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium text-ink">
+                  <input
+                    type="checkbox"
+                    checked={layers.joint}
+                    onChange={(event) =>
+                      setLayers((current) => ({
+                        ...current,
+                        joint: event.target.checked,
+                      }))
+                    }
+                    className="size-4 accent-cobalt"
+                  />
+                  Khớp & dây chằng
+                </label>
+                <div className="flex min-h-11 min-w-0 flex-wrap items-center gap-3 text-xs text-slate">
+                  <label htmlFor="atlas-muscle-opacity">Độ đậm cơ</label>
+                  <input
+                    id="atlas-muscle-opacity"
+                    type="range"
+                    min="15"
+                    max="100"
+                    step="5"
+                    value={Math.round(muscleOpacity * 100)}
+                    onChange={(event) =>
+                      setMuscleOpacity(Number(event.target.value) / 100)
+                    }
+                    className="!min-h-11 !w-28 !border-0 !bg-transparent !p-0 accent-cobalt"
+                  />
+                  <output
+                    htmlFor="atlas-muscle-opacity"
+                    className="w-8 font-mono text-ink"
+                  >
+                    {Math.round(muscleOpacity * 100)}%
+                  </output>
+                </div>
+              </div>
+            </div>
             <div
               id="atlas-3d-stage"
-              className={`scroll-mt-20 relative bg-surface ${learningActive ? "h-[58svh] min-h-[360px] max-h-[680px] sm:min-h-[420px]" : "min-h-[480px] sm:min-h-[620px]"}`}
+              className="scroll-mt-20 relative h-[58svh] min-h-[360px] max-h-[680px] bg-surface sm:min-h-[420px]"
             >
               <Atlas3DCanvas
                 bundleUrl={bundle.url}
@@ -1062,18 +967,14 @@ export default function Atlas3DExplorer({
                 thicknessId={thicknessId}
                 materialStudy={area === "hip" && materialStudy}
                 showSurfaceLabels={
-                  area === "hip" &&
-                  showSurfaceLabels &&
-                  (!learningActive || learning.labels)
+                  area === "hip" && showSurfaceLabels && learning.labels
                 }
                 studyRetry={studyRetry}
                 onStudyStatus={setStudyStatus}
                 muscleOpacity={muscleOpacity}
-                quality={quality}
-                learningMode={learningActive}
-                projection={
-                  learningActive ? learning.projection : "perspective"
-                }
+                quality="detailed"
+                learningMode
+                projection={learning.projection}
                 showStructureLabels={learning.labels}
                 command={command}
                 onSelect={selectStructure}
@@ -1127,122 +1028,29 @@ export default function Atlas3DExplorer({
                 mặt
               </p>
             </div>
-            <div
-              className="flex flex-wrap gap-2 border-t border-rule p-3"
-              role="group"
-              aria-label="Thao tác với cấu trúc đã chọn"
-            >
-              <button
-                type="button"
-                className="button-secondary"
-                disabled={!selected || !selectedVisible}
-                onClick={() => sendCommand("focus")}
-              >
-                <Icon name="target" className="size-4" />
-                Tập trung
-              </button>
-              <button
-                type="button"
-                className="button-secondary"
-                disabled={!selected || !selectedVisible}
-                onClick={() => sendCommand("detail")}
-              >
-                {learningActive ? "Cận cảnh" : "Cận cảnh bề mặt"}
-              </button>
-              <button
-                type="button"
-                className="button-secondary"
-                disabled={!selected}
-                aria-pressed={Boolean(selected && isolatedId === selected.id)}
-                onClick={() => {
-                  if (!selected) return;
-                  // Preserve the searched family when toggling isolation; a
-                  // re-selection would reset isolation before this toggle.
-                  setLayers((current) => ({ ...current, [selected.layer]: true }));
-                  setHiddenIds((current) => {
-                    const next = new Set(current);
-                    next.delete(selected.id);
-                    return next;
-                  });
-                  setIsolatedId((current) =>
-                    current === selected.id ? null : selected.id,
-                  );
-                  sendCommand("focus");
-                }}
-              >
-                Tách riêng
-              </button>
-              <button
-                type="button"
-                className="button-secondary"
-                disabled={!selected}
-                onClick={() => {
-                  if (!selected) return;
-                  setHiddenIds((current) => {
-                    const next = new Set(current);
-                    if (next.has(selected.id)) next.delete(selected.id);
-                    else next.add(selected.id);
-                    return next;
-                  });
-                }}
-              >
-                {selected && hiddenIds.has(selected.id)
-                  ? "Hiện cấu trúc"
-                  : learningActive
-                    ? "Ẩn"
-                    : "Ẩn cấu trúc"}
-              </button>
-              <button
-                type="button"
-                className="button-secondary"
-                onClick={restoreVisibility}
-              >
-                {learningActive ? "Khôi phục" : "Khôi phục lớp"}
-              </button>
-            </div>
           </div>
-
-          {learningActive && (
-            <RegionLearningRail
-              step={learning.step}
-              steps={learningSteps}
-              areaLabel={areaLabel}
-              onStep={applyLearningStep}
-            />
-          )}
         </div>
 
-        {learningActive ? (
-          <AtlasLearningInspector
-            key={`${area}-${learning.step}`}
-            defaultTab={searchTargetIds.size ? "structures" : learning.step === 3 ? "knowledge" : "overview"}
-            overview={
-              <RegionLearningOverview
-                area={area}
-                areaLabel={areaLabel}
-                selfCheck={learning.step === 4}
-              />
-            }
-            structures={searchPanel}
-            knowledge={knowledgePanel}
-            sources={
-              <RegionLearningSources
-                area={area}
-                areaLabel={areaLabel}
-                selectedId={selectedId}
-                selectedEnglish={selected?.english ?? null}
-              />
-            }
-          />
-        ) : (
-          <aside
-            className="min-w-0 space-y-4"
-            aria-label="Danh mục và thông tin cấu trúc"
-          >
-            {searchPanel}
-            {knowledgePanel}
-          </aside>
-        )}
+        <AtlasLearningInspector
+          key={`${area}-${learning.step}`}
+          defaultTab={searchTargetIds.size ? "structures" : "overview"}
+          overview={
+            <RegionLearningOverview
+              area={area}
+              areaLabel={areaLabel}
+            />
+          }
+          structures={searchPanel}
+          knowledge={knowledgePanel}
+          sources={
+            <RegionLearningSources
+              area={area}
+              areaLabel={areaLabel}
+              selectedId={selectedId}
+              selectedEnglish={selected?.english ?? null}
+            />
+          }
+        />
       </div>
       {area === "hip" && (
         <details className="panel overflow-hidden">
@@ -1262,27 +1070,6 @@ export default function Atlas3DExplorer({
           </div>
         </details>
       )}
-      <p className="px-1 text-xs leading-6 text-slate">
-        Mô hình: Z-Anatomy / BodyParts3D · CC BY-SA 4.0. Tên cơ hiển thị Việt /
-        Anh; tên Anh giữ theo nguồn. Tên Việt là chuyển ngữ của app.{" "}
-        <a
-          href="/anatomy/3d/ATTRIBUTION.md"
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium text-cobalt underline underline-offset-2"
-        >
-          Nguồn & giấy phép
-        </a>
-        {" · "}
-        <a
-          href="/anatomy/3d/TERMINOLOGY.md"
-          target="_blank"
-          rel="noreferrer"
-          className="font-medium text-cobalt underline underline-offset-2"
-        >
-          Nguồn tên song ngữ
-        </a>
-      </p>
     </section>
   );
 }

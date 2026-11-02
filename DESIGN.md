@@ -139,7 +139,7 @@ The palette character changes with the selected theme; the semantic role names r
 - **Quiet border / Field border:** `rule` and `rule-strong` establish container and input boundaries.
 - **Toolbar ink / Toolbar secondary text:** `toolbar` and `toolbar-muted` support the dark header; its primary labels are white in the implementation.
 
-All 13 themes remain supported: `tide` (Ocean Sunset, default), `pacific` (Ocean Blue Serenity), `canopy` (Warm Neutral Tones), `sunny-beach` (Sunny Beach Day), `summer-ocean` (Summer Ocean Breeze), `earthy-forest` (Earthy Forest Hues), `olive-garden` (Olive Garden Feast), `summer-fun` (Refreshing Summer Fun), `autumn-glow` (Warm Autumn Glow), `black-gold` (Black & Gold Elegance), `deep-sea` (Deep Sea), `earthy-green` (Earthy Green) and `fresh-greens` (Fresh Greens). The root uses `data-theme`; the provider persists the selection as `kinesis-theme`. The theme picker and toolbar spectrum legitimately use the source palette slots `p1` through `p10`.
+Nine themes remain supported: `linen` (default), `navy`, `coral`, `mint`, `wine`, `slate`, `sky`, `dusk` and `lilac`. The root uses `data-theme`; the provider persists the selection as `kinesis-theme`. The theme picker and toolbar spectrum legitimately use the source palette slots `p1` through `p10`.
 
 The sidecar's derived tonal ramps are preview metadata, not new production tokens or replacements for these theme mappings.
 

@@ -33,7 +33,7 @@ Lượt nâng cấp tiếp theo: [đối chiếu đủ 24 lệnh và phạm vi �
 - **Sản phẩm:** Kinesis Lab, app web tiếng Việt cho Personal Trainer, hỗ trợ tra cứu giải phẫu/cơ sinh học, học tập NCSF, quản lý học viên và tham khảo bằng chứng.
 - **Luồng chính:** `/` chuyển đến `/atlas`; các mục khác gồm `/consult`, `/clients`, `/movement`, `/knowledge`.
 - **Thiết kế:** Clinical Field Notes; Be Vietnam Pro cho nội dung, IBM Plex Mono cho dữ liệu/nhãn kỹ thuật. Nguồn: `README.md`, `src/app/layout.tsx`, `src/app/globals.css`.
-- **Màu:** 13 theme trong `src/lib/theme.ts`; mặc định `tide` (Ocean Sunset). Dùng token ngữ nghĩa trong `globals.css`, kiểm tra các theme thay vì giả định chỉ có một bảng màu.
+- **Màu:** 9 theme trong `src/lib/theme.ts`; mặc định `linen`. Dùng token ngữ nghĩa trong `globals.css`, kiểm tra các theme thay vì giả định chỉ có một bảng màu.
 - **Khung:** thanh điều hướng trên desktop, thanh dưới trên mobile; vùng nội dung cuộn riêng; bộ chọn theme và widget hỏi nhanh. Nguồn: `src/components/AppShell.tsx`.
 - **Thành phần chung:** `src/components/WorkspaceUI.tsx`. Tận dụng thành phần hiện có khi tinh chỉnh.
 - **Y khoa:** tuân thủ `docs/medical-evidence-policy.md`; giữ trích dẫn, ngày truy cập và giới hạn nguồn/mô phỏng. Không đổi `reviewedBy: null` thành một phê duyệt không có thật. Kiểm tra UI không xác nhận nội dung y khoa.

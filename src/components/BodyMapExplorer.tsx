@@ -667,6 +667,7 @@ export function BodyMapExplorer({
             )}
             {threeD ? (
               <ContextualAnatomyViewer
+                compactChrome
                 context={{ kind: "region", id: activeRegion.id }}
                 title={activeRegion.name}
                 onNavigate={(id) => {

@@ -36,6 +36,7 @@ export type ContextualAnatomyProps = {
   title: string;
   onNavigate?: (id: string) => void;
   wholeBody?: boolean;
+  compactChrome?: boolean;
 };
 
 export function ContextualAnatomyViewer(props: ContextualAnatomyProps) {
@@ -118,6 +119,7 @@ function ContextualAnatomyPanel({
   onNavigate,
   manifest,
   wholeBody = false,
+  compactChrome = false,
 }: ContextualAnatomyProps & { manifest: AtlasManifest }) {
   const related = useMemo(
     () => contextStructures(manifest.structures, context),
@@ -230,39 +232,166 @@ function ContextualAnatomyPanel({
         </p>
       </section>
     );
+  const sourceDetails = (
+    <details className="border-t border-rule pt-3 text-xs leading-5 text-slate">
+      <summary className="cursor-pointer font-semibold text-ink">
+        Nguồn mô hình & phạm vi sử dụng
+      </summary>
+      <p className="mt-2">
+        Mô hình Z-Anatomy · CC BY-SA 4.0. Liên kết theo tên và phân vùng của
+        catalog để tra cứu; không xác nhận hình học, số đo, tình trạng đau
+        hoặc tổn thương cá nhân.
+      </p>
+      {wholeBody && (
+        <p className="mt-2">
+          Hình là toàn bộ hệ cơ–xương của atlas. Cơ hoặc vùng đang tra được
+          đánh dấu. Không có đầu, da, nội tạng. Đây không phải vị trí điểm
+          kích hoạt.
+        </p>
+      )}
+      {context.kind === "trigger" && (
+        <p className="mt-2">
+          Không hiển thị tọa độ điểm kích hoạt hoặc vùng đau lan khi chưa có
+          nguồn ánh xạ cụ thể. Chọn cơ chỉ mở kiến thức tham khảo.
+        </p>
+      )}
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+        <a
+          href="/anatomy/3d/ATTRIBUTION.md"
+          target="_blank"
+          rel="noreferrer"
+          className="text-cobalt underline"
+        >
+          Xuất xứ & giấy phép
+        </a>
+        <Link
+          href={`/atlas?${new URLSearchParams({ area, ...(selected ? { structure: selected.id } : {}) })}`}
+          className="text-cobalt underline"
+        >
+          Mở trong Giải phẫu 3D ↗
+        </Link>
+      </div>
+    </details>
+  );
+  const layerToggles = (
+    <div className="flex flex-wrap gap-x-4 text-xs text-ink">
+      {(["bone", "muscle", "joint"] as const).map((layer, index) => (
+        <label key={layer} className="flex min-h-10 items-center gap-2">
+          <input
+            type="checkbox"
+            checked={layers[layer]}
+            onChange={(e) =>
+              setLayers((state) => ({
+                ...state,
+                [layer]: e.target.checked,
+              }))
+            }
+          />
+          {["Xương", "Cơ", "Khớp & dây chằng"][index]}
+        </label>
+      ))}
+      {!wholeBody && (
+        <label className="flex min-h-10 items-center gap-2">
+          <input
+            type="checkbox"
+            checked={surroundings}
+            onChange={(e) => setSurroundings(e.target.checked)}
+          />
+          Cấu trúc xung quanh
+        </label>
+      )}
+    </div>
+  );
+  const sideButtons = (
+    <div
+      className={
+        compactChrome
+          ? "flex flex-wrap gap-1.5"
+          : "flex flex-wrap gap-1.5 border-y border-rule bg-canvas px-3 py-2"
+      }
+      role="group"
+      aria-label="Bên cơ thể"
+    >
+      {(["both", "left", "right"] as const).map((value, index) => (
+        <button
+          key={value}
+          type="button"
+          className={
+            compactChrome
+              ? `button-secondary ${side === value ? "!bg-cobalt-soft !text-cobalt" : ""}`
+              : "button-secondary min-h-10 px-3 text-xs"
+          }
+          aria-pressed={side === value}
+          onClick={() => setSide(value)}
+        >
+          {["Hai bên", "Bên trái", "Bên phải"][index]}
+        </button>
+      ))}
+    </div>
+  );
   return (
     <section
       className="panel min-w-0 overflow-hidden"
       aria-label={`3D · ${title}`}
       data-anatomy-context={`${context.kind}/${context.id}`}
     >
-      <header className="space-y-2 px-4 py-3">
-        <p className="eyebrow">Quan sát cấu trúc · Atlas 3D</p>
-        <h3 className="font-display text-base font-semibold text-ink">
-          {title}
-        </h3>
-        <p className="text-xs leading-5 text-slate">
-          Kéo để xoay · Cuộn/chụm để phóng to. Chọn cấu trúc trên hình hoặc
-          trong danh sách.
-        </p>
-      </header>
-      <div
-        className="flex flex-wrap gap-1.5 border-y border-rule bg-canvas px-3 py-2"
-        role="group"
-        aria-label="Bên cơ thể"
-      >
-        {(["both", "left", "right"] as const).map((value, index) => (
-          <button
-            key={value}
-            type="button"
-            className="button-secondary min-h-10 px-3 text-xs"
-            aria-pressed={side === value}
-            onClick={() => setSide(value)}
-          >
-            {["Hai bên", "Bên trái", "Bên phải"][index]}
-          </button>
-        ))}
-      </div>
+      {compactChrome ? (
+        <div className="border-b border-rule bg-sheet">
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <p className="min-w-0 flex-1 basis-40 break-words text-sm font-semibold leading-6 text-ink">
+              {selected ? (
+                <AtlasStructureName structure={selected} />
+              ) : (
+                "Chọn một cấu trúc để bắt đầu"
+              )}
+            </p>
+            <div
+              className="flex flex-wrap gap-1.5"
+              role="group"
+              aria-label="Góc nhìn 3D"
+            >
+              {(["front", "back", "left", "right"] as const).map(
+                (view, index) => (
+                  <button
+                    key={view}
+                    type="button"
+                    className="button-secondary"
+                    onClick={() => send(view)}
+                  >
+                    {["Trước", "Sau", "Trái", "Phải"][index]}
+                  </button>
+                ),
+              )}
+              <button
+                type="button"
+                className="icon-button"
+                aria-label="Đặt lại góc nhìn"
+                onClick={reset}
+              >
+                <Icon name="refresh" className="size-4" />
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-rule px-4 py-2">
+            {sideButtons}
+            {layerToggles}
+          </div>
+        </div>
+      ) : (
+        <>
+          <header className="space-y-2 px-4 py-3">
+            <p className="eyebrow">Quan sát cấu trúc · Atlas 3D</p>
+            <h3 className="font-display text-base font-semibold text-ink">
+              {title}
+            </h3>
+            <p className="text-xs leading-5 text-slate">
+              Kéo để xoay · Cuộn/chụm để phóng to. Chọn cấu trúc trên hình hoặc
+              trong danh sách.
+            </p>
+          </header>
+          {sideButtons}
+        </>
+      )}
       <div
         className={
           wholeBody
@@ -277,7 +406,7 @@ function ContextualAnatomyPanel({
           hiddenIds={hiddenIds}
           frameIds={frameIds}
           searchTargetIds={markIds.length ? new Set(markIds) : undefined}
-          isolatedId={observation.isolatedId}
+          isolatedId={compactChrome ? null : observation.isolatedId}
           selectedId={selected?.id ?? null}
           thicknessId={null}
           materialStudy={false}
@@ -285,7 +414,7 @@ function ContextualAnatomyPanel({
           studyRetry={0}
           onStudyStatus={() => {}}
           muscleOpacity={1}
-          quality="auto"
+          quality={compactChrome ? "detailed" : "auto"}
           presentation="light"
           projection="orthographic"
           learningMode
@@ -294,151 +423,100 @@ function ContextualAnatomyPanel({
           onSelect={choose}
         />
       </div>
-      <div className="space-y-3 border-t border-rule p-3 sm:p-4">
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="group"
-          aria-label="Góc nhìn 3D"
-        >
-          {(["front", "back", "left", "right"] as const).map((view, index) => (
-            <button
-              key={view}
-              type="button"
-              className="button-secondary min-h-10 px-3 text-xs"
-              onClick={() => send(view)}
-            >
-              {["Trước", "Sau", "Trái", "Phải"][index]}
-            </button>
-          ))}
-        </div>
-        <label className="field-label text-xs">
-          Cấu trúc đang quan sát
-          <select
-            value={selected?.id ?? ""}
-            onChange={(e) => {
-              if (e.target.value) choose(e.target.value);
-            }}
-          >
-            <option value="">
-              {options.length
-                ? "Chọn cấu trúc…"
-                : "Không có cấu trúc trong lớp/bên đã chọn"}
-            </option>
-            {options.map((s) => (
-              <option key={s.id} value={s.id}>
-                {atlasStructureName(s)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="text-xs leading-5 text-slate" aria-live="polite">
-          {selected
-            ? <AtlasStructureName structure={selected} className="font-semibold text-ink" />
-            : `${options.length} cấu trúc có thể chọn`}
-        </div>
-        {selected && <AtlasSourceNames structure={selected} />}
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            className="button-secondary min-h-10 text-xs"
-            disabled={!selected}
-            onClick={() => send("focus")}
-          >
-            Tập trung
-          </button>
-          <button
-            type="button"
-            className="button-secondary min-h-10 text-xs"
-            disabled={!selected}
-            aria-pressed={Boolean(observation.isolatedId)}
-            onClick={() => {
-              setObservation((state) => ({
-                ...state,
-                isolatedId: state.isolatedId ? null : (selected?.id ?? null),
-                command: {
-                  type: state.isolatedId ? defaultView : "focus",
-                  revision: state.command.revision + 1,
-                },
-              }));
-            }}
-          >
-            {observation.isolatedId ? "Hiện lại ngữ cảnh" : "Cô lập cấu trúc"}
-          </button>
-          <button
-            type="button"
-            className="button-secondary min-h-10 text-xs"
-            onClick={reset}
-          >
-            Đặt lại
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-x-4 text-xs text-ink">
-          {(["bone", "muscle", "joint"] as const).map((layer, index) => (
-            <label key={layer} className="flex min-h-10 items-center gap-2">
-              <input
-                type="checkbox"
-                checked={layers[layer]}
-                onChange={(e) =>
-                  setLayers((state) => ({
-                    ...state,
-                    [layer]: e.target.checked,
-                  }))
-                }
-              />
-              {["Xương", "Cơ", "Khớp & dây chằng"][index]}
-            </label>
-          ))}
-          {!wholeBody && (
-            <label className="flex min-h-10 items-center gap-2">
-              <input
-                type="checkbox"
-                checked={surroundings}
-                onChange={(e) => setSurroundings(e.target.checked)}
-              />
-              Cấu trúc xung quanh
-            </label>
-          )}
-        </div>
-        <details className="border-t border-rule pt-3 text-xs leading-5 text-slate">
-          <summary className="cursor-pointer font-semibold text-ink">
-            Nguồn mô hình & phạm vi sử dụng
-          </summary>
-          <p className="mt-2">
-            Mô hình Z-Anatomy · CC BY-SA 4.0. Liên kết theo tên và phân vùng của
-            catalog để tra cứu; không xác nhận hình học, số đo, tình trạng đau
-            hoặc tổn thương cá nhân.
-          </p>
-          {wholeBody && (
-            <p className="mt-2">
-              Hình là toàn bộ hệ cơ–xương của atlas. Cơ hoặc vùng đang tra được
-              đánh dấu. Không có đầu, da, nội tạng. Đây không phải vị trí điểm
-              kích hoạt.
-            </p>
-          )}
-          {context.kind === "trigger" && (
-            <p className="mt-2">
-              Không hiển thị tọa độ điểm kích hoạt hoặc vùng đau lan khi chưa có
-              nguồn ánh xạ cụ thể. Chọn cơ chỉ mở kiến thức tham khảo.
-            </p>
-          )}
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
-            <a
-              href="/anatomy/3d/ATTRIBUTION.md"
-              target="_blank"
-              rel="noreferrer"
-              className="text-cobalt underline"
-            >
-              Xuất xứ & giấy phép
-            </a>
-            <Link
-              href={`/atlas?${new URLSearchParams({ area, ...(selected ? { structure: selected.id } : {}) })}`}
-              className="text-cobalt underline"
-            >
-              Mở trong Giải phẫu 3D ↗
-            </Link>
+      {compactChrome ? (
+        selected && (
+          <div className="space-y-1 border-t border-rule px-4 py-3">
+            <AtlasSourceNames structure={selected} />
           </div>
-        </details>
-      </div>
+        )
+      ) : (
+        <div className="space-y-3 border-t border-rule p-3 sm:p-4">
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="group"
+            aria-label="Góc nhìn 3D"
+          >
+            {(["front", "back", "left", "right"] as const).map((view, index) => (
+              <button
+                key={view}
+                type="button"
+                className="button-secondary min-h-10 px-3 text-xs"
+                onClick={() => send(view)}
+              >
+                {["Trước", "Sau", "Trái", "Phải"][index]}
+              </button>
+            ))}
+          </div>
+          <label className="field-label text-xs">
+            Cấu trúc đang quan sát
+            <select
+              value={selected?.id ?? ""}
+              onChange={(e) => {
+                if (e.target.value) choose(e.target.value);
+              }}
+            >
+              <option value="">
+                {options.length
+                  ? "Chọn cấu trúc…"
+                  : "Không có cấu trúc trong lớp/bên đã chọn"}
+              </option>
+              {options.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {atlasStructureName(s)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="text-xs leading-5 text-slate" aria-live="polite">
+            {selected ? (
+              <AtlasStructureName
+                structure={selected}
+                className="font-semibold text-ink"
+              />
+            ) : (
+              `${options.length} cấu trúc có thể chọn`
+            )}
+          </div>
+          {selected && <AtlasSourceNames structure={selected} />}
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              className="button-secondary min-h-10 text-xs"
+              disabled={!selected}
+              onClick={() => send("focus")}
+            >
+              Tập trung
+            </button>
+            <button
+              type="button"
+              className="button-secondary min-h-10 text-xs"
+              disabled={!selected}
+              aria-pressed={Boolean(observation.isolatedId)}
+              onClick={() => {
+                setObservation((state) => ({
+                  ...state,
+                  isolatedId: state.isolatedId ? null : (selected?.id ?? null),
+                  command: {
+                    type: state.isolatedId ? defaultView : "focus",
+                    revision: state.command.revision + 1,
+                  },
+                }));
+              }}
+            >
+              {observation.isolatedId ? "Hiện lại ngữ cảnh" : "Cô lập cấu trúc"}
+            </button>
+            <button
+              type="button"
+              className="button-secondary min-h-10 text-xs"
+              onClick={reset}
+            >
+              Đặt lại
+            </button>
+          </div>
+          {layerToggles}
+          {sourceDetails}
+        </div>
+      )}
     </section>
   );
 }

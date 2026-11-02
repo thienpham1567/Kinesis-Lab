@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { StudyChatWidget } from "./StudyChatWidget";
 import { ThemePicker } from "./ThemePicker";
 import { Icon, type IconName } from "./WorkspaceUI";
@@ -183,8 +183,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 }
 
 function KinesisLogo({ className = "size-9" }: { className?: string }) {
-  const backgroundId = useId();
-  const vectorId = useId();
   return (
     <svg
       viewBox="0 0 64 64"
@@ -194,97 +192,84 @@ function KinesisLogo({ className = "size-9" }: { className?: string }) {
     >
       <defs>
         <linearGradient
-          id={backgroundId}
-          x1="6"
+          id="kl-nav-bg"
+          x1="8"
           y1="4"
-          x2="58"
+          x2="56"
           y2="60"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stopColor="var(--p1)" />
-          <stop offset="1" stopColor="var(--p3)" />
+          <stop offset="0" stopColor="#12242C" />
+          <stop offset="1" stopColor="#164A8C" />
         </linearGradient>
         <linearGradient
-          id={vectorId}
-          x1="20"
-          y1="14"
-          x2="50"
-          y2="50"
+          id="kl-nav-vec"
+          x1="22"
+          y1="16"
+          x2="47"
+          y2="48"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stopColor="var(--p6)" />
-          <stop offset="1" stopColor="var(--p4)" />
+          <stop offset="0" stopColor="#7EB8F0" />
+          <stop offset="1" stopColor="#3DB89A" />
         </linearGradient>
       </defs>
+      <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#kl-nav-bg)" />
       <rect
-        x="2"
-        y="2"
-        width="60"
-        height="60"
-        rx="14"
-        fill={`url(#${backgroundId})`}
-      />
-      <rect
-        x="3"
-        y="3"
-        width="58"
-        height="58"
-        rx="13"
-        stroke="#ffffff"
+        x="3.2"
+        y="3.2"
+        width="57.6"
+        height="57.6"
+        rx="12.8"
+        stroke="#F6F1EA"
         strokeOpacity="0.16"
-        strokeWidth="1.5"
+        strokeWidth="1.25"
       />
       <path
-        d="M 38 20 A 16 16 0 0 1 38 44"
-        stroke="var(--p6)"
-        strokeOpacity="0.55"
-        strokeWidth="2"
-        strokeDasharray="2.5 2.5"
+        d="M30.4 16.6 A17.4 17.4 0 0 1 30.4 47.4"
+        stroke="#8EBFEC"
+        strokeOpacity="0.48"
+        strokeWidth="1.9"
         strokeLinecap="round"
       />
-      <line
-        x1="20"
-        y1="15"
-        x2="20"
-        y2="49"
-        stroke="#ffffff"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-      />
-      <circle cx="20" cy="16.5" r="3" fill="#ffffff" />
-      <circle cx="20" cy="47.5" r="3" fill="#ffffff" />
       <path
-        d="M 45 16 L 23 32 L 45 48"
-        stroke={`url(#${vectorId})`}
-        strokeWidth="4.5"
+        d="M22 14.6v34.8"
+        stroke="#F6F1EA"
+        strokeWidth="5.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M46.6 15.6 22 32 46.6 48.4"
+        stroke="url(#kl-nav-vec)"
+        strokeWidth="5.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <circle
-        cx="45"
-        cy="16"
-        r="3.5"
-        fill="var(--p6)"
-        stroke="var(--p1)"
-        strokeWidth="1.5"
+        cx="46.6"
+        cy="15.6"
+        r="3.15"
+        fill="#7EB8F0"
+        stroke="#12242C"
+        strokeWidth="1.35"
       />
       <circle
-        cx="45"
-        cy="48"
-        r="3.5"
-        fill="var(--p4)"
-        stroke="var(--p1)"
-        strokeWidth="1.5"
+        cx="46.6"
+        cy="48.4"
+        r="3.15"
+        fill="#3DB89A"
+        stroke="#12242C"
+        strokeWidth="1.35"
       />
       <circle
         cx="22"
         cy="32"
-        r="6"
-        fill="var(--p5)"
-        stroke="#ffffff"
-        strokeWidth="2.5"
+        r="6.7"
+        fill="#0F6E54"
+        stroke="#F6F1EA"
+        strokeWidth="2.1"
       />
-      <circle cx="22" cy="32" r="2" fill="#ffffff" />
+      <circle cx="22" cy="32" r="2.35" fill="#F6F1EA" />
     </svg>
   );
 }

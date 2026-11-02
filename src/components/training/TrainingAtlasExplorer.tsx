@@ -408,6 +408,7 @@ export function TrainingAtlasExplorer({
               <ContextualAnatomyViewer
                 context={{ kind: "training", id: muscle.id }}
                 title={muscle.name}
+                compactChrome
                 onNavigate={(id) => {
                   const target = MUSCLE_GROUP_ATLAS.find((m) => m.id === id);
                   if (target) goMuscle(target.id);

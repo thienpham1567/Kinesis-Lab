@@ -18,12 +18,28 @@ const labFont = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://kinesis-lab.vercel.app"),
   title: {
     default: "Kinesis Lab — Giải phẫu, Cơ sinh học & Lâm sàng cho PT",
     template: "%s | Kinesis Lab",
   },
   description:
     "Nền tảng tra cứu giải phẫu cơ – khớp OpenStax, cơ sinh học phì đại cơ, sàng lọc cờ đỏ PAR-Q+, phân tích xét nghiệm & y văn PubMed dành cho Personal Trainer.",
+  applicationName: "Kinesis Lab",
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    siteName: "Kinesis Lab",
+    title: "Kinesis Lab — Giải phẫu, Cơ sinh học & Lâm sàng cho PT",
+    description:
+      "Nền tảng tra cứu giải phẫu cơ – khớp OpenStax, cơ sinh học phì đại cơ, sàng lọc cờ đỏ PAR-Q+, phân tích xét nghiệm & y văn PubMed dành cho Personal Trainer.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kinesis Lab — Giải phẫu, Cơ sinh học & Lâm sàng cho PT",
+    description:
+      "Nền tảng tra cứu giải phẫu cơ – khớp OpenStax, cơ sinh học phì đại cơ, sàng lọc cờ đỏ PAR-Q+, phân tích xét nghiệm & y văn PubMed dành cho Personal Trainer.",
+  },
 };
 
 export const viewport: Viewport = {

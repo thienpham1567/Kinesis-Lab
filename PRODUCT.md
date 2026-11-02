@@ -21,7 +21,7 @@ The web app uses Vietnamese on desktop and mobile. `/` enters `/atlas`; other ma
 ## Capabilities and Constraints
 
 - Existing Next.js/React app; framework APIs must follow the installed Next documentation.
-- Preserve all existing workflows and 13 selectable themes during refinement.
+- Preserve all existing workflows and the selectable themes in `src/lib/theme.ts` during refinement.
 - Keep NCSF banks, PDFs and images private; never move them into public assets or repository fixtures.
 - Do not create client records, send consultations to AI, or upload/delete real lab records as a design verification step. Use synthetic fixtures and mocked network responses.
 - Source-specific review/access dates and limits remain truthful. `reviewedBy` stays null when no independent review occurred. Reputable-source comparison is the Atlas content acceptance criterion; independent expert signoff is optional.

@@ -4,7 +4,6 @@ import type {
   AtlasLayer,
   AtlasStructure,
 } from "@/lib/clinical/atlas-3d";
-import { atlasStructureName } from "@/lib/clinical/atlas-names";
 import type { CameraCommand } from "./types";
 
 type LearningRegion = {
@@ -69,23 +68,16 @@ export type LearningStep = {
 
 /** Authored UI viewing steps; no clinical protocol or superficial/deep segmentation. */
 export function regionLearningSteps(
-  area: AtlasArea,
-  structures: AtlasStructure[],
+  _area: AtlasArea,
+  _structures: AtlasStructure[],
 ): LearningStep[] {
-  const candidates = structures.filter(
-    (s) =>
-      s.english === LEARNING_REGIONS[area].example &&
-      (area === "full" || s.areas.includes(area)),
-  );
-  const example = candidates.find((s) => s.side === "left") ?? candidates[0];
   const layers = { bone: true, muscle: true, joint: false };
   return [
     {
       id: "overview",
       title: "Nhìn toàn cảnh",
       short: "Toàn cảnh",
-      instruction:
-        "Xoay mô hình để định hướng. Chọn một cấu trúc trên hình hoặc trong danh mục để xem tên Việt và tên Anh từ nguồn.",
+      instruction: "Xoay mô hình rồi chọn một cấu trúc để đọc tên Việt / Anh.",
       layers,
       camera: "front-oblique",
     },
@@ -93,8 +85,7 @@ export function regionLearningSteps(
       id: "bones",
       title: "Quan sát hệ xương",
       short: "Hệ xương",
-      instruction:
-        "Đã tắt nhóm Hệ cơ–gân và Khớp & dây chằng. Hệ xương là nhóm hiển thị của nguồn, không phải kết luận về loại mô của mọi cấu trúc trong nhóm. Dùng Trước / Sau để đổi hướng quan sát.",
+      instruction: "Chỉ hiện nhóm xương của nguồn, không kết luận loại mô.",
       layers: { bone: true, muscle: false, joint: false },
       camera: "front-oblique",
     },
@@ -102,32 +93,9 @@ export function regionLearningSteps(
       id: "muscles",
       title: "Thêm hệ cơ–gân",
       short: "Hệ cơ–gân",
-      instruction:
-        "Nhóm Hệ cơ–gân được hiện cùng Hệ xương. Đây là các nhóm hiển thị của mô hình nguồn; không phải phân lớp mô học hay nông–sâu đã được xác minh.",
+      instruction: "Hiện nhóm cơ–gân của nguồn cùng xương.",
       layers,
       camera: "back-oblique",
-    },
-    {
-      id: "focus",
-      title: example
-        ? `Quan sát ${atlasStructureName(example)}`
-        : "Chọn một cấu trúc trong danh mục",
-      short: "Một cấu trúc",
-      instruction: example
-        ? "Cấu trúc mẫu được tách riêng để quan sát. Mở Kiến thức để đọc thông tin hiện có và Nguồn để xem phạm vi đối chiếu; tên mô hình không đồng nghĩa có kiến thức riêng cho từng mesh."
-        : "Mẫu quan sát chưa có trong danh mục này. Chọn một cấu trúc ở tab Cấu trúc để tìm hiểu.",
-      layers,
-      camera: example ? "focus" : "reset",
-      structureId: example?.id,
-    },
-    {
-      id: "check",
-      title: "Dừng lại và tự kiểm tra",
-      short: "Tự kiểm tra",
-      instruction:
-        "Quay về toàn cảnh. Thử giải thích sự khác nhau giữa thao tác ẩn một lớp và việc xác nhận cấu trúc giải phẫu bằng tài liệu.",
-      layers,
-      camera: "front-oblique",
     },
   ];
 }

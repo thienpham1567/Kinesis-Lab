@@ -7,11 +7,6 @@ export const THEMES = [
     swatches: ["#F9F8F6", "#EFE9E3", "#D9CFC7", "#C9B59C"],
   },
   {
-    id: "blush",
-    name: "Blush",
-    swatches: ["#FCF8F8", "#FBEFEF", "#F9DFDF", "#F5AFAF"],
-  },
-  {
     id: "navy",
     name: "Navy",
     swatches: ["#0F2854", "#1C4D8D", "#4988C4", "#BDE8F5"],
@@ -27,11 +22,6 @@ export const THEMES = [
     swatches: ["#A8DF8E", "#F0FFDF", "#FFD8DF", "#FFAAB8"],
   },
   {
-    id: "sage",
-    name: "Sage",
-    swatches: ["#F1F3E0", "#D2DCB6", "#A1BC98", "#778873"],
-  },
-  {
     id: "wine",
     name: "Wine",
     swatches: ["#FCF5EE", "#FFC4C4", "#EE6983", "#850E35"],
@@ -40,11 +30,6 @@ export const THEMES = [
     id: "slate",
     name: "Slate",
     swatches: ["#213448", "#547792", "#94B4C1", "#EAE0CF"],
-  },
-  {
-    id: "olive",
-    name: "Olive",
-    swatches: ["#F6F0D7", "#C5D89D", "#9CAB84", "#89986D"],
   },
   {
     id: "sky",
