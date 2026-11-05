@@ -19,5 +19,8 @@ export type StudyAnswerMeta = {
   sources: StudySource[];
   actions: StudyAction[];
   context: StudyContext | null;
+  /** Retrieval problems for the reader; shown only when the answer cites nothing. */
   sourceNotice?: string;
+  /** Citation-audit warning; always shown. */
+  warning?: string;
 };

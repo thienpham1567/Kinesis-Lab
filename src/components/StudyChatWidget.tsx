@@ -312,7 +312,7 @@ export function StudyChatWidget({
               ...answer,
               study: {
                 ...answer.study,
-                sourceNotice: [event.text, answer.study.sourceNotice]
+                warning: [answer.study.warning, event.text]
                   .filter(Boolean)
                   .join(" "),
               },

@@ -64,8 +64,10 @@ test('study follow-up anchors current muscle and side and excludes old topic fro
   assert.ok(meta.actions.some(a => a.href === '/atlas?tab=hypertrophy&muscle=deltoids'));
   assert.ok(meta.sources.some(s => s.id.startsWith('APP:muscle:deltoids')));
   assert.ok(meta.sources.every(s => s.checkedAt && s.access && /^https:\/\//.test(s.url)));
-  assert.match(meta.sourceNotice, /cơ mẹ/);
   const system = f.calls.messages[0].content;
+  // Model guidance goes to the prompt only; readers see retrieval problems, not instructions.
+  assert.match(system, /HƯỚNG DẪN DÙNG NGUỒN[^\n]*\n[^\n]*cơ mẹ/);
+  assert.doesNotMatch(meta.sourceNotice ?? '', /cơ mẹ|Chỉ tổng hợp|mesh/);
   assert.match(system, /Acromial part of deltoid muscle/);
   assert.match(system, /phải/);
   assert.doesNotMatch(system, /gastrocnemius|NCSF|Quy tắc in mã APP, RAG và PMID ở trên không dùng/);
@@ -331,4 +333,35 @@ test('focused learning questions do not fill the source list with neighboring RO
   assert.ok(records.some(record => record.id === 'exercise:barbell-hip-thrust'));
   assert.ok(records.length <= 2);
   assert.ok(!records.some(record => record.domain === 'rom'));
+});
+
+test('question names its own subject: suggestions, label and search follow the question, not the Atlas selection', async () => {
+  const acl = 'za-aee00ebd66d4';
+  const ask = async content => {
+    const f = fixture();
+    const { events } = await f.post(body({ studyStructureId: acl, messages: [{ role: 'user', content }] }));
+    return { meta: events.find(e => e.type === 'study-meta'), f };
+  };
+  // Muscle group named while ACL is selected.
+  const quads = await ask('Cơ nào trong nhóm quadriceps vừa duỗi gối vừa gập hông?');
+  assert.equal(quads.meta.context, null);
+  assert.deepEqual(quads.meta.actions.map(a => a.href), ['/atlas?tab=hypertrophy&muscle=quads_adductors']);
+  assert.ok(!quads.f.calls.public.some(q => /cruciate/i.test(q)), 'PubMed must not search the stale selection');
+  // Another structure named: its own view links, not the selection.
+  const rf = await ask('Chức năng của rectus femoris?');
+  assert.ok(rf.meta.actions.length && rf.meta.actions.every(a => !a.href.includes(acl)));
+  assert.ok(rf.meta.actions[0].href.includes('tab=3d'));
+  // Specific exercise names link to the exercise.
+  const rdl = await ask('Hamstrings và Romanian Deadlift');
+  assert.ok(rdl.meta.actions.some(a => a.href === '/atlas?tab=hypertrophy&exercise=romanian-deadlift-seated-curl'));
+  // Head names that are ambiguous structures still resolve to their group.
+  assert.deepEqual((await ask('Biceps femoris thuộc nhóm nào?')).meta.actions.map(a => a.href), ['/atlas?tab=hypertrophy&muscle=hamstrings']);
+  // Implicit and "this structure" questions keep the selection.
+  for (const content of ['Chức năng chính?', 'Dây chằng này liên quan gì tới quadriceps?', 'So sánh squat và deadlift', 'So sánh với rectus femoris', 'Khớp gối chịu lực thế nào?']) {
+    const kept = await ask(content);
+    assert.equal(kept.meta.context?.structureId, acl, content);
+    assert.ok(kept.meta.actions[0].href.includes(acl), content);
+  }
+  // Accent-free "cơ thẳng đùi" must not read as trapezius ("cơ thang").
+  assert.ok(!(await ask('Cơ thẳng đùi làm gì?')).meta.actions.some(a => a.href.includes('upper_back_traps')));
 });

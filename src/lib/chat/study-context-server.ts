@@ -3,7 +3,7 @@ import { resolveAtlasManifest } from "@/lib/clinical/atlas-catalog";
 import { atlasShortEnglishName, atlasVietnameseName } from "@/lib/clinical/atlas-names";
 import type { AtlasManifest, AtlasStructure } from "@/lib/clinical/atlas-3d";
 import { ANATOMY_REGIONS } from "@/lib/clinical/anatomy-atlas";
-import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
+import { HYPERTROPHY_EXERCISES, MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import { EVIDENCE_INDEX, formatCuratedEvidence, normalizeEvidenceQuery, selectCuratedEvidence, type EvidenceIndexEntry } from "@/lib/clinical/evidence-registry";
 import { getStructureAnatomyEvidence } from "@/lib/clinical/structure-anatomy-evidence";
 import { trainingGroupForStructure } from "@/lib/clinical/training-atlas";
@@ -169,19 +169,76 @@ export function studyRetrievalQuery(context: StudyContext | null, question: stri
   return exactMentionedStudyStructures(question).length || studyLiteratureTopic(question) ? question.slice(-4000) : history;
 }
 
+// Common names for training muscle groups, matched on normalized (accent-free)
+// text. Lookaheads keep head/structure names out: biceps femoris is hamstrings,
+// triceps surae is calves, deltoid ligament is the ankle. "co thang" is omitted
+// because accent-free "cơ thẳng" (rectus) collides with "cơ thang" (trapezius).
+const MUSCLE_GROUP_NAMES: readonly [string, RegExp][] = [
+  ["chest", /\b(chest|pecs?|pectoralis|co nguc)\b/],
+  ["lats_teres", /\b(lats|latissimus|co lung rong)\b/],
+  ["upper_back_traps", /\b(traps|trapezius|rhomboids?|co tram)\b/],
+  ["deltoids", /\b(deltoids?(?! ligament)|co delta)\b/],
+  ["biceps_forearm", /\b(biceps(?! femoris)|co nhi dau canh tay)\b/],
+  ["triceps", /\b(triceps(?! surae)|co tam dau canh tay)\b/],
+  ["abs_obliques", /\b(abs|abdominals?|obliques?|co thang bung|co cheo bung|co ngang bung)\b/],
+  ["glutes", /\b(glutes?|gluteals?|co mong)\b/],
+  ["quads_adductors", /\b(quadriceps|quads|co tu dau|adductors?|co khep)\b/],
+  ["hamstrings", /\b(hamstrings?|co gan kheo|nhom dui sau|biceps femoris|semitendinosus|semimembranosus|co nhi dau dui|co ban gan|co ban mang)\b/],
+  ["calves", /\b(calf|calves|co bap chan|co bung chan|co dep)\b/],
+];
+// "Cơ này", "cấu trúc đang chọn", "so sánh với X": the question points at the
+// Atlas selection. Generic words ("bài tập", "squat") name no subject, so such
+// questions also stay with the selection.
+const SELECTION_REFERENCE = /\b(co|cau truc|day chang|xuong|khop|gan|phan|bo) (nay|do)\b|\bdang chon\b|\bthis (muscle|structure)\b|\bso sanh voi\b|\bcompared? (with|to)\b/;
+
+function mentionedMuscleGroups(normalized: string) {
+  return MUSCLE_GROUP_NAMES.flatMap(([id, pattern]) => {
+    const group = pattern.test(normalized) && MUSCLE_GROUP_ATLAS.find(item => item.id === id);
+    return group ? [group] : [];
+  });
+}
+
+// Exact exercise names only ("Romanian Deadlift"), never a bare "squat".
+function mentionedExercises(normalized: string) {
+  return HYPERTROPHY_EXERCISES.filter(exercise =>
+    [...exercise.name.split("/"), ...exercise.vietnameseName.split("/")].some(name => {
+      const term = normalizeEvidenceQuery(name);
+      return term.length >= 5 && normalized.includes(` ${term} `);
+    }));
+}
+
+/**
+ * The Atlas selection is the default subject only for questions that name no
+ * subject of their own or refer back to it ("cơ này"). A question about
+ * quadriceps while ACL is selected is about quadriceps.
+ */
+export function questionStudyContext(selected: StudyContext | null, question: string) {
+  if (!selected) return null;
+  const normalized = ` ${normalizeEvidenceQuery(question.slice(-4000))} `;
+  const structures = exactMentionedStudyStructures(question);
+  // Only named subjects count; broad topic words ("gối", "tăng cơ") stay with the selection.
+  const explicit = structures.length > 0 || mentionedMuscleGroups(normalized).length > 0 ||
+    mentionedExercises(normalized).length > 0;
+  if (!explicit || SELECTION_REFERENCE.test(normalized) || structures.some(item => item.english === selected.english)) return selected;
+  return null;
+}
+
 /** Exact known names only; a bilateral name may offer both real sides. */
 function mentionedStudyActions(question: string) {
   const normalized = ` ${normalizeEvidenceQuery(question.slice(-4000))} `;
   let matches = exactMentionedStudyStructures(question);
   // Shared aliases across different named structures are ambiguous. Never choose
   // an arbitrary structure or side just to provide a navigation action.
-  if (new Set(matches.map(item => item.english)).size !== 1) return [];
+  if (new Set(matches.map(item => item.english)).size !== 1) matches = [];
   // “Có phải ...?” asks a question; “phải” alone is not a side label.
   const left = /\b(ben trai|left)\b/.test(normalized);
   const right = /\b(ben phai|right)\b/.test(normalized);
   if (left !== right) matches = matches.filter(item => item.side === (left ? "left" : "right"));
-  const actions = matches.flatMap(item => studyContextActions(resolveStudyContext(item.id)!));
-  return Array.from(new Map(actions.map(action => [action.href, action])).values()).slice(0, 4);
+  return [
+    ...matches.flatMap(item => studyContextActions(resolveStudyContext(item.id)!)),
+    ...mentionedMuscleGroups(normalized).map(group => ({ label: `Bài tập nhóm ${group.name}`, href: `/atlas?tab=hypertrophy&muscle=${encodeURIComponent(group.id)}` })),
+    ...mentionedExercises(normalized).map(exercise => ({ label: `Xem bài tập ${exercise.name}`, href: `/atlas?tab=hypertrophy&exercise=${encodeURIComponent(exercise.id)}` })),
+  ];
 }
 
 export function selectedStudyContextBlock(context: StudyContext | null) {
@@ -211,21 +268,29 @@ export function studyAnswerMeta(
       ? `metadata và abstract được truy xuất trong lượt này; chưa có toàn văn${paper.abstractTruncated ? "; abstract dài đã lược phần giữa" : ""}${paper.publicationTypes?.length ? `; loại bài: ${paper.publicationTypes.join(", ")}` : ""}`
       : "chỉ metadata/tiêu đề; không có abstract hoặc toàn văn trong lượt này",
   })));
-  const actions = context ? studyContextActions(context) : mentionedStudyActions(question);
+  // Selected structure (when it is still the subject) first, then what the question names.
+  const actions = Array.from(new Map([...(context ? studyContextActions(context) : []), ...mentionedStudyActions(question)]
+    .map(action => [action.href, action])).values())
+    .sort((a, b) => Number(b.href.includes("tab=3d")) - Number(a.href.includes("tab=3d"))).slice(0, 4);
   sources.push(...rag.map(hit => ({
     id: `RAG:${hit.citationId ?? hit.id}`, title: [hit.title, hit.chapter].filter(Boolean).join(" — "),
     url: hit.url ?? "", checkedAt: hit.checkedAt ?? "",
     access: `Đoạn toàn văn được truy xuất trong lượt này. ${hit.access ?? "Không suy đã đọc cả tài liệu, bảng hoặc hình."}`,
   })).filter(source => /^https:\/\//.test(source.url)));
+  // Reader-facing retrieval problems only; shown when an answer cites nothing.
   const publicNotice = literatureStatus === "error"
     ? "Chưa tra cứu được PubMed trong lượt này."
     : literatureStatus === "no_matches" ? "PubMed chưa trả về bài phù hợp với truy vấn."
-    : literatureStatus === "skipped" ? "Lượt này chưa có truy vấn PubMed phù hợp."
-    : "PubMed chỉ cung cấp metadata và abstract nếu có; chưa có toàn văn.";
-  const comparisonNotice = records.filter(record => record.domain === "structure").length > 1
-    ? " Các cơ được nêu rõ trong hội thoại có thêm hồ sơ nguồn từng cơ để so sánh; truy vấn PubMed vẫn chỉ theo cấu trúc đang chọn nếu có." : "";
-  return {
-    context, actions, sources,
-    sourceNotice: `${publicNotice}${context ? ` Truy vấn dùng tên cơ mẹ/cấu trúc catalog: ${studySearchFamily(context)}; kết quả không tự xác nhận chức năng riêng của phần đang chọn hoặc khác biệt giữa hai bên.` : ""}${comparisonNotice} Nguồn được liệt kê để đối chiếu; không phải mọi nguồn đều trả lời từng nhận định. Chỉ tổng hợp phần thực sự được hỗ trợ; nếu thiếu nguồn trực tiếp cho cơ hoặc câu hỏi, nêu rõ giới hạn. Không suy giải phẫu, hướng sợi hay phép đo từ mesh và không biến kiến thức thành chỉ định điều trị cá nhân.`,
-  };
+    : literatureStatus === "skipped" ? "Lượt này chưa có truy vấn PubMed phù hợp." : "";
+  return { context, actions, sources, sourceNotice: publicNotice || undefined };
+}
+
+/** Model-only source guidance for the system prompt; never shown to readers. */
+export function studySourceGuidance(context: StudyContext | null, records: readonly EvidenceIndexEntry[]) {
+  return "HƯỚNG DẪN DÙNG NGUỒN CỦA LƯỢT NÀY\n" + [
+    context && `Truy vấn dùng tên cơ mẹ/cấu trúc catalog: ${studySearchFamily(context)}; kết quả không tự xác nhận chức năng riêng của phần đang chọn hoặc khác biệt giữa hai bên.`,
+    records.filter(record => record.domain === "structure").length > 1 &&
+      "Các cơ được nêu rõ trong hội thoại có thêm hồ sơ nguồn từng cơ để so sánh; truy vấn PubMed vẫn chỉ theo cấu trúc đang chọn nếu có.",
+    "Nguồn được liệt kê để đối chiếu; không phải mọi nguồn đều trả lời từng nhận định. Chỉ tổng hợp phần thực sự được hỗ trợ; nếu thiếu nguồn trực tiếp cho cơ hoặc câu hỏi, nêu rõ giới hạn. Không suy giải phẫu, hướng sợi hay phép đo từ mesh và không biến kiến thức thành chỉ định điều trị cá nhân.",
+  ].filter(Boolean).join(" ");
 }

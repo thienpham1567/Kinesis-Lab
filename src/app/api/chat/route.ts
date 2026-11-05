@@ -12,7 +12,7 @@ import { hasSupabase, supabase } from "@/lib/supabase/server";
 import { formatPubMed, searchPubMed } from "@/lib/tools/pubmed";
 import { formatRag, retrieveKnowledge } from "@/lib/tools/rag-search";
 import { readSseData } from "@/lib/ai/stream-events";
-import { filterStudyPubMed, resolveStudyContext, selectedStudyContextBlock, selectStudyEvidence, studyAnswerMeta, studyPublicLiteratureQuery, studyQuestionContext, studyRetrievalQuery } from "@/lib/chat/study-context-server";
+import { filterStudyPubMed, questionStudyContext, resolveStudyContext, selectedStudyContextBlock, selectStudyEvidence, studyAnswerMeta, studyPublicLiteratureQuery, studySourceGuidance, studyQuestionContext, studyRetrievalQuery } from "@/lib/chat/study-context-server";
 import { filterStudyKnowledge, filterStudyTopicPapers, studyLiteratureTopic } from "@/lib/chat/study-retrieval";
 import { auditAnswerCitations } from "@/lib/chat/citation-audit";
 import type {
@@ -120,7 +120,8 @@ export async function POST(req: Request) {
   // fixed vocabulary derived from the current question only, never that history.
   const prior = messages.filter(m => m.role === "user").slice(-3, -1).map(m => m.content.slice(-800));
   const isStudy = typeof body.studyPage === "string";
-  const studyContext = isStudy ? resolveStudyContext(body.studyStructureId) : null;
+  // The Atlas selection anchors only questions without their own explicit subject.
+  const studyContext = isStudy ? questionStudyContext(resolveStudyContext(body.studyStructureId), last) : null;
   const historyQuery = [...prior, last.slice(-4000)].join("\n");
   const retrievalQuery = isStudy ? studyRetrievalQuery(studyContext, last, historyQuery) : historyQuery;
   const curated = isStudy ? selectStudyEvidence(studyContext, last, retrievalQuery) : selectCuratedEvidence(retrievalQuery);
@@ -140,11 +141,11 @@ export async function POST(req: Request) {
   ]);
   const rag = isStudy ? filterStudyKnowledge(retrievalQuery, knowledge.hits) : knowledge.hits;
   const retrieval = isStudy && knowledge.retrieval.status === "ready" && !rag.length
-    ? { ...knowledge.retrieval, status: "no_matches" as const, message: "Kho toàn văn hiện chưa có bài trong phạm vi trực tiếp của câu hỏi. Dùng các nguồn đối chiếu/PubMed thực sự được cung cấp bên dưới." }
+    ? { ...knowledge.retrieval, status: "no_matches" as const, message: "Kho toàn văn hiện chưa có bài trong phạm vi trực tiếp của câu hỏi." }
     : knowledge.retrieval;
   const pubmed = literature.papers;
   const studyMeta = isStudy ? studyAnswerMeta(studyContext, curated, pubmed, literature.status, last, rag) : null;
-  if (studyMeta) studyMeta.sourceNotice = [retrieval.message, studyMeta.sourceNotice].filter(Boolean).join(" ");
+  if (studyMeta) studyMeta.sourceNotice = [retrieval.status === "ready" ? "" : retrieval.message, studyMeta.sourceNotice].filter(Boolean).join(" ") || undefined;
   const sourceStatus = { rag: retrieval, pubmed: { status: literature.status,
     message: literature.status === "error" ? "Chưa tra cứu được PubMed trong lượt này." :
       literature.status === "no_matches" ? "PubMed chưa trả về bài phù hợp với chủ đề tra cứu." :
@@ -166,7 +167,7 @@ export async function POST(req: Request) {
     formatCuratedEvidence(curated),
     evidenceBlock(formatRag(rag), formatPubMed(pubmed)),
     `TRẠNG THÁI NGUỒN CỦA LƯỢT NÀY\nKho toàn văn: ${retrieval.status}. ${retrieval.message}\nPubMed: ${sourceStatus.pubmed.status}. ${sourceStatus.pubmed.message}`,
-    studyMeta?.sourceNotice ?? "",
+    isStudy ? studySourceGuidance(studyContext, curated) : "",
   ]
     .filter(Boolean)
     .join("\n\n");

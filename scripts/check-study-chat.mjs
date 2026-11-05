@@ -75,6 +75,11 @@ test('copy response replaces internal citation identifiers with readable source 
   assert.ok(copied.includes('Anatomy'));
   assert.ok(copied.includes(meta.sources[0].url));
   assert.ok(!copied.includes('[PMID:123]'));
+  assert.ok(copied.startsWith('Đối chiếu [1].'));
+  assert.ok(copied.includes('[1] PubMed 1\nAnatomy'));
+  const uncited = studyAnswerClipboard({ ...assistant, content: 'Không trích.', study: { ...meta, sourceNotice: 'Chưa tra cứu được PubMed.', warning: 'Có trích dẫn không khớp.' } });
+  assert.ok(uncited.includes('Chưa tra cứu được PubMed.') && uncited.includes('Có trích dẫn không khớp.'));
+  assert.ok(!uncited.includes(meta.sources[0].url), 'uncited supplied sources are not copied');
 });
 
 test('copy supports every displayed source-qualifier boundary without misidentifying a prefix', () => {

@@ -18,10 +18,16 @@ const { outputText } = ts.transpileModule(source, {
     target: ts.ScriptTarget.ES2022,
   },
 });
+// "@/..." project modules are transpiled the same way (they have only type imports).
+const local = (specifier) => {
+  const file = readFileSync(new URL(`../src/${specifier.slice(2)}.ts`, import.meta.url), "utf8");
+  const js = ts.transpileModule(file, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  return `data:text/javascript;base64,${Buffer.from(js).toString("base64")}`;
+};
 const executable = outputText.replace(
   /from (["'])([^"']+)\1/g,
   (_, quote, specifier) =>
-    `from ${quote}${pathToFileURL(require.resolve(specifier)).href}${quote}`,
+    `from ${quote}${specifier.startsWith("@/") ? local(specifier) : pathToFileURL(require.resolve(specifier)).href}${quote}`,
 );
 const { MarkdownAnswer } = await import(
   `data:text/javascript;base64,${Buffer.from(executable).toString("base64")}`
@@ -54,6 +60,35 @@ const citations = [{
 const cited = render("Nội dung học [APP:handbook:patterns].", citations);
 assert.match(cited, /Các mẫu vận động cơ bản/);
 assert.doesNotMatch(cited, /\[APP:handbook:patterns\]/);
+// Inline marker is a small numbered ref; the label appears only in the source list.
+assert.match(cited, /Nội dung học<sup[^>]*>\[1\]<\/sup>\./);
+assert.doesNotMatch(cited, /【/);
+assert.equal(cited.match(/Các mẫu vận động cơ bản<\/p>/g)?.length, 1);
+// Real model output (local run 2026-11-05): per-source markers, adjacent and merged.
+const knee = [{
+  id: "APP:anatomy:knee", label: "Khớp Gối, Khớp Chè–Đùi & Dây chằng",
+  sources: Array.from({ length: 7 }, (_, i) => ({ title: `Nguồn gối ${i + 1}`, url: `https://example.org/knee/${i + 1}`, checkedAt: "2026-11-05", access: "Phạm vi" })),
+}];
+for (const answer of [
+  "Đáp án là **rectus femoris** [APP:anatomy:knee:2] [APP:anatomy:knee:7].\n\n* Ba cơ rộng chỉ duỗi gối [APP:anatomy:knee:7].",
+  "Đáp án là **rectus femoris** [APP:anatomy:knee:2, APP:anatomy:knee:7].\n\n* Ba cơ rộng chỉ duỗi gối [APP:anatomy:knee:7].",
+  "Đáp án là **rectus femoris** [APP:anatomy:knee:2,7].\n\n* Ba cơ rộng chỉ duỗi gối [APP:anatomy:knee:7].",
+]) {
+  const html = render(answer, knee);
+  assert.doesNotMatch(html, /APP:|【|Khớp Gối[^<]*· 2/, answer);
+  assert.match(html, /rectus femoris<\/strong><sup[^>]*>\[1,2\]<\/sup>\./, answer);
+  assert.match(html, /duỗi gối<sup[^>]*>\[2\]<\/sup>/, answer);
+  // Each number lists only the specific source it points to.
+  assert.match(html, /\[1\] Khớp Gối[^<]*<\/p><p>[^<]*<a href="https:\/\/example.org\/knee\/2"/, answer);
+  assert.match(html, /\[2\] Khớp Gối[^<]*<\/p><p>[^<]*<a href="https:\/\/example.org\/knee\/7"/, answer);
+  assert.doesNotMatch(html, /knee\/1"/, answer);
+}
+// Retrieval notice explains a source-less answer only.
+const renderNotice = (text, list) => renderToStaticMarkup(createElement(MarkdownAnswer, { text, citations: list, uncitedNotice: "Chưa tra cứu được PubMed." }));
+assert.match(renderNotice("Không có nguồn.", knee), /Chưa tra cứu được PubMed/);
+assert.doesNotMatch(renderNotice("Có nguồn [APP:anatomy:knee:2].", knee), /Chưa tra cứu được PubMed/);
+const mixed = render("Ý A [APP:anatomy:knee:2] [APP:unknown:x].", knee);
+assert.match(mixed, /<sup[^>]*>\[1\]<\/sup> \[APP:unknown:x\]/);
 const qualified = render("Theo quy ước [APP:handbook:patterns:Quy ước của app].", citations);
 assert.match(qualified, /Các mẫu vận động cơ bản · Quy ước của app/);
 assert.doesNotMatch(qualified, /\[APP:/);

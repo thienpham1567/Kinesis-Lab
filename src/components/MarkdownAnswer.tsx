@@ -2,30 +2,26 @@ import ReactMarkdown, { type Components } from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import type { Root } from "mdast";
-import type { ChatAnswerCitation } from "@/lib/chat/answer-citations";
+import { citationNumbering, type ChatAnswerCitation } from "@/lib/chat/answer-citations";
 
-const APP_MARKER = /\[((?:APP|RAG|PMID):[^\]\n]{1,300})\]/g;
+type MdNode = { type: string; value?: string; children?: MdNode[]; data?: Record<string, unknown> };
+type Numbering = ReturnType<typeof citationNumbering>;
 
-function resolveCitation(value: string, citations: ChatAnswerCitation[]) {
-  const citation = [...citations].sort((a, b) => b.id.length - a.id.length).find((item) =>
-    value === item.id || (value.startsWith(item.id) && /^[:;,\s]/.test(value.slice(item.id.length))));
-  if (!citation) return null;
-  return { citation, qualifier: value.slice(citation.id.length).replace(/^[:;,\s]+/, "").trim() };
-}
-
-// Resolve source markers only in prose. Code and existing links stay literal.
-function remarkReadableCitations({ citations }: { citations: ChatAnswerCitation[] }) {
+// Source markers in prose become small superscript numbers; the full source
+// labels live in the list below. Code and existing links stay literal.
+function remarkReadableCitations({ numbering }: { numbering: Numbering }) {
   return (tree: Root) => {
-    function visit(node: { type: string; value?: string; children?: unknown[] }) {
-      if (["code", "inlineCode", "link", "linkReference"].includes(node.type)) return;
-      if (node.type === "text" && node.value)
-        node.value = node.value.replace(APP_MARKER, (marker, value) => {
-          const resolved = resolveCitation(value, citations);
-          return resolved ? `【${resolved.citation.label}${resolved.qualifier ? ` · ${resolved.qualifier}` : ""}】` : marker;
-        });
-      for (const child of node.children ?? []) visit(child as Parameters<typeof visit>[0]);
+    function visit(node: MdNode) {
+      if (["code", "inlineCode", "link", "linkReference"].includes(node.type) || !node.children) return;
+      node.children = node.children.flatMap((child) => child.type !== "text" || !child.value ? [child]
+        : numbering.split(child.value).map((part): MdNode => typeof part === "string" ? { type: "text", value: part } : {
+            type: "citationRef",
+            data: { hName: "sup", hProperties: { className: "ml-0.5 text-[0.7em] font-medium text-cobalt" } },
+            children: [{ type: "text", value: `[${part.join(",")}]` }],
+          }));
+      node.children.forEach(visit);
     }
-    visit(tree);
+    visit(tree as MdNode);
   };
 }
 
@@ -51,30 +47,39 @@ export function MarkdownAnswer({
   text,
   className = "",
   citations = [],
+  uncitedNotice,
 }: {
   text: string;
   className?: string;
   citations?: ChatAnswerCitation[];
+  /** Explains missing sources; shown only when the answer cites nothing. */
+  uncitedNotice?: string;
 }) {
-  const citedIds = new Set([...text.matchAll(APP_MARKER)].map((match) => resolveCitation(match[1], citations)?.citation.id));
-  const cited = citations.filter((citation) => citedIds.has(citation.id));
+  const numbering = citationNumbering(citations);
+  // Number in reading order before rendering so the list matches the
+  // superscripts; code spans are skipped exactly as the remark plugin does.
+  numbering.split(text.replace(/```[\s\S]*?```|`[^`\n]*`/g, ""));
+  const cited = numbering.refs();
   return (
     <div className={`md-answer ${className}`}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkBreaks, [remarkReadableCitations, { citations }]]}
+        remarkPlugins={[remarkGfm, remarkBreaks, [remarkReadableCitations, { numbering }]]}
         components={components}
       >
         {text}
       </ReactMarkdown>
+      {cited.length === 0 && uncitedNotice && (
+        <p className="mt-2 text-xs leading-5 text-slate">{uncitedNotice}</p>
+      )}
       {cited.length > 0 && (
         <details className="mt-2 text-xs leading-5 text-slate">
           <summary className="cursor-pointer font-medium text-cobalt">Nguồn đối chiếu trong câu trả lời</summary>
-          {cited.map((citation) => (
-            <div key={citation.id} className="mt-2 space-y-1">
-              <p className="font-medium text-ink">{citation.label}</p>
-              {citation.sources.map((source, index) => (
+          {cited.map(({ n, label, sources }) => (
+            <div key={n} className="mt-2 space-y-1">
+              <p className="font-medium text-ink">[{n}] {label}</p>
+              {sources.map((source, index) => (
                 <p key={`${source.url}:${index}`}>
-                  {index + 1}. {/^https?:\/\//i.test(source.url)
+                  {sources.length > 1 && `${index + 1}. `}{/^https?:\/\//i.test(source.url)
                     ? <a href={source.url} target="_blank" rel="noreferrer noopener">{source.title}</a>
                     : <span>{source.title}</span>}
                   {" · kiểm tra "}{source.checkedAt}<br />{source.access}

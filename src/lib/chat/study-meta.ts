@@ -69,5 +69,6 @@ export function parseStudyMeta(raw: unknown): StudyAnswerMeta | undefined {
     actions,
     context,
     sourceNotice: text(row.sourceNotice, 1500) || undefined,
+    warning: text(row.warning, 1500) || undefined,
   };
 }

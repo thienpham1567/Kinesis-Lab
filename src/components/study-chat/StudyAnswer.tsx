@@ -42,8 +42,12 @@ export function StudyAnswer({
       <MarkdownAnswer
         text={message.content}
         citations={message.citations}
+        uncitedNotice={message.study?.sourceNotice}
         className="text-sm"
       />
+      {message.study?.warning && (
+        <p className="text-xs leading-5 text-caution">{message.study.warning}</p>
+      )}
       {!!message.study?.actions.length && (
         <div
           className="flex flex-wrap gap-1.5"
@@ -62,43 +66,6 @@ export function StudyAnswer({
           ))}
         </div>
       )}
-      {message.study &&
-        (message.study.sources.length > 0 || message.study.sourceNotice) && (
-          <details className="rounded-lg border border-rule bg-canvas px-2.5 text-xs leading-5">
-            <summary className="cursor-pointer py-2 font-medium text-cobalt">
-              Nguồn được cung cấp · {message.study.sources.length}
-            </summary>
-            <div className="space-y-2 pb-2.5 text-slate">
-              {message.study.context && (
-                <p>{studyContextLabel(message.study.context)}</p>
-              )}
-              {message.study.sourceNotice && (
-                <p>{message.study.sourceNotice}</p>
-              )}
-              {message.study.sources.map((source) => (
-                <div
-                  key={`${source.id}:${source.url}`}
-                  className="border-t border-rule pt-2"
-                >
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="font-medium text-cobalt underline underline-offset-2"
-                  >
-                    {source.title}
-                  </a>
-                  <p>{source.access}</p>
-                  {source.checkedAt && (
-                    <p className="text-[11px]">
-                      Ngày đối chiếu / truy xuất: {source.checkedAt}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
       <div className="flex min-h-9 flex-wrap items-center gap-1 border-t border-rule pt-1">
         <button
           type="button"
