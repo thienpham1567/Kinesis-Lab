@@ -94,8 +94,8 @@ test("changing region produces a reloadable URL and removes stale source selecti
   assert.equal(url.hash, "#atlas-learning-studio");
 });
 
-test("all muscular-layer source names have paired display names and both-language search", () => {
-  const structures = manifest.structures.filter((s) => s.layer === "muscle");
+test("the original muscular-layer inventory retains paired display names and both-language search", () => {
+  const structures = manifest.structures.filter((s) => s.layer === "muscle" && !s.areas.includes("head"));
   assert.equal(structures.length, 429);
   assert.equal(new Set(structures.map((s) => s.english)).size, 216);
   assert.equal(Object.keys(ATLAS_MUSCULAR_NAMES_VI).length, 216);
@@ -133,7 +133,7 @@ test("three viewing steps reset layer presets without isolating a sample structu
     const target = manifest.structures.find(
       (s) =>
         s.english === learning.LEARNING_REGIONS[area].example &&
-        s.side === "left" &&
+        (s.side === "left" || s.side === null) &&
         (area === "full" || s.areas.includes(area)),
     );
     assert.ok(target, area);
@@ -147,7 +147,7 @@ test("three viewing steps reset layer presets without isolating a sample structu
   }
 });
 
-test("every translated term has scoped evidence without hiding partial or unresolved names", () => {
+test("the original 216 translated terms retain scoped evidence without hiding partial or unresolved names", () => {
   const evidence = load("src/lib/clinical/atlas-terminology-evidence.ts");
   const comparisons = evidence.ATLAS_TERMINOLOGY_COMPARISONS;
   assert.deepEqual(Object.keys(comparisons).sort(), Object.keys(ATLAS_MUSCULAR_NAMES_VI).sort());
@@ -185,7 +185,7 @@ test("every translated term has scoped evidence without hiding partial or unreso
   assert.deepEqual(counts, { matched: 193, partial: 22, unresolved: 1 });
   const structureCounts = { matched: 0, partial: 0, unresolved: 0 };
   for (const structure of manifest.structures)
-    if (structure.layer === "muscle") structureCounts[comparisons[structure.english].status]++;
+    if (structure.layer === "muscle" && !structure.areas.includes("head")) structureCounts[comparisons[structure.english].status]++;
   assert.deepEqual(structureCounts, { matched: 383, partial: 44, unresolved: 2 });
   for (const unknown of ["Future unmapped structure", "toString", "__proto__"])
     assert.equal(evidence.getAtlasTerminologyComparison(unknown), null);

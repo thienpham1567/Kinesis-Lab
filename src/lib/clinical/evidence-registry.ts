@@ -24,6 +24,7 @@ export const EVIDENCE_DOMAIN_LABELS: Record<EvidenceDomain, string> = {
 
 const catalogRecords = new Map<string, EvidenceRecord>();
 const correctionFieldLabels: Record<string, string> = {
+  english: "Tên tiếng Anh",
   latin: "Tên Latin", side: "Bên", clinicalRegion: "Vùng học", anatomicalTissueLabel: "Loại mô đại thể",
 };
 function correctionValue(field: string, value: unknown) {
@@ -40,7 +41,7 @@ for (const [structureId, audit] of Object.entries(catalogAudit.structures)) {
     sources: [{
       title: `Z-Anatomy Models of human anatomy · commit ${catalogAudit.source.commit.slice(0, 12)}`,
       url: `${catalogAudit.source.repository}/tree/${catalogAudit.source.commit}`,
-      checkedAt: catalogAudit.provenanceCheckedAt,
+      checkedAt: "provenanceCheckedAt" in audit ? String(audit.provenanceCheckedAt) : catalogAudit.provenanceCheckedAt,
       access: `Provenance của bộ mesh và so chuỗi với TA2.csv dẫn xuất. CC-BY-SA-4.0; asset version ${catalogAudit.source.assetVersion}. Phép so chuỗi tệp đã ghim chạy lại ${catalogAudit.checkedAt}; không ghi đã đọc lại nguồn giải phẫu. CSV SHA-256: ${catalogAudit.csvSha256}.`,
     }, ...correctionSources],
     supportedClaims: [

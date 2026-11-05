@@ -99,7 +99,7 @@ test('canonical IDs require explicit original-source citation and guarded identi
 
 function fixture() {
   const dir = mkdtempSync(path.join(tmpdir(), 'catalog-audit-'));
-  for (const relative of ['scripts/audit-catalog-evidence.mjs', 'public/anatomy/3d/manifest.json', '.data/z-anatomy/TA2.csv', 'src/lib/clinical/catalog-evidence.json', 'src/lib/clinical/atlas-corrections.json', 'src/lib/clinical/catalog-evidence-history.json']) {
+  for (const relative of ['scripts/audit-catalog-evidence.mjs', 'public/anatomy/3d/manifest.json', 'public/anatomy/3d/head-addition.json', '.data/z-anatomy/TA2.csv', 'src/lib/clinical/catalog-evidence.json', 'src/lib/clinical/atlas-corrections.json', 'src/lib/clinical/catalog-evidence-history.json']) {
     mkdirSync(path.dirname(path.join(dir, relative)), { recursive: true }); cpSync(path.join(root, relative), path.join(dir, relative));
   }
   if (existsSync(moduleFile)) { mkdirSync(path.join(dir, 'scripts/lib'), { recursive: true }); cpSync(moduleFile, path.join(dir, 'scripts/lib/catalog-evidence-audit.mjs')); }
@@ -134,7 +134,7 @@ test('CLI default/check/invalid modes never write, check rejects stale report, a
     assert.deepEqual(report.historicalAudits[0].counts, { structures: 1031, englishMatches: 884, latinMatches: 884 });
     assert.equal(report.csvSha256, '0f9092a328b27dcd15d696d9f9a4087deb229a1aad21b75876657622de835974');
     assert(!JSON.stringify(report.structures).includes('"ta2Ids"'));
-    assert.deepEqual(report.counts, { structures: 1031, upstreamRows: 7298, upstreamSuffixedRows: 105, upstreamUnkeyedRows: 1, englishMatches: 1023, latinMatches: 1023, unmatchedPairs: 8, canonicalComparedStructures: 4 });
+    assert.deepEqual(report.counts, { structures: 1189, upstreamRows: 7298, upstreamSuffixedRows: 105, upstreamUnkeyedRows: 1, englishMatches: 1181, latinMatches: 1181, unmatchedPairs: 8, canonicalComparedStructures: 4 });
     assert.equal(report.historicalAudits[0].checkedAt, '2026-10-19');
     assert.equal(report.historicalAudits[0].algorithm, 'numeric-only-upstream-rows-v1');
     const csvFile = path.join(dir, '.data/z-anatomy/TA2.csv');

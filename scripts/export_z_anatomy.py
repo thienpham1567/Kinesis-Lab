@@ -15,6 +15,7 @@ from mathutils import Vector
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT / "scripts"))
 from z_anatomy_surfaces import classify_surface, bake_thickness, THICKNESS_NAMES
+from z_anatomy_selection import source_layer, is_head_source
 if bpy.context.scene.unit_settings.scale_length != 1.0:
     raise RuntimeError("Thickness fields require source units of one metre")
 SOURCE = ROOT / ".data/z-anatomy"
@@ -60,7 +61,8 @@ GROUPS = [
     (r"gastrocnemius|soleus|tibialis|fibularis|popliteus", "calves"),
 ]
 
-AREAS = ["full", "neck", "upper", "trunk", "hip", "lower"]
+HEAD_ADDITION = '--head-addition' in sys.argv
+AREAS = ["head"] if HEAD_ADDITION else ["full", "head", "neck", "upper", "trunk", "hip", "lower"]
 COLORS = {"bone": (0.73, 0.64, 0.49, 1), "muscle": (0.49, 0.14, 0.16, 1), "joint": (0.2, 0.47, 0.41, 1),
           "cartilage": (.79,.86,.85,1), "tendon": (.8,.76,.64,1), "ligament": (.65,.71,.64,1), "fat": (.75,.57,.25,1)}
 materials = {}
@@ -81,15 +83,11 @@ for source in sorted(originals, key=lambda o: o.name):
     if source.type != 'MESH' or not source.data.vertices or not source.data.polygons or source.name.endswith(('.i', '.j', '.ol', '.or', '.el', '.er', '.g')):
         continue
     collections = {c.name for c in source.users_collection}
-    if 'Head' in collections or 'ethmoid bone' in source.name.lower():
+    head = is_head_source(source.name, collections)
+    if HEAD_ADDITION and not head:
         continue
-    if '1: Skeletal system' in collections:
-        layer = 'bone'
-    elif 'Muscles' in collections and '4: Muscular system' in collections:
-        layer = 'muscle'
-    elif '3: Joints' in collections:
-        layer = 'joint'
-    else:
+    layer = source_layer(source.name, collections)
+    if layer is None:
         continue
     english = re.sub(r'\.(l|r)$', '', source.name).strip()
     if english.startswith('(') and english.endswith(')'): english = english[1:-1]
@@ -107,13 +105,16 @@ for source in sorted(originals, key=lambda o: o.name):
     if not areas: areas.append('neck' if center > 1.4 else 'trunk' if center > .95 else 'hip' if center > .75 else 'lower')
     # Include proximal femur context without inventing a cut surface.
     if lower == 'femur': areas.append('hip')
-    areas = sorted(set(areas))
+    areas = ['head'] if head else sorted(set(areas))
     group = next((group for pattern, group in GROUPS if re.search(pattern, lower)), None) if layer == 'muscle' else None
     region = 'shoulder' if 'upper' in areas else 'cervical' if 'neck' in areas else 'hip_pelvis' if 'hip' in areas else 'knee' if 'lower' in areas else 'lumbar'
     if 'upper' in areas and not re.search(r'shoulder|glenohumeral|acrom|scapul|clavic|deltoid|spinatus|subscapular|teres |humerus', lower): region = None
     if 'lower' in areas and 'hip' not in areas:
         region = 'ankle_foot' if center < .42 else 'knee' if center < .6 else 'thigh_hamstring'
     if 'trunk' in areas and 'neck' not in areas and 'hip' not in areas and center > 1.15: region = 'thoracic_core'
+    if head:
+        region = None
+        group = None
     label = next((vi for en, vi in TRANSLATIONS if en == lower or (layer == 'muscle' and vi.startswith('Cơ ') and en in lower)), english)
     identity = 'za-' + hashlib.sha256(source.name.encode()).hexdigest()[:12]
     obj = bpy.data.objects.new(identity, source.data.copy())
@@ -152,7 +153,7 @@ for source in sorted(originals, key=lambda o: o.name):
     objects.append(obj)
     metadata.append(dict(id=identity, english=english, latin=LATIN.get(lower, ''), label=label, side=side, layer=layer, areas=areas, group=group, clinicalRegion=region, surfaces=surfaces, **({"thickness":thickness} if thickness else {})))
 
-manifest = dict(source={**PIN, 'license': 'CC-BY-SA-4.0', 'assetVersion': 2}, structures=metadata, bundles={})
+manifest = dict(source={**PIN, 'license': 'CC-BY-SA-4.0', 'assetVersion': 3}, structures=metadata, bundles={})
 supported = {p.identifier for p in bpy.ops.export_scene.gltf.get_rna_type().properties}
 for area in AREAS:
     selected = [o for o, m in zip(objects, metadata) if area == 'full' or area in m['areas']]
@@ -168,5 +169,7 @@ for area in AREAS:
     bpy.ops.export_scene.gltf(**{key: value for key, value in options.items() if key in supported})
     manifest['bundles'][area] = dict(url='/anatomy/3d/' + output.name + '?v=' + hashlib.sha256(output.read_bytes()).hexdigest()[:12], bytes=output.stat().st_size, structures=len(selected))
     print('EXPORTED', area, len(selected), output.stat().st_size, flush=True)
-(OUTPUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, separators=(',', ':')))
+manifest_output = SOURCE / 'head-2026-11-05/head-manifest.json' if HEAD_ADDITION else OUTPUT / 'manifest.json'
+manifest_output.parent.mkdir(parents=True, exist_ok=True)
+manifest_output.write_text(json.dumps(manifest, ensure_ascii=False, separators=(',', ':')))
 print('DONE', len(metadata), flush=True)

@@ -3,11 +3,11 @@
  * @typedef {{
  *   id: string, structureIds: string[],
  *   expected: { english: string, latin?: string, side?: string | null, clinicalRegion?: string | null, surfaceKinds?: string[] },
- *   changes: { latin?: string, side?: string | null, clinicalRegion?: string | null, anatomicalTissueLabel?: string },
+ *   changes: { english?: string, latin?: string, side?: string | null, clinicalRegion?: string | null, anatomicalTissueLabel?: string },
  *   sources: CorrectionSource[], checkedAt: string, access: string, basis: string, reviewedBy: null
  * }} AtlasCorrection
  */
-const CHANGE_FIELDS = new Set(['latin', 'side', 'clinicalRegion', 'anatomicalTissueLabel']);
+const CHANGE_FIELDS = new Set(['english', 'latin', 'side', 'clinicalRegion', 'anatomicalTissueLabel']);
 const EXPECTED_FIELDS = new Set(['english', 'latin', 'side', 'clinicalRegion', 'surfaceKinds']);
 const text = value => typeof value === 'string' && value.trim().length > 0;
 const date = value => text(value) && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value));

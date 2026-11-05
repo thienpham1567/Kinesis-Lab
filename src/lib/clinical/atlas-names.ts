@@ -1,17 +1,21 @@
 import type { AtlasStructure } from "./atlas-3d";
 import { ATLAS_MUSCULAR_NAMES_VI } from "./atlas-muscular-names.vi";
+import { getAtlasHeadTerminologyComparison } from "./atlas-head-terminology";
 
 export type AtlasNamedStructure = Pick<
   AtlasStructure,
   "english" | "label" | "layer"
 > &
-  Partial<Pick<AtlasStructure, "side" | "latin">>;
+  Partial<Pick<AtlasStructure, "side" | "latin" | "sourceMetadata">>;
 
 export function atlasVietnameseName(
   structure: AtlasNamedStructure,
 ): string | null {
   return (
-    ATLAS_MUSCULAR_NAMES_VI[structure.english] ??
+    (Object.hasOwn(ATLAS_MUSCULAR_NAMES_VI, structure.english)
+      ? ATLAS_MUSCULAR_NAMES_VI[structure.english]
+      : null) ??
+    getAtlasHeadTerminologyComparison(structure.english)?.vietnamese ??
     (structure.label !== structure.english ? structure.label : null)
   );
 }
@@ -19,9 +23,10 @@ export function atlasVietnameseName(
 /** Original catalog English remains available for provenance and exact lookup. */
 export function atlasSourceName(structure: AtlasNamedStructure): string {
   const vietnamese = atlasVietnameseName(structure);
+  const sourceEnglish = structure.sourceMetadata?.english ?? structure.english;
   return vietnamese
-    ? `${vietnamese} · ${structure.english}`
-    : structure.english;
+    ? `${vietnamese} · ${sourceEnglish}`
+    : sourceEnglish;
 }
 
 /** Display grammar only: keep each head/part/belly and all hand/foot qualifiers. */

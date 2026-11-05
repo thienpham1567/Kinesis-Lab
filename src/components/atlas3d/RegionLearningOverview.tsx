@@ -33,7 +33,7 @@ export function RegionLearningOverview({
       </div>
       <div className="space-y-4 border-t border-rule pt-4">
         <h4 className="text-sm font-semibold text-ink">
-          Kiến thức nền có nguồn
+          {config.regions.length ? "Kiến thức nền có nguồn" : "Phạm vi dữ liệu vùng này"}
         </h4>
         {config.scope && (
           <p className="text-xs leading-6 text-slate">{config.scope}</p>
@@ -70,10 +70,12 @@ export function RegionLearningOverview({
             </section>
           );
         })}
-        <p className="text-xs leading-5 text-slate">
-          Đối chiếu tài liệu: 22/10/2026. Nguồn mô tả giải phẫu đại thể; không
-          xác nhận từng vị trí trên mesh.
-        </p>
+        {config.regions.length > 0 && (
+          <p className="text-xs leading-5 text-slate">
+            Đối chiếu tài liệu: 22/10/2026. Nguồn mô tả giải phẫu đại thể; không
+            xác nhận từng vị trí trên mesh.
+          </p>
+        )}
       </div>
       <div className="rounded-lg border border-rule bg-canvas p-3">
         <p className="text-xs font-semibold text-ink">
@@ -114,12 +116,15 @@ export function RegionLearningSources({
   selectedId: string | null;
   selectedEnglish: string | null;
 }) {
-  const regions = LEARNING_REGIONS[area].regions;
+  const { regions, scope } = LEARNING_REGIONS[area];
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-ink">
         Nguồn kiến thức · {areaLabel}
       </h3>
+      {regions.length === 0 && scope && (
+        <p className="text-xs leading-6 text-slate">{scope}</p>
+      )}
       {selectedEnglish && (
         <AtlasTerminologySources key={selectedEnglish} english={selectedEnglish} expanded />
       )}

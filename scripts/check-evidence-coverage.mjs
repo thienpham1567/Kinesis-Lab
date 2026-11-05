@@ -41,7 +41,7 @@ const domains = [
   ["pain-site", load("src/lib/clinical/trigger-point-atlas.ts").PAIN_SITE_CULPRIT_MAP, 8],
   ["handbook", load("src/lib/clinical/movement-handbook.ts").HANDBOOK, 4],
   ["rom", load("src/lib/clinical/rom-norms.ts").ROM_MOVEMENTS, 17],
-  ["catalog", manifest.structures, 1031],
+  ["catalog", manifest.structures, 1189],
 ];
 const expected = new Set(["trigger:general", "screening:general", "medication:general", "labs:general", "assistant:general"]);
 for (const [domain, records, count] of domains) {
@@ -77,7 +77,7 @@ for (const structure of manifest.structures) {
   assert.equal(evidence.status, "source-only");
   assert.ok(evidence.limitations.join(" ").includes("3D"));
   assert.ok(evidence.sources[0].url.includes(audit.source.commit));
-  assert.equal(evidence.sources[0].checkedAt, audit.provenanceCheckedAt, "local replay does not change source reading date");
+  assert.equal(evidence.sources[0].checkedAt, audit.structures[structure.id].provenanceCheckedAt ?? audit.provenanceCheckedAt, "legacy source dates retained; new head objects use actual provenance reading date");
   const row = audit.structures[structure.id];
   assert(!Object.hasOwn(row, "ta2Ids"), "derivative keys are not labeled official TA2 IDs");
   if (row.latinMatches) {

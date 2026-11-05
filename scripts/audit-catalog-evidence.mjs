@@ -19,10 +19,21 @@ try {
   const historicalAudits = readJson('src/lib/clinical/catalog-evidence-history.json');
   const baseline = historicalAudits[0];
   assert.equal(csvSha256, baseline.csvSha256, 'Pinned upstream CSV SHA-256 drift');
-  assert.deepEqual(manifest.source, baseline.source, 'Pinned manifest provenance drift');
+  assert.deepEqual({...manifest.source,assetVersion:baseline.source.assetVersion}, baseline.source, 'Pinned manifest provenance drift');
+  if(manifest.source.assetVersion!==baseline.source.assetVersion){
+    const addition=readJson('public/anatomy/3d/head-addition.json');
+    assert.deepEqual(manifest.source,addition.source,'Unknown additive asset provenance');
+    assert.equal(manifest.structures.length,addition.previous.structures+addition.addition.structures,'Additive identity count drift');
+    assert.equal(crypto.createHash('sha256').update(JSON.stringify(manifest.structures.slice(0,addition.previous.structures))).digest('hex'),addition.previous.structuresSha256,'Legacy metadata drift');
+  }
   const current = fs.existsSync(reportUrl) ? JSON.parse(fs.readFileSync(reportUrl, 'utf8')) : null;
   const rows = parseUpstreamCsv(bytes.toString('utf8'));
   const structures = compareCatalog(manifest, rows, readJson('src/lib/clinical/atlas-corrections.json'));
+  if(manifest.source.assetVersion===3){
+    const addition=readJson('public/anatomy/3d/head-addition.json');
+    const legacyIds=new Set(addition.previous.structureIds);
+    for(const [id,row]of Object.entries(structures))if(!legacyIds.has(id))row.provenanceCheckedAt=addition.generatedAt.slice(0,10);
+  }
   const records = Object.values(structures);
   // Read-only replay retains the date recorded by --apply; it does not claim a
   // new source reading. --apply records the actual UTC date of the local replay.

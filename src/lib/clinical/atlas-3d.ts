@@ -6,7 +6,7 @@ export const TISSUE_LABELS: Record<TissueKind, string> = {
   bone: "Xương", muscle: "Cơ", joint: "Mô khớp", cartilage: "Sụn",
   tendon: "Gân", ligament: "Dây chằng", fat: "Mỡ",
 };
-export type AtlasArea = "full" | "neck" | "upper" | "trunk" | "hip" | "lower";
+export type AtlasArea = "full" | "head" | "neck" | "upper" | "trunk" | "hip" | "lower";
 export type AtlasStructure = {
   id: string;
   english: string;
@@ -47,6 +47,7 @@ export type AtlasManifest = {
 };
 export const ATLAS_AREAS: { id: AtlasArea; label: string }[] = [
   { id: "full", label: "Toàn hệ vận động" },
+  { id: "head", label: "Đầu & mặt" },
   { id: "neck", label: "Cổ & cột sống cổ" },
   { id: "upper", label: "Vai & chi trên" },
   { id: "trunk", label: "Thân mình & cột sống" },

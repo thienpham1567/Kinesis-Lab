@@ -1,5 +1,6 @@
 // Asset engineering inventory only; polygon/topology metrics do not validate anatomy.
 import { readFile, writeFile, realpath } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import * as THREE from "three";
@@ -96,11 +97,22 @@ export function measureStructureGeometry(meshes) {
 }
 
 export function assertGeometryBaseline(inventory) {
-  if (inventory.source.commit !== BASELINE.sourceCommit || inventory.source.assetVersion !== BASELINE.assetVersion || inventory.bundle.sha256 !== BASELINE.fullBundleSha256) {
+  const additive=inventory.source.assetVersion===3;
+  const addition=additive?JSON.parse(readFileSync(new URL('../public/anatomy/3d/head-addition.json',import.meta.url))):null;
+  const expectedHash=additive?addition.addition.fullGlbSha256:BASELINE.fullBundleSha256;
+  if (inventory.source.commit !== BASELINE.sourceCommit || ![BASELINE.assetVersion,3].includes(inventory.source.assetVersion) || inventory.bundle.sha256 !== expectedHash) {
     throw new Error("Asset version/hash differs from the recorded baseline. Explain the asset change and compare it explicitly; do not adjust totals merely to make this check pass.");
   }
+  if(additive&&(addition.previous.fullGlbSha256!==BASELINE.fullBundleSha256||addition.previous.structures!==BASELINE.structures||addition.source.commit!==BASELINE.sourceCommit))throw Error('Additive release does not retain the pinned legacy baseline');
   for (const name of ["structures", "primitives", "triangles", "structuresAtMost10Triangles", "structuresExactly2Triangles"]) {
-    if (inventory.summary[name] !== BASELINE[name]) throw new Error(`Geometry baseline mismatch: ${name} expected ${BASELINE[name]}, observed ${inventory.summary[name]}. Investigate the asset version/hash; do not silently replace the baseline.`);
+    const expected=BASELINE[name]+(additive?addition.addition.geometry[name]:0);
+    if (inventory.summary[name] !== expected) throw new Error(`Geometry baseline mismatch: ${name} expected ${expected}, observed ${inventory.summary[name]}. Investigate the asset version/hash; do not silently replace the baseline.`);
+  }
+  if(additive){
+    const legacyIds=new Set(addition.previous.structureIds);
+    const legacy=inventory.structures.filter(s=>legacyIds.has(s.id));
+    const actual={structures:legacy.length,primitives:legacy.reduce((n,s)=>n+s.primitives,0),triangles:legacy.reduce((n,s)=>n+s.triangles,0),structuresAtMost10Triangles:legacy.filter(s=>s.triangles<=10).length,structuresExactly2Triangles:legacy.filter(s=>s.triangles===2).length};
+    for(const [key,value]of Object.entries(actual))if(value!==BASELINE[key])throw Error(`Legacy geometry baseline changed: ${key}`);
   }
   if (inventory.summary.nonfinitePositionComponents || inventory.summary.nonfiniteWorldPositionComponents) {
     throw new Error("Geometry contains nonfinite position components; finite positions are required.");
@@ -134,7 +146,7 @@ export function buildGeometryInventory(meshes, manifest, bundle) {
   const sum = (key) => structures.reduce((total, structure) => total + structure[key], 0);
   return {
     schemaVersion: 1,
-    checkedAt: "2026-10-28",
+    checkedAt: manifest.source.assetVersion===3 ? "2026-11-05" : "2026-10-28",
     reviewedBy: null,
     source: manifest.source,
     bundle,

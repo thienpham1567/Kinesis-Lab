@@ -96,15 +96,15 @@ test("saved inventory covers the exact manifest with pinned baseline and truthfu
   const saved = json("../public/anatomy/3d/geometry-quality.json");
   const manifest = json("../public/anatomy/3d/manifest.json");
   assert.deepEqual(saved.structures.map((s) => s.id).sort(), manifest.structures.map((s) => s.id).sort());
-  assert.equal(saved.summary.structures, 1031);
-  assert.equal(saved.summary.primitives, 1411);
-  assert.equal(saved.summary.triangles, 2368785);
-  assert.equal(saved.summary.structuresAtMost10Triangles, 154);
-  assert.equal(saved.summary.structuresExactly2Triangles, 58);
+  assert.equal(saved.summary.structures, 1189);
+  assert.equal(saved.summary.primitives, 1599);
+  assert.equal(saved.summary.triangles, 2696367);
+  assert.equal(saved.summary.structuresAtMost10Triangles, 158);
+  assert.equal(saved.summary.structuresExactly2Triangles, 60);
   assert.equal(saved.summary.nonfinitePositionComponents, 0);
   assert.equal(saved.summary.nonfiniteWorldPositionComponents, 0);
-  assert.equal(saved.bundle.sha256, "bb1a7269cabab3b86112962777bb4509527dda79bae6094324e266a9145c1b1f");
-  assert.equal(saved.source.assetVersion, 2);
+  assert.equal(saved.bundle.sha256, "9c895341ec7d3c8032e15c1f1c0a383ce1964f1b0b578b33be1fdfe3c39426dd");
+  assert.equal(saved.source.assetVersion, 3);
   assert.equal(saved.reviewedBy, null);
   for (const row of saved.structures.filter((s) => s.representation)) {
     assert.equal(row.representation, "schematic-open-surface");
@@ -115,7 +115,7 @@ test("saved inventory covers the exact manifest with pinned baseline and truthfu
   assert.equal(saved.structures.filter((s) => s.representation).length, 10);
   assert.equal(typeof audit.assertGeometryBaseline, "function");
   assert.throws(() => audit.assertGeometryBaseline({ ...saved, bundle: { ...saved.bundle, sha256: "changed" } }), /hash|version/i);
-  assert.throws(() => audit.assertGeometryBaseline({ ...saved, summary: { ...saved.summary, triangles: 2368786 } }), /baseline/i);
+  assert.throws(() => audit.assertGeometryBaseline({ ...saved, summary: { ...saved.summary, triangles: saved.summary.triangles+1 } }), /baseline/i);
   assert.throws(() => audit.assertGeometryBaseline({ ...saved, summary: { ...saved.summary, nonfinitePositionComponents: 1 } }), /finite/i);
 });
 
@@ -166,7 +166,7 @@ test("default and --check decode actual assets without writing the saved invento
     const run = spawnSync(process.execPath, [auditUrl.pathname, ...args], { encoding: "utf8", timeout: 120000 });
     assert.equal(run.status, 0, run.stderr || run.stdout);
     assert.deepEqual(snapshots(), before);
-    assert.match(run.stdout, /1031 structures.*1411 primitives.*2368785 triangles/);
+    assert.match(run.stdout, /1189 structures.*1599 primitives.*2696367 triangles/);
   }
 });
 
@@ -176,7 +176,7 @@ test("--check refuses missing/stale files without creating or repairing them", (
     for (const file of [
       "scripts/audit-atlas-geometry-quality.mjs", "scripts/load-atlas-audit.mjs",
       "src/lib/clinical/atlas-geometry-pilots.mjs", "public/anatomy/3d/manifest.json",
-      "public/anatomy/3d/full.glb", "public/anatomy/3d/draco/draco_decoder.js",
+      "public/anatomy/3d/full.glb", "public/anatomy/3d/head-addition.json", "public/anatomy/3d/draco/draco_decoder.js",
     ]) {
       const target = path.join(dir, file);
       mkdirSync(path.dirname(target), { recursive: true });

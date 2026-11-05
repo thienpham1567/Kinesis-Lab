@@ -1,3 +1,5 @@
+import { ATLAS_HEAD_TERMINOLOGY_SOURCES, getAtlasHeadTerminologyComparison } from "./atlas-head-terminology";
+
 /** Name comparison only; never upgrades catalog geometry or clinical evidence. */
 /** Latest batch date; individual records and sources retain their own dates. */
 export const ATLAS_TERMINOLOGY_CHECKED_AT = "2026-10-28";
@@ -5,6 +7,7 @@ const ORIGINAL_CHECKED_AT = "2026-10-23";
 export const ATLAS_TERMINOLOGY_REVIEWED_BY = null;
 
 export const ATLAS_TERMINOLOGY_SOURCES = {
+  ...ATLAS_HEAD_TERMINOLOGY_SOURCES,
   "hmu-2004": {
     format: "pdf",
     checkedAt: ORIGINAL_CHECKED_AT,
@@ -535,7 +538,7 @@ export const ATLAS_TERMINOLOGY_COMPARISONS: Readonly<Record<string, AtlasTermino
 export function getAtlasTerminologyComparison(english: string): AtlasTerminologyComparison | null {
   return Object.hasOwn(ATLAS_TERMINOLOGY_COMPARISONS, english)
     ? ATLAS_TERMINOLOGY_COMPARISONS[english]
-    : null;
+    : getAtlasHeadTerminologyComparison(english);
 }
 
 export function atlasTerminologyReferenceUrl(reference: AtlasTerminologyReference): string {

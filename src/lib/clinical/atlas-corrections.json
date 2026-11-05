@@ -368,5 +368,30 @@
     "access": "Danh tính sụn của cấu trúc được đặt tên; bone vẫn là nhóm hiển thị theo hệ của nguồn.",
     "basis": "textbook-tissue-identity",
     "reviewedBy": null
+  },
+  {
+    "id": "english-buccinator-spelling",
+    "structureIds": [
+      "za-13ac05d8d27f",
+      "za-ac2287df247e"
+    ],
+    "expected": {
+      "english": "Bucinator"
+    },
+    "changes": {
+      "english": "Buccinator"
+    },
+    "sources": [
+      {
+        "title": "OpenStax · Anatomy and Physiology 2e §11.3 — Buccinator",
+        "url": "https://openstax.org/books/anatomy-and-physiology-2e/pages/11-3-axial-muscles-of-the-head-neck-and-back",
+        "checkedAt": "2026-11-05",
+        "access": "Đọc HTML Muscles That Create Facial Expression và Figure 11.8: cách viết buccinator. Chỉ hiệu đính tên English cho hai ID có giá trị gốc Bucinator; không xác nhận danh tính hoặc hình học mesh."
+      }
+    ],
+    "checkedAt": "2026-11-05",
+    "access": "Sửa cách viết English từ Bucinator thành Buccinator ở runtime; manifest và nhãn nguồn giữ nguyên, sourceMetadata giữ English gốc. Không sửa Latin hay gán mã FIPAT.",
+    "basis": "textbook-name-spelling",
+    "reviewedBy": null
   }
 ]

@@ -26,6 +26,14 @@ export const LEARNING_REGIONS: Record<AtlasArea, LearningRegion> = {
       "ankle_foot",
     ],
     example: "Gluteus medius muscle",
+    scope:
+      "Kiến thức nền áp dụng cho các vùng được liệt kê bên dưới. Phần đầu & mặt hiện phục vụ tra cứu tên và hình học theo danh mục mô hình nguồn; chưa có thẻ kiến thức lâm sàng riêng.",
+  },
+  head: {
+    regions: [],
+    example: "Mandible",
+    scope:
+      "Tên và hình học vùng đầu theo danh mục mô hình nguồn. Vùng này phục vụ tra cứu cấu trúc; kiến thức lâm sàng riêng cho đầu & mặt chưa được bổ sung. Nguồn tên gọi và nguồn mô hình nằm trong mục Nguồn.",
   },
   neck: { regions: ["cervical"], example: "Sternocleidomastoid muscle" },
   upper: {

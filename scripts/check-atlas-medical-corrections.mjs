@@ -43,7 +43,7 @@ const { resolveAtlasManifest, getAtlasCorrections } = load('src/lib/clinical/atl
 const resolved = resolveAtlasManifest(raw);
 assert.deepEqual(plain(resolved), applyAtlasCorrections(raw, corrections));
 assert.equal(JSON.stringify(raw), beforeRaw, 'raw catalog not mutated');
-assert.equal(resolved.structures.length, 1031);
+assert.equal(resolved.structures.length, raw.structures.length);
 assert.deepEqual(plain(resolved.bundles), raw.bundles);
 assert.deepEqual(plain(resolved.structures.map(s => s.id)), raw.structures.map(s => s.id));
 const expectedChanges = [
@@ -58,7 +58,15 @@ const expectedChanges = [
   ['za-76671b911ccb za-d7748ccf7a30', 'anatomicalTissueLabel', 'Đĩa sụn sợi'],
   ['za-119decb9d97f za-c50e8a3180cf', 'anatomicalTissueLabel', 'Dải chậu–chày · phần fascia lata'],
   ['za-9cf0878d5d75', 'anatomicalTissueLabel', 'Sụn giáp'],
+  ['za-13ac05d8d27f za-ac2287df247e', 'english', 'Buccinator'],
 ];
+const englishCorrectionIds = new Set(['za-13ac05d8d27f', 'za-ac2287df247e']);
+const englishCorrections = corrections.filter(record => Object.hasOwn(record.changes, 'english'));
+assert.equal(englishCorrections.length, 1, 'English spelling correction remains scoped to the two researched IDs');
+assert.deepEqual(englishCorrections[0].structureIds, [...englishCorrectionIds]);
+assert.equal(englishCorrections[0].id, 'english-buccinator-spelling');
+assert.deepEqual(englishCorrections[0].expected, { english: 'Bucinator' });
+assert.deepEqual(englishCorrections[0].changes, { english: 'Buccinator' });
 const changedIds = new Set(expectedChanges.flatMap(([ids]) => ids.split(' ')));
 for (const [ids, field, value] of expectedChanges) for (const id of ids.split(' ')) {
   assert.equal(resolved.structures.find(s => s.id === id)[field], value, `${id}/${field}`);
@@ -70,7 +78,10 @@ for (const [index, source] of raw.structures.entries()) {
   const records = getAtlasCorrections(source.id);
   assert(records.length > 0);
   assert.deepEqual(Array.from(corrected.correctionIds), Array.from(records, c => c.id));
-  for (const key of ['id', 'english', 'label', 'layer', 'areas', 'group', 'surfaces', 'thickness']) assert.deepEqual(plain(corrected[key] ?? null), source[key] ?? null, `${source.id}: preserve ${key}`);
+  for (const key of ['id', 'english', 'label', 'layer', 'areas', 'group', 'surfaces', 'thickness']) {
+    if (key === 'english' && englishCorrectionIds.has(source.id)) continue;
+    assert.deepEqual(plain(corrected[key] ?? null), source[key] ?? null, `${source.id}: preserve ${key}`);
+  }
 }
 assert.equal(getAtlasCorrections('unknown').length, 0);
 const first = corrections[0];
@@ -81,7 +92,7 @@ bad(c => delete c[0].expected.latin, /expected|guard/i);
 bad(c => c[0].sources = [], /source|citation/i);
 bad(c => c[0].sources[0].access = '', /source|access/i);
 bad(c => c[0].reviewedBy = 'invented', /review/i);
-for (const field of ['id', 'english', 'label', 'layer', 'areas', 'bundles', 'surfaces', 'thickness']) {
+for (const field of ['id', 'label', 'layer', 'areas', 'bundles', 'surfaces', 'thickness', 'unexpectedField']) {
   bad(c => c[0].changes[field] = 'forbidden', /field|disallowed/i);
 }
 bad(c => c[0].sources[0].url = 'file:///fabricated', /source|citation/i);
@@ -115,6 +126,10 @@ for (const [id, side] of [['za-ad4d8464ab41', 'left'], ['za-5e590f3614ed', 'left
 for (const [ids] of expectedChanges.filter(([, field]) => field === 'latin')) for (const id of ids.split(' ')) {
   const s = resolved.structures.find(s => s.id === id);
   for (const term of [s.latin, s.sourceMetadata.latin]) assert(atlas.resolveAtlasSearch(resolved.structures, term, 'full').targets.some(target => target.id === id), `canonical/source alias ${term}`);
+}
+for (const id of englishCorrectionIds) {
+  const s = resolved.structures.find(s => s.id === id);
+  for (const term of [s.english, s.sourceMetadata.english]) assert(atlas.resolveAtlasSearch(resolved.structures, term, 'full').targets.some(target => target.id === id), `canonical/source English alias ${term}`);
 }
 const canonical = resolved.structures.find(s => s.id === 'za-0594168bc7e0');
 const aliasOnly = { ...canonical, id: 'alias-only', english: 'Different name', latin: 'Different Latin', label: 'Different label', sourceMetadata: { ...canonical.sourceMetadata, latin: canonical.latin } };

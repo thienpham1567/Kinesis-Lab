@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-28",
+  "checkedAt": "2026-11-05",
   "reviewedBy": null,
   "source": {
     "repository": "https://github.com/Z-Anatomy/Models-of-human-anatomy",
     "commit": "0dd2329622c42b4fdcaabbf5ff6ad234df49b659",
     "license": "CC-BY-SA-4.0",
-    "assetVersion": 2
+    "assetVersion": 3
   },
   "bundle": {
     "id": "full",
-    "url": "/anatomy/3d/full.glb?v=bb1a7269caba",
-    "bytes": 9720004,
-    "sha256": "bb1a7269cabab3b86112962777bb4509527dda79bae6094324e266a9145c1b1f",
-    "manifestSha256": "cbb63c4ce44d4119d8da1c6e49a74b44adf18f38a4a1d1710d23e580082eb984"
+    "url": "/anatomy/3d/full.glb?v=9c895341ec7d",
+    "bytes": 10990908,
+    "sha256": "9c895341ec7d3c8032e15c1f1c0a383ce1964f1b0b578b33be1fdfe3c39426dd",
+    "manifestSha256": "250f57ea3354a7c23a52a42ad0b9b1e3906f28e814bd4705134d268e502c1414"
   },
   "method": {
     "positionSpace": "Decoded POSITION slots transformed by each primitive's matrixWorld; source-export units m",
@@ -31,17 +31,17 @@
   ],
   "comparisonDocument": "docs/research/2026-10-28-atlas-geometry-candidates.md",
   "summary": {
-    "structures": 1031,
-    "primitives": 1411,
-    "triangles": 2368785,
-    "vertexSlots": 1393895,
+    "structures": 1189,
+    "primitives": 1599,
+    "triangles": 2696367,
+    "vertexSlots": 1561269,
     "nonfinitePositionComponents": 0,
     "nonfiniteWorldPositionComponents": 0,
-    "boundaryEdges": 76058,
-    "nonmanifoldEdges": 9578,
-    "degenerateTrianglesAfterWeld": 60,
-    "structuresAtMost10Triangles": 154,
-    "structuresExactly2Triangles": 58,
+    "boundaryEdges": 82263,
+    "nonmanifoldEdges": 9670,
+    "degenerateTrianglesAfterWeld": 144,
+    "structuresAtMost10Triangles": 158,
+    "structuresExactly2Triangles": 60,
     "schematicPilots": 10
   },
   "structures": [
@@ -316,6 +316,33 @@
       ]
     },
     {
+      "id": "za-02313f6964fc",
+      "english": "Upper first premolar",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1684,
+      "vertexSlots": 844,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 844,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.024711419362574816,
+          1.5287156337872148,
+          0.06990850251168013
+        ],
+        [
+          -0.015401729848235846,
+          1.5564517015591264,
+          0.07777238823473454
+        ]
+      ]
+    },
+    {
       "id": "za-03222d070917",
       "english": "Ulnar head of flexor carpi ulnaris",
       "side": "left",
@@ -339,6 +366,33 @@
           0.23709333365965046,
           1.1019018276750647,
           0.014859864293486118
+        ]
+      ]
+    },
+    {
+      "id": "za-03577994b017",
+      "english": "Lower lateral incisor",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1040,
+      "vertexSlots": 522,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 522,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.011909222230315208,
+          1.502898458391428,
+          0.07134458888322115
+        ],
+        [
+          -0.004216720815747976,
+          1.5274219550192356,
+          0.08779088500887156
         ]
       ]
     },
@@ -528,6 +582,33 @@
           -0.2733870390802622,
           0.8564765769988298,
           0.034202500246465206
+        ]
+      ]
+    },
+    {
+      "id": "za-04ee24e8ee7c",
+      "english": "Occipitalis muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 2602,
+      "vertexSlots": 1297,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1297,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.06143607012927532,
+          1.5851561073213816,
+          -0.1047056745737791
+        ],
+        [
+          -0.014848513528704643,
+          1.6182021889835596,
+          -0.05813233740627766
         ]
       ]
     },
@@ -964,6 +1045,33 @@
       ]
     },
     {
+      "id": "za-092942e79339",
+      "english": "Inferior head of lateral pterygoid muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 326,
+      "vertexSlots": 165,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 164,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04310122039169073,
+          1.5550776161253452,
+          0.007776073180139065
+        ],
+        [
+          -0.025448252446949482,
+          1.5776051301509142,
+          0.030625767074525356
+        ]
+      ]
+    },
+    {
       "id": "za-09d8674ed113",
       "english": "Intermediate tendon of digastric muscle",
       "side": "left",
@@ -991,6 +1099,33 @@
       ]
     },
     {
+      "id": "za-0a734ef3872d",
+      "english": "Lower canine",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1276,
+      "vertexSlots": 640,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 640,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.01669933320954442,
+          1.5016523310914636,
+          0.06871157884597778
+        ],
+        [
+          -0.008993338793516159,
+          1.5278284261003137,
+          0.08391585946083069
+        ]
+      ]
+    },
+    {
       "id": "za-0ac8007145ef",
       "english": "Abductor hallucis",
       "side": "left",
@@ -1014,6 +1149,33 @@
           0.07554645370692015,
           0.041373139590336415,
           0.08471756000467791
+        ]
+      ]
+    },
+    {
+      "id": "za-0ae71842d58a",
+      "english": "Hyoid bone",
+      "side": null,
+      "primitives": 1,
+      "triangles": 1324,
+      "vertexSlots": 664,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 664,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.02274440973997116,
+          1.4915179312229156,
+          0.0030274707823991776
+        ],
+        [
+          0.022744417190551758,
+          1.5110317841172218,
+          0.03899815492331982
         ]
       ]
     },
@@ -1288,6 +1450,33 @@
       ]
     },
     {
+      "id": "za-0da69982c491",
+      "english": "Corrugator supercilii",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 278,
+      "vertexSlots": 141,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 141,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.008907074380297919,
+          1.6020619585643565,
+          0.07698103557332864
+        ],
+        [
+          0.031557415789783105,
+          1.6210402355270475,
+          0.08401269007410561
+        ]
+      ]
+    },
+    {
       "id": "za-0dd9276e9e87",
       "english": "Quadratus lumborum muscle",
       "side": "right",
@@ -1392,6 +1581,87 @@
           0.03082137741148472,
           1.4174327647454796,
           0.05694894855108927
+        ]
+      ]
+    },
+    {
+      "id": "za-0e5ce44b0cdf",
+      "english": "Upper canine",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1470,
+      "vertexSlots": 737,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 737,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0216037780046463,
+          1.5271074706688523,
+          0.07686164975166321
+        ],
+        [
+          -0.012548287399113178,
+          1.5577152892947197,
+          0.08596384711563587
+        ]
+      ]
+    },
+    {
+      "id": "za-0e612ef4c6f7",
+      "english": "Upper second molar tooth",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1844,
+      "vertexSlots": 924,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 924,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.017861706670373678,
+          1.5351909162546762,
+          0.04588128536217534
+        ],
+        [
+          0.02950119460001588,
+          1.5573178266776284,
+          0.05548676774806219
+        ]
+      ]
+    },
+    {
+      "id": "za-0e6c941dc13f",
+      "english": "Sinus of sphenoid bone",
+      "side": null,
+      "primitives": 1,
+      "triangles": 384,
+      "vertexSlots": 210,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 210,
+      "boundaryEdges": 32,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014118669375022375,
+          1.583303378006121,
+          0.0221041701734066
+        ],
+        [
+          0.014118669375022375,
+          1.6049859513366584,
+          0.03970876894891262
         ]
       ]
     },
@@ -1608,6 +1878,33 @@
           -0.24393122270703316,
           0.8607949698343873,
           0.026384735479950905
+        ]
+      ]
+    },
+    {
+      "id": "za-0fb6711a8ee1",
+      "english": "Procerus muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 546,
+      "vertexSlots": 309,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 309,
+      "boundaryEdges": 72,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.023252868093550205,
+          1.5937745478004217,
+          0.08336269110441208
+        ],
+        [
+          -0.000042807310819625854,
+          1.6303153242915869,
+          0.08944947505369782
         ]
       ]
     },
@@ -1882,6 +2179,33 @@
       ]
     },
     {
+      "id": "za-11772e3dcde1",
+      "english": "Lower first molar tooth",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 4508,
+      "vertexSlots": 2260,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2260,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.028837645426392555,
+          1.5134276943281293,
+          0.049915759824216366
+        ],
+        [
+          -0.016771402209997177,
+          1.5326723651960492,
+          0.06466848123818636
+        ]
+      ]
+    },
+    {
       "id": "za-1177ba8cf26c",
       "english": "Articular capsules of distal interphalangeal joints of foot",
       "side": "left",
@@ -1990,6 +2314,33 @@
       ]
     },
     {
+      "id": "za-12261711ce5b",
+      "english": "Temporalis muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 10260,
+      "vertexSlots": 5517,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 5515,
+      "boundaryEdges": 780,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.07683267630636692,
+          1.5460234060883522,
+          -0.05053061433136463
+        ],
+        [
+          -0.037758635357022285,
+          1.661988042294979,
+          0.06338129751384258
+        ]
+      ]
+    },
+    {
       "id": "za-1233f9afe8db",
       "english": "Quadratus plantae muscle",
       "side": "left",
@@ -2013,6 +2364,33 @@
           0.10176628641784191,
           0.03438211305872946,
           0.014798613615473237
+        ]
+      ]
+    },
+    {
+      "id": "za-1274e7652683",
+      "english": "Middle cells of ethmoid bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 160,
+      "vertexSlots": 84,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 84,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.005037148093245958,
+          1.5805981371979916,
+          0.04713168600574136
+        ],
+        [
+          0.014561830173236423,
+          1.5947307586319204,
+          0.05606237007305026
         ]
       ]
     },
@@ -2098,6 +2476,33 @@
       ]
     },
     {
+      "id": "za-13ac05d8d27f",
+      "english": "Bucinator",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 884,
+      "vertexSlots": 444,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 444,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.020878054786232836,
+          1.514716514772719,
+          0.0421011550022159
+        ],
+        [
+          0.0358563210302586,
+          1.5510273845951046,
+          0.07101154763744395
+        ]
+      ]
+    },
+    {
       "id": "za-147bb1e888a9",
       "english": "Fourth rib",
       "side": "right",
@@ -2175,6 +2580,33 @@
           -0.18907012231647968,
           1.1027866825461388,
           -0.014033800922334194
+        ]
+      ]
+    },
+    {
+      "id": "za-1520fcaa8dde",
+      "english": "Genioglossus muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 3746,
+      "vertexSlots": 1875,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1875,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.008840962313115597,
+          1.4995324350893497,
+          0.03128269128501415
+        ],
+        [
+          -0.0012334142811596394,
+          1.5356770008802414,
+          0.07885309867560863
         ]
       ]
     },
@@ -2287,6 +2719,33 @@
       ]
     },
     {
+      "id": "za-162d564be43a",
+      "english": "Major alar cartilage",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 344,
+      "vertexSlots": 174,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 174,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014849269296973944,
+          1.5481327609159052,
+          0.08703711722046137
+        ],
+        [
+          -0.00006951810792088509,
+          1.5623159748502076,
+          0.11441265884786844
+        ]
+      ]
+    },
+    {
       "id": "za-164e3978d469",
       "english": "Proximal phalanx of fourth finger of hand",
       "side": "left",
@@ -2337,6 +2796,33 @@
           -0.2649595607072115,
           0.8399578854441643,
           0.046945374459028244
+        ]
+      ]
+    },
+    {
+      "id": "za-16d7e34e4153",
+      "english": "Palpebral part of orbicularis oculi",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 830,
+      "vertexSlots": 415,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 415,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.012750910323487963,
+          1.5792004752575823,
+          0.06365778067336286
+        ],
+        [
+          0.04637180828664156,
+          1.6033804060872834,
+          0.08090958142896293
         ]
       ]
     },
@@ -2476,6 +2962,33 @@
       ]
     },
     {
+      "id": "za-1841069185d1",
+      "english": "Superior head of lateral pterygoid muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 226,
+      "vertexSlots": 115,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 115,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.021714886444141157,
+          1.5693237635641615,
+          0.010060615184841621
+        ],
+        [
+          0.04295106457487635,
+          1.5840648039040397,
+          0.032434391720422937
+        ]
+      ]
+    },
+    {
       "id": "za-187a39e40cdd",
       "english": "Palmar trapezoideocapitate ligament",
       "side": "right",
@@ -2611,6 +3124,33 @@
       ]
     },
     {
+      "id": "za-1947be5cb589",
+      "english": "Articular disc of temporomandibular joint",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 288,
+      "vertexSlots": 146,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 146,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.03510312071189037,
+          1.568116899973696,
+          0.0009921368096739045
+        ],
+        [
+          0.05441928220330339,
+          1.5815873953476132,
+          0.014927171766917985
+        ]
+      ]
+    },
+    {
       "id": "za-19c431b38d98",
       "english": "Oblique head of adductor hallucis",
       "side": "left",
@@ -2688,6 +3228,33 @@
           -0.06637381762266159,
           0.012201488279058991,
           0.08052710239446864
+        ]
+      ]
+    },
+    {
+      "id": "za-1a3d4fe5b042",
+      "english": "Depressor anguli oris",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 594,
+      "vertexSlots": 345,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 342,
+      "boundaryEdges": 86,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.01171432763519309,
+          1.4979957887754896,
+          0.050711682527889546
+        ],
+        [
+          0.036050942388393126,
+          1.5396464292162029,
+          0.07468819419277642
         ]
       ]
     },
@@ -2881,6 +3448,33 @@
       ]
     },
     {
+      "id": "za-1c08e8878896",
+      "english": "Superior rectus muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1284,
+      "vertexSlots": 644,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 644,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03680499363690615,
+          1.5983548352853845,
+          0.032844705906362945
+        ],
+        [
+          -0.013909350149333477,
+          1.604811998994118,
+          0.07345160482354954
+        ]
+      ]
+    },
+    {
       "id": "za-1c378e1d6da1",
       "english": "Costal cartilage of tenth rib",
       "side": "left",
@@ -2904,6 +3498,33 @@
           0.12853062711656094,
           1.0993992103330372,
           0.08512829748108322
+        ]
+      ]
+    },
+    {
+      "id": "za-1c5d1e7d5c29",
+      "english": "Levator nasolabialis",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 172,
+      "vertexSlots": 117,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 117,
+      "boundaryEdges": 58,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.010636470143070259,
+          1.5575616666102516,
+          0.07715029240658222
+        ],
+        [
+          0.016088755149612388,
+          1.58666745572296,
+          0.08437777157710676
         ]
       ]
     },
@@ -3205,6 +3826,33 @@
       ]
     },
     {
+      "id": "za-1ef48e94649f",
+      "english": "Epicranial aponeurosis",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 20118,
+      "vertexSlots": 10055,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 10055,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.06689390167593956,
+          1.5985213369131088,
+          -0.10519100725650787
+        ],
+        [
+          -0.000008631497621536255,
+          1.7075766548514366,
+          0.08331429958343506
+        ]
+      ]
+    },
+    {
       "id": "za-1f1fbd1ed3df",
       "english": "Superficial head of flexor pollicis brevis",
       "side": "right",
@@ -3228,6 +3876,60 @@
           -0.2684264797717333,
           0.8470712210983038,
           0.05438930541276932
+        ]
+      ]
+    },
+    {
+      "id": "za-1f31a1321b85",
+      "english": "Superior head of lateral pterygoid muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 226,
+      "vertexSlots": 115,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 115,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04295103531330824,
+          1.569323760457337,
+          0.010060612112283707
+        ],
+        [
+          -0.021714855916798115,
+          1.5840648096054792,
+          0.03243439458310604
+        ]
+      ]
+    },
+    {
+      "id": "za-1f4d9f0f62b1",
+      "english": "Lower medial incisor",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 984,
+      "vertexSlots": 494,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 494,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.006279339548200369,
+          1.5026938877999783,
+          0.07066066563129425
+        ],
+        [
+          -0.0001563900150358677,
+          1.5274135246872902,
+          0.08856780454516411
         ]
       ]
     },
@@ -3988,6 +4690,33 @@
       ]
     },
     {
+      "id": "za-28ab9d9ee4f7",
+      "english": "Upper lateral incisor",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1454,
+      "vertexSlots": 729,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 729,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00650417385622859,
+          1.525593992379493,
+          0.07910855342004701
+        ],
+        [
+          0.015873477328568697,
+          1.5537948559583294,
+          0.0901527259703101
+        ]
+      ]
+    },
+    {
       "id": "za-28f17798255a",
       "english": "Tibia",
       "side": "left",
@@ -4096,6 +4825,60 @@
       ]
     },
     {
+      "id": "za-296f37ae7600",
+      "english": "Zygomatic bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1328,
+      "vertexSlots": 666,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 666,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.031616721478597176,
+          1.5537165822550039,
+          0.03270855088363292
+        ],
+        [
+          0.062324695400846286,
+          1.6084655854319003,
+          0.07167749810636072
+        ]
+      ]
+    },
+    {
+      "id": "za-299aa828b3db",
+      "english": "Common tendinous ring",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 362,
+      "vertexSlots": 181,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 181,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.013132794239261156,
+          1.596338414328691,
+          0.03101657745270812
+        ],
+        [
+          0.019393784496912328,
+          1.6030347596048866,
+          0.03685676187389612
+        ]
+      ]
+    },
+    {
       "id": "za-29a0d6bc1f74",
       "english": "Longus capitis muscle",
       "side": "right",
@@ -4123,6 +4906,33 @@
       ]
     },
     {
+      "id": "za-29b7f43f8aa7",
+      "english": "Orbital part of orbicularis oculi",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 2390,
+      "vertexSlots": 1195,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1195,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.05336574465036392,
+          1.5674147588895766,
+          0.05550181388636228
+        ],
+        [
+          -0.009088769555091858,
+          1.6171293056473486,
+          0.08686348869603225
+        ]
+      ]
+    },
+    {
       "id": "za-29c1c959ded6",
       "english": "Vastus intermedius muscle",
       "side": "left",
@@ -4146,6 +4956,33 @@
           0.13309116289019585,
           0.8069481682884225,
           0.038050033561298234
+        ]
+      ]
+    },
+    {
+      "id": "za-29d15e56516f",
+      "english": "Inferior head of lateral pterygoid muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 326,
+      "vertexSlots": 165,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 164,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.025448282651745646,
+          1.5550776202928682,
+          0.007776078977458712
+        ],
+        [
+          0.04310124954428801,
+          1.5776051265616908,
+          0.030625762890097386
         ]
       ]
     },
@@ -4852,6 +5689,33 @@
       ]
     },
     {
+      "id": "za-2ddfde5198e8",
+      "english": "Superficial part of masseter",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 1404,
+      "vertexSlots": 746,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 746,
+      "boundaryEdges": 88,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.03612695996338561,
+          1.5122009924960793,
+          0.017181361161636797
+        ],
+        [
+          0.06270062475087679,
+          1.574326956431042,
+          0.05667736430286019
+        ]
+      ]
+    },
+    {
       "id": "za-2e0677e472c5",
       "english": "Triquetrocapitate ligament",
       "side": "right",
@@ -5118,6 +5982,60 @@
           0.010734800860696891,
           0.8662850114721019,
           -0.07471958613906082
+        ]
+      ]
+    },
+    {
+      "id": "za-30c3ccf9c591",
+      "english": "Nasal bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 292,
+      "vertexSlots": 148,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 148,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.00839977734722197,
+          1.5737073123455048,
+          0.07933586835861206
+        ],
+        [
+          -8.915085345506668e-7,
+          1.6050796210765839,
+          0.10027180425822735
+        ]
+      ]
+    },
+    {
+      "id": "za-31d490cc3e6e",
+      "english": "Lower second premolar",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1180,
+      "vertexSlots": 592,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 592,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.015952034352969657,
+          1.5069974822838248,
+          0.05805829301516661
+        ],
+        [
+          0.023905764083141073,
+          1.5298061524287732,
+          0.07106855774307935
         ]
       ]
     },
@@ -5392,6 +6310,33 @@
       ]
     },
     {
+      "id": "za-33f95c745228",
+      "english": "Temporoparietalis muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 11972,
+      "vertexSlots": 6519,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 6517,
+      "boundaryEdges": 1088,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.08040962275117636,
+          1.5748386569321156,
+          -0.07189986668527126
+        ],
+        [
+          -0.04220348410308361,
+          1.6777008809149265,
+          0.04492452181875706
+        ]
+      ]
+    },
+    {
       "id": "za-34aa2f8dc60b",
       "english": "Flexor retinaculum of ankle",
       "side": "right",
@@ -5662,6 +6607,33 @@
       ]
     },
     {
+      "id": "za-36ecbbe3aa4f",
+      "english": "Upper first molar tooth",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 2176,
+      "vertexSlots": 1090,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1090,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.018493065144866705,
+          1.531707867950749,
+          0.05351351979578747
+        ],
+        [
+          0.029819782357662916,
+          1.5556734627863718,
+          0.06477148548592018
+        ]
+      ]
+    },
+    {
       "id": "za-37c5573b2c3b",
       "english": "Stylohyoid muscle",
       "side": "right",
@@ -5766,6 +6738,33 @@
           0.041909925639629364,
           1.099784579128027,
           0.017448462545871735
+        ]
+      ]
+    },
+    {
+      "id": "za-3867538a8650",
+      "english": "Depressor labii inferioris",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 832,
+      "vertexSlots": 480,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 468,
+      "boundaryEdges": 102,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03115977067500353,
+          1.5003416603431106,
+          0.05836459808051586
+        ],
+        [
+          -0.000561961904168129,
+          1.5298445681110024,
+          0.08563051000237465
         ]
       ]
     },
@@ -6009,6 +7008,33 @@
           -0.05269817714816986,
           0.08064487161879041,
           -0.03322873206707341
+        ]
+      ]
+    },
+    {
+      "id": "za-3b6e1d04764c",
+      "english": "Frontalis muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 5874,
+      "vertexSlots": 2962,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2962,
+      "boundaryEdges": 58,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.05848626606166363,
+          1.6042183282976077,
+          0.04262731780098943
+        ],
+        [
+          -0.00004272535443305969,
+          1.6743444565190528,
+          0.08951075756650236
         ]
       ]
     },
@@ -6553,6 +7579,33 @@
       ]
     },
     {
+      "id": "za-413e7394dbb9",
+      "english": "Hyoglossus muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1424,
+      "vertexSlots": 714,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 714,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.005146885577438365,
+          1.4985250032779556,
+          0.033540096146444195
+        ],
+        [
+          0.013022504331356224,
+          1.523859708439334,
+          0.06425332721310373
+        ]
+      ]
+    },
+    {
       "id": "za-4181c89ecc3a",
       "english": "Multifidus colli muscle",
       "side": "left",
@@ -6795,6 +7848,33 @@
           0.08604681491851807,
           0.04940104922615355,
           0.013627977604935646
+        ]
+      ]
+    },
+    {
+      "id": "za-423f50dec1e0",
+      "english": "Stylomandibular ligament",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 10,
+      "vertexSlots": 12,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 12,
+      "boundaryEdges": 12,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0373294239398092,
+          1.5285134408129655,
+          -0.0004026640714454386
+        ],
+        [
+          0.04025258240289986,
+          1.5575377440615623,
+          0.01089667596671237
         ]
       ]
     },
@@ -7150,6 +8230,33 @@
       ]
     },
     {
+      "id": "za-4553e6b351cb",
+      "english": "Articular capsule of temporomandibular joint",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 200,
+      "vertexSlots": 125,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 125,
+      "boundaryEdges": 50,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.057617650367319584,
+          1.5666815917938948,
+          0.0009196223691105843
+        ],
+        [
+          -0.03457056265324354,
+          1.5799305364489555,
+          0.015707571990787983
+        ]
+      ]
+    },
+    {
       "id": "za-45571f60ffbe",
       "english": "Intervertebral disc C7-T1",
       "side": null,
@@ -7173,6 +8280,60 @@
           0.016975529491901398,
           1.44830980617553,
           -0.010590141639113426
+        ]
+      ]
+    },
+    {
+      "id": "za-45931960382b",
+      "english": "Upper second premolar",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1554,
+      "vertexSlots": 779,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 779,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.018529134336858988,
+          1.5296874944985355,
+          0.0641328694627469
+        ],
+        [
+          0.02762033650651574,
+          1.5549961007270618,
+          0.07156185842126364
+        ]
+      ]
+    },
+    {
+      "id": "za-45b1899b5e6c",
+      "english": "Inferior oblique muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1148,
+      "vertexSlots": 576,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 576,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.013868362880357976,
+          1.5755367421362614,
+          0.052630021201182015
+        ],
+        [
+          0.043256065225448836,
+          1.5917004708132179,
+          0.07867515414332439
         ]
       ]
     },
@@ -7663,6 +8824,60 @@
       ]
     },
     {
+      "id": "za-4946148150cc",
+      "english": "Common tendinous ring",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 362,
+      "vertexSlots": 181,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 181,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.01939379214309156,
+          1.5963384137503793,
+          0.031016577403126265
+        ],
+        [
+          -0.013132801512256265,
+          1.6030347602153918,
+          0.036856761906079165
+        ]
+      ]
+    },
+    {
+      "id": "za-4946a7e15b87",
+      "english": "Lower medial incisor",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 984,
+      "vertexSlots": 494,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 494,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00015638971428830195,
+          1.5026938896265698,
+          0.0706606590097363
+        ],
+        [
+          0.006279339977365267,
+          1.5274135231319603,
+          0.08856780912805635
+        ]
+      ]
+    },
+    {
       "id": "za-497404d921a2",
       "english": "Deep head of flexor pollicis brevis",
       "side": "left",
@@ -7740,6 +8955,33 @@
           -0.012936783023178577,
           1.1089189909398556,
           -0.017008058726787567
+        ]
+      ]
+    },
+    {
+      "id": "za-49aa2bae7160",
+      "english": "Temporoparietalis muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 11972,
+      "vertexSlots": 6519,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 6517,
+      "boundaryEdges": 1088,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.04220347059879981,
+          1.574838686316423,
+          -0.0718998436625162
+        ],
+        [
+          0.08040960696962923,
+          1.677700855930411,
+          0.044924495609648604
         ]
       ]
     },
@@ -7875,6 +9117,33 @@
           -0.12629676330834627,
           0.020146097522228956,
           0.08179862517863512
+        ]
+      ]
+    },
+    {
+      "id": "za-4af9e58ee0fc",
+      "english": "Stylohyoid ligament",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 156,
+      "vertexSlots": 80,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 80,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.013839681632816792,
+          1.5034386292543573,
+          -0.0010434190925421236
+        ],
+        [
+          0.04038283508270979,
+          1.5517452730054584,
+          0.03284171466985379
         ]
       ]
     },
@@ -8095,6 +9364,33 @@
       ]
     },
     {
+      "id": "za-4c799a83290d",
+      "english": "Superior rectus muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1284,
+      "vertexSlots": 644,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 644,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.013909343488747783,
+          1.5983548363456255,
+          0.032844706016155474
+        ],
+        [
+          0.036804985611633756,
+          1.6048119985004095,
+          0.07345160480587906
+        ]
+      ]
+    },
+    {
       "id": "za-4cad67cac3c2",
       "english": "Medial head of flexor hallucis brevis",
       "side": "left",
@@ -8257,6 +9553,33 @@
       ]
     },
     {
+      "id": "za-4deae5946794",
+      "english": "Superficial part of masseter",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 1404,
+      "vertexSlots": 746,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 746,
+      "boundaryEdges": 88,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.06270059570670128,
+          1.512200977653265,
+          0.017181355506181717
+        ],
+        [
+          -0.036126929335296154,
+          1.5743269696831703,
+          0.05667736753821373
+        ]
+      ]
+    },
+    {
       "id": "za-4eae4ade294d",
       "english": "Articular capsules of proximal interphalangeal joints",
       "side": "right",
@@ -8415,6 +9738,33 @@
           0.10790204815091009,
           0.38265162511786477,
           0.023206505198458995
+        ]
+      ]
+    },
+    {
+      "id": "za-5036012603fe",
+      "english": "Lacrimal bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 588,
+      "vertexSlots": 296,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 296,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.006467820094555321,
+          1.5731173989168445,
+          0.06151899787025683
+        ],
+        [
+          0.017119670574616996,
+          1.5982194140790382,
+          0.07622810859461233
         ]
       ]
     },
@@ -8851,6 +10201,33 @@
       ]
     },
     {
+      "id": "za-556e510c0a5d",
+      "english": "Levator labii superioris",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 540,
+      "vertexSlots": 272,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 272,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.011837794076963837,
+          1.547310906574913,
+          0.06900649537853032
+        ],
+        [
+          0.03882810851474794,
+          1.5762476350838153,
+          0.08388198054377827
+        ]
+      ]
+    },
+    {
       "id": "za-557649a62d5e",
       "english": "Scaphoid bone",
       "side": "right",
@@ -8928,6 +10305,33 @@
           -0.2445832330210459,
           0.8485054488569966,
           0.02637519408017397
+        ]
+      ]
+    },
+    {
+      "id": "za-5627d84f5fe5",
+      "english": "Nasalis muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 704,
+      "vertexSlots": 410,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 410,
+      "boundaryEdges": 116,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014857470989227295,
+          1.5631820000708103,
+          0.07829103991389275
+        ],
+        [
+          -0.0016049779951572418,
+          1.603500586003065,
+          0.10009109973907471
         ]
       ]
     },
@@ -9337,6 +10741,33 @@
       ]
     },
     {
+      "id": "za-58a225262e4d",
+      "english": "Genioglossus muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 3746,
+      "vertexSlots": 1875,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1875,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0012334144746446452,
+          1.4995324391822873,
+          0.031282692631984646
+        ],
+        [
+          0.008840962053155405,
+          1.5356769982920224,
+          0.07885309825563547
+        ]
+      ]
+    },
+    {
       "id": "za-58ce878642aa",
       "english": "Hamate bone",
       "side": "left",
@@ -9468,6 +10899,87 @@
           0.2630731748370821,
           0.7406996196105777,
           0.08169011013942255
+        ]
+      ]
+    },
+    {
+      "id": "za-5a121b84ee03",
+      "english": "Zygomaticus major muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 798,
+      "vertexSlots": 448,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 433,
+      "boundaryEdges": 72,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.055477431043982506,
+          1.5243294779211283,
+          0.050349519588053226
+        ],
+        [
+          -0.026094425469636917,
+          1.5788588635623455,
+          0.07599504105746746
+        ]
+      ]
+    },
+    {
+      "id": "za-5a1dc2b05b96",
+      "english": "Lacrimal bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 588,
+      "vertexSlots": 296,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 296,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.017119669821113348,
+          1.5731173967942595,
+          0.06151899695396423
+        ],
+        [
+          -0.006467820610851049,
+          1.598219416104257,
+          0.07622810918837786
+        ]
+      ]
+    },
+    {
+      "id": "za-5a335db4d317",
+      "english": "Inferior nasal concha bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 476,
+      "vertexSlots": 238,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 238,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00442404376940525,
+          1.5521033204787527,
+          0.04078771882740061
+        ],
+        [
+          0.014880185168984317,
+          1.5746226105501775,
+          0.07542936306954129
         ]
       ]
     },
@@ -9634,6 +11146,33 @@
       ]
     },
     {
+      "id": "za-5b2d808b78f7",
+      "english": "Upper canine",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1470,
+      "vertexSlots": 737,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 737,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.012548287399113178,
+          1.5271074719637643,
+          0.0768616523044768
+        ],
+        [
+          0.0216037780046463,
+          1.5577152876633547,
+          0.08596384589225259
+        ]
+      ]
+    },
+    {
       "id": "za-5b406d40c187",
       "english": "Gluteus minimus muscle",
       "side": "right",
@@ -9738,6 +11277,60 @@
           0.08216327274950258,
           0.05953396585150574,
           0.08440997713060303
+        ]
+      ]
+    },
+    {
+      "id": "za-5c53fb653cfa",
+      "english": "Lower second premolar",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1180,
+      "vertexSlots": 592,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 592,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.02390576363541186,
+          1.506997481919825,
+          0.058058299124240875
+        ],
+        [
+          -0.0159520348533988,
+          1.5298061529174447,
+          0.07106855511665344
+        ]
+      ]
+    },
+    {
+      "id": "za-5c6186fd412f",
+      "english": "Nasalis muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 704,
+      "vertexSlots": 410,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 410,
+      "boundaryEdges": 116,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0016049622753815385,
+          1.563182006590337,
+          0.07829104231947241
+        ],
+        [
+          0.014857456849271866,
+          1.6035005803346656,
+          0.10009109684789672
         ]
       ]
     },
@@ -9877,6 +11470,33 @@
       ]
     },
     {
+      "id": "za-5d0c37d19f37",
+      "english": "Pterygospinous ligament",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 2,
+      "vertexSlots": 4,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.02812496479600668,
+          1.5643639761542385,
+          0.008865253352192052
+        ],
+        [
+          0.03078489564359188,
+          1.569340878418652,
+          0.022054614530160156
+        ]
+      ]
+    },
+    {
       "id": "za-5d442a13feaf",
       "english": "Scaphocapitate ligament",
       "side": "right",
@@ -9900,6 +11520,33 @@
           -0.26463233403150027,
           0.8578246673520601,
           0.023674029057358294
+        ]
+      ]
+    },
+    {
+      "id": "za-5d605a9bf70b",
+      "english": "Stylomandibular ligament",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 10,
+      "vertexSlots": 12,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 12,
+      "boundaryEdges": 12,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.040252522798255086,
+          1.5285134389996529,
+          -0.0004026624374091625
+        ],
+        [
+          -0.03732936433516443,
+          1.5575377456843853,
+          0.010896673891693354
         ]
       ]
     },
@@ -10251,6 +11898,33 @@
           0.1416401387427757,
           1.3158011463973698,
           0.08515873225169686
+        ]
+      ]
+    },
+    {
+      "id": "za-6196f4850bc8",
+      "english": "Parietal bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 6780,
+      "vertexSlots": 3386,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 3386,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.07439018227159977,
+          1.5898201763629913,
+          -0.10030511766672134
+        ],
+        [
+          0.005615873262286186,
+          1.7054525315761566,
+          0.03906109184026718
         ]
       ]
     },
@@ -10903,6 +12577,33 @@
       ]
     },
     {
+      "id": "za-6758c46ff35d",
+      "english": "Epicranial aponeurosis",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 20118,
+      "vertexSlots": 10055,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 10055,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.000008618492830514413,
+          1.5985213836428802,
+          -0.10519098169840323
+        ],
+        [
+          0.06689388468447577,
+          1.7075766297658332,
+          0.08331424015809095
+        ]
+      ]
+    },
+    {
       "id": "za-6787d74597d0",
       "english": "Abductor pollicis brevis",
       "side": "right",
@@ -11146,6 +12847,60 @@
       ]
     },
     {
+      "id": "za-68c1bc357201",
+      "english": "Medial pterygoid muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 496,
+      "vertexSlots": 250,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 249,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.036999969743192196,
+          1.5268500801175833,
+          0.01126728393137455
+        ],
+        [
+          -0.01451717410236597,
+          1.5760664958506823,
+          0.04193028435111046
+        ]
+      ]
+    },
+    {
+      "id": "za-6911b87e4adc",
+      "english": "Orbicularis oris muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1880,
+      "vertexSlots": 940,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 940,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03214255440980196,
+          1.508688047528267,
+          0.06751629430800676
+        ],
+        [
+          -0.00003761518746614456,
+          1.5540816076099873,
+          0.09512149821966887
+        ]
+      ]
+    },
+    {
       "id": "za-6926a0d3ac4f",
       "english": "Costal cartilage of second rib",
       "side": "left",
@@ -11281,6 +13036,33 @@
       ]
     },
     {
+      "id": "za-69ab9da5db6c",
+      "english": "Superior oblique muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1750,
+      "vertexSlots": 877,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 877,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.01263546079468758,
+          1.595418120575319,
+          0.03388826306552149
+        ],
+        [
+          0.04056814772363404,
+          1.6072981227739038,
+          0.0771688779746344
+        ]
+      ]
+    },
+    {
       "id": "za-69adeba52863",
       "english": "Costal cartilage of first rib",
       "side": "left",
@@ -11389,6 +13171,33 @@
       ]
     },
     {
+      "id": "za-6a194c2daf51",
+      "english": "Upper first premolar",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1684,
+      "vertexSlots": 844,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 844,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.015401729848235846,
+          1.5287156350885323,
+          0.06990850147058865
+        ],
+        [
+          0.024711419362574816,
+          1.5564516997759361,
+          0.07777238695334847
+        ]
+      ]
+    },
+    {
       "id": "za-6a4d43d0a8fd",
       "english": "Intervertebral disc T3-T4",
       "side": null,
@@ -11466,6 +13275,60 @@
           0.13728462290303867,
           1.4143072650523956,
           -0.06910462461616396
+        ]
+      ]
+    },
+    {
+      "id": "za-6b8422984fe2",
+      "english": "Lateral temporomandibular ligament",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 24,
+      "vertexSlots": 20,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 20,
+      "boundaryEdges": 14,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.04665193435210635,
+          1.5575930342113775,
+          0.007403205409983933
+        ],
+        [
+          0.0597730314022481,
+          1.5789271851922497,
+          0.020006018779519
+        ]
+      ]
+    },
+    {
+      "id": "za-6b85aa4d89ec",
+      "english": "Risorius muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 592,
+      "vertexSlots": 353,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 351,
+      "boundaryEdges": 112,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.02869311755400461,
+          1.5150467218212402,
+          0.04384471373801847
+        ],
+        [
+          0.04841918396169276,
+          1.5422105089084508,
+          0.07136745546364638
         ]
       ]
     },
@@ -11601,6 +13464,33 @@
           -0.005446344614028931,
           1.417432762682438,
           0.0569489486515522
+        ]
+      ]
+    },
+    {
+      "id": "za-6d36daa5e529",
+      "english": "Temporal bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 14094,
+      "vertexSlots": 7051,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 7051,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.009647439337241437,
+          1.548726506257071,
+          -0.051563980120067944
+        ],
+        [
+          0.07242035413703984,
+          1.6231436150262748,
+          0.04478308515248041
         ]
       ]
     },
@@ -12226,6 +14116,33 @@
       ]
     },
     {
+      "id": "za-7144427aebbe",
+      "english": "Palatine bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1460,
+      "vertexSlots": 732,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 732,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.027038383297622204,
+          1.543977715075016,
+          0.024777857586741447
+        ],
+        [
+          -0.0007845433428883553,
+          1.5841305032372475,
+          0.05999702028930187
+        ]
+      ]
+    },
+    {
       "id": "za-71505881f936",
       "english": "Lateral head of triceps brachii",
       "side": "left",
@@ -12546,6 +14463,33 @@
           0.025353029370307922,
           1.00614916626364,
           0.014174617361277342
+        ]
+      ]
+    },
+    {
+      "id": "za-7315144dcf7f",
+      "english": "Levator anguli oris",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 330,
+      "vertexSlots": 165,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 165,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.01200875644159527,
+          1.5424469773600873,
+          0.06786010101871866
+        ],
+        [
+          0.029055342290115527,
+          1.5624968073942165,
+          0.08343932150594328
         ]
       ]
     },
@@ -13012,6 +14956,33 @@
       ]
     },
     {
+      "id": "za-781d3da03600",
+      "english": "Medial rectus muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1252,
+      "vertexSlots": 628,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 628,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.012535809391597458,
+          1.584945385402116,
+          0.03281920251700776
+        ],
+        [
+          0.022546258942020475,
+          1.6015222012731007,
+          0.07322006341061621
+        ]
+      ]
+    },
+    {
       "id": "za-784ea5bbf056",
       "english": "Inferior extensor retinaculum of ankle",
       "side": "right",
@@ -13147,6 +15118,33 @@
       ]
     },
     {
+      "id": "za-795b2fc6873b",
+      "english": "Inferior oblique muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1148,
+      "vertexSlots": 576,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 576,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.043256073258817196,
+          1.5755367407800296,
+          0.052630021254287424
+        ],
+        [
+          -0.013868369162082672,
+          1.5917004726141581,
+          0.07867515418243584
+        ]
+      ]
+    },
+    {
       "id": "za-79878f9175fe",
       "english": "Intervertebral disc T11-T12",
       "side": null,
@@ -13224,6 +15222,33 @@
           0.2667412845013688,
           0.8575067499708371,
           0.028013277040239162
+        ]
+      ]
+    },
+    {
+      "id": "za-79b142c5db3c",
+      "english": "Posterior cells of ethmoid bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 216,
+      "vertexSlots": 114,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 114,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014050360031808647,
+          1.581522440921714,
+          0.039310127995823424
+        ],
+        [
+          -0.004215884752611344,
+          1.5947188760795048,
+          0.0481010326782443
         ]
       ]
     },
@@ -13336,6 +15361,33 @@
       ]
     },
     {
+      "id": "za-7a850ff504f5",
+      "english": "Mandible",
+      "side": null,
+      "primitives": 2,
+      "triangles": 18834,
+      "vertexSlots": 9601,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 9422,
+      "boundaryEdges": 86,
+      "nonmanifoldEdges": 50,
+      "degenerateTrianglesAfterWeld": 14,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.051664017140865326,
+          1.496296625584364,
+          0.0017980113625526428
+        ],
+        [
+          0.051664017140865326,
+          1.5786498486995697,
+          0.083708256483078
+        ]
+      ]
+    },
+    {
       "id": "za-7aa8b2351da7",
       "english": "Plantar calcaneonavicular ligament",
       "side": "right",
@@ -13440,6 +15492,33 @@
           -0.06754045188426971,
           0.07506963983178139,
           0.09213956817984581
+        ]
+      ]
+    },
+    {
+      "id": "za-7bcd3e50e9f3",
+      "english": "Sphenomandibular ligament",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 26,
+      "vertexSlots": 24,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 24,
+      "boundaryEdges": 20,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0421868241392076,
+          1.5437273988500237,
+          0.007975813001394272
+        ],
+        [
+          -0.031666293274611235,
+          1.5696108443662524,
+          0.022709928452968597
         ]
       ]
     },
@@ -13764,6 +15843,33 @@
           0.07451228077323092,
           0.4335537225511129,
           -0.03891251654588181
+        ]
+      ]
+    },
+    {
+      "id": "za-7e3af84e7d1d",
+      "english": "Stylohyoid ligament",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 156,
+      "vertexSlots": 80,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 80,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.040382775478065014,
+          1.503438625484705,
+          -0.0010434165596961975
+        ],
+        [
+          -0.013839622028172016,
+          1.5517452768981457,
+          0.03284171223640442
         ]
       ]
     },
@@ -14821,6 +16927,33 @@
       ]
     },
     {
+      "id": "za-85e6b2f916dd",
+      "english": "Inferior tarsus",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 108,
+      "vertexSlots": 56,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 56,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.019497892641984316,
+          1.5797778126253132,
+          0.0682886810603815
+        ],
+        [
+          0.04324588299699961,
+          1.5875405171135275,
+          0.07685351262735209
+        ]
+      ]
+    },
+    {
       "id": "za-861071471ec3",
       "english": "Articular capsule of knee joint",
       "side": "left",
@@ -15033,6 +17166,33 @@
           -0.07279123552143574,
           0.033172158524394035,
           0.08849865943193436
+        ]
+      ]
+    },
+    {
+      "id": "za-87ea7339242f",
+      "english": "Trochlea of superior oblique muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 192,
+      "vertexSlots": 98,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 98,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.01670270785689354,
+          1.6051036209320388,
+          0.07397742225983132
+        ],
+        [
+          -0.012479227036237717,
+          1.6087167470003934,
+          0.07691747683143779
         ]
       ]
     },
@@ -15793,6 +17953,33 @@
       ]
     },
     {
+      "id": "za-8dbb0bb7e413",
+      "english": "Ethmoid bone",
+      "side": null,
+      "primitives": 1,
+      "triangles": 4215,
+      "vertexSlots": 2130,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2108,
+      "boundaryEdges": 13,
+      "nonmanifoldEdges": 15,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.01874004863202572,
+          1.5658773817121983,
+          0.03140878118574619
+        ],
+        [
+          0.018740328028798103,
+          1.605312380939722,
+          0.07594645954668522
+        ]
+      ]
+    },
+    {
       "id": "za-8ddf23fc92a1",
       "english": "Iliacus muscle",
       "side": "right",
@@ -15901,6 +18088,33 @@
       ]
     },
     {
+      "id": "za-8e8f88fe40d4",
+      "english": "Frontal bone",
+      "side": null,
+      "primitives": 1,
+      "triangles": 7776,
+      "vertexSlots": 3902,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 3902,
+      "boundaryEdges": 32,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.061188992112874985,
+          1.5926116667687893,
+          0.01801314577460289
+        ],
+        [
+          0.061188992112874985,
+          1.6991909891366959,
+          0.08710893616080284
+        ]
+      ]
+    },
+    {
       "id": "za-8ea5c188c2bc",
       "english": "Nucleus pulposus T4-T5",
       "side": null,
@@ -15955,6 +18169,33 @@
       ]
     },
     {
+      "id": "za-8ecd74e53554",
+      "english": "Lateral process of nasal septal cartilage",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 347,
+      "vertexSlots": 176,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 174,
+      "boundaryEdges": 2,
+      "nonmanifoldEdges": 1,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.000011966192321133384,
+          1.553762574634833,
+          0.08208388694892241
+        ],
+        [
+          0.013153081838001235,
+          1.586742810423399,
+          0.11565844705824736
+        ]
+      ]
+    },
+    {
       "id": "za-8ef971f0d5b4",
       "english": "Flexor carpi radialis",
       "side": "left",
@@ -16005,6 +18246,33 @@
           0.12030596833135558,
           0.41376376186913166,
           -0.023527996241079496
+        ]
+      ]
+    },
+    {
+      "id": "za-8f40e0ec61dd",
+      "english": "Anterior cells of ethmoid bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 136,
+      "vertexSlots": 72,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 72,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.013151946116440882,
+          1.5803952359036448,
+          0.054778575487957906
+        ],
+        [
+          -0.00506877560978336,
+          1.5959788081702615,
+          0.06279825371565251
         ]
       ]
     },
@@ -16717,6 +18985,33 @@
       ]
     },
     {
+      "id": "za-9809d0aa12e6",
+      "english": "Nasal bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 292,
+      "vertexSlots": 148,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 148,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          8.91055562168841e-7,
+          1.5737073162282662,
+          0.07933586635805329
+        ],
+        [
+          0.008399777895474803,
+          1.6050796174021376,
+          0.10027180559210541
+        ]
+      ]
+    },
+    {
       "id": "za-981cc629c912",
       "english": "Platysma",
       "side": "right",
@@ -17010,6 +19305,33 @@
           -0.22955895587801933,
           1.1152850836515427,
           -0.01137702725827694
+        ]
+      ]
+    },
+    {
+      "id": "za-9a927687dd0a",
+      "english": "Depressor labii inferioris",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 832,
+      "vertexSlots": 480,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 468,
+      "boundaryEdges": 102,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0005619448269076344,
+          1.5003416651215802,
+          0.05836460220965571
+        ],
+        [
+          0.03115975724528608,
+          1.5298445646566357,
+          0.08563050777069076
         ]
       ]
     },
@@ -17878,6 +20200,33 @@
       ]
     },
     {
+      "id": "za-a0e2f686f649",
+      "english": "Corrugator supercilii",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 278,
+      "vertexSlots": 141,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 141,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03155742958188057,
+          1.6020619552582502,
+          0.07698103506118059
+        ],
+        [
+          -0.008907090872526169,
+          1.6210402380675077,
+          0.08401269093155861
+        ]
+      ]
+    },
+    {
       "id": "za-a113e29caa5a",
       "english": "Spinalis colli muscle",
       "side": "right",
@@ -18094,6 +20443,33 @@
       ]
     },
     {
+      "id": "za-a2c723b4db15",
+      "english": "Lateral rectus muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1600,
+      "vertexSlots": 802,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 802,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.017668151537835852,
+          1.5856669383725144,
+          0.030927274506603687
+        ],
+        [
+          0.04411374411212862,
+          1.6021335433122563,
+          0.07070313891766201
+        ]
+      ]
+    },
+    {
       "id": "za-a2fdc4f48eee",
       "english": "Tibionavicular ligament",
       "side": "left",
@@ -18252,6 +20628,33 @@
           0.0215804073959589,
           1.1081099603325129,
           0.014285307377576828
+        ]
+      ]
+    },
+    {
+      "id": "za-a3be020bbbc5",
+      "english": "Sphenomandibular ligament",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 26,
+      "vertexSlots": 24,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 24,
+      "boundaryEdges": 20,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.03166635287925601,
+          1.5437273997396088,
+          0.00797581143362762
+        ],
+        [
+          0.04218688374385238,
+          1.56961084263526,
+          0.02270992947584823
         ]
       ]
     },
@@ -18472,6 +20875,33 @@
       ]
     },
     {
+      "id": "za-a5e294f1dd90",
+      "english": "Medial rectus muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1252,
+      "vertexSlots": 628,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 628,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.022546266671270132,
+          1.584945383558826,
+          0.03281920248612387
+        ],
+        [
+          -0.01253581652417779,
+          1.6015222035788588,
+          0.07322006346044645
+        ]
+      ]
+    },
+    {
       "id": "za-a5e6d90d77b9",
       "english": "Nuchal ligament",
       "side": null,
@@ -18495,6 +20925,33 @@
           0,
           1.5872849225997925,
           -0.04501398280262947
+        ]
+      ]
+    },
+    {
+      "id": "za-a5fa3f5d011b",
+      "english": "Palpebral part of orbicularis oculi",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 830,
+      "vertexSlots": 415,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 415,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04637182131409645,
+          1.5792004709225604,
+          0.06365777757147807
+        ],
+        [
+          -0.012750927358865738,
+          1.6033804108910994,
+          0.08090958472217082
         ]
       ]
     },
@@ -18607,6 +21064,33 @@
       ]
     },
     {
+      "id": "za-a6e479ce1c12",
+      "english": "Mentalis muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 166,
+      "vertexSlots": 97,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 97,
+      "boundaryEdges": 24,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0007851511879463091,
+          1.4980944763269997,
+          0.07534904240337213
+        ],
+        [
+          0.014478083626699056,
+          1.5128507972178646,
+          0.0824324502243936
+        ]
+      ]
+    },
+    {
       "id": "za-a71914347fd5",
       "english": "Flexor digiti minimi of foot",
       "side": "right",
@@ -18630,6 +21114,33 @@
           -0.10548437014222145,
           0.027218005619943142,
           0.06711100414395332
+        ]
+      ]
+    },
+    {
+      "id": "za-a74c6306255a",
+      "english": "Sphenoid bone",
+      "side": null,
+      "primitives": 1,
+      "triangles": 7308,
+      "vertexSlots": 3705,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 3648,
+      "boundaryEdges": 32,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 4,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.05441931635141373,
+          1.550312239676714,
+          0.0022515375167131424
+        ],
+        [
+          0.05441931635141373,
+          1.6202471889555454,
+          0.05545179359614849
         ]
       ]
     },
@@ -18823,6 +21334,33 @@
       ]
     },
     {
+      "id": "za-a89e2836ed71",
+      "english": "Superior oblique muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1750,
+      "vertexSlots": 877,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 877,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0405681561678648,
+          1.5954181195104455,
+          0.03388826289508627
+        ],
+        [
+          -0.012635467574000359,
+          1.6072981233261345,
+          0.07716887814393524
+        ]
+      ]
+    },
+    {
       "id": "za-a91b2397472d",
       "english": "Anterior meniscotibial ligament (Medial meniscus)",
       "side": "left",
@@ -18954,6 +21492,33 @@
           -0.023093141615390778,
           1.5195873528718948,
           -0.011190928518772125
+        ]
+      ]
+    },
+    {
+      "id": "za-aa436d2f1924",
+      "english": "Palatine bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1460,
+      "vertexSlots": 732,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 732,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0007845418030971718,
+          1.543977717463617,
+          0.024777855893575465
+        ],
+        [
+          0.02703838488753263,
+          1.5841304981055035,
+          0.05999702136502024
         ]
       ]
     },
@@ -19228,6 +21793,33 @@
       ]
     },
     {
+      "id": "za-aba0ffb23126",
+      "english": "Upper lateral incisor",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1454,
+      "vertexSlots": 729,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 729,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.015873477328568697,
+          1.5255939913913608,
+          0.07910855114459991
+        ],
+        [
+          -0.00650417385622859,
+          1.5537948571145535,
+          0.09015272743999958
+        ]
+      ]
+    },
+    {
       "id": "za-aba4074d7be1",
       "english": "Nucleus pulposus C7-T1",
       "side": null,
@@ -19251,6 +21843,33 @@
           0.0012709323112070764,
           1.4420715985284656,
           -0.01990128816799229
+        ]
+      ]
+    },
+    {
+      "id": "za-abc74f6a1f41",
+      "english": "Occipitalis muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 2602,
+      "vertexSlots": 1297,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1297,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.01484850012243999,
+          1.585156117444926,
+          -0.10470566328239883
+        ],
+        [
+          0.061436053946175906,
+          1.618202182009704,
+          -0.05813235192271157
         ]
       ]
     },
@@ -19305,6 +21924,33 @@
           -0.05006074160337448,
           0.8201771229505539,
           -0.02079012431204319
+        ]
+      ]
+    },
+    {
+      "id": "za-ac2287df247e",
+      "english": "Bucinator",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 884,
+      "vertexSlots": 444,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 444,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.035856335423886776,
+          1.5147165097296238,
+          0.04210114944726229
+        ],
+        [
+          -0.02087807096540928,
+          1.5510273873806,
+          0.0710115497931838
         ]
       ]
     },
@@ -19391,6 +22037,33 @@
       "representation": "schematic-open-surface",
       "verifiedAnatomicalVolume": false,
       "verifiedTissueThickness": false
+    },
+    {
+      "id": "za-aceda29658af",
+      "english": "Depressor septi nasi",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 276,
+      "vertexSlots": 140,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 140,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00004860405154660796,
+          1.5417116202236365,
+          0.08167172108207975
+        ],
+        [
+          0.01669590392505338,
+          1.557842719194671,
+          0.0892449541338995
+        ]
+      ]
     },
     {
       "id": "za-ad194d5f032c",
@@ -19551,6 +22224,33 @@
           -0.03734873980283737,
           0.43318144977092743,
           0.005058363080024719
+        ]
+      ]
+    },
+    {
+      "id": "za-adef6b509aa6",
+      "english": "Parietal bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 6886,
+      "vertexSlots": 3443,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 3443,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.007425181567668915,
+          1.5896922796964645,
+          -0.10056015849113464
+        ],
+        [
+          0.07428992539644241,
+          1.705363504588604,
+          0.04274305701255798
         ]
       ]
     },
@@ -19825,6 +22525,33 @@
       ]
     },
     {
+      "id": "za-afe74781d77a",
+      "english": "Anterior cells of ethmoid bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 136,
+      "vertexSlots": 72,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 72,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00506877560978336,
+          1.5803952357979028,
+          0.0547785758972168
+        ],
+        [
+          0.013151946116440882,
+          1.5959788080473096,
+          0.06279825419187546
+        ]
+      ]
+    },
+    {
       "id": "za-b0bb4f092e61",
       "english": "Distal phalanx of third finger of foot",
       "side": "right",
@@ -19902,6 +22629,33 @@
           -0.1381952054798603,
           1.3972001373767853,
           0.007931304164230824
+        ]
+      ]
+    },
+    {
+      "id": "za-b18e52d0e6eb",
+      "english": "Upper medial incisor",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1368,
+      "vertexSlots": 686,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 686,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.008846853859722614,
+          1.5262928111478686,
+          0.08061191579326987
+        ],
+        [
+          -0.00006142724305391312,
+          1.5520454747602344,
+          0.09320294531062245
         ]
       ]
     },
@@ -20176,6 +22930,87 @@
       ]
     },
     {
+      "id": "za-b3c460b729e4",
+      "english": "Major alar cartilage",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 344,
+      "vertexSlots": 174,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 174,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0000695172262851762,
+          1.548132761909396,
+          0.08703711734364429
+        ],
+        [
+          0.014849270177221874,
+          1.562315974133857,
+          0.11441265907096605
+        ]
+      ]
+    },
+    {
+      "id": "za-b484a60c2197",
+      "english": "Lateral temporomandibular ligament",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 24,
+      "vertexSlots": 20,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 20,
+      "boundaryEdges": 14,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.059773060493171215,
+          1.55759303458035,
+          0.007403205148875713
+        ],
+        [
+          -0.046651965007185936,
+          1.5789271853864193,
+          0.02000601962208748
+        ]
+      ]
+    },
+    {
+      "id": "za-b4b7394d987c",
+      "english": "Zygomaticus major muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 798,
+      "vertexSlots": 448,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 433,
+      "boundaryEdges": 72,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.02609440926116724,
+          1.5243294840111195,
+          0.050349526598169075
+        ],
+        [
+          0.05547741833824005,
+          1.5788588548889635,
+          0.07599503768174835
+        ]
+      ]
+    },
+    {
       "id": "za-b4bec7145684",
       "english": "Iliocostalis thoracis muscle",
       "side": "right",
@@ -20199,6 +23034,33 @@
           -0.03877707198262215,
           1.4399361312389374,
           -0.023259513080120087
+        ]
+      ]
+    },
+    {
+      "id": "za-b4f3d68e8b78",
+      "english": "Zygomatic bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1328,
+      "vertexSlots": 666,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 666,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.06232469342648983,
+          1.5537165775895119,
+          0.03270854987204075
+        ],
+        [
+          -0.03161672316491604,
+          1.60846558958292,
+          0.07167749665677547
         ]
       ]
     },
@@ -20446,6 +23308,33 @@
       ]
     },
     {
+      "id": "za-b72289064ee5",
+      "english": "Lower canine",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1276,
+      "vertexSlots": 640,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 640,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.008993338373262105,
+          1.5016523321589157,
+          0.06871157229572765
+        ],
+        [
+          0.016699333707916486,
+          1.5278284254214245,
+          0.0839158636415522
+        ]
+      ]
+    },
+    {
       "id": "za-b733d3def22e",
       "english": "Nucleus pulposus C5-C6",
       "side": null,
@@ -20604,6 +23493,33 @@
           0.008774783061314864,
           1.5027911941477428,
           0.028255258622024437
+        ]
+      ]
+    },
+    {
+      "id": "za-b8a7cb11b790",
+      "english": "Upper second premolar",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1554,
+      "vertexSlots": 779,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 779,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.02762033650651574,
+          1.529687493108213,
+          0.06413287064060569
+        ],
+        [
+          -0.018529134336858988,
+          1.554996102117002,
+          0.07156185805797577
         ]
       ]
     },
@@ -20905,6 +23821,33 @@
       ]
     },
     {
+      "id": "za-baa50a3291f4",
+      "english": "Temporalis muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 10260,
+      "vertexSlots": 5517,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 5515,
+      "boundaryEdges": 780,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0377586665080164,
+          1.5460234334017566,
+          -0.050530591943766925
+        ],
+        [
+          0.07683270512836671,
+          1.6619880192585472,
+          0.06338128488851943
+        ]
+      ]
+    },
+    {
       "id": "za-bb19dc35992b",
       "english": "Subscapularis muscle",
       "side": "right",
@@ -20928,6 +23871,33 @@
           -0.06513641774654388,
           1.3920843973755836,
           -0.0013653859496116638
+        ]
+      ]
+    },
+    {
+      "id": "za-bb6361e80ae8",
+      "english": "Zygomaticus minor muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 432,
+      "vertexSlots": 254,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 254,
+      "boundaryEdges": 72,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.05034351721405983,
+          1.5466758571565151,
+          0.06004743464291096
+        ],
+        [
+          -0.012736860662698746,
+          1.5773134715855122,
+          0.08466174080967903
         ]
       ]
     },
@@ -21067,6 +24037,33 @@
       ]
     },
     {
+      "id": "za-bcb50f11cf4b",
+      "english": "Levator palpebrae superioris",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 2152,
+      "vertexSlots": 1078,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1078,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.013157871562479384,
+          1.5934014438028663,
+          0.03125472072136585
+        ],
+        [
+          0.043299566099779474,
+          1.609248972521336,
+          0.07730449717480292
+        ]
+      ]
+    },
+    {
       "id": "za-bcf4932a0240",
       "english": "Humerus",
       "side": "right",
@@ -21117,6 +24114,33 @@
           -0.03280904426214594,
           0.4543069841771267,
           -0.012931516911333249
+        ]
+      ]
+    },
+    {
+      "id": "za-bcfc7448ea8a",
+      "english": "Vomer",
+      "side": null,
+      "primitives": 1,
+      "triangles": 1022,
+      "vertexSlots": 513,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 513,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0051185308538115315,
+          1.5574067465312127,
+          0.020958366094343303
+        ],
+        [
+          0.005118665895600949,
+          1.5803592567661502,
+          0.08210162923286371
         ]
       ]
     },
@@ -21198,6 +24222,33 @@
           0.033219512813557284,
           0.8628289033209924,
           0.01814787404113393
+        ]
+      ]
+    },
+    {
+      "id": "za-bdf5cd4d46cf",
+      "english": "Levator nasolabialis",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 172,
+      "vertexSlots": 117,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 117,
+      "boundaryEdges": 58,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.016088769771158695,
+          1.5575616620481014,
+          0.07715029083192348
+        ],
+        [
+          -0.01063648541457951,
+          1.5866674594581127,
+          0.08437777310609818
         ]
       ]
     },
@@ -21337,6 +24388,33 @@
       ]
     },
     {
+      "id": "za-bf646586600a",
+      "english": "Orbital part of orbicularis oculi",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 2390,
+      "vertexSlots": 1195,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1195,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.009088751808534745,
+          1.5674147648746577,
+          0.05550181672427307
+        ],
+        [
+          0.053365732182033554,
+          1.6171293007508223,
+          0.08686348563863386
+        ]
+      ]
+    },
+    {
       "id": "za-bf84fa47e064",
       "english": "Semitendinosus muscle",
       "side": "left",
@@ -21468,6 +24546,33 @@
           0.243711271892667,
           0.8721937081287576,
           0.02753512216557536
+        ]
+      ]
+    },
+    {
+      "id": "za-c100f215d9cd",
+      "english": "Lower lateral incisor",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1040,
+      "vertexSlots": 522,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 522,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.004216720450657352,
+          1.5028984601348336,
+          0.07134458190020057
+        ],
+        [
+          0.011909222782242213,
+          1.527421954072653,
+          0.08779088888043261
         ]
       ]
     },
@@ -21988,6 +25093,33 @@
       ]
     },
     {
+      "id": "za-c56ad02dbb1e",
+      "english": "Hyoglossus muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1424,
+      "vertexSlots": 714,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 714,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.013022504514083266,
+          1.4985250001773238,
+          0.03354009706526995
+        ],
+        [
+          -0.0051468852907419205,
+          1.5238597122952342,
+          0.06425332650542259
+        ]
+      ]
+    },
+    {
       "id": "za-c600cd3356ab",
       "english": "Cricopharyngeal ligament",
       "side": "right",
@@ -22420,6 +25552,33 @@
       ]
     },
     {
+      "id": "za-c9913c8dd8b3",
+      "english": "Lateral process of nasal septal cartilage",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 347,
+      "vertexSlots": 176,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 174,
+      "boundaryEdges": 2,
+      "nonmanifoldEdges": 1,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.013153080828487873,
+          1.5537625700235367,
+          0.08208388648927212
+        ],
+        [
+          0.000011965632438659668,
+          1.58674281463027,
+          0.11565844528377056
+        ]
+      ]
+    },
+    {
       "id": "za-c9a9538880f5",
       "english": "Inguinal ligament",
       "side": "left",
@@ -22528,6 +25687,87 @@
       ]
     },
     {
+      "id": "za-ca93dafc2abc",
+      "english": "Upper first molar tooth",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 2176,
+      "vertexSlots": 1090,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1090,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.029819782357662916,
+          1.5317078670486808,
+          0.05351352086290717
+        ],
+        [
+          -0.018493065144866705,
+          1.5556734642013907,
+          0.06477148504927754
+        ]
+      ]
+    },
+    {
+      "id": "za-ca9498dbeccc",
+      "english": "Inferior rectus muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1736,
+      "vertexSlots": 870,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 870,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.013394140395266318,
+          1.576501610244889,
+          0.030912473040175862
+        ],
+        [
+          0.035608708222576335,
+          1.5983011591133771,
+          0.07236054144962858
+        ]
+      ]
+    },
+    {
+      "id": "za-ca9c43b31448",
+      "english": "Procerus muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 546,
+      "vertexSlots": 309,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 309,
+      "boundaryEdges": 72,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.000042791369605166274,
+          1.5937745533791177,
+          0.08336269221051265
+        ],
+        [
+          0.023252854919190602,
+          1.6303153192561075,
+          0.08944947160043293
+        ]
+      ]
+    },
+    {
       "id": "za-caf3052e2283",
       "english": "Proximal phalanx of second finger of foot",
       "side": "right",
@@ -22578,6 +25818,33 @@
           0.23231052860272353,
           1.0780622742476345,
           -0.030343988400999552
+        ]
+      ]
+    },
+    {
+      "id": "za-cb5a1d19793b",
+      "english": "Lower second molar tooth",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1676,
+      "vertexSlots": 840,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 840,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0321368514560163,
+          1.5185959693044424,
+          0.03762785438448191
+        ],
+        [
+          -0.020321266259998083,
+          1.5368388053029776,
+          0.05376836005598307
         ]
       ]
     },
@@ -22825,6 +26092,33 @@
       ]
     },
     {
+      "id": "za-cd8fea9c508c",
+      "english": "Levator palpebrae superioris",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 2152,
+      "vertexSlots": 1078,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 1078,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04329957440495491,
+          1.5934014418928117,
+          0.03125472057410752
+        ],
+        [
+          -0.013157878071069717,
+          1.6092489737307283,
+          0.07730449709355025
+        ]
+      ]
+    },
+    {
       "id": "za-cdbfb237d6bb",
       "english": "Scapula",
       "side": "right",
@@ -22933,6 +26227,60 @@
       ]
     },
     {
+      "id": "za-ce456d2708bf",
+      "english": "Articular capsule of temporomandibular joint",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 200,
+      "vertexSlots": 125,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 125,
+      "boundaryEdges": 50,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.03457053176233893,
+          1.5666815912672185,
+          0.0009196226621268327
+        ],
+        [
+          0.057617622223841924,
+          1.5799305365722727,
+          0.015707571172867835
+        ]
+      ]
+    },
+    {
+      "id": "za-ce653b612ea4",
+      "english": "Lower first molar tooth",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 4508,
+      "vertexSlots": 2260,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2260,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.01677140144953726,
+          1.5134276936160278,
+          0.04991575548904136
+        ],
+        [
+          0.02883764610434092,
+          1.5326723667675703,
+          0.06466848425335457
+        ]
+      ]
+    },
+    {
       "id": "za-ceb020927dae",
       "english": "Plantar metatarsal ligaments",
       "side": "right",
@@ -23014,6 +26362,33 @@
       ]
     },
     {
+      "id": "za-cf9fb2aff4eb",
+      "english": "Lateral rectus muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1600,
+      "vertexSlots": 802,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 802,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04411375196650624,
+          1.5856669364099256,
+          0.03092727447881714
+        ],
+        [
+          -0.017668157815933228,
+          1.6021335454791479,
+          0.07070313898468385
+        ]
+      ]
+    },
+    {
       "id": "za-cfb0a2a0fed8",
       "english": "Vertebra L5",
       "side": null,
@@ -23091,6 +26466,33 @@
           -0.0358326556161046,
           0.9687185510993004,
           -0.05000860244035721
+        ]
+      ]
+    },
+    {
+      "id": "za-d035fdf1a29f",
+      "english": "Trochlea of superior oblique muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 192,
+      "vertexSlots": 98,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 98,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.012479219716205747,
+          1.605103621241855,
+          0.07397742227008577
+        ],
+        [
+          0.016702700285122496,
+          1.6087167466592054,
+          0.07691747679470014
         ]
       ]
     },
@@ -23635,6 +27037,33 @@
       ]
     },
     {
+      "id": "za-d66cbb99585f",
+      "english": "Lower first premolar",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1222,
+      "vertexSlots": 613,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 613,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.02076256601139903,
+          1.506491269916296,
+          0.06395166227594018
+        ],
+        [
+          -0.012982247862964869,
+          1.5284528397023678,
+          0.07777633843943477
+        ]
+      ]
+    },
+    {
       "id": "za-d67398f574ba",
       "english": "Rectus posterior minor capitis muscle",
       "side": "right",
@@ -23854,6 +27283,33 @@
       ]
     },
     {
+      "id": "za-d8408d0c6e40",
+      "english": "Deep part of masseter",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 994,
+      "vertexSlots": 541,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 541,
+      "boundaryEdges": 88,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0347758875280495,
+          1.5134064390184916,
+          0.009496613238095628
+        ],
+        [
+          0.06181011085901067,
+          1.5788924265113131,
+          0.044108370815217554
+        ]
+      ]
+    },
+    {
       "id": "za-d848095caad9",
       "english": "Flexor hallucis longus",
       "side": "right",
@@ -23989,6 +27445,60 @@
       ]
     },
     {
+      "id": "za-d8e345dda751",
+      "english": "Inferior rectus muscle",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1736,
+      "vertexSlots": 870,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 870,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03560871630907059,
+          1.5765016088097066,
+          0.030912473205299443
+        ],
+        [
+          -0.013394147157669067,
+          1.5983011625806727,
+          0.07236054149650807
+        ]
+      ]
+    },
+    {
+      "id": "za-d8fda91a91ab",
+      "english": "Upper medial incisor",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1368,
+      "vertexSlots": 686,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 686,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00006142724305391312,
+          1.5262928119048793,
+          0.08061191753907274
+        ],
+        [
+          0.008846853859722614,
+          1.5520454738922895,
+          0.0932029443188033
+        ]
+      ]
+    },
+    {
       "id": "za-d915b46c55a4",
       "english": "Dorsal ulnocarpal ligament",
       "side": "right",
@@ -24012,6 +27522,33 @@
           -0.2421014877036214,
           0.8587513067759573,
           0.013857373734936118
+        ]
+      ]
+    },
+    {
+      "id": "za-d929ce5375b3",
+      "english": "Lower first premolar",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1222,
+      "vertexSlots": 613,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 613,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.012982247409491443,
+          1.5064912708803062,
+          0.06395165650130429
+        ],
+        [
+          0.020762566485411804,
+          1.5284528393656436,
+          0.07777634142526667
         ]
       ]
     },
@@ -24205,6 +27742,33 @@
       ]
     },
     {
+      "id": "za-dac6056626cc",
+      "english": "Superior tarsus",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 178,
+      "vertexSlots": 91,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 91,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04395843297243118,
+          1.59188344995715,
+          0.06882331297690661
+        ],
+        [
+          -0.0184153001755476,
+          1.6033323076670365,
+          0.07710317293806215
+        ]
+      ]
+    },
+    {
       "id": "za-db058d9c1100",
       "english": "Costal cartilage of ninth rib",
       "side": "left",
@@ -24309,6 +27873,33 @@
           0.1467619240283966,
           0.9792015714117737,
           -0.014893389914099803
+        ]
+      ]
+    },
+    {
+      "id": "za-db74fa732312",
+      "english": "Occipital bone",
+      "side": null,
+      "primitives": 2,
+      "triangles": 7531,
+      "vertexSlots": 3882,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 3779,
+      "boundaryEdges": 142,
+      "nonmanifoldEdges": 25,
+      "degenerateTrianglesAfterWeld": 66,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.05963079258799553,
+          1.5507360808551311,
+          -0.10337518900632858
+        ],
+        [
+          0.05963079258799553,
+          1.655190970748663,
+          0.012472260743379593
         ]
       ]
     },
@@ -24529,6 +28120,33 @@
       ]
     },
     {
+      "id": "za-de1eb7694f5e",
+      "english": "Inferior tarsus",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 108,
+      "vertexSlots": 56,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 56,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.043245891109108925,
+          1.5797778118235846,
+          0.06828868179381403
+        ],
+        [
+          -0.01949789933860302,
+          1.5875405192855405,
+          0.07685351315203431
+        ]
+      ]
+    },
+    {
       "id": "za-de22fedf8db3",
       "english": "Eleventh rib",
       "side": "right",
@@ -24579,6 +28197,33 @@
           -0.054685698061511884,
           0.06255845637190402,
           -0.015868443995714188
+        ]
+      ]
+    },
+    {
+      "id": "za-de51bcc0183f",
+      "english": "Temporal bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 14094,
+      "vertexSlots": 7051,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 7051,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.07242035120725632,
+          1.548726499080658,
+          -0.051563979126513004
+        ],
+        [
+          -0.009647443890571594,
+          1.623143620789051,
+          0.04478308465331793
         ]
       ]
     },
@@ -24745,6 +28390,33 @@
       ]
     },
     {
+      "id": "za-e0adcf724430",
+      "english": "Posterior cells of ethmoid bone",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 216,
+      "vertexSlots": 114,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 114,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00421588475296124,
+          1.581522441315864,
+          0.03931012835416085
+        ],
+        [
+          0.014050360026943758,
+          1.5947188755138075,
+          0.04810103231084292
+        ]
+      ]
+    },
+    {
       "id": "za-e0f384f5534a",
       "english": "Serratus posterior inferior muscle",
       "side": "left",
@@ -24849,6 +28521,33 @@
           -0.1383853703737259,
           1.409147460013628,
           -0.001927361823618412
+        ]
+      ]
+    },
+    {
+      "id": "za-e1bcca01c624",
+      "english": "Depressor septi nasi",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 276,
+      "vertexSlots": 140,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 140,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.016695917584002018,
+          1.5417116186581552,
+          0.081671719904989
+        ],
+        [
+          -0.000048619695007801056,
+          1.5578427221626043,
+          0.0892449552193284
         ]
       ]
     },
@@ -25393,6 +29092,33 @@
       ]
     },
     {
+      "id": "za-e5566e083785",
+      "english": "Orbicularis oris muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1880,
+      "vertexSlots": 940,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 940,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.0000375986278098317,
+          1.5086880547109223,
+          0.06751629790310587
+        ],
+        [
+          0.03214254167735264,
+          1.554081600593234,
+          0.09512149627953007
+        ]
+      ]
+    },
+    {
       "id": "za-e6c7801fd264",
       "english": "Proximal phalanx of first finger of hand",
       "side": "right",
@@ -25551,6 +29277,33 @@
           0.3216507965545399,
           0.9477503021221484,
           0.047603977657555904
+        ]
+      ]
+    },
+    {
+      "id": "za-e8c01f01b797",
+      "english": "Medial pterygoid muscle",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 496,
+      "vertexSlots": 250,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 249,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.014517204728953292,
+          1.526850091157891,
+          0.01126728739268553
+        ],
+        [
+          0.03699999902970047,
+          1.5760664825019488,
+          0.04193027947656877
         ]
       ]
     },
@@ -25906,6 +29659,33 @@
       ]
     },
     {
+      "id": "za-eb2d3220a099",
+      "english": "Deep part of masseter",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 994,
+      "vertexSlots": 541,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 541,
+      "boundaryEdges": 88,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0618100818246603,
+          1.5134064257144928,
+          0.009496605023741722
+        ],
+        [
+          -0.034775856882333755,
+          1.5788924396038055,
+          0.04410838149487972
+        ]
+      ]
+    },
+    {
       "id": "za-eb3a5b3df5ad",
       "english": "Articular disc of sternoclavicular joint",
       "side": "left",
@@ -25963,6 +29743,33 @@
       ]
     },
     {
+      "id": "za-eb68f00f07b7",
+      "english": "Nasal septal cartilage",
+      "side": null,
+      "primitives": 1,
+      "triangles": 360,
+      "vertexSlots": 182,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 182,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.0025010942481458187,
+          1.551066461019218,
+          0.07350069843232632
+        ],
+        [
+          0.0024239039048552513,
+          1.5854537338018417,
+          0.11576693318784237
+        ]
+      ]
+    },
+    {
       "id": "za-eb77203a0b06",
       "english": "Pisometacarpal ligament",
       "side": "right",
@@ -26013,6 +29820,33 @@
           -0.03194110840559006,
           0.8843053132295609,
           0.018758699297904968
+        ]
+      ]
+    },
+    {
+      "id": "za-ebb4e50743b9",
+      "english": "Sinus of frontal bone",
+      "side": null,
+      "primitives": 1,
+      "triangles": 1504,
+      "vertexSlots": 770,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 770,
+      "boundaryEdges": 32,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.025192927569150925,
+          1.6013795733451843,
+          0.07443621568381786
+        ],
+        [
+          0.025192927569150925,
+          1.6326143145561218,
+          0.08605851605534554
         ]
       ]
     },
@@ -26256,6 +30090,33 @@
           0.02606958442042967,
           1.5449367706579782,
           0.00474968863520773
+        ]
+      ]
+    },
+    {
+      "id": "za-edf15c8fb313",
+      "english": "Levator labii superioris",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 540,
+      "vertexSlots": 272,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 272,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03882812149822712,
+          1.5473109018057585,
+          0.06900649284943938
+        ],
+        [
+          -0.011837810277938843,
+          1.576247638091445,
+          0.08388198493048549
         ]
       ]
     },
@@ -26506,6 +30367,33 @@
       ]
     },
     {
+      "id": "za-f00a764d68e2",
+      "english": "Upper second molar tooth",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 1844,
+      "vertexSlots": 924,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 924,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.02950119460001588,
+          1.5351909147575498,
+          0.04588128626346588
+        ],
+        [
+          -0.017861706670373678,
+          1.5573178278282285,
+          0.055486767552793026
+        ]
+      ]
+    },
+    {
       "id": "za-f08db2401b5a",
       "english": "Longissimus thoracis muscle",
       "side": "right",
@@ -26583,6 +30471,33 @@
           0.23464280503455082,
           1.3215359255232175,
           -0.030657164311328543
+        ]
+      ]
+    },
+    {
+      "id": "za-f0f8c56e2bac",
+      "english": "Risorius muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 592,
+      "vertexSlots": 353,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 351,
+      "boundaryEdges": 112,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.048419198021292686,
+          1.5150467166677117,
+          0.04384471150115132
+        ],
+        [
+          -0.02869313396513462,
+          1.5422105127945542,
+          0.07136745937168598
         ]
       ]
     },
@@ -26830,6 +30745,60 @@
       ]
     },
     {
+      "id": "za-f3d2ad6fbf77",
+      "english": "Lower second molar tooth",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 1676,
+      "vertexSlots": 840,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 840,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.020321265532369626,
+          1.5185959692558084,
+          0.03762785081183566
+        ],
+        [
+          0.03213685213691536,
+          1.5368388062279272,
+          0.05376836208021012
+        ]
+      ]
+    },
+    {
+      "id": "za-f3dba599bfa4",
+      "english": "Frontalis muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 5874,
+      "vertexSlots": 2962,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2962,
+      "boundaryEdges": 58,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.00004271219427010031,
+          1.6042183491438757,
+          0.04262732825532282
+        ],
+        [
+          0.058486249417994185,
+          1.6743444346995509,
+          0.08951075429750156
+        ]
+      ]
+    },
+    {
       "id": "za-f41079ad058d",
       "english": "Extensor hallucis longus",
       "side": "left",
@@ -26961,6 +30930,33 @@
           -0.23493796214461327,
           1.0267459899187088,
           0.031213577836751938
+        ]
+      ]
+    },
+    {
+      "id": "za-f5764a0b5a65",
+      "english": "Depressor anguli oris",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 594,
+      "vertexSlots": 345,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 342,
+      "boundaryEdges": 86,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.03605095576494932,
+          1.497995786368847,
+          0.05071167927235365
+        ],
+        [
+          -0.011714343912899494,
+          1.539646439254284,
+          0.07468819711357355
         ]
       ]
     },
@@ -27103,6 +31099,33 @@
       ]
     },
     {
+      "id": "za-f706396f469f",
+      "english": "Mentalis muscle",
+      "side": "right",
+      "primitives": 2,
+      "triangles": 166,
+      "vertexSlots": 97,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 97,
+      "boundaryEdges": 24,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014478097669780254,
+          1.4980944744311273,
+          0.07534904079511762
+        ],
+        [
+          -0.0007851668633520603,
+          1.5128507995977998,
+          0.08243245119228959
+        ]
+      ]
+    },
+    {
       "id": "za-f70dc9dbfdab",
       "english": "Plantaris muscle",
       "side": "right",
@@ -27180,6 +31203,33 @@
           -0.032730745151638985,
           0.8114025890827179,
           -0.017291907221078873
+        ]
+      ]
+    },
+    {
+      "id": "za-f7982d336331",
+      "english": "Middle cells of ethmoid bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 160,
+      "vertexSlots": 84,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 84,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014561830173236423,
+          1.5805981374567273,
+          0.04713168648482711
+        ],
+        [
+          -0.005037148093245958,
+          1.5947307587186235,
+          0.056062370827140134
         ]
       ]
     },
@@ -27288,6 +31338,33 @@
           -0.00300530344247818,
           1.2582529783248901,
           0.11968841776251793
+        ]
+      ]
+    },
+    {
+      "id": "za-f8eaf5566987",
+      "english": "Zygomaticus minor muscle",
+      "side": "left",
+      "primitives": 2,
+      "triangles": 432,
+      "vertexSlots": 254,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 254,
+      "boundaryEdges": 72,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.012736844046142837,
+          1.5466758601921817,
+          0.060047440727283866
+        ],
+        [
+          0.05034350508056673,
+          1.5773134685974346,
+          0.08466173702120497
         ]
       ]
     },
@@ -27427,6 +31504,33 @@
       ]
     },
     {
+      "id": "za-fa2248fabc8c",
+      "english": "Pterygospinous ligament",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 2,
+      "vertexSlots": 4,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 4,
+      "boundaryEdges": 4,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.030784836038947105,
+          1.5643639732152224,
+          0.008865253068506718
+        ],
+        [
+          -0.028124905191361904,
+          1.569340877700597,
+          0.02205461449921131
+        ]
+      ]
+    },
+    {
       "id": "za-fa8cbe62aff3",
       "english": "Opponens pollicis muscle",
       "side": "right",
@@ -27531,6 +31635,33 @@
           -0.00489210058003664,
           1.4681631987914443,
           0.020424528047442436
+        ]
+      ]
+    },
+    {
+      "id": "za-fb13b8ec6a77",
+      "english": "Maxilla",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 4798,
+      "vertexSlots": 2399,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2399,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.000212492782859508,
+          1.5374439917553333,
+          0.040060480738506696
+        ],
+        [
+          0.04603411958675019,
+          1.6052191085938283,
+          0.09387350792080294
         ]
       ]
     },
@@ -27666,6 +31797,60 @@
           0.0062161863922715055,
           1.004307463957994,
           0.0018838222204434762
+        ]
+      ]
+    },
+    {
+      "id": "za-fcbfdde3f221",
+      "english": "Superior tarsus",
+      "side": "left",
+      "primitives": 1,
+      "triangles": 178,
+      "vertexSlots": 91,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 91,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          0.018415293534282617,
+          1.5918834519410199,
+          0.06882331407440163
+        ],
+        [
+          0.043958424808676844,
+          1.6033323058689888,
+          0.07710317254452992
+        ]
+      ]
+    },
+    {
+      "id": "za-fccfaee39413",
+      "english": "Articular disc of temporomandibular joint",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 288,
+      "vertexSlots": 146,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 146,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.05441931076347828,
+          1.568116900511086,
+          0.0009921370074152946
+        ],
+        [
+          -0.03510315157473087,
+          1.5815873956307769,
+          0.014927171636372805
         ]
       ]
     },
@@ -27886,6 +32071,33 @@
       ]
     },
     {
+      "id": "za-fe74df8d864e",
+      "english": "Maxilla",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 4798,
+      "vertexSlots": 2399,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 2399,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.04603411629796028,
+          1.5374439842998981,
+          0.04006048105657101
+        ],
+        [
+          0.00021249055862426758,
+          1.6052191145718098,
+          0.09387351013720036
+        ]
+      ]
+    },
+    {
       "id": "za-fe9880256b81",
       "english": "Interclavicular ligament",
       "side": "right",
@@ -27909,6 +32121,60 @@
           -1.5366822481155396e-8,
           1.409158787690103,
           0.04238035809248686
+        ]
+      ]
+    },
+    {
+      "id": "za-ffa1378d13a3",
+      "english": "Levator anguli oris",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 330,
+      "vertexSlots": 165,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 165,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.029055356048047543,
+          1.5424469728022814,
+          0.06786009948700666
+        ],
+        [
+          -0.012008772231638432,
+          1.5624968092888594,
+          0.08343932311981916
+        ]
+      ]
+    },
+    {
+      "id": "za-ffe676dbde55",
+      "english": "Inferior nasal concha bone",
+      "side": "right",
+      "primitives": 1,
+      "triangles": 476,
+      "vertexSlots": 238,
+      "nonfinitePositionComponents": 0,
+      "nonfiniteWorldPositionComponents": 0,
+      "weldedVertices": 238,
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "degenerateTrianglesAfterWeld": 0,
+      "invalidPositionTriangles": 0,
+      "worldBounds": [
+        [
+          -0.014880184549838305,
+          1.5521033210679889,
+          0.04078771732747555
+        ],
+        [
+          -0.004424044396728277,
+          1.574622611515224,
+          0.07542936317622662
         ]
       ]
     }
