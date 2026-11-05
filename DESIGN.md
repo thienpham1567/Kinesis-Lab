@@ -165,7 +165,7 @@ Desktop navigation appears at (1024px); below that, a five-column bottom navigat
 
 ## Elevation & Depth
 
-Depth combines theme-toned surfaces, thin borders and soft shadows. Panels have a small contact shadow and a broad low-opacity lift; primary buttons have a compact action shadow; tabs use inset structure and a selected underline. The toolbar uses a tonal gradient, broad structural shadow and a three-pixel palette spectrum. These established gradients belong to this identity. The mobile navigation adds translucent paper, blur (12px) and an upward shadow. Floating study chat has stronger elevation to distinguish it from document content.
+Depth combines theme-toned surfaces, thin borders and soft shadows. Panels have a small contact shadow and a broad low-opacity lift; primary buttons have a compact action shadow; tabs use inset structure and a selected underline. The toolbar uses a tonal gradient, broad structural shadow and a three-pixel palette spectrum. These established gradients belong to this identity. The mobile navigation adds translucent paper, blur (12px) and an upward shadow. The study assistant uses a right-side drawer: a quiet seam in docked desktop mode and a soft directional shadow/backdrop in modal mode. It follows the existing paper, ink and control vocabulary.
 
 Exact shadow expressions are recorded in the sidecar from `globals.css`. State transitions commonly last (150ms); the catch-up arrival animation lasts (180ms) with `cubic-bezier(0.16, 1, 0.3, 1)`. Reduced-motion CSS removes animation and retains brief color, border, shadow and opacity transitions (100ms). These are observed implementation behaviors, not a new motion doctrine.
 
@@ -215,3 +215,9 @@ Desktop links share a dark toolbar, secondary toolbar ink at rest and white text
 - Don't add a decorative eyebrow to PageHeading or turn leftover kicker styling into a future component pattern.
 - Don't replace shared controls with one-off shapes or remove focus and state distinctions.
 - Don't infer universal accessibility or medical validation from these extracted tokens and snippets.
+
+## Study assistant drawer — 2026-11-05
+
+The toolbar assistant button opens a dedicated right column at viewport widths of 1280px and above (460–520px, bounded by available width). Smaller viewports use a native modal dialog, full width below 640px. The heading, model control, Q&A/library destinations and composer remain available while answer content scrolls independently. Assistant prose uses 14px; editable mobile controls use 16px. Opening/closing uses a short horizontal reveal, while the reading column changes width once so PDF pages need not repeatedly re-render during the transition. Reduced-motion CSS retains brief opacity/state feedback without the slide.
+
+The closed dialog remains mounted but inert; modal keyboard boundaries include source disclosure summaries. Docked reading remains interactive. Native close/backdrop/Escape return focus to the launcher when focus was inside the drawer; Escape from the reading surface retains that reading focus. NCSF chapter/lesson controls collapse according to their container width, and the PDF reader retains its page through drawer resizing, including a pending jump. Actual checks and remaining coverage limits: [drawer review](docs/superpowers/reviews/2026-11-05-study-chat-drawer.md).
