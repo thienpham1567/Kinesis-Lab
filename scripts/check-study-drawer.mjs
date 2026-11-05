@@ -51,13 +51,6 @@ test("study pages expose a labeled toolbar launcher tied to the drawer", () => {
   assert.doesNotMatch(html, /study-chat-launcher/);
 });
 
-test("consultation retains its dedicated chat without a second study launcher", () => {
-  const html = renderToStaticMarkup(
-    React.createElement(shell("/consult"), null, "Consultation"),
-  );
-  assert.doesNotMatch(html, /aria-controls="study-assistant-drawer"/);
-});
-
 test("closed drawer uses a native inert dialog and keeps its content mounted", () => {
   const { StudyChatDrawer } = component(
     "src/components/study-chat/StudyChatDrawer.tsx",

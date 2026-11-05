@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
 import { MusclePlateCredit } from "./MusclePlateCredit";
 import { ANATOMY_REGION_EVIDENCE } from "@/lib/clinical/evidence-anatomy";
@@ -860,16 +859,7 @@ export function BodyMapExplorer({
               >
                 Hỏi AI chuyên sâu vùng này
               </button>
-            ) : (
-              <Link
-                href={`/consult?prompt=${encodeURIComponent(activeRegion.sampleAiPrompt)}${
-                  client?.id ? `&clientId=${encodeURIComponent(client.id)}` : ""
-                }`}
-                className="rounded-md bg-cobalt px-4 py-2 font-display text-xs font-semibold text-on-cobalt hover:opacity-95"
-              >
-                Đưa vào Bàn Tư vấn AI
-              </Link>
-            )}
+            ) : null}
           </div>
 
           {/* Client Specific Injury Overlay if present */}

@@ -483,9 +483,6 @@ export default function Atlas3DExplorer({
   }
 
   const bundle = manifest.bundles[area];
-  const prompt = selected
-    ? `Giải thích giải phẫu và vai trò vận động của ${selected.english}${selected.latin ? ` (${selected.latin})` : ""}${selected.side === "left" ? " bên trái" : selected.side === "right" ? " bên phải" : ""}. Liên hệ với nhóm cơ và các bài tập trong phạm vi PT. Đây là yêu cầu tra cứu cấu trúc, chưa có hồ sơ hay triệu chứng học viên.`
-    : "";
 
   const structureList = (
     <>
@@ -651,13 +648,6 @@ export default function Atlas3DExplorer({
             )}
           </div>
           <div className="space-y-2 border-t border-rule pt-3">
-            <Link
-              href={`/consult?prompt=${encodeURIComponent(prompt)}`}
-              className="button-primary w-full text-center"
-            >
-              <Icon name="message" className="size-4" />
-              Hỏi trợ lý về cấu trúc
-            </Link>
             <button
               type="button"
               className="button-secondary w-full"

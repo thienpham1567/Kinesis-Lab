@@ -11,6 +11,7 @@ import type {
   MovementSourceId,
 } from "@/lib/clinical/movement-sources";
 import { ROM_MOVEMENTS } from "@/lib/clinical/rom-norms";
+import { MovementAnatomy } from "./MovementAnatomy";
 import { ReadingProgress } from "./ReadingProgress";
 
 export function MovementSourceLinks({
@@ -216,6 +217,17 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
           </figure>
         ) : null}
       </div>
+
+      <MovementAnatomy
+        topicId={topic.id}
+        regions={topic.anatomy.regions}
+        note={
+          <>
+            {topic.anatomy.note}
+            <Attribution block={topic.anatomy} topic={topic} />
+          </>
+        }
+      />
 
       {topic.parts.map((part) => (
         <Section key={part.label} title={part.label}>

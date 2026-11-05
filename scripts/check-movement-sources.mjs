@@ -13,7 +13,7 @@ const root = path.resolve(import.meta.dirname, ".."),
   cache = new Map();
 function load(relative) {
   let file = path.resolve(root, relative);
-  if (!path.extname(file)) file += ".ts";
+  if (!path.extname(file)) file += existsSync(`${file}.ts`) ? ".ts" : ".tsx";
   if (cache.has(file)) return cache.get(file);
   const exports = {};
   cache.set(file, exports);
@@ -30,7 +30,10 @@ function load(relative) {
     {
       exports,
       require: (id) =>
-        id.startsWith(".")
+        // WebGL viewer is browser-only; this check renders text and sources.
+        id.endsWith("/ContextualAnatomyViewer")
+          ? { ContextualAnatomyViewer: () => null }
+          : id.startsWith(".")
           ? load(path.relative(root, path.resolve(path.dirname(file), id)))
           : id.startsWith("@/")
             ? load(`src/${id.slice(2)}`)
@@ -153,7 +156,6 @@ for (const topic of HANDBOOK) {
     );
 }
 for (const [name, sha] of [
-  ["squat-lab-lorenzetti-2018.png", "393377391076f60e6909b02cc426578f6b471ad5"],
   [
     "flexion-extension-openstax.jpg",
     "eb7db76eeb39bf10dfaaaed3dfc51cfcd5387bd5",

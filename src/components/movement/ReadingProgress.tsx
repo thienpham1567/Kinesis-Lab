@@ -5,6 +5,7 @@ import { readingPosition } from "@/lib/ui/reading-position";
 
 const LINKS = [
   { hash: "key", label: "Kiến thức trọng tâm" },
+  { hash: "3d", label: "3D" },
   { hash: "apply", label: "Áp dụng" },
   { hash: "quiz", label: "Tự kiểm tra" },
   { hash: "sources", label: "Nguồn" },

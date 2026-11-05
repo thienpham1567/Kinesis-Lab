@@ -3,6 +3,7 @@ import {
   type MovementSource,
   type MovementSourceId,
 } from "./movement-sources";
+import type { AnatomyRegionId } from "./anatomy-atlas";
 
 export type Cited = { sourceIds?: MovementSourceId[]; authored?: boolean };
 export type HandbookItem = Cited & { lead?: string; text: string };
@@ -45,6 +46,8 @@ export type HandbookTopic = Cited & {
   quiz: (Cited & { q: string; a: string })[];
   sources: MovementSource[];
   figure?: HandbookFigure;
+  /** Catalog regions the tab text names; navigation only, not a movement or measurement claim. */
+  anatomy: Cited & { regions: AnatomyRegionId[]; note: string };
 };
 export const HANDBOOK_LESSON: HandbookItem[] = [
   {
@@ -92,23 +95,6 @@ export const HANDBOOK: HandbookTopic[] = [
         sourceIds: ["bahr"],
       },
     ],
-    figure: {
-      src: "/movement/squat-lab-lorenzetti-2018.png",
-      width: 896,
-      height: 857,
-      title: "Squat được đo như thế nào?",
-      alt: "Hình 1 nghiên cứu Lorenzetti: người tham gia squat với marker chuyển động, thanh gỗ, hai force plate và camera.",
-      caption:
-        "Thiết lập thí nghiệm với marker, force plate và camera. Đây là một điều kiện nghiên cứu, không phải tư thế chuẩn để bắt chước.",
-      author:
-        "Lorenzetti và cs., BMC Sports Science, Medicine and Rehabilitation (2018), Hình 1",
-      sourceUrl:
-        "https://link.springer.com/article/10.1186/s13102-018-0103-7/figures/1",
-      license: "CC BY 4.0",
-      licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
-      changes:
-        "Giữ nguyên ảnh và nhãn gốc; chú thích tiếng Việt nằm ngoài hình.",
-    },
     parts: [
       {
         label: "Từ mẫu đến nhiệm vụ cụ thể",
@@ -220,6 +206,12 @@ export const HANDBOOK: HandbookTopic[] = [
         sourceIds: ["squat"],
       },
     ],
+    anatomy: {
+      regions: ["knee", "hip_pelvis", "thoracic_core"],
+      note: "Nghiên cứu squat đo đồng thời hông, gối và thân, nên ba vùng này được mở trên mô hình. Mô hình là một cơ thể tham chiếu đứng yên; không cho thấy cách học viên chuyển động.",
+      sourceIds: ["squat"],
+      authored: true,
+    },
     sources: [S.bahr, S.squat, S.hollman],
   },
   {
@@ -349,6 +341,12 @@ export const HANDBOOK: HandbookTopic[] = [
         sourceIds: ["barry"],
       },
     ],
+    anatomy: {
+      regions: ["knee"],
+      note: "Ví dụ LSI trong tab đến từ nghiên cứu sau ACL ở gối. Dùng Bên trái / Bên phải để xem từng bên; mô hình không đo chênh lệch hai bên của học viên.",
+      sourceIds: ["wellsandt"],
+      authored: true,
+    },
     sources: [S.parkinson, S.wellsandt, S.barry],
   },
   {
@@ -505,6 +503,12 @@ export const HANDBOOK: HandbookTopic[] = [
         sourceIds: ["cdc"],
       },
     ],
+    anatomy: {
+      regions: ["knee", "shoulder", "hip_pelvis", "ankle_foot", "cervical", "lumbar"],
+      note: "Các vùng có số tham chiếu trong app: vai, hông, gối, cổ chân (CDC, PROM) và cột sống cổ, thắt lưng (JTSS, AROM). Khuỷu và cẳng tay chưa có vùng 3D riêng. Mô hình không hiển thị góc đo, mốc đặt thước hay trục khớp.",
+      sourceIds: ["cdc", "jtss"],
+      authored: true,
+    },
     sources: [
       S.cdc,
       S.soucie,
@@ -672,6 +676,11 @@ export const HANDBOOK: HandbookTopic[] = [
         sourceIds: ["cochrane", "who"],
       },
     ],
+    anatomy: {
+      regions: ["lumbar", "hip_pelvis", "knee", "shoulder"],
+      note: "Các vùng tương ứng với ví dụ trong tab: đau lưng (thắt lưng), hip hinge và squat (hông, gối), ném bóng (vai). Mô hình giúp gọi tên cấu trúc; không cho thấy kiểu phối hợp cơ hay cue phù hợp.",
+      authored: true,
+    },
     sources: [S.chua, S.mckay, S.cochrane, S.who],
   },
 ];

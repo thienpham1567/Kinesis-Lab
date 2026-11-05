@@ -14,12 +14,6 @@ const NAV: {
   icon: IconName;
 }[] = [
   {
-    href: "/consult",
-    label: "Bàn tư vấn",
-    short: "Tư vấn",
-    icon: "message",
-  },
-  {
     href: "/atlas",
     label: "Atlas giải phẫu",
     short: "Atlas",
@@ -53,8 +47,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isActive = (href: string) =>
     path === href || path.startsWith(href + "/");
   const current = NAV.find((item) => isActive(item.href)) ?? NAV[0];
-  const studyAvailable = !isActive("/consult");
-  const drawerOpen = studyAvailable && studyOpen;
+  const drawerOpen = studyOpen;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -140,23 +133,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </p>
 
             <div className="ml-auto flex shrink-0 items-center gap-2">
-              {studyAvailable && (
-                <button
-                  ref={assistantLauncher}
-                  type="button"
-                  aria-controls="study-assistant-drawer"
-                  aria-expanded={drawerOpen}
-                  aria-label={
-                    drawerOpen ? "Đóng trợ lý học tập" : "Mở trợ lý học tập"
-                  }
-                  title="Trợ lý học tập"
-                  onClick={() => setStudyOpen((value) => !value)}
-                  className="study-assistant-toggle"
-                >
-                  <Icon name="message" className="size-4" />
-                  <span className="hidden sm:inline">Trợ lý</span>
-                </button>
-              )}
+              <button
+                ref={assistantLauncher}
+                type="button"
+                aria-controls="study-assistant-drawer"
+                aria-expanded={drawerOpen}
+                aria-label={
+                  drawerOpen ? "Đóng trợ lý học tập" : "Mở trợ lý học tập"
+                }
+                title="Trợ lý học tập"
+                onClick={() => setStudyOpen((value) => !value)}
+                className="study-assistant-toggle"
+              >
+                <Icon name="message" className="size-4" />
+                <span className="hidden sm:inline">Trợ lý</span>
+              </button>
               <ThemePicker />
             </div>
           </div>
@@ -184,15 +175,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </footer>
           </div>
-          {studyAvailable && (
-            <StudyChatWidget
-              pathname={path}
-              pageLabel={current.label}
-              open={drawerOpen}
-              onOpenChange={setStudyOpen}
-              launcherRef={assistantLauncher}
-            />
-          )}
+          <StudyChatWidget
+            pathname={path}
+            pageLabel={current.label}
+            open={drawerOpen}
+            onOpenChange={setStudyOpen}
+            launcherRef={assistantLauncher}
+          />
         </div>
       </div>
       <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">

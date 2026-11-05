@@ -37,7 +37,7 @@ export function parseStudyMeta(raw: unknown): StudyAnswerMeta | undefined {
         const action = item as Record<string, unknown>;
         if (
           typeof action.href !== "string" ||
-          !/^\/(atlas|movement|consult)(\?|#|$)/.test(action.href) ||
+          !/^\/(atlas|movement)(\?|#|$)/.test(action.href) ||
           !action.label
         )
           return [];
