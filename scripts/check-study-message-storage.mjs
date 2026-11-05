@@ -161,3 +161,23 @@ test("each answer retains its own readable citations after reload, without sendi
   const parsed = parseAnswerCitations([{ ...citations[0], sources: [{ ...citations[0].sources[0], url: "javascript:alert(1)" }] }]);
   assert.equal(parsed[0].sources.length, 0);
 });
+
+test('RAG and PMID sources remain readable and persisted with their originating answer', () => {
+  const citations = [
+    { id: 'RAG:who-chunk', label: 'WHO · hoạt động thể lực', sources: [{ title: 'WHO 2020', url: 'https://doi.org/10.1136/bjsports-2020-102955', checkedAt: '2026-10-26', access: 'Đoạn toàn văn' }] },
+    { id: 'PMID:35006527', label: 'EMG interpretation', sources: [{ title: 'EMG interpretation', url: 'https://pubmed.ncbi.nlm.nih.gov/35006527/', checkedAt: '2026-11-05', access: 'Abstract' }] },
+  ];
+  const restored = parseStudyChatStore(serializeStudyChatStore({ conversationId: crypto.randomUUID(), messages: upgradeStudyMessages([
+    { role: 'assistant', content: 'Có nguồn [RAG:who-chunk] [PMID:35006527].', citations },
+  ]) }));
+  assert.equal(restored.messages[0].citations.length, 2);
+  assert.equal(restored.messages[0].citations[0].sources[0].checkedAt, '2026-10-26');
+});
+
+test('retrieved source labels stay compact while full titles and reading scopes remain available', () => {
+  const { answerCitationsFromStudySources } = load('src/lib/chat/answer-citations.ts');
+  const title = 'World Health Organization 2020 guidelines on physical activity and sedentary behaviour — Recommendations for adults';
+  const refs = answerCitationsFromStudySources([{ id: 'RAG:who', title, url: 'https://doi.org/10.1136/bjsports-2020-102955', checkedAt: '2026-10-26', access: 'Supplied excerpt' }]);
+  assert.ok(refs[0].label.length <= 24);
+  assert.equal(refs[0].sources[0].title, title);
+});

@@ -169,7 +169,7 @@ function NcsfContent({ heading, onSessionExpired }: { heading: React.ReactNode; 
   };
 
   return (
-    <div className="space-y-7 [&_.page-description]:max-sm:hidden">
+    <div className="ncsf-study-page space-y-7 [&_.page-description]:max-sm:hidden">
       {heading}
       <div className="tab-bar" aria-label="Chế độ học">
         <button type="button" aria-pressed={view === "read"} className="tab-button" onClick={() => setView("read")}>
@@ -200,9 +200,9 @@ function NcsfContent({ heading, onSessionExpired }: { heading: React.ReactNode; 
               <button type="button" className="button-primary" onClick={() => setView("quiz")}>Quay lại bài đang làm</button>
             </div>
           )}
-          <div className="grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-            <div className="space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
-              <label className="block lg:hidden">
+          <div className="ncsf-reading-grid grid items-start gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+            <div className="ncsf-chapter-sidebar space-y-4 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
+              <label className="ncsf-chapter-select block lg:hidden">
                 <span className="field-label">Chương</span>
                 <select
                   value={slug}
@@ -216,7 +216,7 @@ function NcsfContent({ heading, onSessionExpired }: { heading: React.ReactNode; 
                   ))}
                 </select>
               </label>
-              <nav className="panel hidden p-2 lg:block" aria-label="Chương">
+              <nav className="ncsf-chapter-nav panel hidden p-2 lg:block" aria-label="Chương">
                 <ul className="space-y-1">
                   {NCSF_CPT.map((c) => (
                     <li key={c.slug}>
@@ -236,7 +236,7 @@ function NcsfContent({ heading, onSessionExpired }: { heading: React.ReactNode; 
               {lessons && (
                 <section className="panel p-3" aria-label="Bài trong chương">
                   <h3 className="px-1 text-sm font-semibold text-ink">Bài trong chương</h3>
-                  <label className="mt-2 block lg:hidden">
+                  <label className="ncsf-lesson-select mt-2 block lg:hidden">
                     <span className="sr-only">Chọn bài</span>
                     <select
                       value={activeLesson}
@@ -253,7 +253,7 @@ function NcsfContent({ heading, onSessionExpired }: { heading: React.ReactNode; 
                       ))}
                     </select>
                   </label>
-                  <ul className="mt-2 hidden space-y-1 lg:block">
+                  <ul className="ncsf-lesson-list mt-2 hidden space-y-1 lg:block">
                     {lessons.map((l, i) => (
                       <li key={l.title}>
                         <button

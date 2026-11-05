@@ -48,11 +48,7 @@ export default function PdfReader({
   const zoomAnchor = useRef<number | null>(null);
   const currentRef = useRef(1);
   const prevWidth = useRef(0);
-  const lastScrollCmdAt = useRef(0);
-
-  useEffect(() => {
-    currentRef.current = current;
-  }, [current]);
+  const scrollTarget = useRef<number | null>(null);
 
   /* Khung đổi cỡ (xoay máy, toàn màn hình, thu phóng): giữ nguyên trang
      đang đọc thay vì giữ nguyên số pixel đã cuộn. */
@@ -64,10 +60,9 @@ export default function PdfReader({
       if (
         prevWidth.current > 0 &&
         Math.abs(w - prevWidth.current) > 2 &&
-        restored.current &&
-        performance.now() - lastScrollCmdAt.current > 1000
+        restored.current
       ) {
-        zoomAnchor.current = currentRef.current;
+        zoomAnchor.current = scrollTarget.current ?? currentRef.current;
       }
       prevWidth.current = w;
       setWidth(w);
@@ -77,13 +72,18 @@ export default function PdfReader({
   }, []);
 
   const scrollToPage = useCallback((n: number, smooth = true) => {
-    lastScrollCmdAt.current = performance.now();
     const el = box.current;
     const slot = el?.querySelector<HTMLElement>(`[data-page="${n}"]`);
     if (!el || !slot) return;
+    // A drawer resize can interrupt smooth navigation before its target arrives.
+    // Keep the requested page until alignment finishes or the reader intervenes.
+    scrollTarget.current = smooth ? n : null;
+    currentRef.current = n;
     el.scrollTo({
       top: Math.max(slot.offsetTop - 12, 0),
-      behavior: smooth ? "smooth" : "auto",
+      // "auto" would inherit this viewport's CSS scroll-smooth and animate
+      // resize restoration, exposing intermediate pages to the next resize.
+      behavior: smooth ? "smooth" : "instant",
     });
   }, []);
 
@@ -118,6 +118,18 @@ export default function PdfReader({
       if (slot.offsetTop <= probe) found = Number(slot.dataset.page) || found;
       else break;
     }
+    const target =
+      scrollTarget.current === null
+        ? null
+        : el.querySelector<HTMLElement>(
+            `[data-page="${scrollTarget.current}"]`,
+          );
+    if (
+      target &&
+      Math.abs(el.scrollTop - Math.max(target.offsetTop - 12, 0)) < 2
+    )
+      scrollTarget.current = null;
+    currentRef.current = found;
     setCurrent((prev) => (prev === found ? prev : found));
   }, [pages]);
 
@@ -187,7 +199,10 @@ export default function PdfReader({
   const slotHeight = ratio > 0 ? pageWidth / ratio : 0;
 
   return (
-    <div ref={wrap} className="pdf-reader-wrap flex min-w-0 flex-col gap-3 bg-sheet">
+    <div
+      ref={wrap}
+      className="pdf-reader-wrap flex min-w-0 flex-col gap-3 bg-sheet"
+    >
       <div className="sticky top-16 z-10 -my-1 flex flex-wrap items-center gap-2 bg-sheet py-1 lg:top-24">
         <button
           type="button"
@@ -237,8 +252,10 @@ export default function PdfReader({
           <select
             value={String(zoom)}
             onChange={(e) => {
-              zoomAnchor.current = current;
-              setZoom(e.target.value === "fit" ? "fit" : Number(e.target.value));
+              zoomAnchor.current = scrollTarget.current ?? currentRef.current;
+              setZoom(
+                e.target.value === "fit" ? "fit" : Number(e.target.value),
+              );
             }}
             className="min-h-10 px-2 text-sm"
           >
@@ -286,6 +303,29 @@ export default function PdfReader({
       <div
         ref={box}
         onScroll={handleScroll}
+        onWheel={() => {
+          scrollTarget.current = null;
+        }}
+        onPointerDown={() => {
+          scrollTarget.current = null;
+        }}
+        onKeyDown={(event) => {
+          if (
+            [
+              "ArrowUp",
+              "ArrowDown",
+              "PageUp",
+              "PageDown",
+              "Home",
+              "End",
+              " ",
+            ].includes(event.key)
+          ) {
+            scrollTarget.current = null;
+          }
+        }}
+        tabIndex={0}
+        role="region"
         className="pdf-scroll-box relative h-[72dvh] overflow-auto scroll-smooth rounded-lg border border-rule bg-surface [overflow-anchor:none] focus:outline-2 focus:outline-cobalt lg:h-[calc(100dvh-14rem)]"
         aria-label="Nội dung PDF. Cuộn để đọc liền các trang."
       >

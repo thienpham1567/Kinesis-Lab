@@ -12,7 +12,9 @@ import { hasSupabase, supabase } from "@/lib/supabase/server";
 import { formatPubMed, searchPubMed } from "@/lib/tools/pubmed";
 import { formatRag, retrieveKnowledge } from "@/lib/tools/rag-search";
 import { readSseData } from "@/lib/ai/stream-events";
-import { filterStudyPubMed, resolveStudyContext, selectedStudyContextBlock, selectStudyEvidence, studyAnswerMeta, studyPublicLiteratureQuery } from "@/lib/chat/study-context-server";
+import { filterStudyPubMed, resolveStudyContext, selectedStudyContextBlock, selectStudyEvidence, studyAnswerMeta, studyPublicLiteratureQuery, studyQuestionContext, studyRetrievalQuery } from "@/lib/chat/study-context-server";
+import { filterStudyKnowledge, filterStudyTopicPapers, studyLiteratureTopic } from "@/lib/chat/study-retrieval";
+import { auditAnswerCitations } from "@/lib/chat/citation-audit";
 import type {
   BiomarkerRecord,
   ChatMessage,
@@ -119,23 +121,30 @@ export async function POST(req: Request) {
   const prior = messages.filter(m => m.role === "user").slice(-3, -1).map(m => m.content.slice(-800));
   const isStudy = typeof body.studyPage === "string";
   const studyContext = isStudy ? resolveStudyContext(body.studyStructureId) : null;
-  const retrievalQuery = [...prior, last.slice(-4000)].join("\n");
+  const historyQuery = [...prior, last.slice(-4000)].join("\n");
+  const retrievalQuery = isStudy ? studyRetrievalQuery(studyContext, last, historyQuery) : historyQuery;
   const curated = isStudy ? selectStudyEvidence(studyContext, last, retrievalQuery) : selectCuratedEvidence(retrievalQuery);
-  const publicQuery = studyContext ? studyPublicLiteratureQuery(studyContext, last) : publicLiteratureQuery(last);
-  const publicSearch = { query: publicQuery || null, scope: studyContext ? "server-catalog-vocabulary" : "fixed-topic-vocabulary", skipped: !publicQuery };
+  const searchContext = studyContext ?? (isStudy ? studyQuestionContext(last) : null);
+  const publicQuery = searchContext ? studyPublicLiteratureQuery(searchContext, last)
+    : isStudy ? studyLiteratureTopic(last)?.query ?? "" : publicLiteratureQuery(last);
+  const publicSearch = { query: publicQuery || null, scope: searchContext ? "server-catalog-vocabulary" : "fixed-topic-vocabulary", skipped: !publicQuery };
   const [knowledge, literature] = await Promise.all([
-    isStudy ? Promise.resolve({ hits: [], retrieval: { status: "skipped", message: "Khung hỏi nhanh dùng nguồn y khoa có phạm vi và PubMed; không truy xuất giáo trình." } }) : retrieveKnowledge(retrievalQuery),
+    retrieveKnowledge(retrievalQuery),
     publicQuery
-      ? searchPubMed(publicQuery, 5, studyContext ? { queryMode: "trusted" } : undefined).then(found => {
-          const papers = studyContext ? filterStudyPubMed(studyContext, found) : found;
+      ? searchPubMed(publicQuery, 5, isStudy ? { queryMode: "trusted" } : undefined).then(found => {
+          const papers = searchContext ? filterStudyPubMed(searchContext, found) : isStudy ? filterStudyTopicPapers(last, found) : found;
           return { papers, status: papers.length ? "ready" : "no_matches" };
         })
         .catch(() => ({ papers: [] as PubMedPaper[], status: "error" }))
       : Promise.resolve({ papers: [] as PubMedPaper[], status: "skipped" }),
   ]);
-  const { hits: rag, retrieval } = knowledge;
+  const rag = isStudy ? filterStudyKnowledge(retrievalQuery, knowledge.hits) : knowledge.hits;
+  const retrieval = isStudy && knowledge.retrieval.status === "ready" && !rag.length
+    ? { ...knowledge.retrieval, status: "no_matches" as const, message: "Kho toàn văn hiện chưa có bài trong phạm vi trực tiếp của câu hỏi. Dùng các nguồn đối chiếu/PubMed thực sự được cung cấp bên dưới." }
+    : knowledge.retrieval;
   const pubmed = literature.papers;
-  const studyMeta = isStudy ? studyAnswerMeta(studyContext, curated, pubmed, literature.status, last) : null;
+  const studyMeta = isStudy ? studyAnswerMeta(studyContext, curated, pubmed, literature.status, last, rag) : null;
+  if (studyMeta) studyMeta.sourceNotice = [retrieval.message, studyMeta.sourceNotice].filter(Boolean).join(" ");
   const sourceStatus = { rag: retrieval, pubmed: { status: literature.status,
     message: literature.status === "error" ? "Chưa tra cứu được PubMed trong lượt này." :
       literature.status === "no_matches" ? "PubMed chưa trả về bài phù hợp với chủ đề tra cứu." :
@@ -209,11 +218,9 @@ export async function POST(req: Request) {
           }
         }
         if (!complete || !assistant.trim()) throw new Error("Kết nối kết thúc trước khi nhận đủ câu trả lời. Vui lòng thử lại.");
-        const suppliedRagIds = new Set(rag.map(hit => hit.id));
-        const citedRag = [...assistant.matchAll(/\bRAG:([^\s,\];)]+)/g)].map(match => match[1].replace(/[.:]+$/, ""));
-        const citationAudit = { unsupportedRagReferences: citedRag.filter(id => !suppliedRagIds.has(id)).length };
-        if (citationAudit.unsupportedRagReferences > 0) controller.enqueue(encoder.encode(JSON.stringify({
-          type: "warning", text: "Có mã trích dẫn RAG không khớp đoạn nguồn đã cung cấp. Hãy đối chiếu danh sách nguồn trước khi sử dụng câu trả lời.",
+        const citationAudit = auditAnswerCitations(assistant, { rag, pubmed, curated });
+        if (citationAudit.unsupportedReferences.length > 0) controller.enqueue(encoder.encode(JSON.stringify({
+          type: "warning", text: "Có trích dẫn không khớp nguồn đã cung cấp trong lượt này. Hãy đối chiếu danh sách nguồn; chưa thể dùng các nhận định đó làm kiến thức đã có căn cứ.",
         }) + "\n"));
         if (body.clientId && hasSupabase() && assistant) {
           const { error: saveError } = await supabase().from("consultations").insert([

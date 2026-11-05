@@ -141,6 +141,8 @@ const db = { from: (table) => {
 const studyModule = createAppLoader({ mocks: { "./anatomy-evidence.mjs": originalAnatomyEvidence, "./atlas-catalog-corrections.mjs": catalogCorrections } })("src/lib/chat/study-context-server.ts");
 const adapters = {
   "@/lib/chat/study-context-server": studyModule,
+  "@/lib/chat/study-retrieval": createAppLoader({ mocks: { "@/lib/clinical/evidence-registry": registry } })("src/lib/chat/study-retrieval.ts"),
+  "@/lib/chat/citation-audit": createAppLoader()("src/lib/chat/citation-audit.ts"),
   "@/lib/clinical/evidence-registry": registry,
   "@/lib/ai/prompts/clinical-pt-system": load("src/lib/ai/prompts/clinical-pt-system.ts"),
   "@/lib/ai/openrouter": {

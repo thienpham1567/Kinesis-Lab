@@ -42,7 +42,7 @@ export function StudyAnswer({
       <MarkdownAnswer
         text={message.content}
         citations={message.citations}
-        className="text-[13px]"
+        className="text-sm"
       />
       {!!message.study?.actions.length && (
         <div
@@ -66,7 +66,7 @@ export function StudyAnswer({
         (message.study.sources.length > 0 || message.study.sourceNotice) && (
           <details className="rounded-lg border border-rule bg-canvas px-2.5 text-xs leading-5">
             <summary className="cursor-pointer py-2 font-medium text-cobalt">
-              Nguồn tham khảo · {message.study.sources.length}
+              Nguồn được cung cấp · {message.study.sources.length}
             </summary>
             <div className="space-y-2 pb-2.5 text-slate">
               {message.study.context && (

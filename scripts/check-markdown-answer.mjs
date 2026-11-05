@@ -66,3 +66,11 @@ assert.doesNotMatch(render("Không trích dẫn nguồn này.", citations), /Tà
 const malicious = render("[APP:handbook:patterns]", [{ ...citations[0], sources: [{ ...citations[0].sources[0], url: "javascript:alert(1)" }] }]);
 assert.doesNotMatch(malicious, /href="javascript:/);
 console.log("Assistant Markdown: inert images, source links, formatting and unsafe HTML/URL checks passed.");
+const researchCitations = [
+  { id: 'RAG:who-chunk', label: 'WHO 2020 · Khuyến nghị', sources: citations[0].sources },
+  { id: 'PMID:35006527', label: 'Giới hạn của EMG', sources: citations[0].sources },
+];
+const research = render('Đối chiếu [RAG:who-chunk] và [PMID:35006527].', researchCitations);
+assert.match(research, /WHO 2020 · Khuyến nghị/);
+assert.match(research, /Giới hạn của EMG/);
+assert.doesNotMatch(research, /\[(RAG|PMID):/);

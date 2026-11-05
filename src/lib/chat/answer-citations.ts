@@ -2,6 +2,14 @@ import type { EvidenceSource } from "@/lib/clinical/evidence-types";
 
 export type ChatAnswerCitation = { id: string; label: string; sources: EvidenceSource[] };
 
+export function answerCitationsFromStudySources(sources: readonly (EvidenceSource & { id: string })[]): ChatAnswerCitation[] {
+  let fullText = 0;
+  let pubmed = 0;
+  return sources.filter(source => /^(RAG|PMID):/.test(source.id)).map(({ id, ...source }) => ({
+    id, label: id.startsWith("RAG:") ? `Toàn văn ${++fullText}` : `PubMed ${++pubmed}`, sources: [source],
+  }));
+}
+
 export function answerCitationsFromEvidence(records: readonly {
   id: string; label: string; evidence: { sources: EvidenceSource[] };
 }[]): ChatAnswerCitation[] {
@@ -11,9 +19,9 @@ export function answerCitationsFromEvidence(records: readonly {
 /** Session storage is untrusted; preserve only bounded source display metadata. */
 export function parseAnswerCitations(raw: unknown): ChatAnswerCitation[] {
   if (!Array.isArray(raw)) return [];
-  return raw.slice(0, 6).flatMap((item) => {
+  return raw.slice(0, 24).flatMap((item) => {
     if (!item || typeof item !== "object" || typeof item.id !== "string" ||
-        !/^APP:[a-z0-9:_-]{1,160}$/i.test(item.id) || typeof item.label !== "string" || !Array.isArray(item.sources)) return [];
+        !/^(APP|RAG|PMID):[a-z0-9:_-]{1,160}$/i.test(item.id) || typeof item.label !== "string" || !Array.isArray(item.sources)) return [];
     const sources = item.sources.slice(0, 30).flatMap((source: Record<string, unknown>) => {
       if (!source || typeof source !== "object" || typeof source.title !== "string" ||
           typeof source.url !== "string" || !/^https?:\/\//i.test(source.url) ||

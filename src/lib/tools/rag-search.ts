@@ -55,6 +55,6 @@ export async function searchRag(query: string, matchCount = 6): Promise<RagHit[]
 export function formatRag(hits: RagHit[]) {
   return hits.map(hit => {
     const location = [hit.title, hit.chapter, hit.page != null ? `Trang ${hit.page}` : null].filter(Boolean).join(" — ");
-    return `[RAG:${hit.id}] ${location}\n${hit.url ?? ""}\nTác giả: ${hit.authors?.join(", ") ?? "Xem bài gốc"}; ${hit.license ?? ""} ${hit.licenseUrl ?? ""}\nNăm: ${hit.year ?? "chưa rõ"}; loại: ${hit.sourceKind ?? "đoạn tài liệu"}; kiểm tra: ${hit.checkedAt ?? "chưa ghi"}\nPhạm vi: ${hit.access ?? "Chỉ đoạn văn được cung cấp, không suy đã đọc cả tài liệu."}\n${hit.content}`;
+    return `[RAG:${hit.citationId ?? hit.id}] ${location}\n${hit.url ?? ""}\nTác giả: ${hit.authors?.join(", ") ?? "Xem bài gốc"}; ${hit.license ?? ""} ${hit.licenseUrl ?? ""}\nNăm: ${hit.year ?? "chưa rõ"}; loại: ${hit.sourceKind ?? "đoạn tài liệu"}; kiểm tra: ${hit.checkedAt ?? "chưa ghi"}\nPhạm vi: ${hit.access ?? "Chỉ đoạn văn được cung cấp, không suy đã đọc cả tài liệu."}\n${hit.content}`;
   }).join("\n\n");
 }

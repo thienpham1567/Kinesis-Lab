@@ -11,7 +11,7 @@ export function parseStudyMeta(raw: unknown): StudyAnswerMeta | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const row = raw as Record<string, unknown>;
   const sources: StudySource[] = Array.isArray(row.sources)
-    ? row.sources.slice(0, 30).flatMap((item) => {
+    ? row.sources.slice(0, 200).flatMap((item) => {
         if (!item || typeof item !== "object") return [];
         const source = item as Record<string, unknown>;
         if (

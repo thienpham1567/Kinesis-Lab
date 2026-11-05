@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StudyChatWidget } from "./StudyChatWidget";
 import { ThemePicker } from "./ThemePicker";
 import { Icon, type IconName } from "./WorkspaceUI";
@@ -48,9 +48,13 @@ const NAV: {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const assistantLauncher = useRef<HTMLButtonElement>(null);
+  const [studyOpen, setStudyOpen] = useState(false);
   const isActive = (href: string) =>
     path === href || path.startsWith(href + "/");
   const current = NAV.find((item) => isActive(item.href)) ?? NAV[0];
+  const studyAvailable = !isActive("/consult");
+  const drawerOpen = studyAvailable && studyOpen;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -70,7 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               aria-label="Kinesis Lab — Trang chủ"
             >
               <KinesisLogo className="size-9 max-w-none shrink-0 rounded-xl ring-1 ring-white/15 transition-transform duration-150 group-hover:scale-[1.03]" />
-              <span className="hidden whitespace-nowrap text-[15px] font-bold tracking-tight text-white lg:inline">
+              <span className="hidden whitespace-nowrap text-[15px] font-bold tracking-tight text-white xl:inline">
                 Kinesis Lab<span className="text-[var(--mark)]">.</span>
               </span>
             </Link>
@@ -107,7 +111,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                             : "text-[var(--toolbar-muted)] group-hover:text-white"
                         }`}
                       />
-                      <span className="whitespace-nowrap">{item.label}</span>
+                      <span className="hidden whitespace-nowrap xl:inline">
+                        {item.label}
+                      </span>
+                      <span className="whitespace-nowrap xl:hidden">
+                        {item.short}
+                      </span>
                     </span>
                     {active && (
                       <span
@@ -120,44 +129,72 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            <p className="pointer-events-none absolute inset-x-16 top-1/2 flex -translate-y-1/2 items-center justify-center gap-2 lg:hidden">
-              <Icon name={current.icon} className="size-3.5 text-[var(--mark)]" />
+            <p className="workspace-current-page pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center justify-center gap-2 lg:hidden">
+              <Icon
+                name={current.icon}
+                className="size-3.5 text-[var(--mark)]"
+              />
               <span className="truncate text-[13px] font-semibold tracking-tight text-white">
                 {current.label}
               </span>
             </p>
 
-            <div className="ml-auto flex shrink-0 items-center">
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              {studyAvailable && (
+                <button
+                  ref={assistantLauncher}
+                  type="button"
+                  aria-controls="study-assistant-drawer"
+                  aria-expanded={drawerOpen}
+                  aria-label={
+                    drawerOpen ? "Đóng trợ lý học tập" : "Mở trợ lý học tập"
+                  }
+                  title="Trợ lý học tập"
+                  onClick={() => setStudyOpen((value) => !value)}
+                  className="study-assistant-toggle"
+                >
+                  <Icon name="message" className="size-4" />
+                  <span className="hidden sm:inline">Trợ lý</span>
+                </button>
+              )}
               <ThemePicker />
             </div>
           </div>
         </header>
-        <div
-          ref={scrollRef}
-          data-workspace-scroll
-          onScroll={() => window.dispatchEvent(new Event("scroll"))}
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto"
-        >
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="workspace-main flex-1 outline-none"
+        <div className="workspace-body" data-study-open={drawerOpen}>
+          <div
+            ref={scrollRef}
+            data-workspace-scroll
+            onScroll={() => window.dispatchEvent(new Event("scroll"))}
+            className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
           >
-            {children}
-          </main>
-          <footer className="workspace-footer mx-auto w-full max-w-[1600px] px-5 pt-4 text-xs leading-5 text-slate sm:px-7 lg:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-4">
-              <span>
-                Kinesis Lab <span className="mx-1.5 text-rule-strong">/</span>{" "}
-                Giải phẫu · Cơ sinh học · Lâm sàng
-              </span>
-            </div>
-          </footer>
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="workspace-main flex-1 outline-none"
+            >
+              {children}
+            </main>
+            <footer className="workspace-footer mx-auto w-full max-w-[1600px] px-5 pt-4 text-xs leading-5 text-slate sm:px-7 lg:px-8">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-rule pt-4">
+                <span>
+                  Kinesis Lab <span className="mx-1.5 text-rule-strong">/</span>{" "}
+                  Giải phẫu · Cơ sinh học · Lâm sàng
+                </span>
+              </div>
+            </footer>
+          </div>
+          {studyAvailable && (
+            <StudyChatWidget
+              pathname={path}
+              pageLabel={current.label}
+              open={drawerOpen}
+              onOpenChange={setStudyOpen}
+              launcherRef={assistantLauncher}
+            />
+          )}
         </div>
       </div>
-      {!isActive("/consult") && (
-        <StudyChatWidget pathname={path} pageLabel={current.label} />
-      )}
       <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">
         {NAV.map((item) => {
           const active = isActive(item.href);

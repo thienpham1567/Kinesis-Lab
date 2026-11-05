@@ -58,6 +58,8 @@ export type KnowledgeDocument = {
 };
 
 export type RagHit = {
+  /** Study-only source marker; id remains the real storage chunk ID. */
+  citationId?: string;
   id: string;
   document_id: string;
   title: string;
@@ -90,6 +92,9 @@ export type ChatSourceStatus = {
 };
 
 export type PubMedPaper = {
+  retrievedAt?: string;
+  publicationTypes?: string[];
+  abstractTruncated?: boolean;
   pmid: string;
   title: string;
   authors: string;

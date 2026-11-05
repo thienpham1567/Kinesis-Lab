@@ -2,7 +2,7 @@ import type { StudyChatMessage } from "./illustration-types";
 
 export function studyAnswerClipboard(message: StudyChatMessage) {
   const content = message.content.replace(
-    /\[((?:APP|PMID):[^\]\n]+)\]/g,
+    /\[((?:APP|RAG|PMID):[^\]\n]+)\]/g,
     (_marker, id: string) => {
       const source = message.study?.sources.find((item) => item.id === id);
       const record = [...(message.citations ?? [])]
@@ -27,6 +27,7 @@ export function studyAnswerClipboard(message: StudyChatMessage) {
     .join("\n\n");
   return [
     content,
+    message.study?.sourceNotice ?? "",
     references ? `Nguồn cung cấp cho lượt trả lời:\n${references}` : "",
   ]
     .filter(Boolean)

@@ -7,7 +7,8 @@ import { MUSCLE_GROUP_ATLAS } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import { EVIDENCE_INDEX, formatCuratedEvidence, normalizeEvidenceQuery, selectCuratedEvidence, type EvidenceIndexEntry } from "@/lib/clinical/evidence-registry";
 import { getStructureAnatomyEvidence } from "@/lib/clinical/structure-anatomy-evidence";
 import { trainingGroupForStructure } from "@/lib/clinical/training-atlas";
-import type { PubMedPaper } from "@/lib/types";
+import type { PubMedPaper, RagHit } from "@/lib/types";
+import { studyLiteratureTopic } from "./study-retrieval";
 import type { StudyAnswerMeta, StudyContext } from "./study-types";
 
 const manifest = resolveAtlasManifest(rawManifest as AtlasManifest);
@@ -66,8 +67,16 @@ export function selectStudyEvidence(context: StudyContext | null, question: stri
     ...(context?.groupId ? [`muscle:${context.groupId}`] : []),
     ...(structure?.clinicalRegion ? [`anatomy:${structure.clinicalRegion}`] : []),
   ]);
-  const supporting = selectCuratedEvidence(context ? studyEvidenceQuery(context, "") : localQuery, 6)
-    .filter(record => context ? allowedIds.has(record.id) : record.domain !== "structure" || families.has(record.id));
+  for (const item of named) {
+    const group = trainingGroupForStructure(item);
+    if (group) allowedIds.add(`muscle:${group}`);
+    if (item.clinicalRegion) allowedIds.add(`anatomy:${item.clinicalRegion}`);
+  }
+  const focused = studyLiteratureTopic(localQuery);
+  const supportingQuery = context ? studyEvidenceQuery(context, "")
+    : named.length ? named.map(item => item.english).join(" ") : focused ? focused.local : localQuery;
+  const supporting = selectCuratedEvidence(supportingQuery, !context && !named.length && focused ? 2 : 6)
+    .filter(record => context || named.length ? allowedIds.has(record.id) : record.domain !== "structure" || families.has(record.id));
   const selected: EvidenceIndexEntry[] = [];
   for (const record of [...individual, ...supporting]) {
     if (selected.length >= 6 || selected.some(item => item.id === record.id)) continue;
@@ -147,7 +156,20 @@ function exactMentionedStudyStructures(question: string) {
     .flatMap(([, structures]) => structures.map(structure => [structure.id, structure] as const))).values());
 }
 
-/** Exact known name mentions only; a bilateral name may offer both real sides. */
+/** Search-only subject from one explicitly named family; does not select Atlas. */
+export function studyQuestionContext(question: string) {
+  const named = exactMentionedStudyStructures(question);
+  if (!named.length || new Set(named.map(item => item.english)).size !== 1) return null;
+  return resolveStudyContext(named[0].id);
+}
+
+/** A new explicit topic replaces old history for full-text retrieval too. */
+export function studyRetrievalQuery(context: StudyContext | null, question: string, history: string) {
+  if (context) return studyEvidenceQuery(context, question);
+  return exactMentionedStudyStructures(question).length || studyLiteratureTopic(question) ? question.slice(-4000) : history;
+}
+
+/** Exact known names only; a bilateral name may offer both real sides. */
 function mentionedStudyActions(question: string) {
   const normalized = ` ${normalizeEvidenceQuery(question.slice(-4000))} `;
   let matches = exactMentionedStudyStructures(question);
@@ -177,18 +199,24 @@ export function studyAnswerMeta(
   papers: readonly PubMedPaper[],
   literatureStatus: string,
   question = "",
+  rag: readonly RagHit[] = [],
 ): StudyAnswerMeta {
   const sources = records.flatMap(record => record.evidence.sources.map((source, index) => ({
     id: `APP:${record.id}:${index + 1}`, ...source,
   })));
   const checkedAt = new Date().toISOString().slice(0, 10);
   sources.push(...papers.map(paper => ({
-    id: `PMID:${paper.pmid}`, title: paper.title, url: paper.url, checkedAt,
+    id: `PMID:${paper.pmid}`, title: paper.title, url: paper.url, checkedAt: paper.retrievedAt?.slice(0, 10) ?? checkedAt,
     access: paper.abstract?.trim()
-      ? "metadata và abstract được truy xuất trong lượt này; chưa có toàn văn"
+      ? `metadata và abstract được truy xuất trong lượt này; chưa có toàn văn${paper.abstractTruncated ? "; abstract dài đã lược phần giữa" : ""}${paper.publicationTypes?.length ? `; loại bài: ${paper.publicationTypes.join(", ")}` : ""}`
       : "chỉ metadata/tiêu đề; không có abstract hoặc toàn văn trong lượt này",
   })));
   const actions = context ? studyContextActions(context) : mentionedStudyActions(question);
+  sources.push(...rag.map(hit => ({
+    id: `RAG:${hit.citationId ?? hit.id}`, title: [hit.title, hit.chapter].filter(Boolean).join(" — "),
+    url: hit.url ?? "", checkedAt: hit.checkedAt ?? "",
+    access: `Đoạn toàn văn được truy xuất trong lượt này. ${hit.access ?? "Không suy đã đọc cả tài liệu, bảng hoặc hình."}`,
+  })).filter(source => /^https:\/\//.test(source.url)));
   const publicNotice = literatureStatus === "error"
     ? "Chưa tra cứu được PubMed trong lượt này."
     : literatureStatus === "no_matches" ? "PubMed chưa trả về bài phù hợp với truy vấn."

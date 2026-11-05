@@ -120,3 +120,11 @@ test('a fabricated or placeholder RAG reference produces a visible warning', asy
     assert.ok(e.some(event => event.type === 'warning' && event.text.includes('không khớp')));
   }
 });
+
+test('invented APP indices, PMIDs and URLs produce source identity warnings', async () => {
+  for (const content of ['[APP:medication:general:999]', '[APP:medication:general, 999]', '[APP:medication:general 999]', '[APP:medication:general] [999]', '[PMID:999999999]', '[Nguồn](https://invented.example/medical)']) {
+    const wire = 'data: ' + JSON.stringify({ choices: [{ delta: { content }, finish_reason: 'stop' }] }) + '\n\ndata: [DONE]\n\n';
+    const e = await events(await fixture({ wire }).post({ ...question('insulin medication'), studyPage: '/knowledge' }));
+    assert.ok(e.some(event => event.type === 'warning' && event.text.includes('không khớp')), content);
+  }
+});

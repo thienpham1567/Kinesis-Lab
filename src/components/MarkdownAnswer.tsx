@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import type { Root } from "mdast";
 import type { ChatAnswerCitation } from "@/lib/chat/answer-citations";
 
-const APP_MARKER = /\[(APP:[^\]\n]{1,300})\]/g;
+const APP_MARKER = /\[((?:APP|RAG|PMID):[^\]\n]{1,300})\]/g;
 
 function resolveCitation(value: string, citations: ChatAnswerCitation[]) {
   const citation = [...citations].sort((a, b) => b.id.length - a.id.length).find((item) =>
