@@ -564,12 +564,12 @@ export default function Atlas3DExplorer({
             <dl className="mt-3 space-y-2 text-xs leading-5">
               <div>
                 <dt className="text-slate">Tên nguồn · English</dt>
-                <dd className="font-medium text-ink">{selected.english}</dd>
+                <dd className="font-medium text-ink">{selected.sourceMetadata?.english ?? selected.english}</dd>
               </div>
               {selected.latin && (
                 <div>
                   <dt className="text-slate">Latin</dt>
-                  <dd className="italic text-ink">{selected.latin}</dd>
+                  <dd className="italic text-ink">{selected.sourceMetadata?.latin ?? selected.latin}</dd>
                 </div>
               )}
               <div>

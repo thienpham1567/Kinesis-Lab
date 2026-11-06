@@ -187,4 +187,4 @@ const unrelatedEvents = (await unrelated.text()).trim().split("\n").map((line) =
 assert.equal(calls.publicQueries.length, 1, "unmatched topics skip public retrieval");
 assert.equal(unrelatedEvents[0].publicSearch.skipped, true);
 assert.equal(unrelatedEvents[0].curated.length, 0);
-console.log(`Evidence coverage passed: ${EVIDENCE_INDEX.length} entries including 8 educational muscle families and 1,031 source-only catalog structures; bounded topic retrieval and truthful source/reviewer metadata checked.`);
+console.log(`Evidence coverage passed: ${EVIDENCE_INDEX.length} entries including 8 educational muscle families and ${manifest.structures.length.toLocaleString('en-US')} source-only catalog structures; bounded topic retrieval and truthful source/reviewer metadata checked.`);

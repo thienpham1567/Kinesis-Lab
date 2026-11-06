@@ -245,7 +245,7 @@ function ContextualAnatomyPanel({
       {wholeBody && (
         <p className="mt-2">
           Hình là toàn bộ hệ cơ–xương của atlas. Cơ hoặc vùng đang tra được
-          đánh dấu. Không có đầu, da, nội tạng. Đây không phải vị trí điểm
+          đánh dấu. Có vùng đầu trong hệ cơ–xương; không có da, nội tạng. Đây không phải vị trí điểm
           kích hoạt.
         </p>
       )}

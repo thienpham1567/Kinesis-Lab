@@ -131,6 +131,9 @@ const otherMuscle = structures.find(s => s.layer === 'muscle' && !infraspinatus.
 assert(otherMuscle, 'a muscle outside the trigger case exists');
 assert.equal(wholeHidden.size, 0, 'whole body keeps every structure when both sides are shown');
 assert(!wholeHidden.has(otherMuscle.id), 'whole body does not clip muscles outside the case');
+const headStructures = structures.filter(s => s.areas.includes('head'));
+assert(headStructures.length > 0, 'the full source catalog includes the head area');
+assert(headStructures.every(s => !wholeHidden.has(s.id)), 'whole-body context retains head structures');
 const leftHidden = new Set(contextViewHidden(structures, infraspinatus, 'left', { wholeBody: true, kind: 'trigger' }));
 assert(structures.some(s => s.side === 'right' && leftHidden.has(s.id)), 'whole body still hides the other side');
 assert(structures.filter(s => s.side === 'left' || s.side === null).every(s => !leftHidden.has(s.id)));

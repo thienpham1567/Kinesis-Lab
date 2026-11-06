@@ -16,6 +16,7 @@
     "check:atlas-render": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-atlas-render-policy.mjs",
     "check:atlas-labels": "node --test scripts/check-atlas-callouts.mjs",
     "check:atlas-learning": "node --test scripts/check-atlas-learning-studio.mjs",
+    "check:atlas-head": "node --test scripts/check-atlas-head.mjs scripts/check-atlas-head-ui.mjs scripts/check-atlas-english-corrections.mjs scripts/check-atlas-correction-display.mjs && node scripts/check-atlas-head-terminology.mjs",
     "check:atlas-study": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-hip-material-study.mjs",
     "check:atlas-detail": "node --experimental-strip-types --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/check-tissue-detail.mjs",
     "check:atlas-corrections": "node scripts/check-atlas-medical-corrections.mjs",

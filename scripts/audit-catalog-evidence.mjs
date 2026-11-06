@@ -32,7 +32,8 @@ try {
   if(manifest.source.assetVersion===3){
     const addition=readJson('public/anatomy/3d/head-addition.json');
     const legacyIds=new Set(addition.previous.structureIds);
-    for(const [id,row]of Object.entries(structures))if(!legacyIds.has(id))row.provenanceCheckedAt=addition.generatedAt.slice(0,10);
+    assert(/^\d{4}-\d{2}-\d{2}$/.test(addition.provenanceCheckedAt),'Missing actual head source inspection date');
+    for(const [id,row]of Object.entries(structures))if(!legacyIds.has(id))row.provenanceCheckedAt=addition.provenanceCheckedAt;
   }
   const records = Object.values(structures);
   // Read-only replay retains the date recorded by --apply; it does not claim a

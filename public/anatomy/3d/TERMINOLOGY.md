@@ -333,3 +333,8 @@ Các G-note dưới ghi phạm vi đọc cũ, giữ để truy vết. Với mụ
 - **G31:** Chưa tìm được đối chiếu tiếng Việt cho dây chằng ngang nông đốt bàn tay; không lấy nguồn dây chằng ngang cổ tay hay dây chằng ngang sâu thay thế.
 - **G32:** Chưa tìm được đối chiếu tiếng Việt cho dây chằng ngang nông đốt bàn chân; không lấy nguồn dây chằng ngang sâu thay thế.
 - **G33:** Đã đối chiếu tên cơ mẹ; chưa tìm được cặp tên riêng cho gân trong những trang đã đọc. Từ “gân” là thành phần chuyển ngữ theo English nguồn.
+
+
+## Head terminology addition — 2026-11-05
+
+The historical 216 muscular-layer comparisons above are unchanged. Asset version 3 separately adds 22 exact head-name keys covering 37 source objects (23 bone-display-group objects and 14 muscle-display-group objects). Their Vietnamese–Latin comparison uses the newly read HMU scan pages 16, 83–84, with bounded English-name bridges to OpenStax A&P 2e §§7.2 and 11.3. These new source records retain their actual reading date and do not change historical source dates. Other head names keep English fallbacks. See [the per-name source and reading-scope report](HEAD-TERMINOLOGY.md). This compares terms only, without verifying meshes, tissue measurements, official translations or clinician approval.

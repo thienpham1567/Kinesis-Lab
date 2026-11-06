@@ -38,6 +38,9 @@ function correctionRows(correction: AtlasCorrection, structure: AtlasStructure) 
   const { changes, expected } = correction;
   const original = structure.sourceMetadata;
   const rows: { label: string; before: string; after: string; tissue?: boolean }[] = [];
+  if (changes.english !== undefined) rows.push({
+    label: "Tên tiếng Anh", before: original?.english ?? expected.english, after: changes.english,
+  });
   if (changes.latin !== undefined) rows.push({
     label: "Tên Latin", before: original?.latin ?? expected.latin ?? "Chưa có tên Latin", after: changes.latin,
   });

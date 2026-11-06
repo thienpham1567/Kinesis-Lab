@@ -39,6 +39,8 @@ export function AtlasSourceNames({
 }: {
   structure: AtlasNamedStructure;
 }) {
+  const sourceEnglish = structure.sourceMetadata?.english ?? structure.english;
+  const sourceLatin = structure.sourceMetadata?.latin ?? structure.latin;
   return (
     <details className="text-xs leading-5 text-slate">
       <summary className="min-h-10 cursor-pointer py-2 font-semibold text-cobalt">
@@ -47,13 +49,13 @@ export function AtlasSourceNames({
       <dl className="space-y-2 break-words pb-2">
         <div>
           <dt className="font-semibold text-ink">English</dt>
-          <dd lang="en">{structure.english}</dd>
+          <dd lang="en">{sourceEnglish}</dd>
         </div>
-        {structure.latin && (
+        {sourceLatin && (
           <div>
             <dt className="font-semibold text-ink">Latin</dt>
             <dd lang="la" className="italic">
-              {structure.latin}
+              {sourceLatin}
             </dd>
           </div>
         )}

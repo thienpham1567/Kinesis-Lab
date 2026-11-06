@@ -72,7 +72,7 @@ export function publishHeadAddition(root=new URL('../',import.meta.url)) {
   }
   for(const index of headDoc.scenes[headDoc.scene??0].nodes)measureNode(index,null);
   const geometry={structures:triangles.size,primitives:primitiveCount,triangles:[...triangles.values()].reduce((a,b)=>a+b,0),structuresAtMost10Triangles:[...triangles.values()].filter(n=>n<=10).length,structuresExactly2Triangles:[...triangles.values()].filter(n=>n===2).length};
-  const release={generatedAt:new Date().toISOString(),source:extra.source,scope:'Additive source musculoskeletal head export; unchanged legacy mesh binary/metadata. Engineering provenance, not anatomical validation.',
+  const release={generatedAt:new Date().toISOString(),provenanceCheckedAt:'2026-11-05',source:extra.source,scope:'Additive source musculoskeletal head export; unchanged legacy mesh binary/metadata. Engineering provenance, not anatomical validation.',
     previous:{structures:before.structures.length,structureIds:before.structures.map(s=>s.id),manifestSha256:hash(baseManifestBytes),fullGlbSha256:hash(baseBytes),binaryBytes:decoded.bin.length,binarySha256:hash(decoded.bin),structuresSha256:jsonHash(before.structures),
       arrays:Object.fromEntries(['nodes','meshes','accessors','bufferViews','materials'].map(k=>[k,{length:decoded.json[k].length,sha256:jsonHash(decoded.json[k])}]))},
     addition:{structures:extra.structures.length,headGlbSha256:hash(headBytes),fullGlbSha256:hash(full),totalStructures:manifest.structures.length,geometry},

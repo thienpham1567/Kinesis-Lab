@@ -1092,5 +1092,6 @@
     "Stapes.r"
   ],
   "exclusionReason": "Auditory ossicles belong to the source Bonus collection; upstream separately credits an NC-SA inner-ear model. Per-object origin not established; excluded pending provenance clarification.",
-  "reviewedBy": null
+  "reviewedBy": null,
+  "provenanceCheckedAt": "2026-11-05"
 }

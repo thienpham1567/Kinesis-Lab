@@ -8,6 +8,17 @@ const manifest = JSON.parse(readFileSync(new URL("../public/anatomy/3d/manifest.
 const id = name => `za-${createHash("sha256").update(name).digest("hex").slice(0,12)}`;
 const hash = bytes => createHash("sha256").update(bytes).digest("hex");
 
+test("public source notes link to the shipped head terminology report", () => {
+  const report=readFileSync(new URL('../public/anatomy/3d/HEAD-TERMINOLOGY.md',import.meta.url),'utf8');
+  assert.equal(report,readFileSync(new URL('../docs/research/2026-11-05-atlas-head-terminology.md',import.meta.url),'utf8'));
+  for(const file of ['ATTRIBUTION.md','TERMINOLOGY.md']){
+    const doc=readFileSync(new URL(`../public/anatomy/3d/${file}`,import.meta.url),'utf8');
+    const links=[...doc.matchAll(/\]\(([^)]*HEAD-TERMINOLOGY\.md)\)/g)].map(m=>m[1]);
+    assert.ok(links.length,`${file} must link the public head report`);
+    for(const link of links)assert.equal(new URL(link,`https://local/anatomy/3d/${file}`).pathname,'/anatomy/3d/HEAD-TERMINOLOGY.md');
+  }
+});
+
 test("additive full bundle preserves all legacy metadata, binary bytes and mesh references", () => {
   const release=JSON.parse(readFileSync(new URL('../public/anatomy/3d/head-addition.json',import.meta.url)));
   const bytes=readFileSync(new URL(`../public${manifest.bundles.full.url}`,import.meta.url));
