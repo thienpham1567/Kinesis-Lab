@@ -27,12 +27,18 @@ async function fetchHistory(clientId: string, signal?: AbortSignal): Promise<Tra
 
 /** Keyed workspace prevents history and in-flight form state from crossing client boundaries. */
 export function TrainingLog({ clientId, initialExerciseId }: TrainingLogProps) {
-  return <TrainingLogWorkspace key={`${clientId}:${initialExerciseId ?? ""}`} clientId={clientId} initialExerciseId={initialExerciseId} />;
+  return <TrainingLogWorkspace key={clientId} clientId={clientId} initialExerciseId={initialExerciseId} />;
 }
 
 function TrainingLogWorkspace({ clientId, initialExerciseId }: TrainingLogProps) {
   const fieldId = useId();
   const [exerciseId, setExerciseId] = useState(() => HYPERTROPHY_EXERCISES.some((item) => item.id === initialExerciseId) ? initialExerciseId! : HYPERTROPHY_EXERCISES[0].id);
+  const [lastExerciseRequest, setLastExerciseRequest] = useState(initialExerciseId);
+  const [pendingExercise, setPendingExercise] = useState<string | null>(null);
+  if (initialExerciseId !== lastExerciseRequest) {
+    setLastExerciseRequest(initialExerciseId);
+    if (initialExerciseId && initialExerciseId !== exerciseId && HYPERTROPHY_EXERCISES.some(item => item.id === initialExerciseId)) setPendingExercise(initialExerciseId);
+  }
   const [date, setDate] = useState(today);
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
@@ -108,9 +114,12 @@ function TrainingLogWorkspace({ clientId, initialExerciseId }: TrainingLogProps)
   return (
     <section className="min-w-0 space-y-5" aria-label="Nhật ký tập của học viên">
       <div className="panel min-w-0 p-4 sm:p-6">
-        <p className="eyebrow">Theo dõi buổi tập</p>
-        <h2 className="mt-2 font-display text-xl font-semibold text-ink">Nhật ký tập luyện</h2>
+        <h2 className="font-display text-xl font-semibold text-ink">Nhật ký tập luyện</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate">Ghi lại bài đã tập, tải, số hiệp và phản hồi.</p>
+        {pendingExercise && <div className="mt-4 rounded-xl border border-rule bg-canvas p-4 text-sm text-ink" role="status">
+          <p>Atlas vừa mở bài {trainingExerciseName(pendingExercise)}. Bản đang ghi vẫn được giữ.</p>
+          <div className="mt-3 flex flex-wrap gap-2"><button type="button" className="button-secondary" onClick={() => { setExerciseId(pendingExercise); setPendingExercise(null); }}>Chọn bài Atlas, giữ các trường khác</button><button type="button" className="button-secondary" onClick={() => setPendingExercise(null)}>Giữ bài đang ghi</button></div>
+        </div>}
         <form onSubmit={save} className="mt-5 min-w-0 space-y-4" aria-busy={saving}>
           <div className="grid min-w-0 gap-4 sm:grid-cols-2">
             <label htmlFor={`${fieldId}-date`} className="min-w-0 text-sm font-medium text-ink">Ngày tập

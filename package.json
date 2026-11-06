@@ -36,7 +36,9 @@
     "evidence:import": "node scripts/ingest-evidence.mjs --apply",
     "check:study-chat": "node --test scripts/check-study-chat.mjs scripts/check-study-chat-route.mjs scripts/check-pubmed.mjs scripts/check-study-message-storage.mjs scripts/check-study-drawer.mjs",
     "check:chat": "node --test scripts/check-ai-runtime.mjs scripts/check-chat-stream.mjs scripts/check-rag-runtime.mjs scripts/check-evidence-import.mjs scripts/check-chat-route.mjs && node scripts/check-evidence-coverage.mjs",
-    "check:ncsf-mocks": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/check-ncsf-mock-exams.mjs scripts/check-ncsf-mock-answers.mjs"
+    "check:ncsf-mocks": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test scripts/check-ncsf-mock-exams.mjs scripts/check-ncsf-mock-answers.mjs",
+    "check:programs": "node --test scripts/check-training-programs.mjs scripts/check-training-program-ui.mjs",
+    "check:programs:sql": "node --test scripts/check-training-programs-sql.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

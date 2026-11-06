@@ -2,6 +2,14 @@
 
 User requirement recorded 2026-10-19: anatomical and medical accuracy takes precedence over visual realism.
 
+## Training program workflow — 2026-11-06
+
+Versioned training programs store PT-entered targets and optional AI drafts; workout records store reported actual sets and a snapshot of the original prescription. Numeric bounds and editable setup defaults are storage/setup limits, not recommended doses or safe-load thresholds. An active program is an application state, not medical clearance, verified credentials or professional approval. Custom exercise/variant names entered by a PT do not inherit Atlas evidence automatically.
+
+AI proposals reuse existing curated exercise evidence with original checked dates, reading scopes, limitations and `reviewedBy: null`. Attached source context records what was supplied to the model, not claim-by-claim entailment or validation of a personalized program. Client-submitted source metadata must match the server catalog; PostgreSQL JSONB object-key reordering is accepted without permitting changed source facts. Generation preserves requested intake and schedule, can return missing-information questions, and never saves or activates a plan. Existing symptom/referral and medication safeguards remain in its system context.
+
+Client consultation receives a bounded factual summary of prior standalone logs and prescribed workouts, including incomplete status; it does not infer clearance or completion from missing entries. Public literature queries retain fixed-topic vocabulary and do not include the profile or training history. Synthetic software/SQL/UI checks do not establish medical accuracy or clinical validation. Storage and verification scope: [training programs](training-program-storage.md).
+
 ## Applying sources
 
 - New medical/anatomical statements need a traceable source at claim level. Prefer established anatomy textbooks, university medical teaching resources, peer-reviewed anatomical research, and specialty guidance appropriate to the claim.

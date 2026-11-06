@@ -52,11 +52,13 @@ export function ChatPanel({
   initialClientId,
   placeholder = "Nhập tình huống lâm sàng, triệu chứng đau cơ học, chỉ số xét nghiệm hoặc bài tập cần kiểm tra...",
   initialPrompt,
+  draftRequest,
 }: {
   clientId?: string;
   initialClientId?: string;
   placeholder?: string;
   initialPrompt?: string;
+  draftRequest?: { id: string; text: string };
 }) {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedId, setSelectedId] = useState<string>(
@@ -84,6 +86,14 @@ export function ChatPanel({
   const inFlight = useRef(false);
   const followLatest = useRef(true);
   const [newContent, setNewContent] = useState(false);
+  const appliedDraftRequest = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!draftRequest || appliedDraftRequest.current === draftRequest.id) return;
+    appliedDraftRequest.current = draftRequest.id;
+    setInput(current => current.trim() ? `${current}\n\n${draftRequest.text}` : draftRequest.text);
+    composer.current?.focus();
+  }, [draftRequest]);
 
   useEffect(() => {
     if (followLatest.current) {

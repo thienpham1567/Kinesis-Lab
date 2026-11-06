@@ -41,9 +41,9 @@ function setup() {
     return url === "/api/clients" ? { ok: true, json: async () => ({ clients: [] }) } : { ok: true, body: {} };
   }, require: id => { assert.ok(id in mocks, `Unexpected import ${id}`); return mocks[id]; } });
   const metrics = { scrollHeight: 2000, clientHeight: 400, scrollTop: 1600, calls: 0, focused: false, scrollTo({ top }) { this.scrollTop = top; this.calls++; }, focus() { this.focused = true; } };
-  const render = () => {
+  const render = (props = {}) => {
     cursor = 0;
-    const tree = exports.ChatPanel({});
+    const tree = exports.ChatPanel(props);
     const log = find(tree, n => n.props.role === "log");
     log.props.ref.current = metrics;
     for (const run of effects.splice(0)) run();
@@ -126,4 +126,20 @@ test("explicit catch-up restores following and does not lose keyboard focus", as
   assert.equal(ui.metrics.scrollTop, ui.metrics.scrollHeight);
   assert.equal(ui.metrics.focused, true);
   assert.equal(find(tree, n => n.type === "button" && text(n).includes("Đến nội dung mới nhất")), undefined);
+});
+
+
+test("body map draft requests append once without clearing the active conversation", async () => {
+  const ui = setup();
+  let tree = await begin(ui);
+  ui.release(); await tick(); tree = ui.render();
+  const messageCount = all(tree).filter(n => n.type === "article").length;
+  find(tree, n => n.type === "textarea").props.onChange({ target: { value: "Manual follow-up" } });
+  const props = { draftRequest: { id: "region-request-1", text: "Synthetic shoulder question" } };
+  ui.render(props); tree = ui.render(props);
+  assert.equal(find(tree, n => n.type === "textarea").props.value, "Manual follow-up\n\nSynthetic shoulder question");
+  assert.equal(all(tree).filter(n => n.type === "article").length, messageCount);
+  tree = ui.render({ draftRequest: { ...props.draftRequest } });
+  assert.equal(find(tree, n => n.type === "textarea").props.value, "Manual follow-up\n\nSynthetic shoulder question", "A request ID is consumed only once");
+  assert.equal(ui.requests.filter(request => request.method === "POST").length, 1, "Appending never sends the new draft");
 });
