@@ -60,10 +60,12 @@ export async function chatComplete(opts: {
   messages: OrMessage[];
   temperature?: number;
   json?: boolean;
+  signal?: AbortSignal;
 }) {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: headers(),
+    signal: opts.signal ? AbortSignal.any([opts.signal, AbortSignal.timeout(50000)]) : AbortSignal.timeout(50000),
     body: JSON.stringify({
       model: opts.model,
       messages: opts.messages,

@@ -3,12 +3,15 @@ import path from "node:path";
 import crypto from "node:crypto";
 import type { BiomarkerRecord, Client, KnowledgeDocument } from "@/lib/types";
 import type { TrainingRecord } from "@/lib/training-log";
+import type { TrainingPlan, TrainingWorkout } from "@/lib/training/program";
 
-type StoreShape = {
+export type StoreShape = {
   clients: Client[];
   biomarkers: BiomarkerRecord[];
   documents: KnowledgeDocument[];
   training_records?: TrainingRecord[];
+  training_plans?: TrainingPlan[];
+  training_workouts?: TrainingWorkout[];
   [key: string]: unknown;
 };
 
@@ -193,7 +196,10 @@ export function readLocalStore(): StoreShape {
   if (store.training_records !== undefined && !Array.isArray(store.training_records)) {
     throw new Error("Nhật ký tập cục bộ không hợp lệ; không ghi đè dữ liệu.");
   }
-  return { ...store, training_records: store.training_records ?? [] };
+  for (const key of ["training_plans", "training_workouts"] as const) {
+    if (store[key] !== undefined && !Array.isArray(store[key])) throw new Error(`Kho dữ liệu ${key} không hợp lệ; không ghi đè dữ liệu.`);
+  }
+  return { ...store, training_records: store.training_records ?? [], training_plans: store.training_plans ?? [], training_workouts: store.training_workouts ?? [] };
 }
 
 export function writeLocalStore(next: StoreShape) {
