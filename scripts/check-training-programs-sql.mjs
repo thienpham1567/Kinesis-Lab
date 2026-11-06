@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { test } from "node:test";
+import { createAppLoader } from "./lib/load-app-module.mjs";
 const modulePath = process.env.TRAINING_SQL_PGLITE_MODULE;
 if (!modulePath)
   throw new Error(
@@ -22,6 +23,22 @@ test("migration RPCs enforce immutable revisions, one active revision, snapshot 
       "create role anon; create role authenticated; create role service_role bypassrls; create table clients(id uuid primary key);",
     );
     await db.exec(migration);
+    const load = createAppLoader({
+      globals: { structuredClone, crypto: globalThis.crypto },
+    });
+    const sources = load("src/lib/training/sources.ts");
+    const catalog = load(
+      "src/lib/clinical/evidence-muscle.ts",
+    ).EXERCISE_EVIDENCE;
+    const context = sources.programSourceContext([Object.keys(catalog)[0]]);
+    const roundTrip = (
+      await db.query("select $1::jsonb as context", [JSON.stringify(context)])
+    ).rows[0].context;
+    assert.doesNotThrow(
+      () => sources.validateSourceContext(roundTrip),
+      "JSONB key ordering must not invalidate source provenance",
+    );
+
     const c = "00000000-0000-4000-8000-000000000001",
       other = "00000000-0000-4000-8000-000000000002";
     await db.query("insert into clients values ($1),($2)", [c, other]);

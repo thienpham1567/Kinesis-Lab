@@ -560,3 +560,36 @@ test("client deletion refuses partial Supabase configuration without touching lo
   assert.equal(res.status, 503);
   assert.deepEqual(f.store(), before);
 });
+
+test("source contexts accept reordered JSON objects while rejecting forged nested metadata and reordered citation arrays", () => {
+  const sources = load("src/lib/training/sources.ts");
+  const catalog = load("src/lib/clinical/evidence-muscle.ts").EXERCISE_EVIDENCE;
+  const exerciseId = Object.keys(catalog).find(
+    (id) => catalog[id].sources.length > 1,
+  );
+  assert.ok(exerciseId);
+  const context = sources.programSourceContext([exerciseId]);
+  function reorder(value) {
+    if (Array.isArray(value)) return value.map(reorder);
+    if (value && typeof value === "object")
+      return Object.fromEntries(
+        Object.entries(value)
+          .reverse()
+          .map(([key, item]) => [key, reorder(item)]),
+      );
+    return value;
+  }
+  const reordered = reorder(context);
+  assert.doesNotThrow(() => sources.validateSourceContext(reordered));
+  for (const forge of [
+    (c) => (c.records[exerciseId].sources[0].url = "https://forged.invalid"),
+    (c) => (c.records[exerciseId].sources[0].checkedAt = "2099-01-01"),
+    (c) => (c.records[exerciseId].reviewedBy = "Invented reviewer"),
+    (c) => c.records[exerciseId].supportedClaims.push("Invented claim"),
+    (c) => c.records[exerciseId].sources.reverse(),
+  ]) {
+    const changed = structuredClone(reordered);
+    forge(changed);
+    assert.throws(() => sources.validateSourceContext(changed));
+  }
+});
