@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useMemo, useState } from "react";
 import type { StudyChatMessage } from "@/lib/chat/illustration-types";
-import { studyAnswerClipboard } from "@/lib/chat/study-copy";
+import { studyAnswerCitations, studyAnswerClipboard } from "@/lib/chat/study-copy";
 import { studyContextLabel } from "@/lib/chat/study-context";
-import { MarkdownAnswer } from "../MarkdownAnswer";
 import { Icon } from "../WorkspaceUI";
+
+const MarkdownAnswer = dynamic(
+  () => import("../MarkdownAnswer").then((module) => module.MarkdownAnswer),
+  { loading: () => <p role="status" className="text-sm leading-6 text-slate">Đang chuẩn bị nội dung…</p> },
+);
 
 export function StudyAnswer({
   message,
@@ -22,6 +27,7 @@ export function StudyAnswer({
   onNavigate?: () => void;
 }) {
   const [copyStatus, setCopyStatus] = useState("");
+  const citations = useMemo(() => studyAnswerCitations(message), [message]);
   async function copy() {
     try {
       await navigator.clipboard.writeText(studyAnswerClipboard(message));
@@ -41,8 +47,9 @@ export function StudyAnswer({
       )}
       <MarkdownAnswer
         text={message.content}
-        citations={message.citations}
+        citations={citations}
         uncitedNotice={message.study?.sourceNotice}
+        streaming={busy}
         className="text-sm"
       />
       {message.study?.warning && (

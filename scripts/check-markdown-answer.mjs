@@ -1,39 +1,11 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import { pathToFileURL } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import ts from "typescript";
-
-const require = createRequire(import.meta.url);
-const source = readFileSync(
-  new URL("../src/components/MarkdownAnswer.tsx", import.meta.url),
-  "utf8",
-);
-const { outputText } = ts.transpileModule(source, {
-  compilerOptions: {
-    jsx: ts.JsxEmit.ReactJSX,
-    module: ts.ModuleKind.ESNext,
-    target: ts.ScriptTarget.ES2022,
-  },
-});
-// "@/..." project modules are transpiled the same way (they have only type imports).
-const local = (specifier) => {
-  const file = readFileSync(new URL(`../src/${specifier.slice(2)}.ts`, import.meta.url), "utf8");
-  const js = ts.transpileModule(file, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
-  return `data:text/javascript;base64,${Buffer.from(js).toString("base64")}`;
-};
-const executable = outputText.replace(
-  /from (["'])([^"']+)\1/g,
-  (_, quote, specifier) =>
-    `from ${quote}${specifier.startsWith("@/") ? local(specifier) : pathToFileURL(require.resolve(specifier)).href}${quote}`,
-);
-const { MarkdownAnswer } = await import(
-  `data:text/javascript;base64,${Buffer.from(executable).toString("base64")}`
-);
-const render = (text, citations = []) =>
-  renderToStaticMarkup(createElement(MarkdownAnswer, { text, citations }));
+import { appModuleUrl } from './lib/load-app-esm.mjs';
+const { MarkdownAnswer } = await import(appModuleUrl('src/components/MarkdownAnswer.tsx'));
+const visible = html => html.replace(/<[^>]+>/g, '');
+const render = (text, citations = [], options = {}) =>
+  renderToStaticMarkup(createElement(MarkdownAnswer, { text, citations, ...options }));
 
 for (const image of [
   "![Diagram](https://example.invalid/pixel?client=private)",
@@ -61,7 +33,7 @@ const cited = render("Nội dung học [APP:handbook:patterns].", citations);
 assert.match(cited, /Các mẫu vận động cơ bản/);
 assert.doesNotMatch(cited, /\[APP:handbook:patterns\]/);
 // Inline marker is a small numbered ref; the label appears only in the source list.
-assert.match(cited, /Nội dung học<sup[^>]*>\[1\]<\/sup>\./);
+assert.match(visible(cited), /Nội dung học\[1\]\./);
 assert.doesNotMatch(cited, /【/);
 assert.equal(cited.match(/Các mẫu vận động cơ bản<\/p>/g)?.length, 1);
 // Real model output (local run 2026-11-05): per-source markers, adjacent and merged.
@@ -76,8 +48,8 @@ for (const answer of [
 ]) {
   const html = render(answer, knee);
   assert.doesNotMatch(html, /APP:|【|Khớp Gối[^<]*· 2/, answer);
-  assert.match(html, /rectus femoris<\/strong><sup[^>]*>\[1,2\]<\/sup>\./, answer);
-  assert.match(html, /duỗi gối<sup[^>]*>\[2\]<\/sup>/, answer);
+  assert.match(visible(html), /rectus femoris\[1,2\]\./, answer);
+  assert.match(visible(html), /duỗi gối\[2\]/, answer);
   // Each number lists only the specific source it points to.
   assert.match(html, /\[1\] Khớp Gối[^<]*<\/p><p>[^<]*<a href="https:\/\/example.org\/knee\/2"/, answer);
   assert.match(html, /\[2\] Khớp Gối[^<]*<\/p><p>[^<]*<a href="https:\/\/example.org\/knee\/7"/, answer);
@@ -88,7 +60,7 @@ const renderNotice = (text, list) => renderToStaticMarkup(createElement(Markdown
 assert.match(renderNotice("Không có nguồn.", knee), /Chưa tra cứu được PubMed/);
 assert.doesNotMatch(renderNotice("Có nguồn [APP:anatomy:knee:2].", knee), /Chưa tra cứu được PubMed/);
 const mixed = render("Ý A [APP:anatomy:knee:2] [APP:unknown:x].", knee);
-assert.match(mixed, /<sup[^>]*>\[1\]<\/sup> \[APP:unknown:x\]/);
+assert.match(visible(mixed), /\[1\] \[APP:unknown:x\]/);
 const qualified = render("Theo quy ước [APP:handbook:patterns:Quy ước của app].", citations);
 assert.match(qualified, /Các mẫu vận động cơ bản · Quy ước của app/);
 assert.doesNotMatch(qualified, /\[APP:/);
@@ -109,3 +81,61 @@ const research = render('Đối chiếu [RAG:who-chunk] và [PMID:35006527].', r
 assert.match(research, /WHO 2020 · Khuyến nghị/);
 assert.match(research, /Giới hạn của EMG/);
 assert.doesNotMatch(research, /\[(RAG|PMID):/);
+
+// Prose is the only eligible citation context, across every Markdown delimiter.
+for (const text of [
+  '~~~text\n[APP:handbook:patterns]\n~~~',
+  '``[APP:handbook:patterns]``',
+  '[Lien ket [APP:handbook:patterns]](https://example.org)',
+  '$[APP:handbook:patterns]$',
+  '![Alt [APP:handbook:patterns]](https://example.org/image)',
+]) assert.doesNotMatch(render(text, citations), /Nguồn đối chiếu trong câu trả lời/, text);
+
+assert.match(cited, /<button[^>]*aria-label="Xem nguồn 1"/);
+assert.match(cited, /id="[^"]+-source-1"/);
+assert.match(formatted, /aria-label="Bảng trong câu trả lời"/);
+assert.match(formatted, /tabindex="0"/);
+assert.match(formatted, /Sao chép bảng/);
+assert.match(render('$\\frac{1}{2}$'), /class="katex"/);
+assert.match(render('$\\frac{1}{2}$'), /<math[^>]*xmlns=/);
+assert.doesNotThrow(() => render('$\\notARealCommand{x}$'));
+assert.doesNotMatch(render('$\\href{javascript:alert(1)}{x}$'), /href="javascript:/);
+assert.match(render('**Đang giải thích', [], { streaming: true }), /<strong>Đang giải thích<\/strong>/);
+assert.doesNotMatch(render('[Tài liệu](https://example.or', [], { streaming: true }), /<a\b/);
+assert.doesNotMatch(render('[Tài liệu](https://example.org)', [], { streaming: true }), /<a\b/);
+assert.match(render('**Đang giải thích'), /\*\*Đang giải thích/);
+
+const { studyAnswerClipboard } = await import(appModuleUrl('src/lib/chat/study-copy.ts'));
+const copy = studyAnswerClipboard({ content: '`[PMID:35006527]`\n\nÝ chính [RAG:who-chunk].', citations: researchCitations });
+assert.match(copy, /`\[PMID:35006527\]`/);
+assert.match(copy, /Ý chính\s+\[1\]/);
+assert.doesNotMatch(copy, /\[2\]|Giới hạn của EMG/);
+console.log('Citation context/copy parity, source controls, tables, math and streaming checks passed.');
+const unresolvedGroup = render('[RAG:who-chunk, PMID:999999]', researchCitations);
+assert.doesNotMatch(unresolvedGroup, /Nguồn đối chiếu trong câu trả lời/);
+const linkCopy = studyAnswerClipboard({ content: '[Ví dụ [PMID:35006527]](https://example.org)\n\nÝ chính [RAG:who-chunk].', citations: researchCitations });
+assert.doesNotMatch(linkCopy, /Giới hạn của EMG|\[2\]/);
+assert.match(linkCopy, /Ý chính\s+\[1\]/);
+for (const prefix of ['**Giải thích', '[Nguồn](https://example.or', '$$\\frac{1}{', '[RAG:who-', '~~~text\n[RAG:who-chunk]']) {
+  assert.doesNotThrow(() => render(prefix, researchCitations, { streaming: true }));
+}
+assert.doesNotMatch(render('$\\includegraphics{https://example.org/pixel}$'), /<img\b|src="https:/);
+const { prepareAnswerMarkdown } = await import(appModuleUrl('src/lib/chat/answer-markdown.ts'));
+const repeated = prepareAnswerMarkdown('A [RAG:who-chunk]. B [RAG:who-chunk].', researchCitations);
+assert.equal(repeated.cited.length, 1);
+assert.equal(repeated.cited[0].n, 1);
+console.log('Mixed unresolved references are atomic; copy exclusions and streamed prefixes passed.');
+
+// Streamdown must process individual blocks without duplicating the full answer.
+const blocks = render('Đoạn một [RAG:who-chunk].\n\nĐoạn hai [PMID:35006527].\n\nĐoạn ba [RAG:who-chunk].', researchCitations, { streaming: true });
+assert.match(blocks, /data-answer-renderer="streamdown"/);
+assert.equal((visible(blocks).match(/Đoạn một/g) ?? []).length, 1);
+assert.match(visible(blocks), /Đoạn một\[1\]/);
+assert.match(visible(blocks), /Đoạn hai\[2\]/);
+assert.match(visible(blocks), /Đoạn ba\[1\]/);
+const referenced = render('[Nhãn [RAG:who-chunk]][ref]\n\nĐoạn khác [PMID:35006527].\n\n[ref]: https://example.org', researchCitations, { streaming: true });
+assert.match(visible(referenced), /Đoạn khác\[1\]/);
+assert.doesNotMatch(referenced, /\[2\] WHO/);
+assert.match(render('Chú thích[^a].\n\n[^a]: Ghi chú đơn giản.'), /Ghi chú đơn giản/);
+assert.match(render('```text\n**code literal**\n```'), /<pre><code[^>]*>\*\*code literal\*\*/);
+console.log('Streamdown block/reference/code fixtures passed.');

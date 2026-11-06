@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "katex/dist/katex.min.css";
+@source "../../../node_modules/streamdown/dist/*.js";
 
 :root,
 html[data-theme="linen"] {
@@ -1003,6 +1005,9 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
 .md-answer > * + * {
   margin-top: 0.6em;
 }
+.md-stream > * + * {
+  margin-top: 0.6em;
+}
 .md-answer h1,
 .md-answer h2,
 .md-answer h3,
@@ -1102,6 +1107,70 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   border: 1px solid var(--rule);
   border-radius: 8px;
 }
+.md-table,
+.md-answer .katex-display {
+  max-width: 100%;
+  min-width: 0;
+}
+.md-answer .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.3em;
+}
+.md-table-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--ink);
+}
+.md-table-tools button {
+  min-height: 36px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.md-table-tools button:hover:not(:disabled),
+.md-citation button:hover {
+  background: var(--cobalt-soft);
+}
+.md-table-tools button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+.md-citation {
+  margin-left: 0.15em;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.md-citation button {
+  display: inline-block;
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.md-table-scroll:focus-visible,
+.md-table-tools button:focus-visible,
+.md-citation button:focus-visible,
+.md-source:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.md-source {
+  scroll-margin-block: 12px;
+}
+.md-sources summary {
+  min-height: 32px;
+  padding-block: 6px;
+  color: var(--ink);
+}
 .md-answer table {
   width: 100%;
   border-collapse: collapse;
@@ -1111,7 +1180,7 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
 }
 .md-answer th,
 .md-answer td {
-  min-width: 96px;
+  min-width: 144px;
   padding: 7px 10px;
   border-bottom: 1px solid var(--rule);
   text-align: left;

@@ -10,6 +10,15 @@ const user = message('00000000-0000-4000-8000-000000000001', 'user', 'Giải th�
 const context = { structureId: 'za-selected', name: 'Cơ delta', english: 'Deltoid', side: 'right', area: 'upper', groupId: 'deltoids' };
 const meta = { context, sources: [{ id: 'PMID:123', title: 'Anatomy', url: 'https://pubmed.ncbi.nlm.nih.gov/123/', checkedAt: '2026-10-29', access: 'Metadata và abstract' }], actions: [{ label: 'Xem trên 3D', href: '/atlas?tab=3d&area=upper&structure=za-selected' }] };
 
+test('study formatting supports the drawer, requested tables and LaTeX without relaxing source rules', () => {
+  const { studyContextBlock } = moduleAt('src/lib/ai/prompts/clinical-pt-system.ts');
+  const prompt = studyContextBlock('/knowledge');
+  assert.doesNotMatch(prompt, /khung chat nổi|Không mở bảng/);
+  assert.match(prompt, /bảng Markdown/);
+  assert.match(prompt, /LaTeX/);
+  assert.match(prompt, /không tự bổ sung chi tiết y khoa không có bằng chứng/);
+});
+
 test('scroll follows only when reader stays near the bottom', () => {
   const { isNearStudyBottom } = moduleAt('src/lib/chat/study-scroll.ts');
   assert.equal(isNearStudyBottom({ scrollHeight: 2000, clientHeight: 400, scrollTop: 1590 }), true);
@@ -80,6 +89,14 @@ test('copy response replaces internal citation identifiers with readable source 
   const uncited = studyAnswerClipboard({ ...assistant, content: 'Không trích.', study: { ...meta, sourceNotice: 'Chưa tra cứu được PubMed.', warning: 'Có trích dẫn không khớp.' } });
   assert.ok(uncited.includes('Chưa tra cứu được PubMed.') && uncited.includes('Có trích dẫn không khớp.'));
   assert.ok(!uncited.includes(meta.sources[0].url), 'uncited supplied sources are not copied');
+});
+
+test('legacy saved answers expose the same source set to display and clipboard', () => {
+  const { studyAnswerCitations, studyAnswerClipboard } = moduleAt('src/lib/chat/study-copy.ts');
+  const answer = { ...assistant, content: 'Đối chiếu [PMID:123].', study: meta };
+  assert.equal(studyAnswerCitations(answer)[0].id, 'PMID:123');
+  assert.equal(studyAnswerCitations({ ...answer, citations: studyAnswerCitations(answer) }).length, 1);
+  assert.match(studyAnswerClipboard(answer), /\[1\] PubMed 1/);
 });
 
 test('copy supports every displayed source-qualifier boundary without misidentifying a prefix', () => {

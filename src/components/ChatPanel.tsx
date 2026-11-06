@@ -417,7 +417,7 @@ export function ChatPanel({
                 </span>
               </div>
               {m.role === "assistant" && m.content ? (
-                <MarkdownAnswer text={m.content} citations={m.citations} className="text-sm" />
+                <MarkdownAnswer text={m.content} citations={m.citations} streaming={busy && idx === messages.length - 1} className="text-sm" />
               ) : (
                 <div className="whitespace-pre-wrap text-sm leading-7 text-ink">
                   {m.content ||

@@ -28,9 +28,9 @@ const ID_START = /\s*[,;]\s*(?=(?:APP|RAG|PMID):)/;
  * "[APP:rec:2, APP:rec:7]", "[APP:rec:2,7]" and adjacent markers (one group).
  * Unknown IDs stay literal so unsupported citations remain visible.
  */
-export function citationNumbering(citations: readonly ChatAnswerCitation[]) {
+export function citationNumbering(citations: readonly ChatAnswerCitation[], seed: readonly (readonly [string, CitedRef])[] = []) {
   const sorted = [...citations].sort((a, b) => b.id.length - a.id.length);
-  const refs = new Map<string, CitedRef>();
+  const refs = new Map<string, CitedRef>(seed);
   const number = (key: string, label: string, sources: EvidenceSource[]) => {
     const ref = refs.get(key) ?? { n: refs.size + 1, label, sources };
     refs.set(key, ref);
@@ -51,8 +51,13 @@ export function citationNumbering(citations: readonly ChatAnswerCitation[]) {
     const out: (string | number[])[] = [];
     let last = 0;
     for (const match of value.matchAll(MARKER)) {
+      const before = new Map(refs);
       const resolved = match[1].split(ID_START).map(resolve);
-      if (resolved.some((item) => !item)) continue;
+      if (resolved.some((item) => !item)) {
+        refs.clear();
+        before.forEach((ref, key) => refs.set(key, ref));
+        continue;
+      }
       const prev = out.at(-1);
       const group = match.index === last && Array.isArray(prev) ? prev : [];
       if (group !== prev) {
@@ -66,7 +71,7 @@ export function citationNumbering(citations: readonly ChatAnswerCitation[]) {
     if (last < value.length) out.push(value.slice(last));
     return out;
   }
-  return { split, refs: () => [...refs.values()] };
+  return { split, refs: () => [...refs.values()], snapshot: () => JSON.stringify([...refs]) };
 }
 
 /** Session storage is untrusted; preserve only bounded source display metadata. */
