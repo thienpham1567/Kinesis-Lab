@@ -4,6 +4,7 @@ import {
   type MovementSourceId,
 } from "./movement-sources";
 import type { AnatomyRegionId } from "./anatomy-atlas";
+import { POSTURE_TOPIC } from "./posture-handbook";
 
 export type Cited = { sourceIds?: MovementSourceId[]; authored?: boolean };
 export type HandbookItem = Cited & { lead?: string; text: string };
@@ -12,12 +13,14 @@ export type HandbookTable = {
   rows: (Cited & { cells: string[] })[];
 };
 export type HandbookPart = Cited & {
+  id?: string;
   label: string;
   intro?: string;
   items?: HandbookItem[];
   table?: HandbookTable;
   note?: string;
   chart?: "knee-flexion";
+  illustration?: Pick<HandbookFigure, "src" | "width" | "height" | "alt" | "title" | "caption">;
 };
 export type HandbookFigure = {
   src: string;
@@ -33,7 +36,7 @@ export type HandbookFigure = {
   changes: string;
 };
 export type HandbookTopic = Cited & {
-  id: "patterns" | "symmetry" | "rom" | "control";
+  id: "posture" | "patterns" | "symmetry" | "rom" | "control";
   tab: string;
   kicker: string;
   title: string;
@@ -61,6 +64,7 @@ export const HANDBOOK_LESSON: HandbookItem[] = [
 ];
 
 export const HANDBOOK: HandbookTopic[] = [
+  POSTURE_TOPIC,
   {
     id: "patterns",
     tab: "Mẫu chuyển động",

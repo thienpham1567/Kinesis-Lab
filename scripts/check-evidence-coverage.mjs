@@ -39,7 +39,7 @@ const domains = [
   ["exercise", load("src/lib/clinical/muscle-hypertrophy-atlas.ts").HYPERTROPHY_EXERCISES, 13],
   ["trigger", load("src/lib/clinical/trigger-point-atlas.ts").TRIGGER_POINT_MUSCLES, 10],
   ["pain-site", load("src/lib/clinical/trigger-point-atlas.ts").PAIN_SITE_CULPRIT_MAP, 8],
-  ["handbook", load("src/lib/clinical/movement-handbook.ts").HANDBOOK, 4],
+  ["handbook", load("src/lib/clinical/movement-handbook.ts").HANDBOOK, 5],
   ["rom", load("src/lib/clinical/rom-norms.ts").ROM_MOVEMENTS, 17],
   ["catalog", manifest.structures, 1189],
 ];
@@ -97,6 +97,7 @@ for (const [query, domain] of [["metformin insulin beta blocker", "medication"],
   assert.ok(selected.length && selected.some((entry) => entry.domain === domain), `${query}: relevant records missing`);
   assert.ok(selected.every((entry) => entry.evidence.status !== "source-only"));
 }
+assert.ok(selectCuratedEvidence("posture correction").some((entry) => entry.id === "handbook:posture"));
 for (const [query, id] of [["Internal Oblique", "internal-oblique"], ["Transversus abdominis", "transversus-abdominis"], ["Supraspinatus", "supraspinatus"], ["Infraspinatus", "infraspinatus"], ["Subscapularis", "subscapularis"], ["Teres minor", "teres-minor"]]) {
   const selected = selectCuratedEvidence(query);
   const individual = selected.find((entry) => entry.id === `structure:${id}`);
@@ -157,6 +158,11 @@ const adapters = {
   },
   "@/lib/clinical/safety": { formatClient: () => "PRIVATE_TEST_NAME", safetyNotes: () => "synthetic safety" },
   "@/lib/local-store": { readLocalStore: () => { throw new Error("unexpected local branch"); } },
+  "@/lib/training/repository": {
+    trainingUsesSupabase: () => true,
+    trainingRepository: { recentHistory: async () => ({ legacy: [], workouts: [] }) },
+  },
+  "@/lib/training/history": load("src/lib/training/history.ts"),
   "@/lib/supabase/server": { hasSupabase: () => true, supabase: () => db },
   "@/lib/tools/pubmed": { formatPubMed: () => "", searchPubMed: async (query) => { calls.publicQueries.push(query); return []; } },
   "@/lib/tools/rag-search": { formatRag: () => "", retrieveKnowledge: async () => ({ hits: [], retrieval: { status: "empty", message: "test empty" } }) },

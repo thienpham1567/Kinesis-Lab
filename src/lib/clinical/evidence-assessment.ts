@@ -17,6 +17,7 @@ export const HANDBOOK_EVIDENCE: Record<string, EvidenceRecord> = Object.fromEntr
     ...(topic.id === 'control' ? ['Ưu thế hướng chú ý ngoài còn tranh luận về thiên lệch công bố. Cochrane 2016 tìm kiếm đến 04/2015; WHO quick guide không xác nhận từng cue của app.'] : []),
     ...(topic.id === 'symmetry' ? ['TUG đo di chuyển chức năng; không phải chỉ số bất đối xứng. Không dùng LSI hay một tỷ lệ chung để cấp phép trở lại thể thao.'] : []),
     ...(topic.id === 'patterns' ? ['Các nhóm mẫu là quy ước huấn luyện. Hình nghiên cứu là điều kiện đo ở người khỏe, không phải tư thế an toàn phổ quát.'] : []),
+    ...(topic.id === 'posture' ? ['Quan sát tư thế và đáp ứng khi đổi nhiệm vụ chỉ phục vụ mô tả/huấn luyện. Không suy nguyên nhân đau, mất cân bằng cơ hay tiên lượng chấn thương từ ảnh hoặc sơ đồ.'] : []),
   ],
   reviewedBy: null,
   status: 'limited',

@@ -2,6 +2,12 @@
 
 Checked/downloaded 2026-10-22. These assets illustrate source material; they do not establish a validated examination, ideal exercise form or individual measurement.
 
+## Posture assessment diagrams
+
+- `posture-standing-views.svg` and `posture-task-views.svg` are original Kinesis Lab diagrams authored on 2026-11-09. They use simplified figures and do not reproduce a published photo, copyrighted teaching plate, study participant, or measured anatomy.
+- The standing diagram labels viewpoints and broad regions to observe. [Ferreira et al.](https://pmc.ncbi.nlm.nih.gov/articles/PMC2910855/) provides background on standardized camera setup only. Its photographs, anatomical measurement points, software and measurement precision are outside the diagram's scope.
+- The chair and reach drawings accompany authored coaching examples. No drawn pose represents a normative alignment, clinical test score, or recommendation for a specific learner.
+
 ## Squat laboratory setup
 
 - Local: `squat-lab-lorenzetti-2018.png`, 896×857, 361205 bytes.

@@ -1,13 +1,15 @@
 "use client";
 
 import { Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { LoadingState, PageHeading } from "@/components/WorkspaceUI";
 import { MovementTopic } from "@/components/movement/MovementTopic";
-import {
-  HANDBOOK,
-  type HandbookTopic,
-} from "@/lib/clinical/movement-handbook";
+import { HANDBOOK } from "@/lib/clinical/movement-handbook";
+
+const [posture, ...supplementary] = HANDBOOK;
+const pageTitle = "Đánh giá & điều chỉnh tư thế";
+const pageDescription = "Bài học tiếng Việt cho PT, có hình minh họa và nguồn đối chiếu.";
 
 export default function MovementHandbookPage() {
   return (
@@ -17,29 +19,10 @@ export default function MovementHandbookPage() {
   );
 }
 
-/* Khi tải, giữ nguyên tiêu đề và hàng tab để trang không nhảy hình. */
 function HandbookFallback() {
   return (
-    <div className="space-y-5" aria-busy="true">
-      <PageHeading
-
-        title="Sổ tay vận động"
-        description="Bốn nền tảng cho PT, với kiến thức trọng tâm, ví dụ thực hành và đường dẫn về tài liệu gốc ngay cạnh nhận định."
-      />
-      <div
-        className="tab-bar grid grid-cols-2 sm:grid-cols-4"
-        aria-hidden="true"
-      >
-        {HANDBOOK.map((t, i) => (
-          <span
-            key={t.id}
-            className="tab-button px-1.5 text-center sm:px-3.5"
-            aria-pressed={i === 0}
-          >
-            {t.tab}
-          </span>
-        ))}
-      </div>
+    <div className="mx-auto max-w-6xl space-y-5" aria-busy="true">
+      <PageHeading title={pageTitle} description={pageDescription} />
       <LoadingState className="panel">
         Đang mở sổ tay…
       </LoadingState>
@@ -47,39 +30,40 @@ function HandbookFallback() {
   );
 }
 function HandbookInner() {
-  const searchParams = useSearchParams(),
-    router = useRouter();
+  const searchParams = useSearchParams();
   const topic =
-    HANDBOOK.find((t) => t.id === searchParams.get("tab")) ?? HANDBOOK[0];
-  function selectTab(id: HandbookTopic["id"]) {
-    router.replace(
-      id === HANDBOOK[0].id ? "/movement" : `/movement?tab=${id}`,
-      { scroll: false },
-    );
-  }
+    HANDBOOK.find((t) => t.id === searchParams.get("tab")) ?? posture;
+  const isPosture = topic.id === posture.id;
   return (
-    <div className="space-y-5">
+    <div className={isPosture ? "mx-auto max-w-6xl space-y-5" : "space-y-5"}>
       <PageHeading
-
-        title="Sổ tay vận động"
-        description="Bốn nền tảng cho PT, với kiến thức trọng tâm, ví dụ thực hành và đường dẫn về tài liệu gốc ngay cạnh nhận định."
+        title={isPosture ? pageTitle : "Sổ tay vận động"}
+        description={isPosture ? pageDescription : "Kiến thức bổ trợ cho quá trình đánh giá và huấn luyện học viên."}
       />
-      <div
-        className="tab-bar grid grid-cols-2 sm:grid-cols-4"
-        aria-label="Các mục trong sổ tay"
-      >
-        {HANDBOOK.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            aria-pressed={topic.id === t.id}
-            onClick={() => selectTab(t.id)}
-            className="tab-button px-1.5 text-center sm:px-3.5"
-          >
-            {t.tab}
-          </button>
-        ))}
-      </div>
+      <nav aria-label="Các mục trong sổ tay" className="space-y-2">
+        {!isPosture && (
+          <Link href="/movement" className="button-secondary inline-flex">
+            Quay về đánh giá tư thế
+          </Link>
+        )}
+        <details open={!isPosture} className="rounded-xl border border-rule bg-sheet px-4">
+          <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold text-ink focus-visible:outline-2 focus-visible:outline-cobalt">
+            Chủ đề bổ trợ · {supplementary.length}
+          </summary>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-rule py-2">
+            {supplementary.map((item) => (
+              <Link
+                key={item.id}
+                href={`/movement?tab=${item.id}`}
+                aria-current={item.id === topic.id ? "page" : undefined}
+                className="inline-flex min-h-11 items-center rounded px-1 text-sm font-medium text-ink underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-cobalt aria-[current=page]:font-bold"
+              >
+                {item.tab}
+              </Link>
+            ))}
+          </div>
+        </details>
+      </nav>
       <MovementTopic key={topic.id} topic={topic} />
     </div>
   );

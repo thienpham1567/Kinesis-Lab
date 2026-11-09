@@ -346,15 +346,16 @@ html[data-theme="lilac"] {
   --flare: var(--p4);
 }
 
-/* Atlas labels also sit on tinted controls. Resolve these from the active theme before scoping them. */
+/* Resolve these from the active theme before applying them to the learning surfaces. */
 :root {
-  --atlas-accent-ink: color-mix(in srgb, var(--ink) 65%, var(--cobalt));
-  --atlas-secondary-ink: color-mix(in srgb, var(--ink) 35%, var(--slate));
+  --learning-accent-ink: color-mix(in srgb, var(--ink) 65%, var(--cobalt));
+  --learning-secondary-ink: color-mix(in srgb, var(--ink) 35%, var(--slate));
 }
 
-#atlas-learning-studio {
-  --cobalt: var(--atlas-accent-ink);
-  --slate: var(--atlas-secondary-ink);
+#atlas-learning-studio,
+#movement-article-posture {
+  --cobalt: var(--learning-accent-ink);
+  --slate: var(--learning-secondary-ink);
 }
 
 @theme inline {
@@ -970,6 +971,9 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   font-size: 1rem;
   line-height: 1.8;
   max-width: 72ch;
+}
+#movement-article-posture :where(p.text-sm, ul.text-sm) {
+  max-width: 54ch;
 }
 @media (max-width: 639px) {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),

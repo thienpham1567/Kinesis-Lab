@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="470" viewBox="0 0 960 470" role="img" aria-labelledby="title desc">
+  <title id="title">Hai nhiệm vụ mẫu để quan sát</title>
+  <desc id="desc">Bên trái là một người bắt đầu ngồi rồi đứng lên. Bên phải là một người bắt đầu với tay thấp rồi đưa một tay lên. Chọn điều kiện phù hợp với học viên.</desc>
+  <defs>
+    <g id="head" stroke="#324652" stroke-width="3" stroke-linejoin="round">
+      <path d="M-11 29l-1 22 22 1-1-22z" fill="#efd7bf"/>
+      <path d="M-25 10c0-20 19-27 34-18 8 4 11 14 10 22l7 9-8 4-3 11c-6 9-30 3-34-9-4-7-6-12-6-19z" fill="#efd7bf"/>
+      <path d="M-23 27c-10-18-6-37 12-41 14-5 27 1 30 14C7-5 4 6-2 12c-6-4-11 3-8 8l-6 9z" fill="#5d4a42"/>
+    </g>
+    <g id="standing">
+      <use href="#head" x="0" y="100"/>
+      <path d="M-18 150c-18 15-19 57-17 80l3 40h54l3-30c1-30 3-64-14-88-7 5-22 3-29-2z" fill="#b9d2cd"/>
+      <path d="M-32 262l54 1 2 52-6 64h-24l-3-55-15 55h-21l4-63z" fill="#637d87"/>
+      <path d="M-27 378h18l10 9c2 4-1 6-7 6h-41l2-9zm26 0h19c7 4 20 8 22 12 0 3-3 4-9 4H-5z" fill="#ece9df"/>
+    </g>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0 0l9 4.5-9 4.5z" fill="#96512b"/>
+    </marker>
+  </defs>
+  <rect width="960" height="470" fill="#f7f4eb"/>
+  <path d="M480 27v418" stroke="#d0c6b7" stroke-width="2"/>
+  <g fill="#273c44" font-family="system-ui, sans-serif" font-weight="700" font-size="33" text-anchor="middle">
+    <text x="240" y="54">Đứng lên từ ghế</text><text x="720" y="54">Đưa tay lên</text>
+  </g>
+  <path d="M47 396h386m94 0h386" stroke="#a59d91" stroke-width="2"/>
+  <g stroke="#324652" stroke-width="3" stroke-linejoin="round">
+    <path d="M52 211h12v70h84v14h-15v101h-10V295H69v101H59V295h-7z" fill="#dfcbb1"/>
+    <use href="#head" x="121" y="156"/>
+    <path d="M104 205c-14 6-20 25-25 41l-8 35 36 15 21-40c12-23 14-37 1-49-9 6-17 5-25-2z" fill="#b9d2cd"/>
+    <path d="M72 278c-4 23 10 36 27 36h58l5 64h23l3-71c1-12-7-21-20-23l-55-8z" fill="#637d87"/>
+    <path d="M161 377l23-1c6 6 19 10 24 13 3 4-2 5-6 5h-43z" fill="#ece9df"/>
+    <path d="M111 215l19 4-4 32 37 26c7 4 6 12-2 14-5 2-12-1-19-5l-41-23c-5-3-5-9-3-16z" fill="#efd7bf"/>
+    <path d="M104 204c8-3 21 1 28 10l-4 20-30-5z" fill="#b9d2cd"/>
+    <g transform="translate(361 0)">
+      <use href="#standing"/>
+      <path d="M1 176l21 3-3 55-2 43c-1 9-9 12-14 7-2-2-2-8-3-15l-2-35z" fill="#efd7bf"/>
+      <path d="M-10 158c8-6 24-2 30 7l4 28-30 3z" fill="#b9d2cd"/>
+    </g>
+    <g transform="translate(601 0)">
+      <use href="#standing"/>
+      <path d="M1 176l21 3-3 55-2 43c-1 9-9 12-14 7-2-2-2-8-3-15l-2-35z" fill="#efd7bf"/>
+      <path d="M-10 158c8-6 24-2 30 7l4 28-30 3z" fill="#b9d2cd"/>
+    </g>
+    <g transform="translate(825 0)">
+      <use href="#standing"/>
+      <path d="M4 170l20-38 15-34 13-22 11 6-7 25-13 36-12 41z" fill="#efd7bf"/>
+      <path d="M4 158l11-18 27 13-13 31-26 4z" fill="#b9d2cd"/>
+    </g>
+  </g>
+  <g stroke="#96512b" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)">
+    <path d="M220 224h76"/><path d="M676 224h77"/>
+  </g>
+  <g font-family="system-ui, sans-serif" font-weight="600" font-size="29" fill="#273c44" text-anchor="middle">
+    <text x="130" y="446">Bắt đầu</text><text x="361" y="446">Đứng lên</text>
+    <text x="601" y="446">Bắt đầu</text><text x="825" y="446">Đưa tay lên</text>
+  </g>
+</svg>

@@ -11,16 +11,26 @@ const LINKS = [
   { hash: "sources", label: "Nguồn" },
 ] as const;
 
+const POSTURE_LINKS = [
+  { hash: "screening", label: "Sàng lọc" },
+  { hash: "standing", label: "Tư thế đứng" },
+  { hash: "tasks", label: "Vận động" },
+  { hash: "adjust", label: "Điều chỉnh" },
+  { hash: "record", label: "Ghi kết quả" },
+  { hash: "sources", label: "Nguồn" },
+] as const;
+
 /* Mục lục dính đầu bài kèm thước tiến độ đọc theo vị trí cuộn. */
 export function ReadingProgress({ topicId }: { topicId: string }) {
   const [position, setPosition] = useState({ percent: 0, activeIndex: 0 });
   const navRef = useRef<HTMLElement>(null);
+  const links = topicId === "posture" ? POSTURE_LINKS : LINKS;
 
   useEffect(() => {
     const article = document.getElementById(`movement-article-${topicId}`);
     if (!article) return;
     const scroller = article.closest<HTMLElement>("[data-workspace-scroll]");
-    const sections = LINKS.map((link) => document.getElementById(`movement-${topicId}-${link.hash}`));
+    const sections = links.map((link) => document.getElementById(`movement-${topicId}-${link.hash}`));
     const bottomNav = document.querySelector<HTMLElement>(".workspace-mobile-nav");
     let raf = 0;
     const update = () => {
@@ -55,7 +65,7 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
       window.removeEventListener("resize", onScroll);
       observer.disconnect();
     };
-  }, [topicId]);
+  }, [links, topicId]);
 
   return (
     <nav
@@ -65,7 +75,7 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
     >
       <div className="overflow-hidden rounded-xl border border-rule bg-sheet shadow-sm">
         <div className="flex flex-wrap items-center gap-1.5 p-1.5">
-          {LINKS.map((link, index) => (
+          {links.map((link, index) => (
             <a
               key={link.hash}
               href={`#movement-${topicId}-${link.hash}`}

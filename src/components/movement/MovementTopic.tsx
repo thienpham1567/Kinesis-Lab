@@ -80,12 +80,13 @@ function Items({
   items: HandbookItem[];
   topic: HandbookTopic;
 }) {
+  const isPosture = topic.id === "posture";
   return (
-    <ul className="max-w-4xl space-y-3 text-sm leading-6 text-ink">
+    <ul className={`max-w-4xl text-sm leading-6 text-ink ${isPosture ? "divide-y divide-rule" : "space-y-3"}`}>
       {items.map((item) => (
         <li
           key={(item.lead ?? "") + item.text}
-          className="border-l-2 border-rule pl-3"
+          className={isPosture ? "py-3 first:pt-0 last:pb-0" : "border-l-2 border-rule pl-3"}
         >
           {item.lead ? <strong>{item.lead} </strong> : null}
           {item.text}
@@ -97,6 +98,9 @@ function Items({
 }
 export function MovementTopic({ topic }: { topic: HandbookTopic }) {
   const figure = topic.figure;
+  const isPosture = topic.id === "posture";
+  const checkedAt = topic.sources.reduce((latest, source) =>
+    source.checkedAt > latest ? source.checkedAt : latest, "");
   const kneeMovement = ROM_MOVEMENTS.find((m) => m.id === "knee_flexion");
   const knee =
     kneeMovement && typeof kneeMovement.means !== "number"
@@ -110,9 +114,9 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
     >
       <header className="panel space-y-3 p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="eyebrow text-cobalt">{topic.kicker}</p>
+          {isPosture ? <span className="text-xs font-medium text-slate">{topic.kicker}</span> : <p className="eyebrow text-cobalt">{topic.kicker}</p>}
           <span className="text-xs text-slate">
-            Đối chiếu 22/10/2026 · {topic.sources.length} nguồn
+            Đối chiếu đến {checkedAt.split("-").reverse().join("/")} · {topic.sources.length} nguồn
           </span>
         </div>
         <h2
@@ -123,14 +127,21 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         </h2>
         <p className="max-w-3xl text-sm leading-6 text-ink">
           {topic.gist}
-          <Attribution block={topic} topic={topic} />
+          {!isPosture && <Attribution block={topic} topic={topic} />}
         </p>
-        <a
-          href={`#movement-${topic.id}-sources`}
-          className="inline-block text-xs font-semibold text-cobalt underline underline-offset-4"
-        >
-          Nguồn nào hỗ trợ nội dung này? ↓
-        </a>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+          {isPosture && (
+            <a href={`#movement-${topic.id}-standing`} className="button-secondary inline-flex min-h-11 items-center">
+              Xem hình ba góc quan sát
+            </a>
+          )}
+          <a
+            href={`#movement-${topic.id}-sources`}
+            className="inline-flex min-h-11 items-center text-xs font-semibold text-cobalt underline underline-offset-4"
+          >
+            Nguồn nào hỗ trợ nội dung này? ↓
+          </a>
+        </div>
       </header>
 
       <ReadingProgress topicId={topic.id} />
@@ -150,7 +161,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
                 <span className="pt-0.5 font-mono text-xs text-cobalt">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <div className="min-w-0 max-w-[72ch]">
+                <div className={`min-w-0 ${isPosture ? "max-w-[58ch]" : "max-w-[72ch]"}`}>
                   <h3 className="text-sm font-semibold text-ink">
                     {point.title}
                   </h3>
@@ -218,7 +229,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         ) : null}
       </div>
 
-      <MovementAnatomy
+      {!isPosture && <MovementAnatomy
         topicId={topic.id}
         regions={topic.anatomy.regions}
         note={
@@ -227,10 +238,10 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
             <Attribution block={topic.anatomy} topic={topic} />
           </>
         }
-      />
+      />}
 
       {topic.parts.map((part) => (
-        <Section key={part.label} title={part.label}>
+        <Section key={part.label} title={part.label} id={part.id ? `movement-${topic.id}-${part.id}` : undefined}>
           {part.intro ? (
             <p className="max-w-4xl text-sm leading-6 text-ink">
               {part.intro}
@@ -240,6 +251,30 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
             <div className="text-xs text-slate">
               <Attribution block={part} topic={topic} />
             </div>
+          )}
+          {part.illustration && (
+            <figure className="max-w-4xl overflow-hidden rounded-xl border border-rule bg-sheet">
+              <a
+                href={part.illustration.src}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Mở ảnh đầy đủ: ${part.illustration.title}`}
+                className="block focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cobalt"
+              >
+                <Image
+                  src={part.illustration.src}
+                  alt={part.illustration.alt}
+                  width={part.illustration.width}
+                  height={part.illustration.height}
+                  unoptimized
+                  className="h-auto w-full"
+                />
+              </a>
+              <figcaption className="space-y-1 border-t border-rule p-4 text-sm leading-6 text-slate">
+                <p className="font-semibold text-ink">{part.illustration.title}</p>
+                <p>{part.illustration.caption}</p>
+              </figcaption>
+            </figure>
           )}
           {part.items ? <Items items={part.items} topic={topic} /> : null}
           {part.table ? (
@@ -311,7 +346,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         </Section>
       ))}
 
-      <Section title="Mốc và con số để đọc đúng">
+      {topic.numbers.length > 0 && <Section title="Mốc và con số để đọc đúng">
         <div className="grid gap-3 sm:grid-cols-2">
           {topic.numbers.map((n) => (
             <div
@@ -328,7 +363,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
             </div>
           ))}
         </div>
-      </Section>
+      </Section>}
       <Section title="Hiểu lầm hay gặp">
         <div className="space-y-3">
           {topic.myths.map((m) => (
@@ -360,6 +395,12 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
           Áp dụng trong buổi tập
         </h3>
         <Items items={topic.apply} topic={topic} />
+        {isPosture && (
+          <>
+            <p className="max-w-3xl text-sm leading-6 text-slate">{topic.anatomy.note}</p>
+            <Link href="/atlas" className="button-secondary inline-flex">Tra vùng giải phẫu trên Atlas 3D</Link>
+          </>
+        )}
         {topic.id === "rom" ? (
           <Link href="/clients" className="button-secondary">
             Mở hồ sơ học viên để ghi số đo →
@@ -390,7 +431,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         className="panel scroll-mt-36 space-y-4 p-5 sm:p-6"
       >
         <div>
-          <p className="eyebrow text-cobalt">Đọc từ nguồn gốc</p>
+          {!isPosture && <p className="eyebrow text-cobalt">Đọc từ nguồn gốc</p>}
           <h3 className="mt-2 font-display text-xl font-semibold text-ink">
             Nguồn và phạm vi đã đọc
           </h3>

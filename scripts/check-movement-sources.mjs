@@ -47,7 +47,7 @@ const { HANDBOOK } = load("src/lib/clinical/movement-handbook.ts");
 const { HANDBOOK_EVIDENCE } = load("src/lib/clinical/evidence-assessment.ts");
 assert.deepEqual(
   Array.from(HANDBOOK, (t) => t.id),
-  ["patterns", "symmetry", "rom", "control"],
+  ["posture", "patterns", "symmetry", "rom", "control"],
 );
 for (const topic of HANDBOOK) {
   const record = HANDBOOK_EVIDENCE[topic.id];
@@ -83,6 +83,11 @@ for (const topic of HANDBOOK) {
     cited(part, "section");
     for (const item of part.items ?? []) cited(item, "item");
     for (const row of part.table?.rows ?? []) cited(row, "row");
+    if (part.illustration) {
+      const { src, alt, caption, width, height } = part.illustration;
+      assert.ok(existsSync(path.join(root, "public", src)), src);
+      assert.ok(alt && caption && width > 0 && height > 0);
+    }
   }
   for (const group of ["numbers", "myths", "apply", "quiz"])
     topic[group].forEach((p) => cited(p, group));
@@ -149,6 +154,16 @@ for (const topic of HANDBOOK) {
     );
   assert.ok(html.includes("<details"), "native self-check disclosure");
   assert.ok(!/Chờ chuyên gia|chờ chuyên gia/.test(html));
+  if (topic.id === "posture") {
+    const illustrations = topic.parts.flatMap(p => p.illustration ? [p.illustration] : []);
+    assert.ok(illustrations.length >= 2, "posture requires standing and movement figures");
+    for (const figure of illustrations) {
+      assert.ok(html.includes(escape(figure.alt)) && html.includes(escape(figure.caption)));
+    }
+    for (const id of ["screening", "standing", "tasks", "adjust", "record"]) {
+      assert.ok(html.includes(`id="movement-posture-${id}"`));
+    }
+  }
   if (topic.figure)
     assert.ok(
       html.includes(escape(topic.figure.licenseUrl)) &&
@@ -169,5 +184,5 @@ for (const [name, sha] of [
     "retain exact licensed original asset",
   );
 console.log(
-  "Movement sources: 4 tabs, cited core and scientific blocks, explicit authored examples, scope/date/license metadata and updated interpretation passed.",
+  "Movement sources: posture-first inventory, visible figures, sourced claims and scope/date/license checks passed.",
 );
