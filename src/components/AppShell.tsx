@@ -194,7 +194,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               aria-current={active ? "page" : undefined}
               className={`relative flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold transition-colors ${
                 active
-                  ? "bg-cobalt-soft text-cobalt"
+                  ? "bg-cobalt-soft text-ink"
                   : "text-slate hover:bg-surface hover:text-ink"
               }`}
             >

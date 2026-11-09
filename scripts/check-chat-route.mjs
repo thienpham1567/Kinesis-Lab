@@ -4,15 +4,15 @@ import { createAppLoader } from './lib/load-app-module.mjs';
 import * as anatomyEvidence from '../src/lib/clinical/anatomy-evidence.mjs';
 import * as catalogCorrections from '../src/lib/clinical/atlas-catalog-corrections.mjs';
 
-function fixture({ wire, upstreamError, literatureError = false } = {}) {
+function fixture({ wire, upstreamError, literatureError = false, clientStore, env = {}, remote } = {}) {
   const calls = { model: 0, retrieval: [], public: [], messages: [] };
   const load = createAppLoader({
-    globals: { process: { env: { OPENROUTER_API_KEY: 'synthetic-only' } } },
+    globals: { process: { env: { OPENROUTER_API_KEY: 'synthetic-only', ...env } } },
     mocks: {
       './anatomy-evidence.mjs': anatomyEvidence,
       './atlas-catalog-corrections.mjs': catalogCorrections,
-      '@/lib/supabase/server': { hasSupabase: () => false },
-      '@/lib/local-store': { readLocalStore: () => ({ clients: [], biomarkers: [] }) },
+      '@/lib/supabase/server': { hasSupabase: () => Boolean(env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY), supabase:()=>remote },
+      '@/lib/local-store': { readLocalStore: () => clientStore ?? ({ clients: [], biomarkers: [] }) },
       '@/lib/ai/openrouter': {
         pickChatModel: () => 'google/gemini-2.5-flash',
         chatStream: async ({ messages }) => {
@@ -127,4 +127,19 @@ test('invented APP indices, PMIDs and URLs produce source identity warnings', as
     const e = await events(await fixture({ wire }).post({ ...question('insulin medication'), studyPage: '/knowledge' }));
     assert.ok(e.some(event => event.type === 'warning' && event.text.includes('không khớp')), content);
   }
+});
+
+test('client chat receives bounded legacy and prescribed workout observations', async()=>{
+ const client={id:'synthetic-client',name:'Synthetic',age:30,sex:'Nam',goals:'Test',training_level:'Test',medical_conditions:[],medications:[],orthopedic_issues:[],red_flags:{parq:{},notes:''}};
+ const f=fixture({clientStore:{clients:[client],biomarkers:[],training_records:[{client_id:client.id,recorded_at:'2026-11-06',exercise_id:'synthetic-exercise',sets:2,reps:8,load:null,load_unit:'bodyweight',rpe:5,feedback:'SYNTHETIC_LEGACY_FEEDBACK'}],training_workouts:[{client_id:client.id,performedAt:'2026-11-06',status:'in_progress',rpe:null,notes:'SYNTHETIC_WORKOUT_NOTE',prescription:{exercises:[{id:'row',name:'Synthetic variant',exerciseId:null,sets:1,repMin:8,repMax:12,load:null,loadUnit:'bodyweight'}]},sets:[{exerciseId:'row',setNumber:1,reps:null,load:null,loadUnit:'bodyweight',completed:false}]}]}});
+ const response=await f.post({...question('hello'),clientId:client.id});assert.equal(response.status,200);await events(response);
+ const system=f.calls.messages[0].content;assert.ok(system.includes('SYNTHETIC_LEGACY_FEEDBACK'));assert.ok(system.includes('SYNTHETIC_WORKOUT_NOTE'));assert.ok(system.includes('Synthetic variant'));
+});
+
+test('client chat refuses partial configuration and failed profile queries before AI access',async()=>{
+ const partial=fixture({env:{SUPABASE_URL:'https://synthetic.invalid'}});
+ assert.equal((await partial.post({...question('hello'),clientId:'synthetic-client'})).status,503);assert.equal(partial.calls.model,0);
+ const query={select(){return this},eq(){return this},order(){return this},single:async()=>({data:null,error:{message:'PRIVATE_DATABASE_ERROR'}}),limit:async()=>({data:null,error:{message:'PRIVATE_DATABASE_ERROR'}})};
+ const failed=fixture({env:{SUPABASE_URL:'https://synthetic.invalid',SUPABASE_SERVICE_ROLE_KEY:'synthetic'},remote:{from:()=>query}});
+ const res=await failed.post({...question('hello'),clientId:'synthetic-client'});assert.equal(res.status,503);assert.ok(!(await res.text()).includes('PRIVATE_DATABASE_ERROR'));assert.equal(failed.calls.model,0);
 });

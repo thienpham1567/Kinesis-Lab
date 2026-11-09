@@ -1,6 +1,6 @@
 # Kinesis Lab — PT Medical & Exercise Science Agent
 
-Clinical co-pilot cho Personal Trainer: hồ sơ bệnh lý học viên, sàng lọc Red Flags, truy xuất bằng chứng theo nguồn, PubMed, đọc phiếu xét nghiệm/InBody.
+Không gian làm việc cho Personal Trainer: hồ sơ học viên, kế hoạch tập có phiên bản, nhật ký từng hiệp, sàng lọc, truy xuất bằng chứng theo nguồn, PubMed và đọc phiếu xét nghiệm/InBody.
 
 ## Chạy local
 
@@ -24,7 +24,7 @@ Sau khi triển khai mã tương ứng, `node --env-file=.env.local scripts/ncsf
 
 | Key | Việc |
 | --- | --- |
-| `OPENROUTER_API_KEY` | Bắt buộc. Chat, Vision, embedding đều đi qua OpenRouter. |
+| `OPENROUTER_API_KEY` | Cần cho chat, đề xuất chương trình AI, Vision và embedding qua OpenRouter. Soạn kế hoạch và ghi buổi tập thủ công không cần key AI. |
 | `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Hồ sơ học viên, vector tài liệu bằng chứng. |
 | `NCBI_EMAIL` / `NCBI_API_KEY` | Tuỳ chọn, lịch sự với PubMed. |
 | `SITE_URL` | Origin HTTPS thực tế khi tự host; dùng cho canonical và URL ảnh chia sẻ của landing. Vercel tự cung cấp hostname production. |
@@ -39,7 +39,7 @@ Model mặc định (đổi được trong `.env.local`):
 ## Supabase
 
 1. Tạo project, bật extension `vector`.
-2. SQL Editor → chạy `supabase/migrations/001_initial_schema.sql`.
+2. SQL Editor → chạy các migration `001` đến `004` trong `supabase/migrations/` theo thứ tự. Với database đã có `001`–`003`, chỉ cần áp dụng `004_training_programs.sql`.
 3. Dán URL + service role key vào `.env.local`.
 
 Không expose service role ra trình duyệt. Mọi truy vấn đi qua API routes.
@@ -47,9 +47,15 @@ Không expose service role ra trình duyệt. Mọi truy vấn đi qua API route
 ## Việc nên làm trên app
 
 1. **Nguồn chat** — guideline, tổng quan hệ thống và nghiên cứu đã đăng ký; xem nguồn và phạm vi trong từng lượt. Thư viện NCSF là nội dung học tập riêng.
-2. **Học viên** — bệnh nền, thuốc, pain trigger, PAR-Q+.
-3. **Xét nghiệm / InBody** — chụp phiếu, Gemini đọc chỉ số.
-4. **Tư vấn** — hỏi bài tập; agent trích đoạn nguồn + PMID và kiểm tra chống chỉ định.
+2. **Học viên** — xem mục tiêu và kế hoạch đang áp dụng; tra hồ sơ, thuốc, pain trigger và bảng kiểm trước tập.
+3. **Kế hoạch tập** — soạn lịch tuần, bài/biến thể, hiệp, khoảng reps, tải, nghỉ, RIR, method và ghi chú tăng tiến. Mỗi lần lưu tạo một phiên bản mới; chọn áp dụng phiên bản đã lưu là thao tác riêng.
+4. **Buổi tập** — mở buổi từ kế hoạch, ghi kết quả từng hiệp, lưu tiến độ hoặc hoàn tất và mở lại lịch sử. Nhật ký độc lập trước đây vẫn được giữ.
+5. **Xét nghiệm / InBody** — chụp phiếu, kiểm tra lại dữ liệu AI trích xuất trước khi lưu.
+6. **Tư vấn** — hỏi bài tập với hồ sơ và lịch sử tập gần đây; đối chiếu nguồn, phạm vi áp dụng và thông tin còn thiếu.
+
+Đề xuất AI là bản nháp có thể chỉnh, không tự lưu hoặc áp dụng. Nguồn đính kèm ghi nhận ngữ cảnh đã cung cấp cho model, không xác nhận từng nhận định hay sự phù hợp với một cá nhân. Các giá trị khởi tạo là thông số để PT chỉnh, không phải ngưỡng tải an toàn. Xem [lưu trữ, migration và kiểm tra](docs/training-program-storage.md).
+
+Các bản đang soạn được giữ khi đổi mục trong cùng hồ sơ; cần lưu trước khi tải lại hoặc rời hồ sơ. Không ghi bản nháp y tế vào bộ nhớ trình duyệt lâu dài. Dinh dưỡng là phần triển khai tiếp theo, chưa nằm trong module kế hoạch tập này.
 
 PT không chẩn đoán, không kê thuốc. Red Flags → chuyển bác sĩ.
 

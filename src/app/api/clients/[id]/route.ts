@@ -1,4 +1,5 @@
 import { readLocalStore, writeLocalStore } from "@/lib/local-store";
+import { trainingUsesSupabase } from "@/lib/training/repository";
 import { hasSupabase, supabase } from "@/lib/supabase/server";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -66,11 +67,22 @@ export async function PATCH(req: Request, ctx: Ctx) {
 
 export async function DELETE(_: Request, ctx: Ctx) {
   const { id } = await ctx.params;
-  if (!hasSupabase()) {
+  let useSupabase: boolean;
+  try {
+    useSupabase = trainingUsesSupabase();
+  } catch {
+    return Response.json(
+      { error: "Cấu hình Supabase chưa đầy đủ; không xóa dữ liệu cục bộ." },
+      { status: 503 },
+    );
+  }
+  if (!useSupabase) {
     const store = readLocalStore();
     store.clients = store.clients.filter((c) => c.id !== id);
     store.biomarkers = store.biomarkers.filter((b) => b.client_id !== id);
     store.training_records = (store.training_records ?? []).filter((record) => record.client_id !== id);
+    store.training_plans = (store.training_plans ?? []).filter((plan) => plan.client_id !== id);
+    store.training_workouts = (store.training_workouts ?? []).filter((workout) => workout.client_id !== id);
     writeLocalStore(store);
     return Response.json({ ok: true });
   }

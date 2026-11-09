@@ -8,6 +8,8 @@ import {
 import { formatClient, safetyNotes } from "@/lib/clinical/safety";
 import { selectCuratedEvidence, formatCuratedEvidence, normalizeEvidenceQuery } from "@/lib/clinical/evidence-registry";
 import { readLocalStore } from "@/lib/local-store";
+import { trainingRepository, trainingUsesSupabase } from "@/lib/training/repository";
+import { trainingHistorySummary } from "@/lib/training/history";
 import { hasSupabase, supabase } from "@/lib/supabase/server";
 import { formatPubMed, searchPubMed } from "@/lib/tools/pubmed";
 import { formatRag, retrieveKnowledge } from "@/lib/tools/rag-search";
@@ -89,30 +91,40 @@ export async function POST(req: Request) {
 
   let client: Client | null = null;
   let labsText = "";
+  let trainingText = "";
   if (body.clientId) {
-    if (hasSupabase()) {
-      const db = supabase();
-      const [{ data: c }, { data: labs }] = await Promise.all([
-        db.from("clients").select("*").eq("id", body.clientId).single(),
-        db
-          .from("biomarker_records")
-          .select("*")
-          .eq("client_id", body.clientId)
-          .order("recorded_at", { ascending: false })
-          .limit(4),
-      ]);
-      client = (c as Client) ?? null;
-      labsText = ((labs ?? []) as BiomarkerRecord[])
-        .map((r) => `${r.recorded_at} (${r.kind}): ${JSON.stringify(r.metrics)}`)
-        .join("\n");
-    } else {
-      const store = readLocalStore();
-      client = store.clients.find((c) => c.id === body.clientId) ?? null;
-      labsText = store.biomarkers
-        .filter((b) => b.client_id === body.clientId)
-        .slice(0, 4)
-        .map((r) => `${r.recorded_at} (${r.kind}): ${JSON.stringify(r.metrics)}`)
-        .join("\n");
+    try {
+      if (trainingUsesSupabase()) {
+        const db = supabase();
+        const [profileResult, labsResult] = await Promise.all([
+          db.from("clients").select("*").eq("id", body.clientId).single(),
+          db
+            .from("biomarker_records")
+            .select("*")
+            .eq("client_id", body.clientId)
+            .order("recorded_at", { ascending: false })
+            .limit(4),
+        ]);
+        if (profileResult.error || labsResult.error) throw new Error("client context unavailable");
+        const c = profileResult.data;
+        const labs = labsResult.data;
+        client = (c as Client) ?? null;
+        labsText = ((labs ?? []) as BiomarkerRecord[])
+          .map((r) => `${r.recorded_at} (${r.kind}): ${JSON.stringify(r.metrics)}`)
+          .join("\n");
+      } else {
+        const store = readLocalStore();
+        client = store.clients.find((c) => c.id === body.clientId) ?? null;
+        labsText = store.biomarkers
+          .filter((b) => b.client_id === body.clientId)
+          .slice(0, 4)
+          .map((r) => `${r.recorded_at} (${r.kind}): ${JSON.stringify(r.metrics)}`)
+          .join("\n");
+      }
+      if (!client) return Response.json({ error: "Không tìm thấy học viên." }, { status: 404 });
+      trainingText = trainingHistorySummary(await trainingRepository.recentHistory(body.clientId));
+    } catch {
+      return Response.json({ error: "Chưa đọc được đầy đủ ngữ cảnh học viên. Kiểm tra cấu hình kho dữ liệu và migration 004 rồi thử lại." }, { status: 503 });
     }
   }
 
@@ -156,7 +168,7 @@ export async function POST(req: Request) {
     CLINICAL_PT_SYSTEM,
     client
       ? clientContextBlock(
-          [formatClient(client), labsText ? `Xét nghiệm/InBody:\n${labsText}` : ""]
+          [formatClient(client), labsText ? `Xét nghiệm/InBody:\n${labsText}` : "", trainingText]
             .filter(Boolean)
             .join("\n"),
           safetyNotes(client),

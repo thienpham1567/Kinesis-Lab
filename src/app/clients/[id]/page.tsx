@@ -11,6 +11,7 @@ import { normalizeLabExtraction } from "@/lib/clinical/lab-extraction";
 import { compressImageForUpload, MAX_UPLOAD_BYTES } from "@/lib/image-compress";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { ClientTrainingWorkspace } from "@/components/training/ClientTrainingWorkspace";
 import { TrainingLog } from "@/components/training/TrainingLog";
 import { BodyMapExplorer } from "@/components/BodyMapExplorer";
 import { ChatPanel } from "@/components/ChatPanel";
@@ -21,6 +22,9 @@ import { PARQ_ITEMS, safetyNotes } from "@/lib/clinical/safety";
 import type { BiomarkerRecord, Client } from "@/lib/types";
 
 type Tab =
+  | "overview"
+  | "program"
+  | "workouts"
   | "ban-do"
   | "ho-so"
   | "co-do"
@@ -63,6 +67,10 @@ function ClientDetailPageInner({ id }: { id: string }) {
   const router = useRouter();
   const requestedTab = searchParams.get("tab");
   const tab: Tab = [
+    "overview",
+    "program",
+    "workouts",
+    "ban-do",
     "ho-so",
     "co-do",
     "bien-do",
@@ -71,7 +79,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
     "training",
   ].includes(requestedTab ?? "")
     ? (requestedTab as Tab)
-    : "ban-do";
+    : "overview";
   function setTab(nextTab: Tab) {
     const next = new URLSearchParams(searchParams.toString());
     next.set("tab", nextTab);
@@ -82,7 +90,8 @@ function ClientDetailPageInner({ id }: { id: string }) {
   }
   const [client, setClient] = useState<Client | null>(null);
   const [biomarkers, setBiomarkers] = useState<BiomarkerRecord[]>([]);
-  const [chatPrompt, setChatPrompt] = useState<string>("");
+  const [chatRequest, setChatRequest] = useState<{ id: string; text: string } | undefined>();
+  const chatRequestNumber = useRef(0);
   const [error, setError] = useState("");
   const [loadError, setLoadError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -95,7 +104,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
     loadRequest.current?.abort();
     const controller = new AbortController();
     loadRequest.current = controller;
-    return fetch(`/api/clients/${encodeURIComponent(id)}`, { signal: controller.signal })
+    return fetch(`/api/clients/${encodeURIComponent(id)}`, { signal: controller.signal, cache: "no-store" })
       .then(async (res) => {
         if (controller.signal.aborted) return false;
         if (res.status === 404) {
@@ -187,7 +196,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
     matchClientIssuesToRegions(client),
   ).length;
 
-  const tabs: { id: Tab; label: string; badge?: number }[] = [
+  const clinicalTabs: { id: Tab; label: string; badge?: number }[] = [
     {
       id: "ban-do",
       label: "Bản đồ điểm đau",
@@ -208,7 +217,15 @@ function ClientDetailPageInner({ id }: { id: string }) {
       label: "Xét nghiệm & InBody",
       badge: labRecords.length,
     },
-    { id: "chat", label: "Tư vấn & giáo án" },
+  ];
+
+  const clinicalActive = clinicalTabs.some(t => t.id === tab);
+  const primaryTabs: { id: Tab; label: string }[] = [
+    { id: "overview", label: "Tổng quan" },
+    { id: "program", label: "Chương trình" },
+    { id: "workouts", label: "Buổi tập & lịch sử" },
+    { id: "ho-so", label: "Hồ sơ & đánh giá" },
+    { id: "chat", label: "Tư vấn" },
   ];
 
   return (
@@ -223,8 +240,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
       <div className="panel p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="eyebrow">Hồ sơ học viên · Theo dõi vận động</p>
-            <h1 className="mt-2 break-words font-display text-3xl font-bold tracking-tight text-ink">
+            <h1 className="break-words font-display text-3xl font-bold tracking-tight text-ink">
               {client.name}
             </h1>
             <p className="mt-1 text-sm text-slate">
@@ -232,6 +248,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
               {client.age != null ? `${client.age} tuổi` : "Chưa rõ tuổi"} •{" "}
               {client.training_level ?? "Chưa phân cấp độ"}
             </p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-ink"><span className="font-semibold">Mục tiêu: </span>{client.goals || "Chưa ghi mục tiêu"}</p>
           </div>
           <div
             className="flex flex-wrap items-center gap-2 text-xs"
@@ -249,7 +266,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
         </div>
 
         <div className="mt-5 rounded-xl border border-caution/25 bg-caution-soft/60 p-4">
-          <h2 className="flex items-center gap-2 text-xs font-semibold text-caution">
+          <h2 className="flex items-center gap-2 text-xs font-semibold text-ink">
             <Icon name="shield" className="size-4" />
             Lưu ý an toàn & điều chỉnh tải
           </h2>
@@ -273,84 +290,51 @@ function ClientDetailPageInner({ id }: { id: string }) {
         </div>
       ) : null}
 
-      <div
-        className="tab-bar flex-nowrap overflow-x-auto"
-        aria-label="Các phần hồ sơ học viên"
-      >
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            aria-pressed={tab === t.id}
-            disabled={saving}
-            className="tab-button shrink-0 whitespace-nowrap"
-          >
-            <span>{t.label}</span>
-            {t.badge != null && t.badge > 0 && (
-              <span
-                className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ${
-                  tab === t.id
-                    ? "bg-cobalt-soft text-cobalt"
-                    : "bg-sheet text-slate"
-                }`}
-              >
-                {t.badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {tab === "ban-do" && (
+      <nav className="tab-bar flex-wrap" aria-label="Các phần hồ sơ học viên">
+        {primaryTabs.map(t => <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-pressed={t.id === "ho-so" ? clinicalActive : tab === t.id} className="tab-button">{t.label}</button>)}
+      </nav>
+      <p className="text-xs leading-6 text-slate">Bản đang soạn được giữ khi chuyển các phần của học viên này. Hãy lưu trước khi tải lại trang hoặc rời học viên; bản nháp chỉ nằm trong phiên hiện tại.</p>
+      <ClientTrainingWorkspace key={client.id} clientId={client.id} clientGoal={client.goals} destination={tab === "overview" || tab === "program" || tab === "workouts" ? tab : null} onNavigate={setTab} />
+      {clinicalActive && <nav className="tab-bar flex-wrap" aria-label="Đánh giá lâm sàng và nhật ký trước đây">
+        {clinicalTabs.map(t => <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-pressed={tab === t.id} className="tab-button">{t.label}{t.badge != null && t.badge > 0 && <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-ink">{t.badge}</span>}</button>)}
+      </nav>}
+      <KeepVisitedPanel active={tab === "ban-do"}>
         <BodyMapExplorer
-          key={client.updated_at + "-map"}
           mode="client"
           client={client}
           onAskRegion={(prompt) => {
-            setChatPrompt(prompt);
+            chatRequestNumber.current += 1;
+            setChatRequest({ id: `${id}:${chatRequestNumber.current}`, text: prompt });
             setTab("chat");
           }}
         />
-      )}
-      {tab === "ho-so" && (
-        <ProfileForm
-          key={client.updated_at}
-          client={client}
-          onSave={save}
-          saving={saving}
-        />
-      )}
-      {tab === "co-do" && (
-        <RedFlagForm
-          key={client.updated_at + "-rf"}
-          client={client}
-          onSave={save}
-          saving={saving}
-        />
-      )}
-      {tab === "training" && (
-        <TrainingLog
-          clientId={client.id}
-          initialExerciseId={searchParams.get("exercise")}
-        />
-      )}
-      {tab === "bien-do" && (
+      </KeepVisitedPanel>
+      <KeepVisitedPanel active={tab === "ho-so"}>
+        <ProfileForm client={client} onSave={save} saving={saving} />
+      </KeepVisitedPanel>
+      <KeepVisitedPanel active={tab === "co-do"}>
+        <RedFlagForm client={client} onSave={save} saving={saving} />
+      </KeepVisitedPanel>
+      <KeepVisitedPanel active={tab === "training"}>
+        <TrainingLog clientId={client.id} initialExerciseId={searchParams.get("exercise")} />
+      </KeepVisitedPanel>
+      <KeepVisitedPanel active={tab === "bien-do"}>
         <RomAssessment client={client} records={romRecords} onChange={load} />
-      )}
-      {tab === "xet-nghiem" && (
+      </KeepVisitedPanel>
+      <KeepVisitedPanel active={tab === "xet-nghiem"}>
         <Labs clientId={client.id} records={labRecords} onChange={load} />
-      )}
-      {tab === "chat" && (
-        <ChatPanel
-          key={`${client.id}:${chatPrompt}`}
-          clientId={client.id}
-          initialPrompt={chatPrompt}
-          placeholder={`Hỏi bài tập, kiểm tra chống chỉ định hoặc lên giáo án Rehab cho ${client.name}...`}
-        />
-      )}
+      </KeepVisitedPanel>
+      <KeepVisitedPanel active={tab === "chat"}>
+        <ChatPanel clientId={client.id} draftRequest={chatRequest} placeholder={`Hỏi về bài tập hoặc chuẩn bị tư vấn cho ${client.name}...`} />
+      </KeepVisitedPanel>
     </div>
   );
+}
+
+function KeepVisitedPanel({ active, children }: { active: boolean; children: ReactNode }) {
+  const [visited, setVisited] = useState(active);
+  if (active && !visited) setVisited(true);
+  return <div hidden={!active} inert={!active}>{active || visited ? children : null}</div>;
 }
 
 function ProfileForm({
