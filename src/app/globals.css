@@ -1509,6 +1509,3 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   height: auto !important;
   min-height: 0;
 }
-.pdf-reader-wrap:fullscreen > .sticky {
-  top: 0 !important;
-}

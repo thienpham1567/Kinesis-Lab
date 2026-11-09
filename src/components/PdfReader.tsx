@@ -201,105 +201,118 @@ export default function PdfReader({
   return (
     <div
       ref={wrap}
-      className="pdf-reader-wrap flex min-w-0 flex-col gap-3 bg-sheet"
+      className="pdf-reader-wrap @container flex min-w-0 flex-col bg-sheet"
     >
-      <div className="sticky top-16 z-10 -my-1 flex flex-wrap items-center gap-2 bg-sheet py-1 lg:top-24">
-        <button
-          type="button"
-          className="icon-button"
-          onClick={() => scrollToPage(current - 1)}
-          disabled={current <= 1}
-          aria-label="Trang trước"
-        >
-          <Icon name="arrow-left" className="size-4" />
-        </button>
-        <form
-          className="flex items-center gap-1.5 text-sm text-slate"
-          onSubmit={(e) => {
-            e.preventDefault();
-            commitPageInput();
-          }}
-        >
-          <label htmlFor="pdf-page-input">Trang</label>
-          <input
-            id="pdf-page-input"
-            type="number"
-            min={1}
-            max={pages || 1}
-            value={draft ?? String(current)}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={commitPageInput}
-            className="min-h-10 w-16 px-2 text-center text-sm"
-          />
-          <span aria-live="polite">/ {pages || "…"}</span>
-        </form>
-        <button
-          type="button"
-          className="icon-button"
-          onClick={() => scrollToPage(current + 1)}
-          disabled={!pages || current >= pages}
-          aria-label="Trang sau"
-        >
-          <Icon name="arrow-right" className="size-4" />
-        </button>
-        {pages > 0 && (
-          <span className="text-xs tabular-nums text-slate" aria-live="polite">
-            Đã đọc {scrollPct}%
-          </span>
-        )}
-        <label className="ml-auto flex items-center gap-1.5 text-sm text-slate">
-          Thu phóng
-          <select
-            value={String(zoom)}
-            onChange={(e) => {
-              zoomAnchor.current = scrollTarget.current ?? currentRef.current;
-              setZoom(
-                e.target.value === "fit" ? "fit" : Number(e.target.value),
-              );
-            }}
-            className="min-h-10 px-2 text-sm"
-          >
-            <option value="fit">Vừa màn</option>
-            {ZOOMS.map((z) => (
-              <option key={z} value={z}>
-                {z * 100}%
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          type="button"
-          className="icon-button"
-          onClick={toggleFullscreen}
-          aria-label="Đọc toàn màn hình"
-        >
-          <Icon name="expand" className="size-4" />
-        </button>
-        <a
-          className="icon-button"
-          href={file}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Mở PDF trong tab mới"
-        >
-          <Icon name="external" className="size-4" />
-        </a>
-      </div>
-      {pages > 0 && (
-        <div
-          className="h-1 overflow-hidden rounded bg-rule/60"
-          role="progressbar"
-          aria-label="Tiến độ đọc"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={scrollPct}
-        >
-          <div
-            className="h-full bg-cobalt transition-[width] duration-150"
-            style={{ width: `${scrollPct}%` }}
-          />
+      <div
+        role="group"
+        aria-label="Điều khiển trình đọc PDF"
+        className="sticky top-0 z-10 shrink-0 rounded-t-lg border border-rule bg-sheet"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2 p-2">
+          <div className="flex flex-wrap items-center gap-1 @min-[320px]:gap-2">
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => scrollToPage(current - 1)}
+              disabled={current <= 1}
+              aria-label="Trang trước"
+            >
+              <Icon name="arrow-left" className="size-4" />
+            </button>
+            <form
+              className="flex items-center gap-1 whitespace-nowrap text-sm text-ink"
+              onSubmit={(e) => {
+                e.preventDefault();
+                commitPageInput();
+              }}
+            >
+              <label htmlFor="pdf-page-input">Trang</label>
+              <input
+                id="pdf-page-input"
+                type="number"
+                min={1}
+                max={pages || 1}
+                value={draft ?? String(current)}
+                onChange={(e) => setDraft(e.target.value)}
+                onBlur={commitPageInput}
+                className="min-h-11 w-12 px-1 text-center text-sm @min-[320px]:w-16"
+              />
+              <span aria-live="polite">/ {pages || "…"}</span>
+            </form>
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => scrollToPage(current + 1)}
+              disabled={!pages || current >= pages}
+              aria-label="Trang sau"
+            >
+              <Icon name="arrow-right" className="size-4" />
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-1.5 whitespace-nowrap text-sm text-ink">
+              <span className="sr-only @min-[300px]:not-sr-only">Thu phóng</span>
+              <select
+                value={String(zoom)}
+                onChange={(e) => {
+                  zoomAnchor.current = scrollTarget.current ?? currentRef.current;
+                  setZoom(
+                    e.target.value === "fit" ? "fit" : Number(e.target.value),
+                  );
+                }}
+                className="min-h-11 px-2 text-sm"
+              >
+                <option value="fit">Vừa màn</option>
+                {ZOOMS.map((z) => (
+                  <option key={z} value={z}>
+                    {z * 100}%
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              className="icon-button"
+              onClick={toggleFullscreen}
+              aria-label="Đọc toàn màn hình"
+            >
+              <Icon name="expand" className="size-4" />
+            </button>
+            <a
+              className="icon-button"
+              href={file}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Mở PDF trong tab mới"
+            >
+              <Icon name="external" className="size-4" />
+            </a>
+          </div>
         </div>
-      )}
+        {pages > 0 && (
+          <div className="flex items-center gap-3 px-2 pb-2">
+            <div
+              className="h-1 flex-1 overflow-hidden rounded bg-rule/60"
+              role="progressbar"
+              aria-label="Tiến độ đọc"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={scrollPct}
+            >
+              <div
+                className="h-full bg-cobalt transition-[width] duration-150"
+                style={{ width: `${scrollPct}%` }}
+              />
+            </div>
+            <span
+              aria-hidden="true"
+              className="whitespace-nowrap text-xs tabular-nums text-ink"
+            >
+              Đã đọc {scrollPct}%
+            </span>
+          </div>
+        )}
+      </div>
       <div
         ref={box}
         onScroll={handleScroll}
@@ -326,7 +339,7 @@ export default function PdfReader({
         }}
         tabIndex={0}
         role="region"
-        className="pdf-scroll-box relative h-[72dvh] overflow-auto scroll-smooth rounded-lg border border-rule bg-surface [overflow-anchor:none] focus:outline-2 focus:outline-cobalt lg:h-[calc(100dvh-14rem)]"
+        className="pdf-scroll-box relative h-[72dvh] overflow-auto scroll-smooth rounded-b-lg border-x border-b border-rule bg-surface [overflow-anchor:none] focus:outline-2 focus:outline-cobalt lg:h-[calc(100dvh-14rem)]"
         aria-label="Nội dung PDF. Cuộn để đọc liền các trang."
       >
         {/* suspense={false}: trang mới hiện bằng khung chờ riêng, không treo
