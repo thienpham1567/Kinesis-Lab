@@ -346,6 +346,17 @@ html[data-theme="lilac"] {
   --flare: var(--p4);
 }
 
+/* Atlas labels also sit on tinted controls. Resolve these from the active theme before scoping them. */
+:root {
+  --atlas-accent-ink: color-mix(in srgb, var(--ink) 65%, var(--cobalt));
+  --atlas-secondary-ink: color-mix(in srgb, var(--ink) 35%, var(--slate));
+}
+
+#atlas-learning-studio {
+  --cobalt: var(--atlas-accent-ink);
+  --slate: var(--atlas-secondary-ink);
+}
+
 @theme inline {
   --color-canvas: var(--canvas);
   --color-sheet: var(--sheet);

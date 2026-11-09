@@ -8,6 +8,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Training terminology
+
+Read [GLOSSARY.md](GLOSSARY.md) when specifying, changing, or reviewing training proposals, saved plan revisions, or workout records.
+
 ## Medical accuracy
 
 The user requires medically accurate knowledge grounded in reputable sources. Follow `docs/medical-evidence-policy.md` for new anatomical/medical content. Keep claim-level citations and access/review dates. Source comparison, code tests and visual realism do not establish clinical validation. Do not present mesh-derived or AI-generated fiber directions, landmarks or tissue measurements as verified anatomy. Keep reviewer metadata truthful; do not invent professional approval.

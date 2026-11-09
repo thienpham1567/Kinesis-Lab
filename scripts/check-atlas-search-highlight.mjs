@@ -1,15 +1,111 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import vm from "node:vm";
+import ts from "typescript";
 import { createAppLoader } from "./lib/load-app-module.mjs";
 
 const manifest = JSON.parse(readFileSync(new URL("../public/anatomy/3d/manifest.json", import.meta.url)));
 const { structures } = manifest;
-const load = createAppLoader();
+const load = createAppLoader({ globals: { URLSearchParams } });
 const atlas = load("src/lib/clinical/atlas-3d.ts");
 const names = load("src/lib/clinical/atlas-names.ts");
 const ids = rows => Array.from(rows, row => row.id).sort();
 const internal = structures.filter(row => row.english === "Internal abdominal oblique muscle");
+
+function nodes(node) {
+  if (Array.isArray(node)) return node.flatMap(nodes);
+  return node?.props ? [node, ...nodes(node.props.children)] : [];
+}
+
+async function hipExplorer() {
+  // Exercise the explorer's event handlers without needing a WebGL context.
+  const slots = [], effects = [];
+  let cursor = 0;
+  const react = {
+    useState(initial) {
+      const i = cursor++;
+      if (!(i in slots)) slots[i] = typeof initial === "function" ? initial() : initial;
+      return [slots[i], next => { slots[i] = typeof next === "function" ? next(slots[i]) : next; }];
+    },
+    useRef(initial) { return slots[cursor++] ??= { current: initial }; },
+    useEffect(effect, deps) {
+      const i = cursor++;
+      const previous = slots[i];
+      if (!previous || deps.some((dep, j) => !Object.is(dep, previous.deps[j]))) {
+        effects.push(() => { previous?.cleanup?.(); slots[i] = { deps, cleanup: effect() }; });
+      }
+    },
+    useMemo: compute => compute(),
+  };
+  const jsx = (type, props) => ({ type, props });
+  const exports = {};
+  const location = new URL("http://localhost/atlas?area=hip");
+  const file = "src/components/atlas3d/Atlas3DExplorer.tsx";
+  const { outputText } = ts.transpileModule(readFileSync(file, "utf8"), {
+    fileName: file,
+    compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
+  });
+  const modules = {
+    react,
+    "react/jsx-runtime": { jsx, jsxs: jsx },
+    "next/dynamic": { default: () => "Atlas3DCanvas" },
+    "@/lib/chat/study-context": { publishStudyContext() {} },
+    "@/lib/clinical/atlas-catalog": { resolveAtlasManifest: data => data },
+    "@/lib/clinical/atlas-3d": atlas,
+    "@/lib/clinical/atlas-names": names,
+    "@/lib/clinical/muscle-hypertrophy-atlas": load("src/lib/clinical/muscle-hypertrophy-atlas.ts"),
+    "@/lib/clinical/training-atlas": load("src/lib/clinical/training-atlas.ts"),
+    "./region-learning": load("src/components/atlas3d/region-learning.ts"),
+    "./hip-material-policy": load("src/components/atlas3d/hip-material-policy.ts"),
+    "./HipMaterialStudyControls": { default: "HipMaterialStudyControls" },
+  };
+  vm.runInNewContext(outputText, {
+    exports, AbortController, setTimeout, clearTimeout,
+    fetch: async () => ({ ok: true, json: async () => manifest }),
+    document: { addEventListener() {}, removeEventListener() {} },
+    window: { location, history: { replaceState: (_state, _title, href) => {
+      location.href = new URL(href, location).href;
+    } } },
+    require: id => modules[id] ?? new Proxy({}, { get: (_target, name) => name }),
+  }, { filename: file });
+  function render() {
+    cursor = 0;
+    const tree = exports.default({ initialArea: "hip" });
+    for (const run of effects.splice(0)) run();
+    return nodes(tree);
+  }
+  render();
+  await new Promise(resolve => setImmediate(resolve));
+  return { location, render };
+}
+
+test("selecting on the model keeps the hip material sample open", async () => {
+  const { location, render } = await hipExplorer();
+  render().find(node => node.type === "HipMaterialStudyControls").props.onSample("muscle");
+  const canvas = () => render().find(node => node.type === "Atlas3DCanvas").props;
+  const sample = canvas();
+  assert.equal(sample.materialStudy, true);
+  sample.onSelect(sample.selectedId);
+  const selected = canvas();
+  assert.equal(location.searchParams.get("area"), "hip");
+  assert.equal(selected.selectedId, sample.selectedId);
+  assert.equal(selected.materialStudy, true);
+  assert.equal(selected.searchTargetIds.size, 0);
+});
+
+test("choosing a search suggestion opens the full body and highlights only that structure", async () => {
+  const { location, render } = await hipExplorer();
+  render().find(node => node.props.id === "atlas-structure-search")
+    .props.onChange({ target: { value: "Oblique" } });
+  const suggestion = render().find(node => node.props["aria-label"] === "Gợi ý tìm kiếm cấu trúc");
+  const result = nodes(suggestion).find(node => node.type === "button" && node.props["aria-pressed"] === false);
+  result.props.onClick();
+  const canvas = render().find(node => node.type === "Atlas3DCanvas").props;
+  assert.equal(location.searchParams.get("area"), "full");
+  assert.deepEqual([...canvas.searchTargetIds], [canvas.selectedId]);
+  assert.ok(structures.some(row => row.id === canvas.selectedId && /oblique/i.test(row.english)));
+});
 
 test("Internal Oblique resolves to both source sides and excludes External Oblique", () => {
   assert.equal(typeof atlas.resolveAtlasSearch, "function");

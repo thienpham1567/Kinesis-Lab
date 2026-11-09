@@ -77,11 +77,11 @@ export function RegionLearningOverview({
           </p>
         )}
       </div>
-      <div className="rounded-lg border border-rule bg-canvas p-3">
+      <div className="border-t border-rule pt-4">
         <p className="text-xs font-semibold text-ink">
           Một câu hỏi trước khi tiếp tục
         </p>
-        <p className="mt-2 text-xs leading-6 text-slate">
+        <p className="mt-2 text-pretty text-xs leading-6 text-slate">
           Ẩn lớp cơ để thấy xương có đồng nghĩa hình học và điểm bám trên mô
           hình đã được xác nhận chính xác không?
         </p>

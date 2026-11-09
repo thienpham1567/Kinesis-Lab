@@ -323,15 +323,15 @@ export default function Atlas3DExplorer({
     }
   }
 
-  function selectStructure(id: string) {
+  function selectStructure(id: string, origin: "browse" | "search" = "browse") {
     const structure = manifest?.structures.find((entry) => entry.id === id);
     if (!structure) return;
     closeSuggestions(!!searchContainer.current?.contains(document.activeElement));
-    cancelSearch();
-    if (query.trim()) {
+    if (origin === "search") {
       focusSearchTargets([structure], "full");
       return;
     }
+    clearSearchTargets();
     setSelectedId(id);
     setThicknessId((current) => (current === id ? current : null));
     setLayers((current) => ({ ...current, [structure.layer]: true }));
@@ -502,7 +502,7 @@ export default function Atlas3DExplorer({
               <button
                 type="button"
                 aria-pressed={searchTargetIds.has(structure.id) || structure.id === selectedId}
-                onClick={() => selectStructure(structure.id)}
+                onClick={() => selectStructure(structure.id, query.trim() ? "search" : "browse")}
                 className={`my-0.5 flex min-h-11 w-full min-w-0 items-start gap-2 rounded-lg border px-3 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt ${searchTargetIds.has(structure.id) || structure.id === selectedId ? "border-cobalt bg-cobalt-soft text-cobalt" : "border-transparent text-ink hover:bg-surface"}`}
               >
                 <span
