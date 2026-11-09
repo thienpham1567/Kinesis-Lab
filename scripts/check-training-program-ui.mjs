@@ -18,6 +18,30 @@ const response = (body, status = 200) => ({
   status,
   json: async () => body,
 });
+test("default browser fetch loads plans and workouts with its native receiver", async () => {
+  const calls = [];
+  const browserLoad = createAppLoader({
+    globals: {
+      crypto: webcrypto,
+      AbortController,
+      structuredClone,
+      fetch: async function (url) {
+        if (this?.getSnapshot) throw new TypeError("Illegal invocation");
+        calls.push(url);
+        return response(
+          url.includes("training-plans") ? { plans: [] } : { workouts: [] },
+        );
+      },
+    },
+  });
+  const { TrainingWorkspaceModel } = browserLoad("src/lib/training/workspace.ts");
+  const model = new TrainingWorkspaceModel("synthetic-client");
+  await model.load();
+  assert.equal(model.getSnapshot().loadError, "");
+  assert.equal(model.getSnapshot().loaded, true);
+  assert.equal(calls.length, 2);
+});
+
 function setup(fetcher) {
   assert.equal(
     typeof Model,

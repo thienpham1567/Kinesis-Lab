@@ -47,7 +47,7 @@ export class TrainingWorkspaceModel {
   private savedDraft: string;
   constructor(
     clientId: string,
-    private fetcher: typeof fetch = fetch,
+    private fetcher: typeof fetch = (...args) => globalThis.fetch(...args),
   ) {
     const draft = createProgramDraft();
     this.savedDraft = JSON.stringify(draft);

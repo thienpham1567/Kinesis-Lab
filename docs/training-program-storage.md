@@ -22,3 +22,10 @@ TRAINING_SQL_PGLITE_MODULE=/tmp/pt-program-sql-tests/node_modules/@electric-sql/
 ```
 
 Numeric ranges and editable setup defaults are storage/setup limits, not safe-dose recommendations. Software tests and source comparison do not establish clinical validation or professional approval.
+
+## Browser verification on 2026-11-09
+
+- An isolated Chrome fixture reproduced a native `fetch` receiver error at the client workspace entry point. The fix calls browser `fetch` with its global receiver. A regression test failed before the fix and passed afterward.
+- The browser kept an edited plan through section changes and the missing AI configuration response. It saved and activated a manual revision, opened the next dated session, recorded a set and reopened the single completed record by keyboard after reloading. The inspected desktop overview and mobile workout had no horizontal page overflow.
+- The fixture production build, TypeScript, targeted ESLint and 70 program, UI and chat tests passed. AI response behavior used mocks. Live model and Supabase deployment checks were outside this run.
+- Impeccable reported two existing source stripe rules and 24 advisories. The rendered program at 390×844 and workout at 1440×1000 each flagged the nested safety block. The mobile program also had a line-wrap advisory. React Doctor reported nine warnings covering component size and complexity, numeric input parsing, chat state updates, a deferred await and a mixed component export. Other themes were not checked in this run.
