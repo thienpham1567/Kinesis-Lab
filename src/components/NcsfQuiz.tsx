@@ -25,6 +25,10 @@ import type {
 import type { UseLearningProgressResult } from "./learning/useLearningProgress";
 import { NcsfQuestionFigure } from "./NcsfQuestionFigure";
 import { NcsfSourceLinks } from "./NcsfCorrections";
+import {
+  NcsfAnswerReviewPanel,
+  useNcsfAnswerReviews,
+} from "./NcsfAnswerReview";
 
 const LETTERS = ["A", "B", "C", "D"];
 export const QUIZ_DRAFT_ID = "ncsf-quiz-active";
@@ -231,6 +235,12 @@ export function NcsfQuiz({
   const [submitted, setSubmitted] = useState(false);
   const [customSession, setCustomSession] = useState<CustomQuizSession | null>(
     null,
+  );
+
+  const answerReviews = useNcsfAnswerReviews(
+    "quiz",
+    customSession ? customSession.items.map((item) => item.ch) : [ch],
+    submitted,
   );
 
   const attemptIdRef = useRef<string>(nextQuizAttemptId());
@@ -756,6 +766,44 @@ export function NcsfQuiz({
                     {q.references && (
                       <NcsfSourceLinks references={q.references} />
                     )}
+                    <NcsfAnswerReviewPanel
+                      review={answerReviews.reviews.get(item.itemId)}
+                      status={answerReviews.status}
+                      onRetry={answerReviews.retry}
+                      model={answerReviews.model}
+                      generatedAt={answerReviews.generatedAt}
+                      outcome={
+                        picked[pickKey] === undefined
+                          ? "unanswered"
+                          : picked[pickKey] === q.answer
+                            ? "correct"
+                            : "wrong"
+                      }
+                      correct={{
+                        label: LETTERS[order.indexOf(q.answer)],
+                        text: q.options[q.answer],
+                        optionId: item.optionIds[q.answer],
+                      }}
+                      picked={
+                        picked[pickKey] === undefined
+                          ? undefined
+                          : {
+                              label: LETTERS[order.indexOf(picked[pickKey])],
+                              text: q.options[picked[pickKey]],
+                              optionId: item.optionIds[picked[pickKey]],
+                            }
+                      }
+                      others={order
+                        .filter(
+                          (j) => j !== q.answer && j !== picked[pickKey],
+                        )
+                        .map((j) => ({
+                          label: LETTERS[order.indexOf(j)],
+                          text: q.options[j],
+                          optionId: item.optionIds[j],
+                        }))}
+                      onOpenPage={onOpenPage}
+                    />
                   </div>
                 )}
               </fieldset>

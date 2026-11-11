@@ -14,6 +14,7 @@ function fixture({ quizResponses = [], sessionResponses = [] } = {}) {
   let active;
   let random = () => 0;
   const requests = [];
+  const reviewRequests = [];
   const element = (type, props, key = null) => ({ type, props: props ?? {}, key });
   const stub = () => null;
   const hooks = {
@@ -64,6 +65,8 @@ function fixture({ quizResponses = [], sessionResponses = [] } = {}) {
     math.random = () => random();
     vm.runInNewContext(output.outputText, { exports, Math: math, AbortController, console,
       fetch: async (url, options) => {
+        // Expanded answer feedback loads after grading; no review is published in this fixture.
+        if (url.startsWith("/api/ncsf/review?")) { reviewRequests.push(url); return { ok: false, status: 404 }; }
         requests.push({ url, options });
         assert.ok(responses[url]?.length, `Unexpected network request: ${url}`);
         const response = responses[url].shift();
@@ -89,7 +92,7 @@ function fixture({ quizResponses = [], sessionResponses = [] } = {}) {
     };
   }
   return { page: load("src/app/knowledge/page.tsx"), quiz: load("src/components/NcsfQuiz.tsx").NcsfQuiz,
-    mount, requests, setRandom: value => { random = () => value; } };
+    mount, requests, reviewRequests, setRandom: value => { random = () => value; } };
 }
 const bank = () => ({ chapters: Array.from({ length: 8 }, (_, i) => ({ ch: i + 1,
   questions: [16, 18, 22].map((page, n) => ({ q: `Synthetic ${i + 1}.${n}`, options: ["One", "Two", "Three", "Four"],
@@ -145,6 +148,7 @@ test("checking a citation preserves scored answers, chapter, lesson and order; e
   button(tree, "Xem trang 18").props.onClick(); tree = quiz.render();
   assert.deepEqual(citations, [["02-giai-phau-chuc-nang", 18]]);
   assert.deepEqual(snapshot(tree), before); assert.equal(f.requests.length, 1);
+  assert.deepEqual(f.reviewRequests, ["/api/ncsf/review?bank=quiz&part=2"], "graded answers load chapter feedback once");
   f.setRandom(0.95); button(tree, "Làm lại tất cả").props.onClick(); tree = quiz.render();
   assert.notDeepEqual(nodes(tree, node => node.type === "legend").map(({ node }) => text(node)), originalOrder);
   assert.notDeepEqual(nodes(tree, node => node.type === "label" && nodes(node, child => child.type === "input").length).map(({ node }) => text(node)), originalOptions);

@@ -405,6 +405,7 @@ function NcsfContent({
               fromProgress ? () => setView("progress") : undefined
             }
             onSessionExpired={onSessionExpired}
+            onOpenPage={open}
           />
         </section>
       )}
