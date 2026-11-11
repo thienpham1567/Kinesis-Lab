@@ -292,17 +292,13 @@ function MuscleClinicalPanel({
         <h3 className="font-display text-base font-bold text-ink">
           1. Trao đổi triệu chứng &amp; giới hạn tiếp xúc
         </h3>
-        <div className="grid gap-2 text-xs md:grid-cols-2">
-          <PalpationCard label="Tư thế học viên" value={muscle.palpation.clientPosition} />
-          <PalpationCard
-            label="Thuật ngữ kỹ thuật"
-            value={muscle.palpation.technique}
-            accent
-          />
-          <PalpationCard label="Mô tả vùng, không phải tọa độ ấn" value={muscle.palpation.bonyLandmarks} />
+        <div className="grid gap-2 text-xs md:grid-cols-3">
+          <PalpationCard label="Tư thế quan sát" value={muscle.palpation.clientPosition} />
+          <PalpationCard label="Vùng giải phẫu định hướng (không phải tọa độ ấn)" value={muscle.palpation.bonyLandmarks} />
           <PalpationCard
             label="Giới hạn tiếp xúc"
             value={muscle.palpation.underFingerFeel}
+            accent
           />
         </div>
         <div className="rounded-md border border-rule bg-canvas/70 px-3 py-2.5 text-xs leading-6 text-ink">
@@ -313,7 +309,7 @@ function MuscleClinicalPanel({
 
       <section className="space-y-2">
         <h3 className="font-display text-base font-bold text-ink">
-          2. Cơ liên quan cần đánh giá (giả thuyết, chưa xác nhận)
+          2. Cơ liên quan &amp; cấu trúc lân cận cần phân biệt
         </h3>
         <div className="rounded-lg border border-rule bg-canvas/60 p-4 text-xs leading-6">
           <p>
@@ -340,7 +336,7 @@ function MuscleClinicalPanel({
             </div>
             <div className="rounded border border-rule bg-sheet p-2.5">
               <span className="font-mono text-[10px] font-bold uppercase text-slate">
-                Vùng liên quan khác (chưa xác nhận)
+                Cấu trúc lân cận cần phân biệt
               </span>
               <ul className="mt-1.5 list-disc space-y-0.5 pl-4 text-ink">
                 {muscle.chain.satelliteTriggerPoints.map((s) => (
@@ -356,7 +352,9 @@ function MuscleClinicalPanel({
         <h3 className="font-display text-base font-bold text-ink">
           3. Các lựa chọn và giới hạn thực hành
         </h3>
-        <p className="text-xs leading-6 text-slate">Các mục dưới là ví dụ thực hành do ứng dụng biên soạn để chọn theo triệu chứng và khả năng. Chúng không phải trình tự điều trị đã được nghiên cứu cho từng cơ; có thể bỏ qua mục mô mềm.</p>
+        <p className="text-xs leading-6 text-slate">
+          Các mục dưới là ví dụ thực hành do ứng dụng biên soạn để chọn theo triệu chứng và khả năng. Chúng không phải trình tự điều trị đã được nghiên cứu cho từng cơ; có thể bỏ qua mục mô mềm. Không có ngưỡng lực ấn, số giây hay quy trình Pin &amp; Stretch chuẩn hóa; dừng ngay nếu đau nhói, tê hoặc khó chịu tăng.
+        </p>
         <ol className="grid gap-2.5">
           <ProtocolStep
             n={1}
@@ -364,20 +362,12 @@ function MuscleClinicalPanel({
             tone="crimson"
           >
             <p>
-              <strong>Dụng cụ: </strong>
+              <strong>Dụng cụ / tiếp cận: </strong>
               {muscle.protocol.step1Release.tool}
             </p>
             <p>
-              <strong>Vị trí: </strong>
+              <strong>Vị trí cần tránh: </strong>
               {muscle.protocol.step1Release.placement}
-            </p>
-            <p>
-              <strong>Lực &amp; thời gian: </strong>
-              {muscle.protocol.step1Release.pressureAndTime}
-            </p>
-            <p>
-              <strong>Pin &amp; Stretch: </strong>
-              {muscle.protocol.step1Release.pinAndStretch}
             </p>
           </ProtocolStep>
           <ProtocolStep n={2} title="Vận động trong khả năng phù hợp" tone="caution">

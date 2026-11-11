@@ -33,3 +33,4 @@ if (!medicationNote("insulin").includes("hạ đường")) throw new Error("miss
 if (!medicationNote("aspirin").includes("kháng tiểu cầu")) throw new Error("antiplatelet misclassified");
 if (notes.includes("McGill Big 3")) throw new Error("keyword must not prescribe universal rehab");
 if (medicationNote("nitroglycerin").includes("nếu không đỡ")) throw new Error("emergency escalation must not wait");
+if (!medicationNote("amlodipine 5mg").includes("hạ huyết áp tư thế")) throw new Error("missing antihypertensive postural hypotension note");

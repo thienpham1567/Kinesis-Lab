@@ -551,7 +551,7 @@ export const MUSCLE_GROUP_ATLAS: MuscleGroupAtlas[] = [
         "name": "Cơ Chéo Bụng & Cơ Ngang Bụng",
         "latin": "Obliquus externus/internus & Transversus abdominis",
         "originInsertion": "Điểm bám khác nhau ở sườn, chậu, cân và đường trắng; đây là ba cơ riêng.",
-        "fiberDirection": "Hai cơ chéo có hướng sợi khác nhau; cơ ngang chạy ngang và nén ổ bụng.",
+        "fiberDirection": "Chéo bụng ngoài chạy chéo xuống–vào (như hướng đút tay vào túi quần), chéo bụng trong chạy vuông góc với chéo ngoài; cả hai góp phần xoay và nghiêng bên thân. Cơ ngang bụng chạy ngang và nén ổ bụng.",
         "lengthenedExercise": "Cable rotation với tải phù hợp.",
         "shortenedExercise": "Side plank, Pallof press hoặc carry là ví dụ giữ thân.",
         "ptCue": "Gợi ý: duy trì kiểm soát thân và nhịp thở, không gồng tối đa cho mọi bài."

@@ -39,6 +39,7 @@ const DRUG_NOTES: [RegExp, string][] = [
   [/warfarin|rivaroxaban|apixaban|dabigatran|edoxaban/i, "Thuốc chống đông: tăng nguy cơ chảy máu; thảo luận hoạt động có va chạm/nguy cơ chấn thương và chỉ định cá nhân với nhóm điều trị. [NHS: https://www.nhs.uk/medicines/anticoagulants/]"],
   [/aspirin|clopidogrel/i, "Thuốc kháng tiểu cầu: có thể tăng chảy máu; cần xác nhận chỉ định và kế hoạch hoạt động với nhóm điều trị. Đây là nhóm thuốc khác thuốc chống đông. [NHS: https://www.nhs.uk/medicines/clopidogrel/]"],
   [/statin|atorvastatin|rosuvastatin/i, "Statin: báo bác sĩ khi đau/yếu cơ bất thường không giải thích được; triệu chứng nặng cần đánh giá sớm. Không tự kết luận là DOMS hoặc tự ngừng thuốc. [NHS: https://www.nhs.uk/medicines/statins/]"],
+  [/amlodipine|nifedipine|felodipine|losartan|valsartan|telmisartan|irbesartan|candesartan|perindopril|lisinopril|enalapril|ramipril|captopril|hydrochlorothiazide|indapamide|thuốc huyết áp|thuốc hạ áp/i, "Thuốc hạ huyết áp (CCB/ACEi/ARB/lợi tiểu): có thể liên quan choáng/hạ huyết áp tư thế khi đứng dậy nhanh hoặc đổi tư thế đột ngột; chuyển tư thế từ từ, hạ nhiệt (cool-down) từ tốn và đủ nước theo hướng dẫn y tế. Không tự đổi hoặc ngừng thuốc. [NHS: https://www.nhs.uk/conditions/low-blood-pressure-hypotension/]"],
   [/nitroglycerin|isosorbide/i, "Nitrate: xác nhận kế hoạch đau thắt ngực do bác sĩ cung cấp. Đau ngực mới, kéo dài, lan tay/hàm hoặc kèm khó thở, vã mồ hôi, choáng: dừng và gọi cấp cứu địa phương ngay. [NHS: https://www.nhs.uk/symptoms/chest-pain/]"],
 ];
 

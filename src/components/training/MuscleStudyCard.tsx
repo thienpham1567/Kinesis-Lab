@@ -26,6 +26,16 @@ export function MuscleStudyCard({
         </Link>
       </header>
       <p className="text-sm leading-6 text-ink">{muscle.summary}</p>
+      {!compact && muscle.hypertrophyScience && (
+        <div className="rounded-lg border border-rule bg-canvas px-3.5 py-3">
+          <p className="text-xs font-semibold text-cobalt">
+            Bối cảnh nghiên cứu & ứng dụng
+          </p>
+          <p className="mt-1 text-xs leading-6 text-ink">
+            {muscle.hypertrophyScience}
+          </p>
+        </div>
+      )}
       <ClinicalEvidencePanel evidence={MUSCLE_GROUP_EVIDENCE[muscle.id]} />
       <div className="divide-y divide-rule">
         {muscle.subdivisions.map((s, index) => (
@@ -49,6 +59,22 @@ export function MuscleStudyCard({
                 <dt className="font-semibold text-ink">Chức năng và mô tả</dt>
                 <dd className="text-slate">{s.fiberDirection}</dd>
               </div>
+              {!compact && (s.lengthenedExercise || s.shortenedExercise) && (
+                <div className="grid gap-2.5 pt-1 sm:grid-cols-2">
+                  <div className="rounded border border-rule bg-canvas px-3 py-2">
+                    <dt className="font-semibold text-ink">
+                      Ví dụ ở biên độ cơ kéo dài
+                    </dt>
+                    <dd className="mt-0.5 text-slate">{s.lengthenedExercise}</dd>
+                  </div>
+                  <div className="rounded border border-rule bg-canvas px-3 py-2">
+                    <dt className="font-semibold text-ink">
+                      Ví dụ ở biên độ cơ rút ngắn
+                    </dt>
+                    <dd className="mt-0.5 text-slate">{s.shortenedExercise}</dd>
+                  </div>
+                </div>
+              )}
               <div>
                 <dt className="font-semibold text-ink">Gợi ý huấn luyện</dt>
                 <dd className="text-slate">{s.ptCue}</dd>
@@ -57,6 +83,29 @@ export function MuscleStudyCard({
           </details>
         ))}
       </div>
+      {!compact && muscle.compensationFixes.length > 0 && (
+        <div className="space-y-2.5 border-t border-rule pt-4">
+          <p className="text-xs font-semibold text-ink">
+            Tình huống cần quan sát & gợi ý điều chỉnh khi dạy
+          </p>
+          {muscle.compensationFixes.map((fix) => (
+            <div
+              key={fix.symptom}
+              className="rounded-lg border border-rule bg-canvas px-3.5 py-3 text-xs leading-6"
+            >
+              <p className="font-semibold text-ink">{fix.symptom}</p>
+              <p className="mt-1 text-slate">
+                <span className="font-medium text-ink">Cơ chế cần xét: </span>
+                {fix.biomechanicalCause}
+              </p>
+              <p className="mt-1 text-slate">
+                <span className="font-medium text-cobalt">Gợi ý chỉnh: </span>
+                {fix.ptCorrection}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
       <p className="border-t border-rule pt-3 text-xs leading-5 text-slate">
         Mô tả theo nhóm cơ và tài liệu được liệt kê. Mesh 3D minh họa cấu trúc từ
         mô hình nguồn; không thể hiện điểm bám hoặc đường sợi đo trên từng người.

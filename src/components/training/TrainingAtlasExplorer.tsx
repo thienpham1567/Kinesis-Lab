@@ -360,9 +360,14 @@ export function TrainingAtlasExplorer({
                         >
                           {m.name} →
                         </button>
-                        <p className="mt-1 text-xs leading-5 text-slate">
+                        <p className="mt-1 text-xs leading-5 text-ink">
                           {t.targetedHeads}
                         </p>
+                        {t.biomechanicalWhy && (
+                          <p className="mt-1 text-xs leading-5 text-slate">
+                            {t.biomechanicalWhy}
+                          </p>
+                        )}
                         <div className="mt-2">
                           <Link
                             className="text-xs font-semibold text-cobalt underline"

@@ -339,7 +339,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Ngồi thẳng hoặc đứng thả lỏng hai tay dọc thân để quan sát đường bờ trên vai–cổ và tầm xoay/nghiêng cổ tự nhiên [OpenStax §11.5].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Minh họa vùng vai trên giữa cổ và mỏm cùng vai, không là mốc ấn hoặc vị trí nút đã xác minh.",
       "underFingerFeel": "Ghi triệu chứng và vận động cổ/vai dễ chịu; không cần sờ để xác nhận nguyên nhân. Nếu tiếp xúc nhẹ vùng vai nông, phải có đồng ý; không ấn cổ hoặc hố quanh đòn.",
@@ -350,11 +350,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Khả năng vận động và chịu tải cần đánh giá riêng; tư thế đầu hoặc nâng vai không tự chứng minh cơ yếu hay co ngắn.",
       "antagonistOrInhibited": {
         "muscles": "Nhóm cơ cổ và đai vai: chỉ lựa chọn sau đánh giá, không mặc định bị ức chế.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Phần xuống cơ thang cùng cơ răng trước và cơ thang dưới phối hợp vận động xương bả vai khi nâng tay; khi học viên nhún vai sớm, cần đánh giá toàn bộ nhịp vai–bả vai thay vì quy cho một cơ đơn lẻ [OpenStax §11.5].",
         "activationExercise": "Ví dụ vận động vai/cổ chủ động hoặc wall slide nhẹ nếu dễ chịu; liều và bài phù hợp từng người, không là thuốc chống tái phát."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng cổ–vai cần phân biệt: cơ nâng vai (levator scapulae — bám góc trên bả vai) và cơ trên gai (supraspinatus — hố trên gai) [OpenStax §11.5]."
       ]
     },
     "protocol": {
@@ -425,7 +425,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Ngồi tựa lưng, hai vai buông lỏng tự nhiên để quan sát góc cổ–bả vai và biên độ xoay cổ chủ động [OpenStax §11.5].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Sơ đồ vùng góc trên và bờ trong bả vai; không xác nhận lớp cơ hoặc điểm sâu bằng hình bề mặt.",
       "underFingerFeel": "Ưu tiên hỏi triệu chứng và quan sát vận động dễ chịu. Không ấn sâu góc cổ, luồn ngón dưới cơ thang hoặc búng tìm twitch.",
@@ -436,11 +436,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Chuyển động cổ/bả vai và tải tập cần được xem cùng triệu chứng; không có chuỗi bù trừ mặc định.",
       "antagonistOrInhibited": {
         "muscles": "Các cơ kiểm soát cổ và bả vai, không kết luận yếu hoặc ức chế từ đau góc bả.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ nâng vai nâng góc trên xương bả vai; khi học viên mỏi góc trên trong bả vai lúc tập kéo hoặc đẩy qua đầu, cần quan sát sự phối hợp xoay bả vai và vị trí đầu–cổ [OpenStax §11.5].",
         "activationExercise": "Ví dụ wall slide hoặc quay cổ chủ động ở biên độ dễ chịu; không cần cô lập một cơ vì nhãn trigger point."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng góc trên bả vai cần phân biệt: phần xuống cơ thang (phủ nông hơn) và cơ trám bé/lớn (bờ trong bả vai) [OpenStax §11.5]."
       ]
     },
     "protocol": {
@@ -538,7 +538,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Ngồi hoặc đứng thoải mái, thử đưa tay ra trước và xoay ngoài nhẹ trong biên độ không đau để quan sát vận động khớp vai–bả vai [OpenStax §11.5].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Minh họa vùng sau bả vai dưới gai bả; vị trí teres minor gần bờ ngoài chỉ là định hướng vùng, không là tọa độ tiếp cận.",
       "underFingerFeel": "Nếu được đồng ý có thể ghi nhạy vùng mô nông sau vai, lực nhẹ. Không tìm jump sign, không luồn vào nách; phản ứng đau trước vai không tự xác nhận chẩn đoán.",
@@ -549,11 +549,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Cần đánh giá chức năng vai, tải tập và vận động bả; không mặc định pec co ngắn hoặc chóp xoay yếu.",
       "antagonistOrInhibited": {
         "muscles": "Chóp xoay và đai vai: đánh giá sức mạnh/chức năng trước khi chọn bài.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ dưới gai và cơ tròn bé thuộc nhóm chóp xoay sau, thực hiện xoay ngoài cánh tay và phối hợp giữ ổn định chỏm xương cánh tay trong ổ chảo khi đẩy/kéo [OpenStax §11.5].",
         "activationExercise": "Ví dụ xoay ngoài nhẹ có hỗ trợ nếu phù hợp và dễ chịu; tải không được ấn định bằng bản đồ đau."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng vai sau cần phân biệt: phần gai cơ delta (lớp nông phía trên), cơ tròn lớn (bờ dưới ngoài bả vai, xoay trong) và cơ trên gai [OpenStax §11.5]."
       ]
     },
     "protocol": {
@@ -645,7 +645,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Đứng hoặc ngồi tự nhiên để quan sát vị trí mỏm cùng vai, xương đòn và khả năng vươn tay lên cao trong biên độ dễ chịu [OpenStax §11.5; Borstad 2005].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Minh họa vùng ngực trước; pec minor là cơ sâu và không thể nhận diện điểm bằng chấm bề mặt. Không là vị trí đặt bóng.",
       "underFingerFeel": "Không hướng dẫn luồn ngón dưới pec major, ấn dưới mỏm quạ, hõm nách hay vùng quanh đòn. Trao đổi triệu chứng và chuyển khám nếu có tê/yếu hoặc dấu hiệu mạch.",
@@ -656,11 +656,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Đánh giá vận động vai theo từng người; không cần release pec minor để mọi bài tập khác có tác dụng.",
       "antagonistOrInhibited": {
         "muscles": "Nhóm cơ vai và bả vai, không mặc định serratus/lower trap bị ức chế.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ ngực bé bám vào mỏm quạ xương bả vai (vận động đai vai), khác với cơ ngực lớn bám vào xương cánh tay (khép/gập cánh tay); cần phân biệt rõ vai trò bả vai và cánh tay khi chỉnh bài đẩy [OpenStax §11.5].",
         "activationExercise": "Ví dụ vận động vai có hỗ trợ ở biên độ dễ chịu; lựa chọn sau đánh giá, không là điều trị TOS."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng ngực–vai trước: cơ ngực lớn (lớp nông phủ ngoài), cơ răng trước (thành bên ngực) và nhóm cơ bám mỏm quạ [OpenStax §11.5]."
       ]
     },
     "protocol": {
@@ -752,7 +752,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Đứng hoặc ngồi quan sát chuyển động xương bả vai ôm lồng ngực khi giơ tay qua đầu và khi hít thở tự nhiên [OpenStax §11.5].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Sơ đồ vùng lưng bên và thành ngực; không dùng số xương sườn hoặc bờ nách làm tọa độ ấn.",
       "underFingerFeel": "Không ấn vào nách, kẽ sườn hoặc dùng lực gây nín thở để tìm điểm. Nếu đau khi hít thở hoặc không rõ nguyên nhân, ưu tiên đánh giá y tế.",
@@ -763,11 +763,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Đánh giá hoạt động overhead, triệu chứng và chức năng bả vai; không suy ra cơ đối kháng bị ức chế.",
       "antagonistOrInhibited": {
         "muscles": "Nhóm cơ đai vai và thân mình; không mặc định mất cân bằng từ hình bả vai.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ răng trước giữ bờ trong bả vai áp sát lồng ngực và xoay trên bả vai khi nâng tay, còn cơ lưng rộng duỗi/khép cánh tay; cần quan sát phối hợp bả vai–lồng ngực khi tập overhead [OpenStax §11.5].",
         "activationExercise": "Ví dụ wall slide nhẹ hoặc giơ tay có hỗ trợ nếu dễ chịu; bả vai nhô mới kèm yếu cần khám."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận dọc thành bên ngực–bả vai: cơ tròn lớn (góc dưới bả vai), các cơ gian sườn và cơ chéo bụng ngoài [OpenStax §11.5]."
       ]
     },
     "protocol": {
@@ -845,7 +845,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Đứng hai chân hoặc một chân có điểm tựa, quan sát cử động nghiêng bên thân và sự cân đối khung chậu–lồng ngực trong biên độ dễ chịu [OpenStax §11.4].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Sơ đồ vùng giữa bờ sườn dưới và mào chậu sau; không là vị trí ép sâu hướng mỏm ngang.",
       "underFingerFeel": "Không hướng dẫn bóng hoặc ngón ấn sâu vùng hông lưng dưới sườn. Vị trí đau không phân biệt chắc QL với cơ, khớp, thần kinh hoặc nguyên nhân khác.",
@@ -856,11 +856,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Đánh giá chuyển động và chức năng trong bối cảnh đau lưng, không dùng hip hike để xác nhận một cơ yếu.",
       "antagonistOrInhibited": {
         "muscles": "Cơ hông và thân mình theo mục tiêu chức năng; không giả định cơ đối kháng bị ức chế.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ vuông thắt lưng nằm ở thành bụng sau, tham gia nghiêng bên cột sống và giữ ổn định thắt lưng–chậu cùng khối cơ dựng sống và nhóm cơ dạng háng [OpenStax §11.4; NICE NG59].",
         "activationExercise": "Ví dụ đi bộ, đứng lên ngồi xuống hoặc bài sức mạnh phù hợp; có thể chọn side plank biến thể nếu dung nạp, không bắt buộc."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng thắt lưng–chậu cần phân biệt: khối cơ dựng sống (erector spinae), các cơ chéo bụng và phần trên cơ mông nhỡ [OpenStax §11.4]."
       ]
     },
     "protocol": {
@@ -952,7 +952,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Đứng dậy từ ghế, bước đi hoặc thử duỗi háng chủ động nhẹ để quan sát biên độ háng–thắt lưng mà không ấn vào thành bụng [OpenStax §11.4; StatPearls].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Chỉ minh họa vùng cơ sâu. Bề mặt bụng hoặc khoảng cách từ rốn không là tọa độ an toàn để tiếp cận psoas/iliacus.",
       "underFingerFeel": "Không hướng dẫn tự sờ sâu, luồn ngón trong mào chậu, nằm đè bóng lên bụng/bẹn hoặc nhận mạch đập làm mốc. Nếu đau bụng/bẹn chưa rõ, cần đánh giá y tế.",
@@ -963,11 +963,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Đánh giá chức năng háng và lưng thay vì mặc định lower crossed syndrome hoặc một chuỗi cơ bị ức chế.",
       "antagonistOrInhibited": {
         "muscles": "Nhóm cơ hông/thân theo khả năng; không xác nhận glute max yếu bằng điểm đau bụng.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ thắt lưng lớn (psoas major) và cơ chậu (iliacus) tạo thành cơ thắt lưng–chậu gập háng và giữ tư thế; cần đánh giá phối hợp với nhóm duỗi háng (mông lớn, gân kheo) và kiểm soát thân [OpenStax §11.4; StatPearls].",
         "activationExercise": "Ví dụ đi bộ hoặc bridge nhẹ nếu không làm tăng triệu chứng và đã đánh giá phù hợp; không có cửa sổ kích hoạt bắt buộc."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng trước háng cần phân biệt: cơ thẳng đùi (vừa gập háng vừa duỗi gối), cơ lược (pectineus) và cơ căng mạc đùi [OpenStax §11.6]."
       ]
     },
     "protocol": {
@@ -1066,7 +1066,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Đứng hai chân hoặc đứng một chân có điểm vịn để quan sát kiểm soát khung chậu ngang và trục chi dưới trong biên độ không đau [OpenStax §11.6].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Sơ đồ vùng mông, gồm cơ sâu dưới lớp nông; đường sacrum–mấu chuyển không là tọa độ để ấn piriformis.",
       "underFingerFeel": "Không ngồi đè bóng hoặc ấn sâu giữa mông để tìm piriformis/glute minimus. Đau lan hoặc tê khi ấn không xác nhận điểm kích hoạt; dừng áp lực.",
@@ -1077,11 +1077,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Cần đánh giá sức mạnh, chức năng chân trụ và triệu chứng thần kinh; hình chuyển động không tự xác lập chuỗi bù trừ.",
       "antagonistOrInhibited": {
         "muscles": "Nhóm cơ hông/thân cần được đánh giá riêng, không mặc định glute max bị ức chế.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ mông nhỡ và mông bé dạng đùi và ổn định khung chậu khi đứng một chân; cơ hình lê nằm sâu dưới cơ mông lớn, xoay ngoài đùi và liên quan chặt chẽ cấu trúc thần kinh vùng mông sâu [OpenStax §11.6; Martin 2015].",
         "activationExercise": "Ví dụ bridge, đứng một chân có hỗ trợ hoặc bài sức mạnh hông phù hợp nếu dễ chịu; không dùng cảm giác cháy để xác nhận cơ được tuyển dụng."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng mông–hông cần phân biệt: cơ mông lớn (lớp nông), nhóm cơ xoay ngoài sâu khác và cơ căng mạc đùi [OpenStax §11.6]."
       ]
     },
     "protocol": {
@@ -1166,7 +1166,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Ngồi duỗi gối hoặc đứng squat nông trong biên độ dễ chịu để quan sát trục hông–gối–cổ chân và vị trí triệu chứng [OpenStax §11.6; Neal 2024].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Minh họa vùng ngoài hông/đùi; không phải tọa độ bóng dưới ASIS hoặc sát gối.",
       "underFingerFeel": "Có thể ghi vùng nhạy mô đùi nông nếu đồng ý; không ấn bẹn, sát ASIS hoặc vùng khớp sưng để tìm nút. Đau khi sờ không xác nhận TFL/VL gây đau gối.",
@@ -1177,11 +1177,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Không mặc định gối là nạn nhân của hông. Với đau bánh chè đã đánh giá, chọn bài theo khả năng và nhu cầu. [Neal 2024]",
       "antagonistOrInhibited": {
         "muscles": "Cơ gối và hông theo đánh giá; không kết luận glute med hoặc VMO bị ức chế.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ căng mạc đùi (TFL) và cơ mông lớn cùng bám vào dải chậu–chày, còn cơ rộng ngoài thuộc cơ tứ đầu duỗi gối; hướng xử trí chính cho đau bánh chè–đùi là quản lý tải và tập sức mạnh gối–hông [OpenStax §11.6; Neal 2024].",
         "activationExercise": "Ví dụ squat nông có hỗ trợ hoặc bài sức mạnh hông/gối phù hợp; không là toa cho mọi đau mặt ngoài gối."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận mặt ngoài đùi–gối cần phân biệt: cơ mông nhỡ (phía trên sau TFL), cơ thẳng đùi và đầu dài cơ nhị đầu đùi [OpenStax §11.6]."
       ]
     },
     "protocol": {
@@ -1278,7 +1278,7 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       }
     ],
     "palpation": {
-      "clientPosition": "Tư thế thoải mái do người tập tự chọn; không đặt tư thế để ép sâu vào cơ.",
+      "clientPosition": "Ngồi (gối gập) và đứng (gối duỗi) kiểm tra biên độ gấp mu/gấp gan chân chủ động và cảm giác vùng gân gót–gan chân [OpenStax §11.6; Koc 2023].",
       "technique": "Flat Palpation",
       "bonyLandmarks": "Sơ đồ vùng bắp chân và cẳng chân trước; không là vị trí ấn sâu qua gastrocnemius để tìm soleus.",
       "underFingerFeel": "Không ấn sâu cẳng chân, khoeo hoặc tìm nút bằng đau gót lan. Đau/sưng một chân chưa rõ cần khám khẩn trước khi massage, không cần đủ đỏ/nóng mới nghi ngờ. [NHS DVT]",
@@ -1289,11 +1289,11 @@ const triggerMuscleRecords: TriggerPointMuscle[] = [
       "biomechanicalReason": "Đánh giá chức năng cổ chân, tải chạy và triệu chứng; không suy ra chuỗi bù trừ chỉ từ squat hoặc cảm giác căng.",
       "antagonistOrInhibited": {
         "muscles": "Nhóm cơ cẳng chân/bàn chân theo chức năng; không bắt buộc kích hoạt chày trước sau lăn.",
-        "whyRelated": "Liên hệ cơ học nếu có là giả thuyết cần kiểm tra bằng đánh giá phù hợp, không là kết luận chẩn đoán từ sơ đồ.",
+        "whyRelated": "Cơ bụng chân đi qua cả khớp gối và cổ chân, còn cơ dép chỉ đi qua khớp cổ chân (cùng gấp gan chân qua gân gót); cơ chày trước ở khoang trước đối vận bằng gấp mu và nghiêng trong bàn chân [OpenStax §11.6].",
         "activationExercise": "Ví dụ cử động cổ chân hoặc calf raise có hỗ trợ nếu phù hợp; đau gót/Achilles cần lựa chọn bài theo đánh giá riêng."
       },
       "satelliteTriggerPoints": [
-        "Không có chuỗi điểm vệ tinh mặc định được xác nhận; xem từng triệu chứng và chức năng riêng."
+        "Cấu trúc lân cận vùng cẳng chân–bàn chân cần phân biệt: cân gan chân (plantar fascia), các cơ mác bên và nhóm cơ gấp sâu sau cẳng chân [OpenStax §11.6; Koc 2023]."
       ]
     },
     "protocol": {

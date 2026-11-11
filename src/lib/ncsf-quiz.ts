@@ -127,6 +127,33 @@ export function parseNcsfQuiz(value: unknown): NcsfQuizData | null {
   return value as NcsfQuizData;
 }
 
+const BUILTIN_PAGE_CORRECTIONS: {
+  ch: number;
+  page: number;
+  text: string;
+  references: NcsfReference[];
+}[] = [
+  {
+    ch: 6,
+    page: 6,
+    text: "Tr.5–6 dùng mốc phương Tây (BMI 25–29,9 / ≥30; vòng eo >101,6 cm ở nam, >88,9 cm ở nữ và đo ngang rốn). Ở quần thể châu Á, hội thảo chuyên gia WHO (2004) nêu các điểm hành động sức khỏe cộng đồng bổ sung ở BMI ≥23 và ≥27,5 kg/m², còn đồng thuận IDF/AHA/NHLBI (2009) dùng ngưỡng vòng eo ≥90 cm (nam) và ≥80 cm (nữ) cho người châu Á khi sàng lọc béo bụng. Khi làm bài thi NCSF giữ mốc giáo trình; khi đánh giá thực tế tại Việt Nam cần ghi rõ bộ tiêu chuẩn và mốc đo.",
+    references: [
+      {
+        title: "WHO Expert Consultation 2004: Appropriate body-mass index for Asian populations and its implications for policy and intervention strategies",
+        url: "https://pubmed.ncbi.nlm.nih.gov/14726171/",
+        checkedAt: "2026-11-11",
+        scope: "abstract",
+      },
+      {
+        title: "Alberti et al. 2009 (IDF/NHLBI/AHA): Harmonizing the metabolic syndrome — ngưỡng vòng eo theo quần thể",
+        url: "https://pubmed.ncbi.nlm.nih.gov/19805654/",
+        checkedAt: "2026-11-11",
+        scope: "full-text",
+      },
+    ],
+  },
+];
+
 export function pageCorrections(bank: NcsfQuizData, chapter: number, page: number) {
   const notes = new Map<string, { text: string; references: NcsfReference[] }>();
   for (const q of bank.chapters.find(c => c.ch === chapter)?.questions ?? []) {
@@ -135,6 +162,13 @@ export function pageCorrections(bank: NcsfQuizData, chapter: number, page: numbe
     for (const ref of q.references ?? [])
       if (!note.references.some(r => r.url === ref.url && r.scope === ref.scope && r.checkedAt === ref.checkedAt)) note.references.push(ref);
     notes.set(q.correction, note);
+  }
+  for (const b of BUILTIN_PAGE_CORRECTIONS) {
+    if (b.ch !== chapter || b.page !== page) continue;
+    const note = notes.get(b.text) ?? { text: b.text, references: [] };
+    for (const ref of b.references)
+      if (!note.references.some(r => r.url === ref.url && r.scope === ref.scope && r.checkedAt === ref.checkedAt)) note.references.push(ref);
+    notes.set(b.text, note);
   }
   return [...notes.values()];
 }
