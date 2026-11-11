@@ -47,3 +47,36 @@ node --env-file=.env.local scripts/ncsf-answer-review.mjs publish
 - Tiêu đề mục lấy từ dòng đầu của slide. Một số slide bắt đầu bằng bảng hoặc câu dẫn nên không có tiêu đề mục. Số trang là định vị chính.
 - Văn bản PDF hai cột có thể làm một dòng trích bị ngắt hoặc ghép lệch. Nút “Mở trang” luôn dẫn tới trang gốc.
 - Các kiểm tra trên chỉ xác nhận cấu trúc và nguồn trích. Chúng không xác nhận độ chính xác y khoa và không thay cho việc chuyên gia duyệt.
+
+## Sửa khóa đáp án nhóm A (2026-11-12)
+
+AI đã sơ bộ xếp 21 câu vào nhóm “khóa đáp án có thể sai”. Mỗi câu được đọc lại theo trang giáo trình trước khi sửa. Có 6 câu được giữ nguyên:
+- PRCF/speed (tr.21).
+- OH Bulgarian squat (“circuit” khác “chain”).
+- Reverse lunge (bảng tr.75).
+- Khớp gối và thứ tự tạ–cardio trong đề thi thử: đã có ghi chú hoặc nguồn từ trước.
+- Tăng cân: chỉ sửa trang dẫn.
+
+Đã sửa 16 mục trong `quiz.json` và một mục trong `mock-answers.json` (dạng câu làm rõ, giữ câu gốc). Bản cũ được sao lưu trong `.data/ncsf-review/releases/`.
+
+| Câu | Thay đổi | Căn cứ |
+|---|---|---|
+| HRCF cao nhưng mất ngủ, hút thuốc | Sửa câu chữ phương án đúng (“không thực sự khỏe mạnh”) | Giáo trình Ch.1 tr.14 |
+| Ung thư không liên quan mỡ cơ thể | Đề viết lại theo danh sách tr.40, thêm đính chính | Giáo trình tr.40; NCI fact sheet (rà 2025-01-28) |
+| Đỉnh BMD | 18 → 30 tuổi, thêm đính chính | Giáo trình Ch.2 tr.4; NIAMS Kids and Their Bones (rà 2023-05) |
+| Supination cổ chân | Đáp án đổi sang plantarflexion + adduction + inversion, thêm đính chính | OUHSC (D. Thompson PT); giáo trình tr.38 đảo khái niệm |
+| Hormone đồng hóa (đề cương và đề thi thử 2, câu 30) | Estrogen → testosterone | Giáo trình Ch.3 tr.38 |
+| Modified Thomas Test | Thay phương án cũng đạt mức Tốt; trang dẫn 60 → 61 | Giáo trình Ch.4 tr.61 |
+| “Chất béo chuyển hóa thành” | Đề viết lại theo câu giáo trình (glucose dư → triglyceride) | Giáo trình Ch.5 tr.8 |
+| Protein khi mang thai | Giữ 20 g, thêm đính chính theo tam cá nguyệt | Giáo trình tr.26–27; Murphy 2021 (tóm lược DRI) |
+| Very Low Sodium | “Dưới 35 mg” → “35 mg trở xuống” | Giáo trình Ch.5 tr.49 |
+| Cân nặng mục tiêu FFM 56 kg | 65,8 → 65,9 kg (làm tròn) | Giáo trình Ch.6 tr.12 |
+| Tăng cân khi tập cường độ cao | Trang dẫn 33 → 35 | Giáo trình Ch.6 tr.35 |
+| Chương trình làm mát | Trang dẫn 4 → 7 | Giáo trình Ch.7 tr.7 |
+| RPE | Đề viết lại cho bài tập kỵ khí; “≥14” → “>14” | Giáo trình Ch.7 tr.55 |
+| Linh hoạt nam/nữ | “Phần lớn” → “một phần” do giải phẫu | Giáo trình Ch.7 tr.110 |
+| Bài chuẩn bị cho lunge tải dọc trục | Đề viết lại theo mục đích trong bảng | Giáo trình Ch.7 tr.143 |
+
+Các nguồn ngoài đều được đọc ngày 2026-11-12. Phạm vi đọc được ghi trong `references` của từng câu.
+
+Lưu ý: dữ liệu gốc dùng cho `scripts/ncsf-upload.mjs` nằm ở `.data/ncsf/quiz/` trên máy biên soạn, không có ở đây. Lần upload sau từ máy đó sẽ ghi đè các sửa đổi này, trừ khi bản sửa được chép vào dữ liệu gốc. Bản đã sửa nằm tại `.data/ncsf-review/patched/`.

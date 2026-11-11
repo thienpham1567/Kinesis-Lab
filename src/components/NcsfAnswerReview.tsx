@@ -184,7 +184,8 @@ function ReviewBody({
       )}
       <p className="text-xs leading-5 text-slate">
         Phần lý do do AI ({model}) soạn ngày {formatDate(generatedAt)}, chỉ dựa trên trang giáo
-        trình trích ở trên; chưa có chuyên gia duyệt. Nếu thấy khác giáo trình, hãy theo giáo trình.
+        trình trích ở trên; chưa có chuyên gia duyệt. Nếu lý do khác đoạn trích, hãy đối chiếu đoạn
+        trích, phần đính chính (nếu có) và nguồn đối chiếu.
       </p>
     </div>
   );
