@@ -15,7 +15,7 @@ export const HANDBOOK_EVIDENCE: Record<string, EvidenceRecord> = Object.fromEntr
     'Ví dụ/cue và cách ghi chép của app không tự trở thành test chẩn đoán, dự báo nguy cơ hay phác đồ điều trị cá nhân.',
     ...(topic.id === 'rom' ? ['CDC là ROM thụ động, JTSS là chủ động. Số trung bình và CI của trung bình không phải ngưỡng chẩn đoán. Không chuyển sai số của một app/quy trình sang form nhập số.'] : []),
     ...(topic.id === 'control' ? ['Ưu thế hướng chú ý ngoài còn tranh luận về thiên lệch công bố. Cochrane 2016 tìm kiếm đến 04/2015; WHO quick guide không xác nhận từng cue của app.'] : []),
-    ...(topic.id === 'symmetry' ? ['TUG đo di chuyển chức năng; không phải chỉ số bất đối xứng. Không dùng LSI hay một tỷ lệ chung để cấp phép trở lại thể thao.'] : []),
+    ...(topic.id === 'symmetry' ? ['Không dùng LSI hay một tỷ lệ chung để cấp phép trở lại thể thao.'] : []),
     ...(topic.id === 'patterns' ? ['Các nhóm mẫu là quy ước huấn luyện. Hình nghiên cứu là điều kiện đo ở người khỏe, không phải tư thế an toàn phổ quát.'] : []),
     ...(topic.id === 'posture' ? ['Quan sát tư thế và đáp ứng khi đổi nhiệm vụ chỉ phục vụ mô tả/huấn luyện. Không suy nguyên nhân đau, mất cân bằng cơ hay tiên lượng chấn thương từ ảnh hoặc sơ đồ.'] : []),
   ],

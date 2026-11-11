@@ -1,14 +1,20 @@
 import type { HandbookTopic } from "./movement-handbook";
 import { MOVEMENT_SOURCES as S } from "./movement-sources";
+import { POSTURE_GUIDES } from "./posture-guides";
 
 export const POSTURE_TOPIC: HandbookTopic = {
   id: "posture",
   tab: "Đánh giá tư thế",
-  kicker: "Posture correction",
-  title: "Quan sát, điều chỉnh và kiểm tra lại",
-  gist: "Quy trình đánh giá học viên trưởng thành. Hỏi mục tiêu, quan sát lúc đứng và khi vận động, thử một điều chỉnh rồi kiểm tra lại.",
+  kicker: "Cẩm nang thực hành cho PT · Người trưởng thành",
+  title: "Đánh giá tư thế: từ quan sát đến kế hoạch tập",
+  gist: "Sau buổi đánh giá, bạn cần mô tả được điều đã thấy, chọn được việc cần đo thêm và biết nên thử điều chỉnh gì. Bài này đi từ sàng lọc, quan sát ba hướng và phép thử chức năng đến hướng xử lý theo sáu vùng, rồi ghi kết quả để đánh giá lại.",
   authored: true,
   keyPoints: [
+    {
+      title: "Đặt mục tiêu bằng một việc học viên muốn làm",
+      text: "Ví dụ: ngồi làm việc dễ chịu hơn, với tay lên kệ hoặc đứng dậy khỏi ghế. Ghi riêng ba kết quả: hình dáng/số đo tư thế, khả năng thực hiện nhiệm vụ và cảm nhận của học viên. Chọn can thiệp dựa trên mục tiêu và dữ liệu, không chỉ để ảnh đứng trông cân hơn.",
+      authored: true,
+    },
     {
       title: "Quan sát giúp mô tả tư thế",
       text: "Ghi điều thấy được trong điều kiện cụ thể, chẳng hạn vai phải trông cao hơn khi đứng thả lỏng. Tổng quan về quan sát tư thế tĩnh tìm thấy ít dữ liệu về tính giá trị và chưa có dữ liệu về khả năng phát hiện thay đổi trong các nghiên cứu được đưa vào.",
@@ -26,8 +32,13 @@ export const POSTURE_TOPIC: HandbookTopic = {
     },
     {
       title: "Tách thay đổi hình dáng khỏi kết quả chức năng",
-      text: "Trong tổng quan ở người khỏe, tập sức mạnh qua nhiều buổi cải thiện một số chỉ số tư thế vùng cổ và ngực. Phân tích vùng thắt lưng–chậu không cho thấy hiệu quả rõ, và nghiên cứu không chứng minh giảm đau nhờ thay đổi góc tư thế.",
-      sourceIds: ["postureExercise"],
+      text: "Tổng quan ở người khỏe cho thấy tập sức mạnh có thể cải thiện một số chỉ số tư thế cổ/ngực. Tổng quan RCT 2026 về các mẫu đầu–vai–ngực cũng tìm thấy thay đổi góc, nhưng lợi ích đau/chức năng chưa nhất quán. Cần theo dõi cả nhiệm vụ và triệu chứng để biết việc tập có đạt mục tiêu hay không.",
+      sourceIds: ["postureExercise", "postureUcs"],
+    },
+    {
+      title: "Một số đo chỉ có nghĩa khi biết quy trình và sai số",
+      text: "Knee-to-wall là một phép đo gập mu cổ chân khi chịu trọng lượng. Nó không xác định một cơ gây hạn chế. Thay đổi nhỏ có thể nằm trong sai số; mức thay đổi phát hiện được khác với mức thay đổi có ý nghĩa đối với học viên.",
+      sourceIds: ["postureLunge", "postureLungeError", "devet"],
     },
   ],
   parts: [
@@ -37,6 +48,7 @@ export const POSTURE_TOPIC: HandbookTopic = {
       intro: "Xác định một việc học viên muốn làm tốt hơn, rồi xem họ có thể thử nhiệm vụ đó hôm nay không.",
       authored: true,
       items: [
+        { lead: "Chốt đầu ra của buổi đánh giá.", text: "Cùng học viên chọn một nhiệm vụ ưu tiên. Ghi mức hiện tại, điều họ muốn cải thiện và kết quả nào sẽ được so lại. Cuối buổi cần có: mô tả ban đầu → giả thuyết cần kiểm tra → điều chỉnh đã thử → đáp ứng → kế hoạch. Nếu chưa đủ dữ liệu, ghi câu hỏi còn thiếu thay vì gán một hội chứng tư thế.", authored: true },
         { lead: "Mục tiêu và triệu chứng.", text: "Hỏi việc nào đang khó, khi nào bắt đầu, vị trí và diễn biến triệu chứng, điều làm dễ hơn hoặc khó hơn. Hỏi thêm về chấn thương gần đây, mức vận động và hướng dẫn hạn chế hoạt động đang áp dụng.", sourceIds: ["postureScreen"], authored: true },
         { lead: "Hoãn bài thử và hỏi ý kiến y tế.", text: "Đau, tức hoặc khó chịu ở ngực khi sinh hoạt hằng ngày hay khi vận động, chóng mặt khi vận động, ngất hoặc mất ý thức, khó thở lúc nghỉ, hay đau hoặc sưng ở một vùng cơ thể làm hạn chế vận động là các ví dụ cần xem kỹ hướng dẫn sàng lọc. Tạm dừng đánh giá vận động nếu có dấu hiệu đáng lo đang xảy ra.", sourceIds: ["postureScreen"] },
         { lead: "Trợ giúp y tế ngay.", text: "Dừng buổi đánh giá và gọi cấp cứu nếu đau hoặc tức ngực đột ngột không hết. Làm tương tự nếu đau ngực lan tới tay, cổ, hàm, bụng hoặc lưng, hay kèm khó thở, vã mồ hôi, buồn nôn hoặc choáng. Đau thắt lưng nặng lan xuống chân kèm tê vùng đáy chậu mới xuất hiện hoặc thay đổi mới về tiểu tiện, đại tiện hay chức năng tình dục cũng cần đánh giá y tế ngay.", sourceIds: ["postureNhs", "postureNice"] },
@@ -58,10 +70,12 @@ export const POSTURE_TOPIC: HandbookTopic = {
         caption: "Sơ đồ do Kinesis Lab dựng để nhắc vị trí quan sát. Các dấu chỉ vùng nhìn, không dùng để căn một tư thế chuẩn hay đo mốc giải phẫu.",
       },
       items: [
+        { lead: "Chuẩn hóa điều kiện trước.", text: "Giải thích mục đích, xin phép và bảo đảm riêng tư nếu chụp ảnh. Ghi giày, mặt sàn, vị trí chân, hướng nhìn, chỉ dẫn đứng và thời điểm quan sát. Mời đứng tự nhiên trước khi đưa cue; nếu yêu cầu ‘đứng thẳng’, ghi đó là một điều kiện khác. Quan sát tĩnh và quan sát khi vận động là hai loại dữ liệu.", sourceIds: ["postureObservation", "posturePhoto"], authored: true },
         { lead: "Nhìn trước.", text: "Mô tả độ cao tương đối của vai, thân có nghiêng về một bên không, hướng gối và cách đặt bàn chân.", authored: true },
         { lead: "Nhìn bên.", text: "Ghi vị trí tương đối của đầu so với thân, cách thân và chậu đứng trên chân, cùng tư thế gối. Có thể quan sát bên còn lại nếu cần làm rõ.", authored: true },
         { lead: "Nhìn sau.", text: "So hai bên ở vai, đường viền vùng bả vai, thân và gót. Ghi khác biệt quan sát được, kèm hướng nhìn và bên của học viên.", authored: true },
         { lead: "Nếu dùng ảnh để đối chiếu.", text: "Xin phép trước khi chụp. Lặp lại vị trí máy, khoảng cách, hướng nhìn, cách đặt chân và hướng dẫn đứng. Dùng ảnh để đối chiếu mô tả. Muốn đo góc cần mốc, quy trình và dụng cụ đã được đánh giá phù hợp.", sourceIds: ["posturePhoto", "postureObservation"], authored: true },
+        { lead: "Khi đo góc trên ảnh.", text: "Cần định nghĩa góc, mốc đánh dấu, máy vuông góc mặt phẳng cần quan sát và cách hiệu chuẩn. Nghiên cứu PAS/SAPO cho người đánh giá đọc lại cùng các ảnh đã chụp; kết quả đó không bảo đảm tư thế một người ổn định qua buổi hoặc ảnh điện thoại chưa đánh dấu đo chính xác. Không so hai ảnh khác điều kiện rồi kết luận thay đổi vài độ là thành công.", sourceIds: ["posturePhoto"], authored: true },
       ],
     },
     {
@@ -84,43 +98,88 @@ export const POSTURE_TOPIC: HandbookTopic = {
       ],
     },
     {
+      id: "chair",
+      label: "Phép thử có quy trình: đứng lên khỏi ghế 30 giây",
+      intro: "Dùng khi mục tiêu là khả năng đứng lên lặp lại và học viên phù hợp để thực hiện. Đây là phép thử chức năng trong bộ STEADI cho người cao tuổi; khác với việc thử một chiếc ghế cao hơn để chọn bài tập.",
+      sourceIds: ["postureChair"],
+      items: [
+        { lead: "Thiết lập theo CDC.", text: "Chuẩn bị ghế tựa thẳng, không tay vịn, mặt ghế cao 17 inch (khoảng 43,2 cm), đồng hồ và vị trí an toàn. Người đánh giá đứng cạnh. Học viên ngồi giữa ghế, hai bàn chân áp sàn, khoanh tay chạm vai đối bên, giữ lưng thẳng và tay sát ngực.", sourceIds: ["postureChair"] },
+        { lead: "Thực hiện và đếm.", text: "Khi bắt đầu tính giờ, đứng thẳng hoàn toàn rồi ngồi xuống, lặp trong 30 giây. Đếm số lần đứng hoàn toàn; khi hết giờ, lần đã vượt quá nửa đường đứng lên được tính theo quy tắc CDC. Nếu phải dùng tay để đứng, dừng và ghi 0 theo protocol.", sourceIds: ["postureChair"] },
+        { lead: "Diễn giải đúng đối tượng.", text: "Bảng tham chiếu đi kèm CDC chia theo tuổi/giới từ 60 đến 94; không dùng các ngưỡng đó cho người trẻ hoặc gọi đây là điểm tư thế. Ghi 0 theo protocol không có nghĩa học viên không thể đứng dậy với hỗ trợ, và không chỉ ra cơ nào yếu.", sourceIds: ["postureChair"], authored: true },
+        { lead: "Khi cần thay ghế hoặc dùng tay.", text: "Có thể quan sát một phiên bản hỗ trợ phù hợp cho mục tiêu huấn luyện: ghi rõ chiều cao ghế, hỗ trợ và số lần. Đánh dấu ‘đã sửa đổi quy trình’; so với chính điều kiện đó ở lần sau, không chấm bằng bảng chuẩn CDC.", authored: true },
+      ],
+    },
+    {
+      id: "ankle-test",
+      label: "Phép đo có quy trình: knee-to-wall cho cổ chân",
+      intro: "Phép đo gập mu cổ chân khi chịu trọng lượng giúp trả lời một câu hỏi cụ thể về vận động cổ chân. Nghiên cứu Chisholm loại người có chống chỉ định chịu toàn bộ trọng lượng hoặc không thực hiện được bài; cần xác định sự phù hợp trước khi thử.",
+      sourceIds: ["postureLunge"],
+      items: [
+        { lead: "Chuẩn bị.", text: "Dán thước từ tường ra sàn và vạch dọc lên tường. Đặt ngón cái và giữa gót của chân thử trên đường thước. Ghi bên, giày/đi chân trần và người đo để lần sau lặp được cùng cách thiết lập.", sourceIds: ["postureLunge"], authored: true },
+        { lead: "Tìm điểm cuối.", text: "Chùng gối có kiểm soát để gối chạm vạch tường, giữ gót chạm đất và bàn chân theo đường thước. Khi làm được, lùi chân dần; trong tối đa năm lần tìm khoảng xa nhất vẫn đáp ứng các điều kiện đó. Protocol này không cố khóa sấp/ngửa bàn chân.", sourceIds: ["postureLunge"] },
+        { lead: "Ghi kết quả hai bên.", text: "Ghi khoảng ngón cái–tường bằng cùng đơn vị, gót có nhấc không và cảm nhận; lặp bên kia. Nếu đổi cách đặt chân hoặc điểm kết thúc, không so như cùng một phép đo. Kết quả không tự xác định hạn chế do cơ, khớp hay nguyên nhân đau.", sourceIds: ["postureLunge"], authored: true },
+        { lead: "Hiểu sai số.", text: "Tổng quan 12 nghiên cứu báo MDC trung bình khoảng 1,6 cm giữa người đo và 1,9 cm trong cùng người đo. Đây là mô tả sai số trong các quy trình nghiên cứu, không phải quy tắc cho mọi cá nhân. MDC không là ngưỡng ‘bình thường’, mục tiêu phải đạt hoặc mức cải thiện có ý nghĩa với học viên.", sourceIds: ["postureLungeError"] },
+        { lead: "Kết nối lại với mục tiêu.", text: "Sau một điều chỉnh phù hợp, đo lại cùng cách và thử lại nhiệm vụ ban đầu, chẳng hạn squat hoặc bước xuống. Có thể số cm thay đổi mà nhiệm vụ chưa dễ hơn, hoặc ngược lại. Ghi cả hai thay vì chỉ cố đạt một con số; nguồn trên không cung cấp ngưỡng 10 cm bắt buộc.", authored: true },
+      ],
+    },
+    {
+      id: "regions",
+      label: "4. Chọn hướng đánh giá và điều chỉnh theo vùng",
+      intro: "Mở vùng liên quan đến mục tiêu. Mỗi mục nối mô tả, kiểm tra bổ sung, bằng chứng, cách thử và kết quả cần theo dõi. Các ví dụ huấn luyện do app biên soạn được ghi riêng với liều và kết quả nguyên bản của nghiên cứu.",
+      authored: true,
+      guides: POSTURE_GUIDES,
+    },
+    {
       id: "adjust",
-      label: "4. Thử một điều chỉnh và làm lại",
+      label: "5. Từ điều chỉnh thử đến kế hoạch tập",
       intro: "Thử thay một yếu tố, giữ các điều kiện còn lại và lặp lại nhiệm vụ. So điều học viên làm được, độ dễ kiểm soát và triệu chứng.",
       authored: true,
       items: [
         { lead: "Nếu đứng lên khó ở ghế thấp.", text: "Thử ghế cao hơn với cùng vị trí chân và cách hỗ trợ. Nếu học viên đứng lên dễ hơn, dùng mức đó làm điểm bắt đầu. Có thể hạ dần độ cao khi học viên kiểm soát được và thấy phù hợp.", authored: true },
         { lead: "Nếu khó đưa tay đến kệ cao.", text: "Thử hạ mục tiêu xuống một mức, giữ cùng bên và tải. Hỏi tầm nào dùng được cho việc thường ngày, rồi chọn tầm tập phù hợp thay vì ép cánh tay hoặc lưng vào một góc cố định.", authored: true },
         { lead: "Nếu đã được đánh giá đau thắt lưng mạn nguyên phát.", text: "WHO xem chương trình tập có cấu trúc là một lựa chọn trong chăm sóc cá thể hóa. PT nên phối hợp với hướng dẫn của người điều trị nếu học viên đang được theo dõi, và chọn bài theo chức năng thay vì hình dáng ảnh đứng.", sourceIds: ["postureWho"], authored: true },
+        { lead: "Chọn bài từ câu hỏi đã kiểm tra.", text: "Nếu vấn đề là kỹ năng nhiệm vụ, chọn phiên bản có điểm tựa, tầm hoặc tải làm được. Nếu câu hỏi là sức mạnh/ROM, đo phù hợp trước rồi chọn bài theo kết quả và mục tiêu. Đừng kê cùng bộ kéo giãn–kích hoạt cho tất cả người có ảnh đứng giống nhau.", authored: true },
+        { lead: "Dùng liều nghiên cứu để hiểu bằng chứng.", text: "Liều trong các mục theo vùng là liều của mẫu được chọn, có điều kiện giám sát và can thiệp kèm theo. Không ghép số hiệp của thử nghiệm này với số tuần của thử nghiệm khác thành một ‘protocol đã chứng minh’. Khi áp dụng, ghi bài, số lần/hiệp, thời gian giữ, mức tải và tần suất thực tế để theo dõi đáp ứng.", authored: true },
+        { lead: "Tiến triển có điều kiện.", text: "Bắt đầu bằng mức học viên thực hiện có kiểm soát và phù hợp hướng dẫn y tế nếu có. Chọn trước yếu tố sẽ tăng, ví dụ số lần, tầm hoặc tải; giữ các yếu tố khác để nhận biết đáp ứng. Nếu không có lợi ích cho mục tiêu, xem lại giả thuyết và mức tham gia thay vì chỉ tiếp tục vì tên bài là ‘sửa tư thế’.", authored: true },
       ],
       note: "Một lần thử thấy dễ hơn giúp chọn cách tập hôm nay. Nó chưa xác nhận nguyên nhân triệu chứng hoặc hiệu quả lâu dài.",
     },
     {
       id: "record",
-      label: "5. Ghi kết quả và hẹn kiểm tra lại",
+      label: "6. Ghi ba loại kết quả và quyết định lần sau",
       intro: "Dùng cùng nhiệm vụ và cách thiết lập khi muốn so sánh qua các buổi. Nếu đổi điều kiện, ghi rõ điều đã đổi.",
       authored: true,
       items: [
         { lead: "Mẫu ghi cho PT.", text: "Mục tiêu → nhiệm vụ, bên và điều kiện → điều quan sát → cảm nhận → thay đổi đã thử → đáp ứng → việc sẽ kiểm tra lại.", authored: true },
         { lead: "Ví dụ đã điền.", text: "Mục tiêu: đứng dậy khỏi ghế thấp. Quan sát: ghế 45 cm, dùng tay, học viên báo khó đứng lên. Thử: ghế 50 cm, giữ cách dùng tay. Kết quả: học viên báo dễ hơn. Buổi sau: dùng lại ghế 50 cm, cùng cách đặt chân và hỗ trợ để đối chiếu.", authored: true },
         { lead: "Chọn tiêu chí gắn với việc cần làm.", text: "Ví dụ ghi độ cao ghế, mức hỗ trợ, độ cao với tới, số lần làm được và cảm nhận. Đây là cách ghi huấn luyện, không quy đổi thành điểm tư thế hay nguy cơ chấn thương.", authored: true },
+        { lead: "Ba cột cần tách.", text: "Hình dáng/số đo: góc, khoảng cách hoặc mô tả ảnh theo cùng protocol. Chức năng: điều làm được, tải, tầm, số lần hoặc hỗ trợ. Cảm nhận: triệu chứng và điều học viên thấy quan trọng. Đừng viết ‘tốt lên toàn bộ’ khi chỉ một cột đổi; cũng đừng phủ nhận cải thiện chức năng vì ảnh đứng chưa khác.", authored: true },
+        { lead: "Ví dụ vai — dữ liệu giả để học cách ghi.", text: "Mục tiêu với đồ lên kệ: ghi bên tay, cùng vật không tải và chiều cao mục tiêu. Lượt đầu học viên ngả thân và báo khó chịu; thử hạ mục tiêu một mức, giữ các yếu tố khác và học viên báo dễ hơn. Ghi mức thấp làm điểm khởi đầu, lên lịch so cùng điều kiện; chưa kết luận đã xác định cơ gây ra.", authored: true },
+        { lead: "Ví dụ cổ chân — dữ liệu giả.", text: "Lần đầu knee-to-wall 6,0 cm, lần sau 6,5 cm với cùng protocol. Chỉ ghi tăng 0,5 cm; chưa gọi là thay đổi vượt sai số dựa trên MDC trung bình của tổng quan. Kiểm tra cả squat hoặc nhiệm vụ mục tiêu và cảm nhận. Những con số này không là ngưỡng hoặc mục tiêu cho học viên.", sourceIds: ["postureLungeError"], authored: true },
+        { lead: "Quyết định và thời điểm.", text: "Nếu điều kiện thử giúp nhiệm vụ và phù hợp với học viên, có thể giữ nó làm điểm bắt đầu. Nếu không đổi, kiểm tra lại thiết lập, mục tiêu và giả thuyết. Nếu triệu chứng tăng hoặc xuất hiện dấu hiệu đáng lo, quay về phần sàng lọc/chuyển khám. Ghi thời điểm kiểm tra lại theo kế hoạch cá nhân; không có một lịch ‘sửa xong’ chung được xác lập ở đây.", authored: true },
       ],
     },
   ],
-  numbers: [],
   myths: [
     { say: "Đầu đưa ra trước chắc chắn gây đau cổ.", real: "Tổng quan ghi nhận liên hệ ở người trưởng thành trong các nghiên cứu cắt ngang. Dữ liệu đó chưa cho biết tư thế gây đau, đau làm đổi tư thế hay yếu tố khác ảnh hưởng cả hai.", sourceIds: ["postureNeck"] },
     { say: "Nhìn thấy chậu nghiêng là đủ để chọn cơ cần kéo giãn.", real: "Tổng quan ở người khỏe không tìm thấy hiệu quả rõ của kéo giãn lên các chỉ số tư thế được nghiên cứu.", sourceIds: ["postureExercise"] },
     { say: "Ảnh đứng cho biết cơ nào ‘căng’ hay ‘yếu’.", real: "Ảnh đứng chỉ ghi hình dáng tại một thời điểm. Bài học không gán cơ ‘căng’ hay ‘yếu’ từ ảnh. Muốn biết sức mạnh hay tầm vận động thì kiểm tra trực tiếp.", authored: true },
+    { say: "Knee-to-wall phải đạt 10 cm mới được squat.", real: "Các nguồn đo lường ở đây không xác lập ngưỡng cấp phép squat này. Phải biết protocol, sai số, mục tiêu và khả năng thực hiện nhiệm vụ của người được đánh giá.", sourceIds: ["postureLunge", "postureLungeError"], authored: true },
+    { say: "Góc tư thế tốt hơn nghĩa là đã giảm đau và ngừa chấn thương.", real: "Các kết quả là khác nhau: tổng quan 2026 còn bất định về đau/chức năng dù góc tư thế đổi; thử nghiệm gối Bell không có kết quả tỷ lệ chấn thương. Cần đo đúng điều muốn kết luận.", sourceIds: ["postureUcs", "postureKneeTrial"] },
   ],
   apply: [
-    { lead: "Tập phân biệt quan sát và diễn giải.", text: "Ghi một câu cho ảnh đứng, một câu cho nhiệm vụ và một câu cho phản hồi của học viên. Chọn một điều chỉnh để thử rồi quyết định có giữ lại hay không.", authored: true },
+    { lead: "Trước.", text: "Sàng lọc, chọn một mục tiêu, ghi nhiệm vụ và điều kiện ban đầu. Quan sát mô tả; chỉ thêm phép đo cần thiết để trả lời câu hỏi đang có.", authored: true },
+    { lead: "Trong.", text: "Mở mục theo vùng, chọn một giả thuyết và một thay đổi có thể thử. Giữ các điều kiện còn lại, thực hiện lại nhiệm vụ và hỏi cùng câu hỏi về cảm nhận.", authored: true },
+    { lead: "Sau.", text: "Ghi riêng số đo/hình dáng, chức năng và cảm nhận. Chốt điều sẽ tập, mức thực tế, tiêu chí tiến triển và điều kiện kiểm tra lại. Ghi ‘chưa rõ’ khi chưa có dữ liệu, thay vì một kết luận cơ yếu hoặc hội chứng.", authored: true },
   ],
   quiz: [
     { q: "Vai phải trông cao hơn nhưng học viên không có triệu chứng và thực hiện được mục tiêu. Ghi gì?", a: "Ghi hướng quan sát và độ cao tương đối của vai. Hỏi thêm nếu khác biệt liên quan tới việc học viên muốn làm. Không suy nguyên nhân hay bắt buộc sửa cho cân chỉ từ hình dáng.", sourceIds: ["postureObservation"], authored: true },
     { q: "Thử ghế cao hơn thì học viên đứng lên dễ hơn. Kết quả này dùng để làm gì?", a: "Dùng để chọn độ cao bắt đầu và thiết lập lần kiểm tra lại. Bạn đã thấy đáp ứng với một điều kiện cụ thể, chưa xác định cơ nào gây khó khăn.", authored: true },
+    { q: "Dùng tay để đứng lên thì có được so số lần với bảng CDC không?", a: "Trong protocol CDC 30 giây, cần dùng tay thì dừng và ghi 0. Nếu chọn phiên bản có tay để quan sát huấn luyện, ghi rõ sửa đổi và so lại cùng phiên bản; không chấm bằng bảng chuẩn hoặc kết luận học viên không có khả năng đứng dậy.", sourceIds: ["postureChair"], authored: true },
+    { q: "Vòm chân thấp nhưng không khó chịu có nhất thiết cần short-foot hoặc đế?", a: "Không quyết định chỉ từ ảnh. Nguồn tham chiếu FPI cho thấy tư thế hơi sấp phổ biến ở người khỏe. Thử nghiệm short-foot được đọc là ở bàn chân bẹt mềm có triệu chứng, dùng cùng đế; không đại diện mọi người vòm thấp.", sourceIds: ["postureFootIndex", "postureFootTrial"] },
+    { q: "Tập tám tuần mà ảnh cổ khác nhưng mục tiêu sinh hoạt chưa tốt hơn thì ghi thế nào?", a: "Ghi riêng thay đổi số đo, nhiệm vụ và cảm nhận. Xem lại mục tiêu, cách đo và kế hoạch; không gọi thay đổi ảnh là bằng chứng đã giảm đau. Số tuần của một nghiên cứu không là thời hạn bảo đảm cho cá nhân.", sourceIds: ["postureUcs"], authored: true },
   ],
-  sources: [S.postureObservation, S.postureSpine, S.postureScreen, S.postureExercise, S.posturePhoto, S.postureNhs, S.postureNice, S.postureCes, S.hollman, S.postureWho, S.postureNeck],
+  sources: [S.postureObservation, S.postureSpine, S.postureScreen, S.postureExercise, S.posturePhoto, S.postureNhs, S.postureNice, S.postureCes, S.hollman, S.postureWho, S.postureNeck, S.postureChair, S.postureLunge, S.postureLungeError, S.posturePelvisPalpation, S.postureFootIndex, S.postureUcs, S.postureUpperTrial, S.postureKyphosis, S.posturePelvicExercise, S.postureKneeTrial, S.postureFootTrial, S.postureAsymmetry, S.devet],
   anatomy: {
     regions: ["cervical", "shoulder", "thoracic_core", "hip_pelvis", "knee", "ankle_foot"],
     note: "Tra vị trí các vùng đã quan sát. Dùng mô hình để học tên và tương quan giải phẫu, còn đánh giá học viên dựa trên quan sát và phản hồi trong nhiệm vụ thật.",

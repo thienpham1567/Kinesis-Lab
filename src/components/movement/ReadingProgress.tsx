@@ -5,18 +5,18 @@ import { readingPosition } from "@/lib/ui/reading-position";
 
 const LINKS = [
   { hash: "key", label: "Kiến thức trọng tâm" },
-  { hash: "3d", label: "3D" },
+  { hash: "practice", label: "Thực hành" },
   { hash: "apply", label: "Áp dụng" },
   { hash: "quiz", label: "Tự kiểm tra" },
   { hash: "sources", label: "Nguồn" },
 ] as const;
 
 const POSTURE_LINKS = [
-  { hash: "screening", label: "Sàng lọc" },
-  { hash: "standing", label: "Tư thế đứng" },
-  { hash: "tasks", label: "Vận động" },
-  { hash: "adjust", label: "Điều chỉnh" },
-  { hash: "record", label: "Ghi kết quả" },
+  { hash: "screening", label: "Quy trình" },
+  { hash: "tasks", label: "Phép thử" },
+  { hash: "regions", label: "Theo vùng" },
+  { hash: "adjust", label: "Kế hoạch" },
+  { hash: "record", label: "Đo lại" },
   { hash: "sources", label: "Nguồn" },
 ] as const;
 
@@ -86,7 +86,7 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
             </a>
           ))}
           <span
-            className="ml-auto px-2 text-xs tabular-nums text-slate"
+            className="ml-auto hidden px-2 text-xs tabular-nums text-slate sm:block"
           >
             Vị trí {position.percent}%
           </span>

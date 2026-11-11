@@ -82,6 +82,12 @@ for (const topic of HANDBOOK) {
   for (const part of topic.parts) {
     cited(part, "section");
     for (const item of part.items ?? []) cited(item, "item");
+    for (const guide of part.guides ?? []) {
+      cited(guide, "guide");
+      assert.ok(guide.id && guide.title && guide.summary);
+      assert.ok(guide.items.length >= 4, "regional guides must connect assessment, action and reassessment");
+      for (const item of guide.items) cited(item, "guide/item");
+    }
     for (const row of part.table?.rows ?? []) cited(row, "row");
     if (part.illustration) {
       const { src, alt, caption, width, height } = part.illustration;
@@ -89,7 +95,7 @@ for (const topic of HANDBOOK) {
       assert.ok(alt && caption && width > 0 && height > 0);
     }
   }
-  for (const group of ["numbers", "myths", "apply", "quiz"])
+  for (const group of ["myths", "apply", "quiz"])
     topic[group].forEach((p) => cited(p, group));
   if (topic.figure) {
     const f = topic.figure;
@@ -155,6 +161,12 @@ for (const topic of HANDBOOK) {
   assert.ok(html.includes("<details"), "native self-check disclosure");
   assert.ok(!/Chờ chuyên gia|chờ chuyên gia/.test(html));
   if (topic.id === "posture") {
+    const guides = topic.parts.find(part => part.id === "regions")?.guides ?? [];
+    assert.deepEqual(Array.from(guides, guide => guide.id), ["head-neck", "shoulder", "thoracic", "pelvis", "knee", "foot"], "posture needs a finite regional assessment-to-action inventory");
+    for (const guide of guides) {
+      assert.ok(html.includes(escape(guide.title)) && html.includes(escape(guide.summary)), "regional guidance must actually render");
+      for (const item of guide.items) assert.ok(html.includes(escape(item.text)), "regional action/source text must be visible in the rendered disclosure");
+    }
     const illustrations = topic.parts.flatMap(p => p.illustration ? [p.illustration] : []);
     assert.ok(illustrations.length >= 2, "posture requires standing and movement figures");
     for (const figure of illustrations) {

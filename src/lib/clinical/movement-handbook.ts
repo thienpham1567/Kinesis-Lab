@@ -8,15 +8,23 @@ import { POSTURE_TOPIC } from "./posture-handbook";
 
 export type Cited = { sourceIds?: MovementSourceId[]; authored?: boolean };
 export type HandbookItem = Cited & { lead?: string; text: string };
+export type HandbookGuide = Cited & {
+  id: string;
+  title: string;
+  summary: string;
+  items: HandbookItem[];
+};
 export type HandbookTable = {
   head: string[];
   rows: (Cited & { cells: string[] })[];
+  compact?: boolean;
 };
 export type HandbookPart = Cited & {
   id?: string;
   label: string;
   intro?: string;
   items?: HandbookItem[];
+  guides?: HandbookGuide[];
   table?: HandbookTable;
   note?: string;
   chart?: "knee-flexion";
@@ -43,7 +51,6 @@ export type HandbookTopic = Cited & {
   gist: string;
   keyPoints: (Cited & { title: string; text: string })[];
   parts: HandbookPart[];
-  numbers: (Cited & { value: string; text: string })[];
   myths: (Cited & { say: string; real: string })[];
   apply: HandbookItem[];
   quiz: (Cited & { q: string; a: string })[];
@@ -139,39 +146,6 @@ export const HANDBOOK: HandbookTopic[] = [
           ],
         },
       },
-      {
-        label: "Phân biệt mô tả với kết luận",
-        sourceIds: ["hollman", "bahr"],
-        items: [
-          {
-            lead: "Mô tả:",
-            text: "“Gối di chuyển vào trong ở ba lần cuối” là ghi chép quan sát do app gợi ý.",
-            authored: true,
-          },
-          {
-            lead: "Kết luận cần thêm dữ liệu:",
-            text: "Nếu câu hỏi là sức mạnh hông, cần phép đo sức mạnh phù hợp. Quan sát single-leg squat không tự trả lời câu hỏi đó.",
-            sourceIds: ["hollman"],
-          },
-          {
-            lead: "Sàng lọc:",
-            text: "Không dùng một điểm tổng để dự báo chắc chấn thương hoặc tự cấp phép trở lại thể thao.",
-            sourceIds: ["bahr"],
-          },
-        ],
-      },
-    ],
-    numbers: [
-      {
-        value: "42 người",
-        text: "Mẫu nghiên cứu squat: người khỏe tập gym; không phải thử nghiệm điều trị hay theo dõi chấn thương.",
-        sourceIds: ["squat"],
-      },
-      {
-        value: "Cùng nhiệm vụ",
-        text: "Ghi thiết lập, tải và hỗ trợ để việc so sánh lần sau có ý nghĩa thực hành.",
-        authored: true,
-      },
     ],
     myths: [
       {
@@ -220,7 +194,7 @@ export const HANDBOOK: HandbookTopic[] = [
   },
   {
     id: "symmetry",
-    tab: "Đối xứng",
+    tab: "So sánh hai bên",
     kicker: "02 · Symmetry",
     title: "Đọc cả hai bên, không chỉ một tỷ lệ",
     gist: "Chênh lệch hai bên phụ thuộc nhiệm vụ, cách tính và độ lặp lại. Không có một tỷ lệ phần trăm chung phân biệt khỏe và bệnh.",
@@ -245,11 +219,6 @@ export const HANDBOOK: HandbookTopic[] = [
         title: "LSI có thể đánh giá quá cao hồi phục",
         text: "Sau ACL, chi đối diện cũng có thể giảm khả năng. Xem số tuyệt đối và tiến trình từng chân; đạt LSI 90% riêng lẻ chưa đủ kết luận hồi phục đầy đủ.",
         sourceIds: ["wellsandt"],
-      },
-      {
-        title: "TUG là thông tin di chuyển",
-        text: "TUG không đo tỷ lệ lệch hai chi. Ngưỡng 13,5 giây dự báo ngã hạn chế ở người cao tuổi sống tại cộng đồng; cần thêm bệnh sử và đánh giá.",
-        sourceIds: ["barry"],
       },
     ],
     parts: [
@@ -283,30 +252,13 @@ export const HANDBOOK: HandbookTopic[] = [
           "Ví dụ tính toán do app biên soạn, không phải dữ liệu bệnh nhân hoặc ngưỡng phục hồi.",
         table: {
           head: ["Lần đo", "Trái / phải", "Chênh theo bên lớn"],
+          compact: true,
           rows: [
             { cells: ["Lần 1", "800 / 700 N", "12,5%"], authored: true },
             { cells: ["Lần 2", "700 / 650 N", "≈7,1%"], authored: true },
           ],
         },
         note: "Tỷ lệ giảm nhưng cả hai bên cùng giảm lực. Đây là lý do giữ số tuyệt đối và điều kiện đo.",
-      },
-      {
-        label: "Đặt TUG đúng vai trò",
-        sourceIds: ["barry"],
-        intro:
-          "TUG tính thời gian đứng lên, đi, quay lại và ngồi theo quy trình. Tổng quan về dự báo ngã không biến kết quả đó thành phép đo bất đối xứng hoặc giấy phép tập bài khó.",
-      },
-    ],
-    numbers: [
-      {
-        value: "12,5%",
-        text: "(800 − 700) / 800 × 100. Ví dụ số học; không là ngưỡng bệnh.",
-        authored: true,
-      },
-      {
-        value: "90% LSI",
-        text: "Không dùng riêng để xác nhận hồi phục sau ACL hoặc trở lại thể thao.",
-        sourceIds: ["wellsandt"],
       },
     ],
     myths: [
@@ -339,11 +291,6 @@ export const HANDBOOK: HandbookTopic[] = [
         a: "(170 − 150) / 170 × 100 ≈11,8%. Đây là phép tính mô tả, không xác định nguyên nhân hoặc nguy cơ.",
         authored: true,
       },
-      {
-        q: "TUG nhanh hơn có nghĩa hai chân đối xứng hơn không?",
-        a: "Không. TUG đo di chuyển chức năng theo thời gian, không phải tỷ lệ sức mạnh hoặc quãng nhảy hai bên.",
-        sourceIds: ["barry"],
-      },
     ],
     anatomy: {
       regions: ["knee"],
@@ -351,7 +298,7 @@ export const HANDBOOK: HandbookTopic[] = [
       sourceIds: ["wellsandt"],
       authored: true,
     },
-    sources: [S.parkinson, S.wellsandt, S.barry],
+    sources: [S.parkinson, S.wellsandt],
   },
   {
     id: "rom",
@@ -457,18 +404,6 @@ export const HANDBOOK: HandbookTopic[] = [
             sourceIds: ["devet"],
           },
         ],
-      },
-    ],
-    numbers: [
-      {
-        value: "2–69 tuổi",
-        text: "Khoảng tuổi của bảng PROM CDC; không ngoại suy ra ngoài mẫu.",
-        sourceIds: ["cdc", "soucie"],
-      },
-      {
-        value: "18–29 tuổi",
-        text: "Mẫu AROM cột sống JTSS; không đại diện mọi độ tuổi.",
-        sourceIds: ["jtss"],
       },
     ],
     myths: [
@@ -630,18 +565,6 @@ export const HANDBOOK: HandbookTopic[] = [
         intro:
           "Cochrane 2016 không tìm thấy ưu thế quan trọng của tập kiểm soát vận động so với các hình thức tập khác cho đau lưng mạn không đặc hiệu. WHO 2023 nhấn mạnh chăm sóc dựa trên đánh giá và hoàn cảnh cá nhân.",
         note: "Cochrane tìm kiếm đến 04/2015. WHO: tập có cấu trúc là khuyến nghị có điều kiện, bằng chứng độ chắc chắn thấp; quick guide đã đọc không xác nhận từng cue hoặc phác đồ của app.",
-      },
-    ],
-    numbers: [
-      {
-        value: "3 kết quả",
-        text: "Thực hiện lúc tập, giữ kỹ năng và chuyển kỹ năng là các kết quả khác nhau.",
-        sourceIds: ["chua"],
-      },
-      {
-        value: "Theo nhiệm vụ",
-        text: "Thử một cue đơn giản và xem đáp ứng; không hứa một phần trăm cải thiện chung.",
-        authored: true,
       },
     ],
     myths: [

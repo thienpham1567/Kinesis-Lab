@@ -353,7 +353,7 @@ html[data-theme="lilac"] {
 }
 
 #atlas-learning-studio,
-#movement-article-posture {
+.movement-article {
   --cobalt: var(--learning-accent-ink);
   --slate: var(--learning-secondary-ink);
 }
@@ -1024,9 +1024,6 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
 .movement-article :where(p.text-sm, ul.text-sm) {
   font-size: 1rem;
   line-height: 1.8;
-  max-width: 72ch;
-}
-#movement-article-posture :where(p.text-sm, ul.text-sm) {
   max-width: 54ch;
 }
 @media (max-width: 639px) {

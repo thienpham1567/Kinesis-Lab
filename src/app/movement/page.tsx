@@ -9,7 +9,7 @@ import { HANDBOOK } from "@/lib/clinical/movement-handbook";
 
 const [posture, ...supplementary] = HANDBOOK;
 const pageTitle = "Đánh giá & điều chỉnh tư thế";
-const pageDescription = "Bài học tiếng Việt cho PT, có hình minh họa và nguồn đối chiếu.";
+const pageDescription = "Hướng dẫn thực hành cho PT: quan sát, đo chức năng, chọn điều chỉnh theo vùng và đánh giá lại. Có bằng chứng, quy trình và ví dụ tiếng Việt.";
 
 export default function MovementHandbookPage() {
   return (
@@ -35,7 +35,7 @@ function HandbookInner() {
     HANDBOOK.find((t) => t.id === searchParams.get("tab")) ?? posture;
   const isPosture = topic.id === posture.id;
   return (
-    <div className={isPosture ? "mx-auto max-w-6xl space-y-5" : "space-y-5"}>
+    <div className="mx-auto max-w-6xl space-y-5">
       <PageHeading
         title={isPosture ? pageTitle : "Sổ tay vận động"}
         description={isPosture ? pageDescription : "Kiến thức bổ trợ cho quá trình đánh giá và huấn luyện học viên."}
