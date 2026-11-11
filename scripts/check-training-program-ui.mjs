@@ -34,7 +34,9 @@ test("default browser fetch loads plans and workouts with its native receiver", 
       },
     },
   });
-  const { TrainingWorkspaceModel } = browserLoad("src/lib/training/workspace.ts");
+  const { TrainingWorkspaceModel } = browserLoad(
+    "src/lib/training/workspace.ts",
+  );
   const model = new TrainingWorkspaceModel("synthetic-client");
   await model.load();
   assert.equal(model.getSnapshot().loadError, "");
@@ -117,8 +119,10 @@ test("workout failure retries the same ID and history reopens the saved record",
     m.getSnapshot().workout.sets.some((s) => s.completed),
     false,
   );
-  await m.saveWorkout(false);
-  await m.saveWorkout(false);
+  assert.equal(await m.saveWorkout(false), false);
+  assert.match(m.getSnapshot().workoutSaveError, /Offline/);
+  assert.equal(await m.saveWorkout(false), true);
+  assert.equal(m.getSnapshot().workoutSaveError, "");
   assert.deepEqual(ids, [id, id]);
   const saved = m.getSnapshot().workouts[0];
   m.openWorkout(saved);
@@ -150,6 +154,31 @@ test("disposed client ignores stale requests; another client has independent dra
   );
   assert.equal(second.getSnapshot().draft.title, "");
   assert.equal(second.getSnapshot().clientId, "another-client");
+});
+test("a pending workout save ignores a duplicate click and cannot populate a disposed client", async () => {
+  let release;
+  let saved;
+  let signal;
+  let writes = 0;
+  const pending = new Promise((resolve) => {
+    release = resolve;
+  });
+  const model = setup(async (_url, options) => {
+    writes++;
+    signal = options.signal;
+    saved = JSON.parse(options.body);
+    return pending;
+  });
+  const session = plan.program.sessions[0];
+  model.startWorkout(plan, session, "2026-11-06");
+  const firstSave = model.saveWorkout(false);
+  assert.equal(await model.saveWorkout(false), false);
+  assert.equal(writes, 1);
+  model.dispose();
+  release(response({ workout: { ...saved, prescription: session } }));
+  assert.equal(await firstSave, false);
+  assert.equal(signal.aborted, true);
+  assert.equal(model.getSnapshot().workouts.length, 0);
 });
 test("switching saved revisions and starting another workout never discards unsaved edits without explicit replacement", () => {
   const m = setup(async () => response({}));

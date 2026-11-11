@@ -1,6 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/components/WorkspaceUI";
+import {
+  mergeWorkoutSets,
+  workoutSetsForExercise,
+} from "@/lib/training/coaching";
 import type {
   ExercisePrescription,
   TrainingWorkout,
@@ -15,15 +20,19 @@ export function WorkoutExercise({
   index,
   workout,
   workouts,
+  compact,
+  onRestStart,
   onChange,
 }: {
   exercise: ExercisePrescription;
   index: number;
   workout: WorkoutInput;
   workouts: TrainingWorkout[];
+  compact: boolean;
+  onRestStart: (exerciseName: string, duration: number) => void;
   onChange: (workout: WorkoutInput) => void;
 }) {
-  const sets = workout.sets.filter((set) => set.exerciseId === exercise.id);
+  const sets = workoutSetsForExercise(exercise, workout.sets);
   const actualUnit = sets[0]?.loadUnit ?? exercise.loadUnit;
   const prior = previousExerciseResult(
     { ...exercise, loadUnit: actualUnit },
@@ -32,25 +41,33 @@ export function WorkoutExercise({
     workout.performedAt,
   );
   function changeSet(setNumber: number, patch: Partial<WorkoutSet>) {
+    const set = sets[setNumber - 1];
     onChange({
       ...workout,
-      sets: workout.sets.map((s) =>
-        s.exerciseId === exercise.id && s.setNumber === setNumber
-          ? { ...s, ...patch }
-          : s,
-      ),
+      sets: mergeWorkoutSets(workout.sets, [{ ...set, ...patch }]),
     });
   }
   return (
     <section
-      className="min-w-0 py-5"
+      className="@container min-w-0 py-5"
       aria-label={`Bài ${index + 1} · ${exercise.name}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-bold text-ink">
+        <h3 className="min-w-0 wrap-break-word text-sm font-bold text-ink">
           {index + 1}. {exercise.name}
         </h3>
-        {exercise.exerciseId && (
+        {compact && exercise.restSeconds > 0 && (
+          <button
+            type="button"
+            className="button-secondary min-h-11 px-2"
+            aria-label={`Bắt đầu nghỉ ${exercise.restSeconds} giây · ${exercise.name}`}
+            onClick={() => onRestStart(exercise.name, exercise.restSeconds)}
+          >
+            <Icon name="clock" className="size-4" />
+            Nghỉ {exercise.restSeconds} giây
+          </button>
+        )}
+        {!compact && exercise.exerciseId && (
           <Link
             href={`/atlas?tab=hypertrophy&exercise=${encodeURIComponent(exercise.exerciseId)}`}
             className="inline-flex min-h-11 items-center text-xs text-cobalt underline underline-offset-4"
@@ -85,28 +102,45 @@ export function WorkoutExercise({
           onChange={(loadUnit) =>
             onChange({
               ...workout,
-              sets: workout.sets.map((s) =>
-                s.exerciseId === exercise.id
-                  ? { ...s, loadUnit, load: null, completed: false }
-                  : s,
+              sets: mergeWorkoutSets(
+                workout.sets,
+                sets.map((s) => ({
+                  ...s,
+                  loadUnit,
+                  load: null,
+                  completed: false,
+                })),
               ),
             })
           }
         />
       </div>
-      <div className="mt-4 space-y-3">
+      <div
+        className={
+          compact
+            ? "mt-3 divide-y divide-rule border-y border-rule"
+            : "mt-4 space-y-3"
+        }
+      >
         {sets.map((set) => {
           const context = `${exercise.name} · Hiệp ${set.setNumber} thực tế`;
           return (
             <div
               key={set.setNumber}
-              className="grid items-end gap-3 rounded-xl border border-rule bg-canvas p-3 sm:grid-cols-[70px_1fr_1fr_1fr]"
+              data-workout-set={`${exercise.id}:${set.setNumber}`}
+              className={
+                compact
+                  ? "grid grid-cols-2 items-end gap-x-3 gap-y-1 py-2 @min-[570px]:grid-cols-[4rem_minmax(0,1fr)_minmax(0,1fr)_auto]"
+                  : "grid items-end gap-3 rounded-xl border border-rule bg-canvas p-3 sm:grid-cols-[70px_1fr_1fr_1fr]"
+              }
             >
-              <p className="self-center text-xs font-semibold text-ink">
+              <p
+                className={`self-center text-xs font-semibold text-ink ${compact ? "col-span-full @min-[570px]:col-auto" : ""}`}
+              >
                 Hiệp {set.setNumber}
               </p>
               <NumberField
-                label="Số lần thực tế"
+                label={compact ? "Số lần" : "Số lần thực tế"}
                 context={context}
                 value={set.reps}
                 nullable
@@ -117,24 +151,30 @@ export function WorkoutExercise({
               />
               <NumberField
                 label={
-                  actualUnit === "assisted"
-                    ? "Trợ lực thực tế (kg)"
-                    : "Tải ngoài thực tế (kg)"
+                  set.loadUnit === "assisted"
+                    ? compact
+                      ? "Trợ lực (kg)"
+                      : "Trợ lực thực tế (kg)"
+                    : compact
+                      ? "Tải ngoài (kg)"
+                      : "Tải ngoài thực tế (kg)"
                 }
                 context={context}
                 value={set.load}
                 nullable
                 max={2000}
                 step={0.1}
-                disabled={actualUnit === "bodyweight"}
+                disabled={set.loadUnit === "bodyweight"}
                 onChange={(load) =>
                   changeSet(set.setNumber, { load, completed: false })
                 }
               />
-              <label className="flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium text-ink">
+              <label
+                className={`flex min-h-11 cursor-pointer items-center gap-2 text-xs font-medium text-ink ${compact ? "col-span-full @min-[570px]:col-auto" : ""}`}
+              >
                 <input
                   type="checkbox"
-                  className="size-5"
+                  className={compact ? "size-5 accent-cobalt" : "size-5"}
                   checked={set.completed}
                   onChange={(e) =>
                     changeSet(set.setNumber, { completed: e.target.checked })

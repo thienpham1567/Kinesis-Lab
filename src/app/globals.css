@@ -943,6 +943,24 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
 .workspace-footer {
   padding-bottom: 86px;
 }
+.workout-action-bar {
+  margin-top: 16px;
+  padding-block: 8px;
+  border-top: 1px solid var(--rule);
+  background: var(--sheet);
+}
+@media (min-height: 481px) {
+  .workout-action-bar {
+    position: sticky;
+    z-index: 5;
+    bottom: calc(3rem + 7px + max(6px, env(safe-area-inset-bottom)));
+  }
+}
+@media (min-width: 1024px) {
+  .workout-action-bar {
+    bottom: 0;
+  }
+}
 .chat-composer:focus-within {
   border-color: var(--cobalt);
   box-shadow: 0 0 0 3px var(--cobalt-soft);

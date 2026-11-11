@@ -27,6 +27,7 @@ export type TrainingWorkspaceState = {
   workout: WorkoutInput | null;
   prescription: ProgramSession | null;
   workoutDirty: boolean;
+  workoutSaveError: string;
   proposal: Proposal | null;
   loading: boolean;
   loaded: boolean;
@@ -62,6 +63,7 @@ export class TrainingWorkspaceModel {
       workout: null,
       prescription: null,
       workoutDirty: false,
+      workoutSaveError: "",
       proposal: null,
       loading: true,
       loaded: false,
@@ -360,6 +362,7 @@ export class TrainingWorkspaceModel {
       workout: createWorkoutInput(plan, session, date),
       prescription: session,
       workoutDirty: false,
+      workoutSaveError: "",
       error: "",
       notice: "Buổi tập mới chưa lưu. Ghi nhận từng hiệp thực tế.",
     });
@@ -374,19 +377,30 @@ export class TrainingWorkspaceModel {
       workout: structuredClone(workout),
       prescription: workout.prescription,
       workoutDirty: false,
+      workoutSaveError: "",
       error: "",
       notice: "Đã mở lại bản ghi buổi tập.",
     });
     return true;
   }
   editWorkout(workout: WorkoutInput) {
-    if (workout.client_id !== this.state.clientId) return;
+    if (
+      this.state.busy ||
+      workout.client_id !== this.state.clientId ||
+      workout.id !== this.state.workout?.id
+    )
+      return;
     this.update({ workout, workoutDirty: true, notice: "" });
   }
   async saveWorkout(complete: boolean) {
     if (this.state.busy || !this.state.workout || !this.state.prescription)
-      return;
-    this.update({ busy: "workout", error: "", notice: "" });
+      return false;
+    this.update({
+      busy: "workout",
+      workoutSaveError: "",
+      error: "",
+      notice: "",
+    });
     const controller = new AbortController();
     try {
       const input = validateWorkoutInput(
@@ -405,27 +419,29 @@ export class TrainingWorkspaceModel {
         },
         controller,
       );
-      if (!controller.signal.aborted)
-        this.update({
+      if (controller.signal.aborted) return false;
+      this.update({
+        workout,
+        prescription: workout.prescription,
+        workouts: [
           workout,
-          prescription: workout.prescription,
-          workouts: [
-            workout,
-            ...this.state.workouts.filter((w) => w.id !== workout.id),
-          ],
-          workoutDirty: false,
-          notice: complete
-            ? "Đã lưu buổi tập hoàn thành."
-            : "Đã lưu tiến độ buổi tập.",
-        });
+          ...this.state.workouts.filter((w) => w.id !== workout.id),
+        ],
+        workoutDirty: false,
+        notice: complete
+          ? "Đã lưu buổi tập hoàn thành."
+          : "Đã lưu tiến độ buổi tập.",
+      });
+      return true;
     } catch (error) {
       if (!controller.signal.aborted)
         this.update({
-          error:
+          workoutSaveError:
             error instanceof Error
               ? error.message
               : "Chưa lưu được buổi tập. Số liệu vẫn được giữ để thử lại.",
         });
+      return false;
     } finally {
       if (!controller.signal.aborted) this.update({ busy: null });
     }

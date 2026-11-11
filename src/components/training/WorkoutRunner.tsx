@@ -5,7 +5,7 @@ import {
   nextScheduledSession,
 } from "@/lib/training/schedule";
 import { useState } from "react";
-import { WorkoutExercise } from "./WorkoutExercise";
+import { WorkoutEntry } from "./WorkoutEntry";
 import {
   PLAN_STATUS_LABELS,
   WEEKDAY_LABELS,
@@ -16,7 +16,7 @@ import {
   type TrainingWorkspaceModel,
   type TrainingWorkspaceState,
 } from "@/lib/training/workspace";
-import { NumberField, ProgramField } from "./ProgramFields";
+import { ProgramField } from "./ProgramFields";
 
 export function WorkoutRunner({
   model,
@@ -181,97 +181,13 @@ export function WorkoutRunner({
         )}
       </section>
       {state.workout && state.prescription && (
-        <section
-          className="panel min-w-0 p-5 sm:p-6"
-          aria-label="Ghi nhận buổi tập đang mở"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-4">
-            <div>
-              <h2 className="text-lg font-bold text-ink">
-                {state.prescription.name} · {state.workout.performedAt}
-              </h2>
-              <p className="mt-1 text-xs text-slate">
-                {state.workoutDirty
-                  ? "Có dữ liệu chưa lưu"
-                  : state.workouts.some((w) => w.id === state.workout?.id)
-                    ? "Bản ghi đã lưu"
-                    : "Buổi mới chưa lưu"}{" "}
-                ·{" "}
-                {state.workout.status === "completed"
-                  ? "Đã hoàn thành"
-                  : "Đang thực hiện"}
-              </p>
-            </div>
-          </div>
-          <fieldset
-            disabled={!!state.busy}
-            className="min-w-0 divide-y divide-rule disabled:opacity-70"
-          >
-            <legend className="sr-only">Số liệu thực tế từng hiệp</legend>
-            {state.prescription.exercises.map((exercise, index) => (
-              <WorkoutExercise
-                key={exercise.id}
-                exercise={exercise}
-                index={index}
-                workout={state.workout!}
-                workouts={state.workouts}
-                onChange={(workout) => model.editWorkout(workout)}
-              />
-            ))}
-          </fieldset>
-          <fieldset
-            disabled={!!state.busy}
-            className="mt-5 grid min-w-0 gap-4 sm:grid-cols-[180px_1fr]"
-          >
-            <legend className="sr-only">Cảm nhận buổi tập</legend>
-            <NumberField
-              label="RPE cả buổi (0–10, tùy chọn)"
-              value={state.workout.rpe}
-              nullable
-              max={10}
-              step={0.5}
-              onChange={(rpe) => model.editWorkout({ ...state.workout!, rpe })}
-            />
-            <ProgramField label="Phản hồi / triệu chứng và ghi chú buổi">
-              <textarea
-                value={state.workout.notes}
-                maxLength={4000}
-                onChange={(e) =>
-                  model.editWorkout({
-                    ...state.workout!,
-                    notes: e.target.value,
-                  })
-                }
-              />
-            </ProgramField>
-          </fieldset>
-          <p className="mt-4 text-xs leading-6 text-slate">
-            Đánh dấu từng hiệp sau khi ghi số lần và tải thực tế. Chỉ kết thúc
-            khi tất cả hiệp đã được ghi nhận và xác nhận.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="button-secondary"
-              disabled={!!state.busy}
-              onClick={() => {
-                void model.saveWorkout(false);
-              }}
-            >
-              {state.busy === "workout" ? "Đang lưu…" : "Lưu tiến độ"}
-            </button>
-            <button
-              type="button"
-              className="button-primary"
-              disabled={!!state.busy}
-              onClick={() => {
-                void model.saveWorkout(true);
-              }}
-            >
-              Lưu và hoàn thành buổi
-            </button>
-          </div>
-        </section>
+        <WorkoutEntry
+          key={state.workout.id}
+          model={model}
+          state={state}
+          workout={state.workout}
+          session={state.prescription}
+        />
       )}
       <section
         className="panel min-w-0 p-5 sm:p-6"
