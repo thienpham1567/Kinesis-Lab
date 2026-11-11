@@ -37,6 +37,7 @@ export type NcsfQuestion = {
   explain: string;
   page: number;
   evidence: string;
+  lesson?: number;
   source?: "image";
   obj?: string[];
   kind?: QuestionKind;
@@ -102,6 +103,7 @@ export function questionErrors(value: unknown, chapter: number): string[] {
     errors.push("Need four distinct, nonempty options");
   if (!Number.isInteger(value.answer) || Number(value.answer) < 0 || Number(value.answer) > 3) errors.push("Invalid answer index");
   if (typeof value.page !== "number" || !figureObjectKey(chapter, value.page)) errors.push("Invalid source page");
+  if (value.lesson !== undefined && (!Number.isInteger(value.lesson) || Number(value.lesson) < 1 || Number(value.lesson) > 12)) errors.push("Invalid lesson index");
   if (value.source !== undefined && value.source !== "image") errors.push("Invalid source type");
   if (value.obj !== undefined && (!Array.isArray(value.obj) || !value.obj.every(v => typeof v === "string" && /^O[1-8]\.\d{3}$/.test(v)))) errors.push("Invalid objective IDs");
   if (value.kind !== undefined && !Object.hasOwn(QUESTION_KINDS, String(value.kind))) errors.push("Invalid question kind");

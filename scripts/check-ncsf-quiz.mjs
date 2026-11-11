@@ -50,7 +50,10 @@ for(let i=0;i<all.length;i++){
     else if(jaccard(all[i].set,all[j].set)>=0.67)similar.push({left:all[i].id,right:all[j].id,score:jaccard(all[i].set,all[j].set)});
   }
   for(const e of exams){
-    if(stem(all[i].q.q)===e.text)errors.push(`Copied mock stem: ${all[i].id} / ${e.ref}`);
+    if(stem(all[i].q.q)===e.text){
+      if(all[i].q.lesson)similar.push({left:all[i].id,right:e.ref,score:1,sharedOfficialStudyGuide:true});
+      else errors.push(`Copied mock stem: ${all[i].id} / ${e.ref}`);
+    }
     else if(jaccard(all[i].set,e.set)>=0.72)similar.push({left:all[i].id,right:e.ref,score:jaccard(all[i].set,e.set)});
   }
 }

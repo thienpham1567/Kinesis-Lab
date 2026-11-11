@@ -755,6 +755,42 @@ select:focus {
   .catch-up-button {
     animation: content-arrived 180ms cubic-bezier(0.16, 1, 0.3, 1);
   }
+  .learning-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .learning-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+  .learning-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 20px 24px;
+  }
+  .learning-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+  }
+  .learning-table th {
+    padding: 8px 12px 10px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--slate);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .learning-table td {
+    padding: 10px 12px 10px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
 }
 
 @keyframes content-arrived {

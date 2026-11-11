@@ -5,6 +5,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
   type Ref,
 } from "react";
@@ -24,6 +25,25 @@ import {
   prepareMockPractice,
   type MockPracticeBank,
 } from "@/lib/ncsf-mock-answers";
+import {
+  identifyMockBank,
+  type IdentifiedMockBank,
+} from "@/lib/learning/ncsf-identity";
+import type {
+  LearningDraft,
+  LearningDraftItem,
+  LearningItemResult,
+} from "@/lib/learning/types";
+import type { UseLearningProgressResult } from "./learning/useLearningProgress";
+
+export const MOCK_DRAFT_ID = "ncsf-mock-active";
+
+let mockAttemptSeq = 0;
+function nextMockAttemptId(examId: number): string {
+  mockAttemptSeq += 1;
+  const rand = Math.floor(Math.random() * 1000000).toString(36);
+  return `ncsf-mock-${examId}-${Date.now().toString(36)}-${mockAttemptSeq}-${rand}`;
+}
 
 function MockImage({
   exam,
@@ -86,15 +106,31 @@ function MockImage({
   );
 }
 
-export type NcsfMockExamsHandle = { reshuffle: () => void };
+export type NcsfMockExamsHandle = {
+  reshuffle: () => void;
+  resumeDraft?: (draft: LearningDraft) => void;
+};
 
 export function NcsfMockExams({
   apiRef,
+  progress,
+  pendingDraft,
+  onDraftConsumed,
+  onBackToProgress,
+  onSessionExpired,
 }: {
   apiRef?: Ref<NcsfMockExamsHandle>;
+  progress?: UseLearningProgressResult;
+  pendingDraft?: LearningDraft | null;
+  onDraftConsumed?: () => void;
+  onBackToProgress?: () => void;
+  onSessionExpired?: () => void;
 }) {
   const [bank, setBank] = useState<MockPracticeBank | null>(null);
+  const [identifiedBank, setIdentifiedBank] =
+    useState<IdentifiedMockBank | null>(null);
   const [error, setError] = useState("");
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [reload, setReload] = useState(0);
   const [active, setActive] = useState(1);
   const [answers, setAnswers] = useState<
@@ -102,6 +138,14 @@ export function NcsfMockExams({
   >({ 1: {}, 2: {} });
   const [orders, setOrders] = useState<Record<number, NcsfMockOrder>>({});
   const [finished, setFinished] = useState<Record<number, boolean>>({});
+  const [resumedNotice, setResumedNotice] = useState<string | null>(null);
+
+  const attemptIdsRef = useRef<Record<number, string>>({
+    1: nextMockAttemptId(1),
+    2: nextMockAttemptId(2),
+  });
+  const submittedIdsRef = useRef<Set<string>>(new Set());
+
   useEffect(() => {
     const controller = new AbortController();
     Promise.all(
@@ -110,36 +154,156 @@ export function NcsfMockExams({
           signal: controller.signal,
           cache: "no-store",
         });
-        if (!response.ok)
-          throw new Error(
-            response.status === 401
-              ? "Phiên truy cập đã hết hạn. Hãy đăng nhập lại thư viện."
-              : "Không tải được đề thi và đáp án. Hãy thử lại.",
-          );
+        if (!response.ok) {
+          if (response.status === 401) {
+            const authErr = new Error(
+              "Phiên truy cập đã hết hạn. Hãy đăng nhập lại thư viện.",
+            );
+            authErr.name = "SessionExpiredError";
+            throw authErr;
+          }
+          throw new Error("Không tải được đề thi và đáp án. Hãy thử lại.");
+        }
         return response.json();
       }),
     )
       .then(([source, key]) => {
         const original = parseNcsfMockExams(source);
         const data = original && prepareMockPractice(original, key);
-        if (!data) throw new Error("Đề thi và đáp án chưa khớp. Hãy tải lại trước khi làm bài.");
+        if (!data)
+          throw new Error(
+            "Đề thi và đáp án chưa khớp. Hãy tải lại trước khi làm bài.",
+          );
         if (!controller.signal.aborted) {
           setOrders(
             Object.fromEntries(
               data.exams.map((e) => [e.id, shuffleMockExam(e)]),
             ),
           );
+          setIdentifiedBank(identifyMockBank(data));
           setBank(data);
+          setSessionExpired(false);
         }
       })
       .catch((e) => {
-        if (!controller.signal.aborted)
+        if (!controller.signal.aborted) {
+          if (e instanceof Error && e.name === "SessionExpiredError") {
+            setSessionExpired(true);
+          }
           setError(
             e instanceof Error ? e.message : "Không tải được đề thi thử.",
           );
+        }
       });
     return () => controller.abort();
   }, [reload]);
+
+  const applyDraft = useCallback(
+    (draft: LearningDraft) => {
+      if (!bank || !identifiedBank) return;
+      let targetExamId = active;
+      for (const draftItem of draft.items) {
+        const rec = identifiedBank.byItemId.get(draftItem.itemId);
+        const loc = rec?.locations.find((l) => l.source === "ncsf-mock");
+        if (loc && loc.source === "ncsf-mock") {
+          targetExamId = loc.examId;
+          break;
+        }
+      }
+      const exam = bank.exams.find((e) => e.id === targetExamId);
+      const examIdentified = identifiedBank.byExam.get(targetExamId);
+      if (!exam || !examIdentified) return;
+
+      const nextQuestions: number[] = [];
+      const nextOptions: number[][] = exam.questions.map((q, idx) =>
+        orders[targetExamId]?.options[idx] ??
+        Array.from({ length: q.options.length }, (_, i) => i),
+      );
+      const nextExamAnswers: Record<number, number> = {};
+      let removedCount = 0;
+
+      for (const draftItem of draft.items) {
+        const rec = identifiedBank.byItemId.get(draftItem.itemId);
+        const loc = rec?.locations.find(
+          (l) => l.source === "ncsf-mock" && l.examId === targetExamId,
+        );
+        if (!rec || !loc || loc.source !== "ncsf-mock") {
+          removedCount += 1;
+          continue;
+        }
+        const qIdx = loc.questionIndex;
+        const q = exam.questions[qIdx];
+        if (!q) {
+          removedCount += 1;
+          continue;
+        }
+        const optOrder = draftItem.optionOrder.map((optHash) =>
+          rec.optionIds.indexOf(optHash),
+        );
+        if (
+          optOrder.length !== q.options.length ||
+          optOrder.some((idx) => idx < 0) ||
+          new Set(optOrder).size !== q.options.length
+        ) {
+          removedCount += 1;
+          continue;
+        }
+        nextQuestions.push(qIdx);
+        nextOptions[qIdx] = optOrder;
+        if (draftItem.selectedOptionId !== null) {
+          const pickedIdx = rec.optionIds.indexOf(draftItem.selectedOptionId);
+          if (pickedIdx >= 0) {
+            nextExamAnswers[qIdx] = pickedIdx;
+          }
+        }
+      }
+
+      if (nextQuestions.length === 0) {
+        setResumedNotice(
+          `Không thể khôi phục phiên làm dở vì cả ${removedCount} câu đã thay đổi hoặc không còn khả dụng.`,
+        );
+        return;
+      }
+
+      setActive(targetExamId);
+      setOrders((prev) => ({
+        ...prev,
+        [targetExamId]: {
+          questions: nextQuestions,
+          options: nextOptions,
+        },
+      }));
+      setAnswers((prev) => ({
+        ...prev,
+        [targetExamId]: nextExamAnswers,
+      }));
+      setFinished((prev) => ({
+        ...prev,
+        [targetExamId]: false,
+      }));
+      attemptIdsRef.current[targetExamId] = nextMockAttemptId(targetExamId);
+      setResumedNotice(
+        removedCount > 0
+          ? `Đã tiếp tục phiên Bộ đề ${targetExamId} (${nextQuestions.length} câu). Đã loại ${removedCount} câu không còn khả dụng do nội dung đã thay đổi.`
+          : `Đã tiếp tục phiên Bộ đề ${targetExamId} (${nextQuestions.length} câu).`,
+      );
+    },
+    [active, bank, identifiedBank, orders],
+  );
+
+  useEffect(() => {
+    if (!bank || !identifiedBank || !pendingDraft) return;
+    let cancelled = false;
+    void Promise.resolve().then(() => {
+      if (cancelled) return;
+      applyDraft(pendingDraft);
+      onDraftConsumed?.();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [bank, identifiedBank, pendingDraft, applyDraft, onDraftConsumed]);
+
   const reshuffle = useCallback(
     (examId?: number) => {
       if (!bank) return;
@@ -149,23 +313,44 @@ export function NcsfMockExams({
           .map((e) => [e.id, shuffleMockExam(e, orders[e.id])]),
       );
       setOrders({ ...orders, ...updated });
+      setResumedNotice(null);
     },
     [bank, orders],
   );
-  useImperativeHandle(apiRef, () => ({ reshuffle }), [reshuffle]);
+
+  useImperativeHandle(
+    apiRef,
+    () => ({
+      reshuffle,
+      resumeDraft: applyDraft,
+    }),
+    [reshuffle, applyDraft],
+  );
+
   if (error)
     return (
       <div className="space-y-3" role="alert">
         <p>{error}</p>
-        <button
-          className="button-secondary"
-          onClick={() => {
-            setError("");
-            setReload((v) => v + 1);
-          }}
-        >
-          Thử lại
-        </button>
+        {sessionExpired && onSessionExpired ? (
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={onSessionExpired}
+          >
+            Đăng nhập lại
+          </button>
+        ) : (
+          <button
+            className="button-secondary"
+            onClick={() => {
+              setError("");
+              setSessionExpired(false);
+              setReload((v) => v + 1);
+            }}
+          >
+            Thử lại
+          </button>
+        )}
       </div>
     );
   if (!bank || !orders[active])
@@ -174,6 +359,7 @@ export function NcsfMockExams({
         Đang tải hai bộ đề thi thử…
       </p>
     );
+
   const exam = bank.exams[active - 1];
   const order = orders[active];
   const selections = answers[active];
@@ -181,8 +367,152 @@ export function NcsfMockExams({
   const done = !!finished[active];
   const grade = gradeMockExam(exam, selections);
   const clarified = exam.questions.filter((q) => q.original).length;
+  const savedMockDraft =
+    progress?.drafts.find(
+      (d) => d.source === "ncsf-mock" && d.id === MOCK_DRAFT_ID,
+    ) ?? null;
+
+  const handleSelectOption = (sourceIndex: number, optionIndex: number) => {
+    const nextExamSelections = {
+      ...answers[active],
+      [sourceIndex]: optionIndex,
+    };
+    setAnswers((v) => ({
+      ...v,
+      [active]: nextExamSelections,
+    }));
+
+    const examIdentified = identifiedBank?.byExam.get(active);
+    if (progress && examIdentified && order.questions.length > 0) {
+      const draftItems: LearningDraftItem[] = order.questions.map((qIdx) => {
+        const idInfo = examIdentified[qIdx]!;
+        const optOrder = order.options[qIdx]!.map(
+          (optIdx) => idInfo.optionIds[optIdx]!,
+        );
+        const pickedIdx = nextExamSelections[qIdx];
+        return {
+          itemId: idInfo.itemId,
+          optionOrder: optOrder,
+          selectedOptionId:
+            pickedIdx !== undefined
+              ? (idInfo.optionIds[pickedIdx] ?? null)
+              : null,
+        };
+      });
+      const currentItemId =
+        examIdentified[sourceIndex]?.itemId ?? draftItems[0]?.itemId ?? null;
+      progress.queueSaveDraft({
+        id: MOCK_DRAFT_ID,
+        source: "ncsf-mock",
+        revision: 0,
+        updatedAt: new Date().toISOString(),
+        items: draftItems,
+        currentItemId,
+      });
+    }
+  };
+
+  const handleCompleteExam = () => {
+    setFinished((v) => ({ ...v, [active]: true }));
+    const examIdentified = identifiedBank?.byExam.get(active);
+    const currentAttemptId =
+      attemptIdsRef.current[active] ?? nextMockAttemptId(active);
+    if (
+      progress &&
+      examIdentified &&
+      order.questions.length > 0 &&
+      !submittedIdsRef.current.has(currentAttemptId)
+    ) {
+      submittedIdsRef.current.add(currentAttemptId);
+      const submissionItems: LearningItemResult[] = order.questions.map(
+        (qIdx) => {
+          const q = exam.questions[qIdx]!;
+          const idInfo = examIdentified[qIdx]!;
+          const pickedIdx = selections[qIdx];
+          return {
+            itemId: idInfo.itemId,
+            selectedOptionId:
+              pickedIdx !== undefined
+                ? (idInfo.optionIds[pickedIdx] ?? null)
+                : null,
+            correct: pickedIdx === q.answer,
+            domain: idInfo.domain,
+          };
+        },
+      );
+      void progress.submitAttempt(
+        {
+          id: currentAttemptId,
+          source: "ncsf-mock",
+          submittedAt: new Date().toISOString(),
+          items: submissionItems,
+        },
+        MOCK_DRAFT_ID,
+      );
+    }
+  };
+
   return (
     <div className="min-w-0 space-y-5">
+      {progress?.saveError && (
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-crimson/40 bg-crimson-soft p-3 text-sm text-ink"
+          role="alert"
+        >
+          <p>{progress.saveError}</p>
+          <button
+            type="button"
+            className="button-secondary"
+            onClick={() => void progress.retryLastSave()}
+          >
+            Thử lưu lại
+          </button>
+        </div>
+      )}
+
+      {(savedMockDraft || resumedNotice || onBackToProgress) && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rule bg-surface p-3 text-sm">
+          <div className="space-y-1">
+            {resumedNotice ? (
+              <p className="text-ink" role="status">
+                {resumedNotice}
+              </p>
+            ) : savedMockDraft ? (
+              <p className="text-ink">
+                Có một phiên đề thi thử đang làm dở trên trình duyệt này (đã
+                chọn{" "}
+                {
+                  savedMockDraft.items.filter(
+                    (it) => it.selectedOptionId !== null,
+                  ).length
+                }
+                /{savedMockDraft.items.length} câu).
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {savedMockDraft && (
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={() => applyDraft(savedMockDraft)}
+              >
+                Tiếp tục phiên đề thi thử đang dở
+              </button>
+            )}
+            {onBackToProgress && (
+              <button
+                type="button"
+                className="button-secondary"
+                onClick={onBackToProgress}
+              >
+                Quay lại tiến độ học
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2" aria-label="Chọn bộ đề thi thử">
         {bank.exams.map((e) => (
           <button
@@ -204,14 +534,15 @@ export function NcsfMockExams({
           Đề thi thử NCSF · Bộ {active}
         </h2>
         <p>
-          Câu hỏi và lựa chọn được xáo trộn mỗi lần mở đề; đáp án đi cùng nội dung.
-          Đáp án được đối chiếu nguồn ngày{" "}
+          Câu hỏi và lựa chọn được xáo trộn mỗi lần mở đề; đáp án đi cùng nội
+          dung. Đáp án được đối chiếu nguồn ngày{" "}
           {bank.checkedAt.split("-").reverse().join("/")}.
         </p>
         <p>
-          Đây là đáp án biên soạn để luyện tập, chưa phải khóa đáp án chính thức của NCSF.
-          Bộ này có {clarified} câu đã làm rõ để chấm một đáp án; bạn có thể xem câu gốc bên dưới.
-          Giải thích và nguồn đối chiếu xuất hiện sau khi hoàn thành bài.
+          Đây là đáp án biên soạn để luyện tập, chưa phải khóa đáp án chính thức
+          của NCSF. Bộ này có {clarified} câu đã làm rõ để chấm một đáp án; bạn
+          có thể xem câu gốc bên dưới. Giải thích và nguồn đối chiếu xuất hiện
+          sau khi hoàn thành bài.
         </p>
         <a
           className="font-semibold text-cobalt underline underline-offset-4"
@@ -224,7 +555,9 @@ export function NcsfMockExams({
       </div>
       <div className="sticky top-20 z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rule bg-sheet p-3 shadow-sm">
         <p className="text-sm font-semibold text-ink" role="status">
-          {done ? `Đúng ${grade.correct}/${grade.total} câu` : `Đã trả lời · ${count}/${grade.total} câu`}
+          {done
+            ? `Đúng ${grade.correct}/${order.questions.length} câu`
+            : `Đã trả lời · ${count}/${order.questions.length} câu`}
         </p>
         {done ? (
           <button
@@ -236,6 +569,7 @@ export function NcsfMockExams({
               reshuffle(active);
               setAnswers((v) => ({ ...v, [active]: {} }));
               setFinished((v) => ({ ...v, [active]: false }));
+              attemptIdsRef.current[active] = nextMockAttemptId(active);
             }}
           >
             Làm lại bộ đề {active}
@@ -255,16 +589,16 @@ export function NcsfMockExams({
           className="rounded-lg border border-rule bg-surface p-3 text-sm"
           role="status"
         >
-          Kết quả luyện tập: {grade.correct} câu đúng, {grade.wrong} câu sai,
-          {" "}{grade.unanswered} câu chưa trả lời. Điểm tính trên toàn bộ {grade.total} câu.
-          Xem đáp án, giải thích và nguồn bên dưới.
+          Kết quả luyện tập: {grade.correct} câu đúng, {grade.wrong} câu sai,{" "}
+          {grade.unanswered} câu chưa trả lời. Điểm tính trên toàn bộ{" "}
+          {grade.total} câu. Xem đáp án, giải thích và nguồn bên dưới.
         </p>
       )}
       <form
         id={`ncsf-mock-${active}`}
         onSubmit={(e) => {
           e.preventDefault();
-          setFinished((v) => ({ ...v, [active]: true }));
+          handleCompleteExam();
         }}
         className="space-y-5"
       >
@@ -289,9 +623,15 @@ export function NcsfMockExams({
                   <div className="mt-3 space-y-2 whitespace-pre-wrap break-words text-slate">
                     <p>{q.original.title}</p>
                     <ul className="space-y-1 pl-4">
-                      {q.original.options.map((option, index) => <li key={index}>{option}</li>)}
+                      {q.original.options.map((option, index) => (
+                        <li key={index}>{option}</li>
+                      ))}
                     </ul>
-                    {done && <p className="border-t border-rule pt-2">Đối chiếu câu gốc: {q.original.reason}</p>}
+                    {done && (
+                      <p className="border-t border-rule pt-2">
+                        Đối chiếu câu gốc: {q.original.reason}
+                      </p>
+                    )}
                   </div>
                 </details>
               )}
@@ -318,47 +658,80 @@ export function NcsfMockExams({
                         value={optionIndex}
                         checked={selections[sourceIndex] === optionIndex}
                         onChange={() =>
-                          setAnswers((v) => ({
-                            ...v,
-                            [active]: {
-                              ...v[active],
-                              [sourceIndex]: optionIndex,
-                            },
-                          }))
+                          handleSelectOption(sourceIndex, optionIndex)
                         }
                       />
                       <span className="min-w-0 whitespace-pre-wrap break-words">
                         {String.fromCharCode(65 + displayOptionIndex)}.{" "}
                         {mockOptionText(q.options[optionIndex])}
-                        {done && optionIndex === q.answer && <span className="ml-2 font-semibold text-cleared">✓ Đáp án đúng</span>}
-                        {done && selections[sourceIndex] === optionIndex && <span className="ml-2 font-semibold">· Bạn chọn</span>}
+                        {done && optionIndex === q.answer && (
+                          <span className="ml-2 font-semibold text-cleared">
+                            ✓ Đáp án đúng
+                          </span>
+                        )}
+                        {done && selections[sourceIndex] === optionIndex && (
+                          <span className="ml-2 font-semibold">· Bạn chọn</span>
+                        )}
                       </span>
                     </label>
                   ),
                 )}
               </div>
               {done && (
-                <div className="mt-3 space-y-3 border-t border-rule pt-3 text-sm leading-6" data-feedback>
+                <div
+                  className="mt-3 space-y-3 border-t border-rule pt-3 text-sm leading-6"
+                  data-feedback
+                >
                   <p className="font-semibold text-ink">
-                    {selections[sourceIndex] === undefined ? "Chưa trả lời" : selections[sourceIndex] === q.answer ? "✓ Đúng" : "✕ Sai"}
-                    {" · Đáp án "}{String.fromCharCode(65 + order.options[sourceIndex].indexOf(q.answer))}
-                    {": "}{mockOptionText(q.options[q.answer])}
+                    {selections[sourceIndex] === undefined
+                      ? "Chưa trả lời"
+                      : selections[sourceIndex] === q.answer
+                        ? "✓ Đúng"
+                        : "✕ Sai"}
+                    {" · Đáp án "}
+                    {String.fromCharCode(
+                      65 + order.options[sourceIndex].indexOf(q.answer),
+                    )}
+                    {": "}
+                    {mockOptionText(q.options[q.answer])}
                   </p>
-                  <p className="whitespace-pre-wrap break-words text-ink">{mockFeedbackText(q.explanation, order.options[sourceIndex])}</p>
+                  <p className="whitespace-pre-wrap break-words text-ink">
+                    {mockFeedbackText(q.explanation, order.options[sourceIndex])}
+                  </p>
                   {(q.qualified || q.notes) && (
                     <div className="rounded-lg bg-surface p-3 text-slate">
-                      {q.qualified && <p className="font-semibold text-ink">Lưu ý phạm vi áp dụng</p>}
-                      {q.notes && <p className="whitespace-pre-wrap break-words">{mockFeedbackText(q.notes, order.options[sourceIndex])}</p>}
+                      {q.qualified && (
+                        <p className="font-semibold text-ink">
+                          Lưu ý phạm vi áp dụng
+                        </p>
+                      )}
+                      {q.notes && (
+                        <p className="whitespace-pre-wrap break-words">
+                          {mockFeedbackText(q.notes, order.options[sourceIndex])}
+                        </p>
+                      )}
                     </div>
                   )}
                   <details className="text-slate">
-                    <summary className="cursor-pointer font-semibold text-cobalt">Nguồn đối chiếu ({q.sources.length})</summary>
+                    <summary className="cursor-pointer font-semibold text-cobalt">
+                      Nguồn đối chiếu ({q.sources.length})
+                    </summary>
                     <ul className="mt-2 space-y-3 pl-4">
                       {q.sources.map((source, index) => (
                         <li key={index} className="break-words">
-                          <a href={source.url} target="_blank" rel="noreferrer" className="text-cobalt underline underline-offset-4">{source.title}</a>
+                          <a
+                            href={source.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-cobalt underline underline-offset-4"
+                          >
+                            {source.title}
+                          </a>
                           <p>{source.locator}</p>
-                          <p>{source.scope} · Đọc ngày {source.checkedAt.split("-").reverse().join("/")}</p>
+                          <p>
+                            {source.scope} · Đọc ngày{" "}
+                            {source.checkedAt.split("-").reverse().join("/")}
+                          </p>
                         </li>
                       ))}
                     </ul>

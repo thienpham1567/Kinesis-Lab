@@ -117,7 +117,7 @@ test("citation navigation retains the quiz subtree, identity and explicit way ba
   const f = fixture(); const parent = f.mount(f.page.NcsfContent, { heading: null });
   let tree = parent.render();
   assert.equal(quizNode(tree, f.quiz), undefined, "do not load private questions until requested");
-  button(tree, "Đề thi nhỏ").props.onClick(); tree = parent.render();
+  button(tree, "Đề cương ôn tập").props.onClick(); tree = parent.render();
   const first = quizNode(tree, f.quiz); assert.ok(first);
   first.node.props.onOpenPage("02-giai-phau-chuc-nang", 18); tree = parent.render();
   const reading = quizNode(tree, f.quiz);
@@ -128,7 +128,7 @@ test("citation navigation retains the quiz subtree, identity and explicit way ba
   const resumed = quizNode(tree, f.quiz);
   assert.equal(resumed.route, first.route); assert.equal(resumed.node.key, first.node.key);
   button(tree, "Đọc giáo trình").props.onClick(); tree = parent.render();
-  button(tree, "Đề thi nhỏ").props.onClick(); tree = parent.render();
+  button(tree, "Đề cương ôn tập").props.onClick(); tree = parent.render();
   assert.equal(quizNode(tree, f.quiz).node.key, first.node.key, "tabs must not create a new attempt");
 });
 
@@ -185,11 +185,11 @@ test("retry-wrong starts a new attempt containing only missed question identitie
 
 test("mock exams keep their declared reshuffle-on-open behavior without resetting quiz identity", () => {
   const f = fixture(); const parent = f.mount(f.page.NcsfContent, { heading: null }); let tree = parent.render();
-  button(tree, "Đề thi nhỏ").props.onClick(); tree = parent.render(); const first = quizNode(tree, f.quiz);
+  button(tree, "Đề cương ôn tập").props.onClick(); tree = parent.render(); const first = quizNode(tree, f.quiz);
   button(tree, "Đề thi thử").props.onClick(); tree = parent.render();
   const mock = nodes(tree, node => node.props.apiRef)[0].node;
   let reshuffles = 0; mock.props.apiRef.current = { reshuffle() { reshuffles++; } };
-  button(tree, "Đề thi nhỏ").props.onClick(); tree = parent.render();
+  button(tree, "Đề cương ôn tập").props.onClick(); tree = parent.render();
   assert.equal(quizNode(tree, f.quiz).node.key, first.node.key);
   button(tree, "Đề thi thử").props.onClick(); tree = parent.render();
   assert.equal(reshuffles, 1);
@@ -214,3 +214,113 @@ test("failed logout stays truthful and offers another logout attempt", async () 
   await button(content.node.props.heading, "Đăng xuất").props.onClick(); tree = page.render();
   assert.equal(nodes(tree, node => node.type === f.page.NcsfContent).length, 0);
 });
+
+test("learning progress integration saves drafts, submits once, restores option order by hash and retains attempt across progress/citation navigation", async () => {
+  const f = fixture({ quizResponses: [ok(bank()), ok(bank())] });
+  const savedDrafts = [];
+  const submittedAttempts = [];
+  const fakeProgress = {
+    hydrated: true,
+    drafts: [],
+    submissions: [],
+    summary: {
+      nowIso: "2026-11-11T08:00:00.000Z",
+      totalSubmissions: 0,
+      totalSeenItems: 0,
+      dueItems: [],
+      itemsById: {},
+      domains: [],
+    },
+    storeWarning: null,
+    saveError: null,
+    revisionConflict: null,
+    queueSaveDraft(draft) {
+      savedDrafts.push(draft);
+      fakeProgress.drafts = [draft];
+    },
+    async saveDraftNow(draft) {
+      savedDrafts.push(draft);
+      return draft;
+    },
+    async submitAttempt(submission) {
+      submittedAttempts.push(submission);
+      fakeProgress.drafts = [];
+      return true;
+    },
+    async deleteDraft() {},
+    async retryLastSave() {},
+    async resolveRevisionConflict() {},
+    async clearAllProgress() {},
+    async refresh() {},
+  };
+
+  const citations = [];
+  const quiz = f.mount(f.quiz, {
+    onOpenPage: (...args) => citations.push(args),
+    progress: fakeProgress,
+  });
+  quiz.render();
+  await settle();
+  let tree = quiz.render();
+
+  // Select an answer -> saves draft metadata (hashes only, no raw question text).
+  nodes(tree, node => node.type === "input")[0].node.props.onChange();
+  tree = quiz.render();
+  assert.equal(savedDrafts.length, 1);
+  assert.equal(savedDrafts[0].items.length, 3);
+  assert.ok(savedDrafts[0].items.some(it => it.selectedOptionId !== null));
+  assert.ok(!JSON.stringify(savedDrafts[0]).includes("Synthetic"), "draft must not store raw question text");
+
+  // Open citation -> snapshot unchanged; then submit -> records submission once.
+  const beforeCitation = snapshot(tree);
+  const submitBtn = button(tree, "Nộp bài (1/3)");
+  assert.ok(submitBtn);
+  submitBtn.props.onClick();
+  tree = quiz.render();
+  assert.equal(submittedAttempts.length, 1);
+
+  button(tree, "Xem trang 16").props.onClick();
+  tree = quiz.render();
+  assert.deepEqual(citations, [["01-suc-khoe-the-duc", 16]]);
+  assert.notDeepEqual(snapshot(tree), beforeCitation);
+
+  // Resume a draft that also contains an obsolete itemId -> restores valid items and reports removed count.
+  const draftWithRemoved = {
+    ...savedDrafts[0],
+    items: [
+      ...savedDrafts[0].items,
+      {
+        itemId: "obsolete-question-hash",
+        optionOrder: ["opt-1", "opt-2", "opt-3", "opt-4"],
+        selectedOptionId: null,
+      },
+    ],
+  };
+  let backCalled = 0;
+  const resumedQuiz = f.mount(f.quiz, {
+    onOpenPage() {},
+    progress: fakeProgress,
+    sessionRequest: { id: 1, kind: "resume-draft", draft: draftWithRemoved },
+    onBackToProgress: () => { backCalled += 1; },
+  });
+  resumedQuiz.render();
+  await settle();
+  const resumedTree = resumedQuiz.render();
+  assert.match(text(resumedTree), /Đã loại 1 câu không còn khả dụng/);
+  assert.equal(nodes(resumedTree, node => node.type === "legend").length, 3);
+  button(resumedTree, "Quay lại tiến độ học").props.onClick();
+  assert.equal(backCalled, 1);
+
+  // Tab bar in NcsfContent includes "Tiến độ học" and preserves mounted quiz across tab switches.
+  const parent = f.mount(f.page.NcsfContent, { heading: null });
+  let pTree = parent.render();
+  button(pTree, "Đề cương ôn tập").props.onClick();
+  pTree = parent.render();
+  const mountedQuiz = quizNode(pTree, f.quiz);
+  assert.ok(mountedQuiz);
+  button(pTree, "Tiến độ học").props.onClick();
+  pTree = parent.render();
+  assert.ok(quizNode(pTree, f.quiz), "switching to Tiến độ học keeps quiz mounted");
+  assert.equal(quizNode(pTree, f.quiz).node.key, mountedQuiz.node.key);
+});
+
