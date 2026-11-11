@@ -250,7 +250,10 @@ function NcsfContent({
     "read",
   );
   const [quizOpened, setQuizOpened] = useState(false);
-  const [readingCitation, setReadingCitation] = useState(false);
+  // Which practice view opened the cited page, so "back" returns to that attempt.
+  const [citationFrom, setCitationFrom] = useState<"quiz" | "mock" | null>(
+    null,
+  );
   const [mockOpened, setMockOpened] = useState(false);
   const [fromProgress, setFromProgress] = useState(false);
   const [quizSessionRequest, setQuizSessionRequest] =
@@ -280,11 +283,11 @@ function NcsfContent({
     setView("read");
   };
   const jumpToPage = (p: number) => readerRef.current?.jumpTo(p);
-  const open = (s: string, p = 1) => {
+  const openCitation = (from: "quiz" | "mock") => (s: string, p = 1) => {
     setSlug(s);
     setStartPage(p);
     setCurrentPage(p);
-    setReadingCitation(true);
+    setCitationFrom(from);
     setView("read");
   };
 
@@ -405,7 +408,7 @@ function NcsfContent({
               fromProgress ? () => setView("progress") : undefined
             }
             onSessionExpired={onSessionExpired}
-            onOpenPage={open}
+            onOpenPage={openCitation("mock")}
           />
         </section>
       )}
@@ -416,7 +419,7 @@ function NcsfContent({
           aria-label="Đề cương ôn tập"
         >
           <NcsfQuiz
-            onOpenPage={open}
+            onOpenPage={openCitation("quiz")}
             onSessionExpired={onSessionExpired}
             progress={progress}
             sessionRequest={quizSessionRequest}
@@ -428,7 +431,7 @@ function NcsfContent({
       )}
       {view === "read" && (
         <div className="space-y-4">
-          {readingCitation && (
+          {citationFrom && (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-slate">
                 Đáp án và kết quả của bài đang làm vẫn được giữ trong phiên này.
@@ -436,7 +439,7 @@ function NcsfContent({
               <button
                 type="button"
                 className="button-primary"
-                onClick={() => setView("quiz")}
+                onClick={() => setView(citationFrom)}
               >
                 Quay lại bài đang làm
               </button>

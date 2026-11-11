@@ -92,5 +92,8 @@ test("wrong answers render the expanded review with textbook source and AI discl
     assert.match(source, /useNcsfAnswerReviews\(/, file);
     assert.match(source, /<NcsfAnswerReviewPanel/, file);
   }
-  assert.match(readFileSync("src/app/knowledge/page.tsx", "utf8"), /<NcsfMockExams[\s\S]*onOpenPage=\{open\}/);
+  const knowledge = readFileSync("src/app/knowledge/page.tsx", "utf8");
+  assert.match(knowledge, /<NcsfMockExams[\s\S]*onOpenPage=\{openCitation\("mock"\)\}/);
+  // Returning from a cited page goes back to the practice view that opened it.
+  assert.match(knowledge, /setView\(citationFrom\)/);
 });
