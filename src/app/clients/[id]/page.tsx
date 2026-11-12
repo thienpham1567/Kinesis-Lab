@@ -98,7 +98,33 @@ function ClientDetailPageInner({ id }: { id: string }) {
   const [savedToast, setSavedToast] = useState("");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletingClient, setDeletingClient] = useState(false);
+  const [deleteClientError, setDeleteClientError] = useState("");
   const loadRequest = useRef<AbortController | null>(null);
+
+  async function deleteCurrentClient() {
+    if (deletingClient) return;
+    setDeletingClient(true);
+    setDeleteClientError("");
+    try {
+      const res = await fetch(`/api/clients/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Không xóa được hồ sơ");
+      }
+      router.push("/clients");
+    } catch (e) {
+      setDeleteClientError(
+        e instanceof Error
+          ? e.message
+          : "Không xóa được hồ sơ. Kiểm tra kết nối và thử lại.",
+      );
+      setDeletingClient(false);
+    }
+  }
 
   const load = useCallback(() => {
     loadRequest.current?.abort();
@@ -262,8 +288,61 @@ function ClientDetailPageInner({ id }: { id: string }) {
                 {savedToast}
               </span>
             )}
+            <button
+              type="button"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-rule px-3 text-xs font-semibold text-slate hover:border-crimson/50 hover:bg-crimson-soft/30 hover:text-crimson"
+              aria-label={`Xóa hồ sơ ${client.name}`}
+              onClick={() => {
+                setConfirmDelete(true);
+                setDeleteClientError("");
+              }}
+            >
+              <Icon name="trash" className="size-4" />
+              Xóa hồ sơ
+            </button>
           </div>
         </div>
+
+        {confirmDelete && (
+          <div
+            role="alertdialog"
+            aria-label={`Xác nhận xóa hồ sơ ${client.name}`}
+            className="mt-4 rounded-xl border border-crimson/25 bg-crimson-soft p-4 text-sm leading-6 text-ink"
+          >
+            <p>
+              Xóa vĩnh viễn hồ sơ <strong>{client.name}</strong> cùng toàn bộ
+              dữ liệu liên quan (chỉ số, xét nghiệm, giáo án, buổi tập)? Hành
+              động này <strong>không thể hoàn tác</strong>.
+            </p>
+            {deleteClientError && (
+              <p className="mt-2 text-xs font-semibold text-crimson">
+                {deleteClientError}
+              </p>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="button-primary min-h-11"
+                disabled={deletingClient}
+                onClick={() => void deleteCurrentClient()}
+              >
+                <Icon
+                  name={deletingClient ? "spinner" : "trash"}
+                  className={`size-4 ${deletingClient ? "animate-spin" : ""}`}
+                />
+                {deletingClient ? "Đang xóa…" : "Xóa vĩnh viễn"}
+              </button>
+              <button
+                type="button"
+                className="button-secondary min-h-11"
+                disabled={deletingClient}
+                onClick={() => setConfirmDelete(false)}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="mt-5 rounded-xl border border-caution/25 bg-caution-soft/60 p-4">
           <h2 className="flex items-center gap-2 text-xs font-semibold text-ink">
@@ -388,11 +467,17 @@ function ProfileForm({
           />
         </Field>
         <Field label="Giới tính sinh học">
-          <input
+          <select
             className="w-full px-3 py-2 text-sm"
             value={form.sex ?? ""}
-            onChange={(e) => setForm({ ...form, sex: e.target.value })}
-          />
+            onChange={(e) =>
+              setForm({ ...form, sex: e.target.value || null })
+            }
+          >
+            <option value="">Chưa rõ giới</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+          </select>
         </Field>
         <Field label="Kinh nghiệm vận động" className="md:col-span-2">
           <input

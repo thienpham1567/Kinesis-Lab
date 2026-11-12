@@ -29,7 +29,14 @@ export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
+  const [sex, setSex] = useState("");
   const [goals, setGoals] = useState("");
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteMessage, setDeleteMessage] = useState("");
+  const deleteRequest = useRef(false);
+  const deleteTriggers = useRef<Record<string, HTMLButtonElement | null>>({});
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -105,6 +112,7 @@ export default function ClientsPage() {
         body: JSON.stringify({
           name: name.trim(),
           age: age ? Number(age) : null,
+          sex: sex || null,
           goals: goals.trim() || null,
         }),
       });
@@ -113,6 +121,7 @@ export default function ClientsPage() {
       if (data.client?.id) setCreatedClient(data.client);
       setName("");
       setAge("");
+      setSex("");
       setGoals("");
       setMessage(
         "Đã tạo hồ sơ. Mở hồ sơ để bổ sung sàng lọc và thông tin lâm sàng.",
@@ -128,6 +137,35 @@ export default function ClientsPage() {
       );
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function deleteClient(target: Client) {
+    if (deleteRequest.current) return;
+    deleteRequest.current = true;
+    setDeletingId(target.id);
+    setDeleteError("");
+    setDeleteMessage("");
+    try {
+      const res = await fetch(`/api/clients/${encodeURIComponent(target.id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Không xóa được hồ sơ.");
+      }
+      setClients((current) => current.filter((c) => c.id !== target.id));
+      setCreatedClient((current) => (current?.id === target.id ? null : current));
+      setConfirmId(null);
+      setDeleteMessage(`Đã xóa hồ sơ ${target.name}.`);
+      searchInput.current?.focus();
+    } catch (error) {
+      setDeleteError(
+        feedbackError(error, "Không xóa được hồ sơ. Kiểm tra kết nối và thử lại."),
+      );
+    } finally {
+      deleteRequest.current = false;
+      setDeletingId(null);
     }
   }
 
@@ -270,6 +308,21 @@ export default function ClientsPage() {
                 />
               </label>
               <label className="block">
+                <span className="field-label">
+                  Giới tính sinh học{" "}
+                  <span className="font-normal text-slate">(không bắt buộc)</span>
+                </span>
+                <select
+                  value={sex}
+                  onChange={(event) => setSex(event.target.value)}
+                  className="min-h-11 w-full px-3 text-sm"
+                >
+                  <option value="">Chưa chọn</option>
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                </select>
+              </label>
+              <label className="block">
                 <span className="field-label">Mục tiêu / Ghi chú ban đầu</span>
                 <textarea
                   value={goals}
@@ -348,6 +401,16 @@ export default function ClientsPage() {
           </div>
           {query.trim() && !loading && !listError && <p role="status" className="wrap-anywhere text-xs text-slate">Tìm thấy {matchingClients.length} hồ sơ cho “{query.trim()}”.</p>}
           <div aria-live="polite">
+            {deleteError && (
+              <p className="alert-error mb-4" role="alert">
+                {deleteError}
+              </p>
+            )}
+            {deleteMessage && (
+              <p role="status" className="mb-4 rounded-lg bg-cleared-soft p-3 text-sm text-ink">
+                {deleteMessage}
+              </p>
+            )}
             {listError && (
               <div className="alert-error mb-4">
                 <p>{listError}</p>
@@ -409,7 +472,64 @@ export default function ClientsPage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
             {matchingClients.map((client) => (
-              <ClientRecordCard key={client.id} client={client} />
+              <div key={client.id} className="flex min-w-0 flex-col gap-2">
+                <ClientRecordCard client={client} />
+                {confirmId === client.id ? (
+                  <div
+                    role="alertdialog"
+                    aria-label={`Xác nhận xóa hồ sơ ${client.name}`}
+                    className="rounded-xl border border-crimson/25 bg-crimson-soft p-3 text-sm leading-6 text-ink"
+                  >
+                    <p>
+                      Xóa vĩnh viễn hồ sơ <strong>{client.name}</strong> cùng
+                      dữ liệu liên quan (chỉ số, giáo án, buổi tập)? Không thể
+                      hoàn tác.
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="button-primary min-h-11"
+                        disabled={deletingId === client.id}
+                        onClick={() => void deleteClient(client)}
+                      >
+                        <Icon
+                          name={deletingId === client.id ? "spinner" : "trash"}
+                          className={`size-4 ${deletingId === client.id ? "animate-spin" : ""}`}
+                        />
+                        {deletingId === client.id ? "Đang xóa…" : "Xóa vĩnh viễn"}
+                      </button>
+                      <button
+                        type="button"
+                        className="button-secondary min-h-11"
+                        disabled={deletingId === client.id}
+                        onClick={() => {
+                          setConfirmId(null);
+                          deleteTriggers.current[client.id]?.focus();
+                        }}
+                      >
+                        Hủy
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    ref={(node) => {
+                      deleteTriggers.current[client.id] = node;
+                    }}
+                    className="inline-flex min-h-11 items-center gap-1.5 self-end px-2 text-xs font-semibold text-slate hover:text-crimson"
+                    aria-label={`Xóa hồ sơ ${client.name}`}
+                    onClick={() => {
+                      setConfirmId(client.id);
+                      setDeleteError("");
+                      setDeleteMessage("");
+                    }}
+                  >
+                    <Icon name="trash" className="size-4" />
+                    Xóa hồ sơ
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         </section>

@@ -27,9 +27,15 @@ export type IconName =
   | "clock"
   | "expand"
   | "spark"
-  | "palette";
+  | "palette"
+  | "trash";
 
 const paths: Record<IconName, ReactNode> = {
+  trash: (
+    <>
+      <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v6M14 10v6" />
+    </>
+  ),
   copy: <><rect x="8" y="8" width="12" height="13" rx="2" /><path d="M16 8V3H3v13h5" /></>,
   bookmark: <path d="M5 3h14v18l-7-4-7 4V3Z" />,
   message: (
