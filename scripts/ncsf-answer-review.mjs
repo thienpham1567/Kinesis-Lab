@@ -409,6 +409,20 @@ function build() {
   if (missing.length) process.exitCode = 1;
 }
 
+// Storage calls can fail on a flaky connection; retry each one a few times.
+async function retry(fn, label) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const result = await fn();
+      if (result?.error && attempt < 5) throw result.error;
+      return result;
+    } catch (error) {
+      if (attempt >= 5) throw new Error(`${label}: ${error?.message ?? error}`);
+      await new Promise((r) => setTimeout(r, 2000 * attempt));
+    }
+  }
+}
+
 async function publish() {
   const bucket = await storage();
   const release = path.join(dir, "releases", new Date().toISOString().replaceAll(":", "-"));
@@ -417,11 +431,11 @@ async function publish() {
     const key = answerReviewKey(bank, part);
     const body = readFileSync(path.join(dir, "out", key));
     if (!parseAnswerReviewFile(JSON.parse(body.toString("utf8")), { bank, part })) throw new Error(`${key}: invalid`);
-    const { data: previous } = await bucket.download(key);
+    const { data: previous } = await retry(() => bucket.download(key).then((r) => (r.error?.message?.includes("not found") ? { data: null } : r)), `${key} backup`);
     if (previous) writeFileSync(path.join(release, key.replace("/", "_") + ".previous"), Buffer.from(await previous.arrayBuffer()));
-    const { error } = await bucket.upload(key, body, { contentType: "application/json", upsert: true });
+    const { error } = await retry(() => bucket.upload(key, body, { contentType: "application/json", upsert: true }), `${key} upload`);
     if (error) throw new Error(`${key}: ${error.message}`);
-    const { data: check, error: checkError } = await bucket.download(key);
+    const { data: check, error: checkError } = await retry(() => bucket.download(key), `${key} verify`);
     if (checkError || !check || sha(Buffer.from(await check.arrayBuffer())) !== sha(body)) throw new Error(`${key}: uploaded bytes could not be verified`);
     console.log("uploaded", key, `${(body.length / 1e6).toFixed(2)} MB`);
   }

@@ -80,3 +80,34 @@ AI đã sơ bộ xếp 21 câu vào nhóm “khóa đáp án có thể sai”. M
 Các nguồn ngoài đều được đọc ngày 2026-11-12. Phạm vi đọc được ghi trong `references` của từng câu.
 
 Lưu ý: dữ liệu gốc dùng cho `scripts/ncsf-upload.mjs` nằm ở `.data/ncsf/quiz/` trên máy biên soạn, không có ở đây. Lần upload sau từ máy đó sẽ ghi đè các sửa đổi này, trừ khi bản sửa được chép vào dữ liệu gốc. Bản đã sửa nằm tại `.data/ncsf-review/patched/`.
+
+## Sửa nhóm B — câu mơ hồ (2026-11-12)
+
+Đầu vào là 112 câu mà lượt phân loại xếp vào nhóm mơ hồ: 96 câu ở Đề cương ôn tập, 16 câu ở Đề thi thử.
+- **Đề xuất:** `anthropic/claude-opus-5.5` đề xuất cách sửa tối thiểu cho từng câu. Model chỉ được dựa trên trang giáo trình và không được thêm con số mới.
+- **Duyệt:** mỗi đề xuất được đối chiếu thủ công với văn bản trang giáo trình trước khi áp dụng.
+
+Kết quả:
+- **Áp dụng 103 câu và thêm một câu cho nhất quán:** câu “khớp gối” ở Đề thi thử 1 được sửa giống bản ở Đề cương và Đề thi thử 2.
+- **Không nhận 3 đề xuất, giữ nguyên câu gốc:**
+  - Lactate: đáp án “Tất cả đều đúng” khớp Ch.3 tr.7 và tr.22.
+  - BMI béo phì độ I: đáp án 32,0 khớp bảng BMI ở Ch.4 tr.28.
+  - Forward head: đề xuất biến câu hỏi thành câu dịch thuật ngữ.
+- **Model đề xuất giữ nguyên 6 câu.**
+- **Chỉnh tay 4 câu:**
+  - Somatostatin: diễn đạt lại đáp án theo StatPearls và gắn nguồn bổ sung, vì giáo trình không đề cập.
+  - Aerobic 10 phút cho trẻ em: chuyển trang dẫn sang Ch.8 tr.27.
+  - Đứng yên lâu ở phụ nữ mang thai: theo Ch.8 tr.23.
+  - Một phương án nhiễu có con số không có trong giáo trình: đã đổi câu chữ.
+
+Cách sửa chủ yếu:
+- Ghi rõ “theo giáo trình” hoặc nêu bối cảnh.
+- Thay phương án nhiễu vốn cũng đúng bằng phương án sai rõ ràng.
+- Sửa câu chữ của đáp án đúng cho khớp nguyên văn giáo trình.
+- Viết lại đề khi đề gốc hỏi điều giáo trình không nêu (ví dụ “phổ biến nhất”, “tốt nhất”).
+
+Câu ở Đề thi thử được sửa dưới dạng “Câu đã làm rõ”, câu gốc vẫn xem được. Các câu có đề đổi được cập nhật lại câu trích căn cứ khi dòng giáo trình mới khớp rõ hơn (35 câu). Bản trước mỗi lần upload được sao lưu trong `.data/ncsf-review/releases/`; nhật ký thay đổi nằm trong `.data/ncsf-review/patched-b/group-b-log.json`.
+
+Sau khi sửa, phần giải thích mở rộng của các câu thay đổi được sinh lại. Kiểm tra trên dữ liệu bucket cho thấy 2.319/2.319 câu đều có giải thích, và mọi phương án sai đều có lý do riêng. Số câu bị đánh dấu “căn cứ gián tiếp” giảm từ 303 xuống 214.
+
+Nhóm C (13 câu: đáp án đúng nhưng giáo trình ghi khác) và nhóm D (170 câu: căn cứ gián tiếp) chưa được sửa. Lưu ý về dữ liệu gốc `.data/ncsf/quiz/` ở phần nhóm A vẫn áp dụng.
