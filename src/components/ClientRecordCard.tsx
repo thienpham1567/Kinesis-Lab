@@ -46,7 +46,15 @@ export function clientStatus(client: Client) {
         };
 }
 
-export function ClientRecordCard({ client }: { client: Client }) {
+export function ClientRecordCard({
+  client,
+  onDelete,
+  deleteButtonRef,
+}: {
+  client: Client;
+  onDelete?: () => void;
+  deleteButtonRef?: (node: HTMLButtonElement | null) => void;
+}) {
   const status = clientStatus(client);
   const initials = client.name
     .trim()
@@ -55,23 +63,52 @@ export function ClientRecordCard({ client }: { client: Client }) {
     .map((part) => part[0])
     .join("");
   return (
-    <Link
-      href={`/clients/${client.id}`}
-      className="panel group flex min-w-0 flex-col p-5 transition-colors hover:border-cobalt/50"
-    >
-      <div className="flex items-start gap-3.5">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-rule bg-canvas text-sm font-semibold text-ink">
-          {initials}
-        </span>
-        <div className="min-w-0">
-          <h3 className="break-words text-base font-semibold text-ink group-hover:text-cobalt">
-            {client.name}
-          </h3>
-          <p className="mt-1 text-xs leading-5 text-slate">
-            {client.age != null ? `${client.age} tuổi` : "Chưa rõ tuổi"} ·{" "}
-            {client.sex ?? "Chưa rõ giới"}
-          </p>
+    <div className="panel group relative flex min-w-0 flex-col p-5 transition-colors hover:border-cobalt/50">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3.5">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-rule bg-canvas text-sm font-semibold text-ink">
+            {initials}
+          </span>
+          <div className="min-w-0">
+            <h3 className="break-words text-base font-semibold text-ink group-hover:text-cobalt">
+              <Link
+                href={`/clients/${client.id}`}
+                className="focus:outline-hidden after:absolute after:inset-0 after:content-['']"
+              >
+                {client.name}
+              </Link>
+            </h3>
+            <p className="mt-1 text-xs leading-5 text-slate">
+              {client.age != null ? `${client.age} tuổi` : "Chưa rõ tuổi"} ·{" "}
+              {client.sex ?? "Chưa rõ giới"}
+            </p>
+          </div>
         </div>
+
+        {onDelete && (
+          <div className="group/tooltip relative z-10 shrink-0">
+            <button
+              ref={deleteButtonRef}
+              type="button"
+              className="flex size-8 items-center justify-center rounded-lg text-slate transition-colors hover:bg-crimson-soft hover:text-crimson focus-visible:outline-2 focus-visible:outline-crimson"
+              aria-label={`Xóa hồ sơ ${client.name}`}
+              title="Xóa hồ sơ"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete();
+              }}
+            >
+              <Icon name="trash" className="size-4" />
+            </button>
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute bottom-full right-0 z-20 mb-1.5 whitespace-nowrap rounded-md bg-ink px-2 py-0.5 text-[11px] font-medium text-white opacity-0 shadow-md transition-opacity duration-150 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100"
+            >
+              Xóa hồ sơ
+            </span>
+          </div>
+        )}
       </div>
       <span
         className={`mt-4 flex w-fit max-w-full items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs font-medium ${status.className}`}
@@ -113,11 +150,11 @@ export function ClientRecordCard({ client }: { client: Client }) {
         <span className="min-w-0 wrap-anywhere text-slate">
           {client.training_level ?? "Chưa phân cấp độ"}
         </span>
-        <span className="flex items-center gap-2 font-semibold text-ink">
+        <span className="flex items-center gap-2 font-semibold text-ink group-hover:text-cobalt">
           Mở hồ sơ
           <Icon name="arrow-right" className="size-4" />
         </span>
       </div>
-    </Link>
+    </div>
   );
 }

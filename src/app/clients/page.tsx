@@ -471,66 +471,68 @@ export default function ClientsPage() {
             ) : null}
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-            {matchingClients.map((client) => (
-              <div key={client.id} className="flex min-w-0 flex-col gap-2">
-                <ClientRecordCard client={client} />
-                {confirmId === client.id ? (
-                  <div
-                    role="alertdialog"
-                    aria-label={`Xác nhận xóa hồ sơ ${client.name}`}
-                    className="rounded-xl border border-crimson/25 bg-crimson-soft p-3 text-sm leading-6 text-ink"
-                  >
-                    <p>
+            {matchingClients.map((client) =>
+              confirmId === client.id ? (
+                <div
+                  key={client.id}
+                  role="alertdialog"
+                  aria-label={`Xác nhận xóa hồ sơ ${client.name}`}
+                  className="panel flex min-w-0 flex-col justify-between border-crimson/30 bg-crimson-soft p-5 text-sm leading-6 text-ink shadow-xs"
+                >
+                  <div>
+                    <h4 className="flex items-center gap-2 text-base font-semibold text-crimson">
+                      <Icon name="alert" className="size-4" />
+                      Xác nhận xóa hồ sơ
+                    </h4>
+                    <p className="mt-2 text-sm leading-6 text-ink">
                       Xóa vĩnh viễn hồ sơ <strong>{client.name}</strong> cùng
-                      dữ liệu liên quan (chỉ số, giáo án, buổi tập)? Không thể
-                      hoàn tác.
+                      toàn bộ dữ liệu liên quan (chỉ số, xét nghiệm, giáo án, buổi tập)?
                     </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        className="button-primary min-h-11"
-                        disabled={deletingId === client.id}
-                        onClick={() => void deleteClient(client)}
-                      >
-                        <Icon
-                          name={deletingId === client.id ? "spinner" : "trash"}
-                          className={`size-4 ${deletingId === client.id ? "animate-spin" : ""}`}
-                        />
-                        {deletingId === client.id ? "Đang xóa…" : "Xóa vĩnh viễn"}
-                      </button>
-                      <button
-                        type="button"
-                        className="button-secondary min-h-11"
-                        disabled={deletingId === client.id}
-                        onClick={() => {
-                          setConfirmId(null);
-                          deleteTriggers.current[client.id]?.focus();
-                        }}
-                      >
-                        Hủy
-                      </button>
-                    </div>
+                    <p className="mt-1 text-xs text-slate">
+                      Hành động này không thể hoàn tác.
+                    </p>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    ref={(node) => {
-                      deleteTriggers.current[client.id] = node;
-                    }}
-                    className="inline-flex min-h-11 items-center gap-1.5 self-end px-2 text-xs font-semibold text-slate hover:text-crimson"
-                    aria-label={`Xóa hồ sơ ${client.name}`}
-                    onClick={() => {
-                      setConfirmId(client.id);
-                      setDeleteError("");
-                      setDeleteMessage("");
-                    }}
-                  >
-                    <Icon name="trash" className="size-4" />
-                    Xóa hồ sơ
-                  </button>
-                )}
-              </div>
-            ))}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      className="button-primary min-h-11"
+                      disabled={deletingId === client.id}
+                      onClick={() => void deleteClient(client)}
+                    >
+                      <Icon
+                        name={deletingId === client.id ? "spinner" : "trash"}
+                        className={`size-4 ${deletingId === client.id ? "animate-spin" : ""}`}
+                      />
+                      {deletingId === client.id ? "Đang xóa…" : "Xóa vĩnh viễn"}
+                    </button>
+                    <button
+                      type="button"
+                      className="button-secondary min-h-11"
+                      disabled={deletingId === client.id}
+                      onClick={() => {
+                        setConfirmId(null);
+                        deleteTriggers.current[client.id]?.focus();
+                      }}
+                    >
+                      Hủy
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <ClientRecordCard
+                  key={client.id}
+                  client={client}
+                  onDelete={() => {
+                    setConfirmId(client.id);
+                    setDeleteError("");
+                    setDeleteMessage("");
+                  }}
+                  deleteButtonRef={(node) => {
+                    deleteTriggers.current[client.id] = node;
+                  }}
+                />
+              ),
+            )}
           </div>
         </section>
 
