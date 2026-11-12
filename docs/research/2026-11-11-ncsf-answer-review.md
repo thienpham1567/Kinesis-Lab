@@ -111,3 +111,24 @@ Câu ở Đề thi thử được sửa dưới dạng “Câu đã làm rõ”,
 Sau khi sửa, phần giải thích mở rộng của các câu thay đổi được sinh lại. Kiểm tra trên dữ liệu bucket cho thấy 2.319/2.319 câu đều có giải thích, và mọi phương án sai đều có lý do riêng. Số câu bị đánh dấu “căn cứ gián tiếp” giảm từ 303 xuống 214.
 
 Nhóm C (13 câu: đáp án đúng nhưng giáo trình ghi khác) và nhóm D (170 câu: căn cứ gián tiếp) chưa được sửa. Lưu ý về dữ liệu gốc `.data/ncsf/quiz/` ở phần nhóm A vẫn áp dụng.
+
+## Sửa nhóm C — giáo trình ghi khác nguồn chuẩn (2026-11-12)
+
+13 câu được rà lại. Đáp án được giữ hoặc chỉnh theo nguồn chuẩn. Chỗ giáo trình ghi khác được nêu trong phần “Đính chính giáo trình” kèm nguồn; các nguồn đều đọc ngày 2026-11-12.
+
+| Câu | Xử lý | Nguồn |
+|---|---|---|
+| Pronation cổ chân | Giữ đáp án chuẩn; đính chính tr.38 đảo pronation/supination; sửa câu trích căn cứ | OUHSC (D. Thompson PT) |
+| Răng trước trong hội chứng gù | Giữ “kém hoạt động”; dẫn theo bảng tr.65, đính chính tr.61 | Giáo trình tr.65; Martin & Fish 2007 |
+| Scapular winging / yếu cơ răng trước (2 câu) | Giữ đáp án; đính chính bảng tr.68 xếp răng trước vào cột căng | Martin & Fish 2007 |
+| Phục hồi glycogen | Diễn đạt lại đáp án đúng theo tr.18 (cửa sổ 45 phút cho CHO chỉ số đường huyết cao; bữa CHO:protein 3–4:1) | Giáo trình Ch.3 tr.18 |
+| Saxenda | Bỏ “chống chỉ định tuyệt đối”; nêu cảnh báo thai kỳ trên nhãn FDA; Belviq đã bị rút năm 2020 | Nhãn FDA Saxenda 02/2026; FDA Drug Safety Communication 2020-02-13 |
+| WHO “gần 2 tỷ béo phì” | Giữ con số giáo trình; đính chính: số này là thừa cân, béo phì là 940 triệu (2024) | WHO fact sheet |
+| Tiền sản giật “tuyệt đối” | Thêm nguồn cho mức chống chỉ định tuyệt đối | Hướng dẫn Canada 2019 (SOGC/CSEP) |
+| Trẻ em đổ mồ hôi | Viết lại đề theo tr.26; đính chính tỷ lệ diện tích bề mặt/khối lượng của trẻ là lớn hơn | PMC10274554 |
+| Đề thi thử 1, câu 110 (lactate tolerance) | Câu làm rõ: “đủ số rep mục tiêu… với kỹ thuật đúng” | Giáo trình Ch.7 tr.54 |
+| Đề thi thử 1, câu 32 (kéo tạ một tay) | Giữ cơ lưng rộng; ghi chú giáo trình gắn bài này với cơ tròn lớn (tr.29) | Giáo trình Ch.2 tr.29 |
+| Đề thi thử 2, AMDR carbohydrate | Giữ 45–65%; ghi chú giáo trình gọi 55–60% là “RDA” | Giáo trình Ch.5 tr.15; DRI |
+| Đề thi thử 1, câu 87 (energy continuum) | Giữ nguyên; ghi chú hiện có đã nêu giới hạn của khái niệm | — |
+
+Sau khi sửa, phần giải thích mở rộng của các câu thay đổi được sinh lại. Số câu bị đánh dấu “căn cứ gián tiếp” giảm từ 214 xuống 206. Nhóm D (170 câu chỉ có căn cứ gián tiếp, không cần sửa câu hỏi) vẫn giữ nguyên.
