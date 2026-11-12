@@ -8,6 +8,7 @@ import {
   type MuscleGroupId,
 } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import { EXERCISE_EVIDENCE } from "@/lib/clinical/evidence-muscle";
+import { getExerciseInstruction } from "@/lib/clinical/exercise-instructions";
 import {
   TRAINING_ROLE_LABELS,
   filterTrainingExercises,
@@ -17,6 +18,7 @@ import {
   atlasGroupHref,
 } from "@/lib/clinical/training-atlas";
 import { ClinicalEvidencePanel } from "../ClinicalEvidencePanel";
+import { ExerciseInstructionCard } from "./ExerciseInstructionCard";
 import { EmptyState, Icon } from "../WorkspaceUI";
 import { MuscleStudyCard } from "./MuscleStudyCard";
 import { TrainingAnatomyViewer } from "./TrainingAnatomyViewer";
@@ -40,6 +42,7 @@ export function TrainingAtlasExplorer({
     MUSCLE_GROUP_ATLAS,
     { exerciseId: initialExerciseId, muscleId: initialMuscleId },
   );
+  const instruction = getExerciseInstruction(exercise.id);
   const [query, setQuery] = useState("");
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [pattern, setPattern] = useState("all");
@@ -325,6 +328,13 @@ export function TrainingAtlasExplorer({
                   )}
                 </section>
               )}
+              {instruction && (
+                <ExerciseInstructionCard
+                  card={instruction}
+                  exerciseName={exercise.vietnameseName}
+                  headingId="exercise-instruction-heading"
+                />
+              )}
               <div className="grid min-w-0 items-start gap-4 2xl:grid-cols-[minmax(0,1.15fr)_minmax(250px,.85fr)]">
                 <TrainingAnatomyViewer exercise={exercise} />
                 <section
@@ -381,6 +391,7 @@ export function TrainingAtlasExplorer({
                   })}
                 </section>
               </div>
+              {!instruction && (
               <section
                 className="panel p-4 sm:p-5"
                 aria-label="Gợi ý hướng dẫn bài tập"
@@ -407,6 +418,7 @@ export function TrainingAtlasExplorer({
                   </div>
                 </div>
               </section>
+              )}
             </>
           ) : (
             <>

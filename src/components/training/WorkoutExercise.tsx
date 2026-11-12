@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useId, useRef, useState } from "react";
 import { Icon } from "@/components/WorkspaceUI";
+import { getExerciseInstruction } from "@/lib/clinical/exercise-instructions";
 import {
   mergeWorkoutSets,
   workoutSetsForExercise,
@@ -13,6 +15,7 @@ import type {
   WorkoutSet,
 } from "@/lib/training/program";
 import { previousExerciseResult } from "@/lib/training/workspace";
+import { ExerciseInstructionCard } from "./ExerciseInstructionCard";
 import { NumberField, UNIT_LABELS, UnitField } from "./ProgramFields";
 
 export function WorkoutExercise({
@@ -32,6 +35,14 @@ export function WorkoutExercise({
   onRestStart: (exerciseName: string, duration: number) => void;
   onChange: (workout: WorkoutInput) => void;
 }) {
+  const instruction = getExerciseInstruction(exercise.exerciseId);
+  const [showInstruction, setShowInstruction] = useState(false);
+  const instructionButton = useRef<HTMLButtonElement>(null);
+  const instructionId = useId();
+  function closeInstruction() {
+    setShowInstruction(false);
+    instructionButton.current?.focus();
+  }
   const sets = workoutSetsForExercise(exercise, workout.sets);
   const actualUnit = sets[0]?.loadUnit ?? exercise.loadUnit;
   const prior = previousExerciseResult(
@@ -75,7 +86,43 @@ export function WorkoutExercise({
             Mở tham chiếu Atlas
           </Link>
         )}
+        {instruction ? (
+          <button
+            type="button"
+            ref={instructionButton}
+            className="button-secondary min-h-11 px-2"
+            aria-expanded={showInstruction}
+            aria-controls={instructionId}
+            onClick={() =>
+              showInstruction ? closeInstruction() : setShowInstruction(true)
+            }
+          >
+            <Icon name="book" className="size-4" />
+            {showInstruction ? "Ẩn hướng dẫn" : "Xem hướng dẫn"}
+          </button>
+        ) : null}
       </div>
+      {instruction && showInstruction && (
+        <div id={instructionId} className="mt-3">
+          <ExerciseInstructionCard
+            card={instruction}
+            exerciseName={exercise.name}
+            headingId={`${instructionId}-heading`}
+          />
+          <button
+            type="button"
+            className="button-secondary mt-2 min-h-11 px-3"
+            onClick={closeInstruction}
+          >
+            Đóng hướng dẫn
+          </button>
+        </div>
+      )}
+      {!instruction && (
+        <p className="mt-1 text-xs leading-5 text-slate">
+          Chưa có thẻ hướng dẫn cho bài này; dùng tham chiếu Atlas hoặc ghi chú giáo án.
+        </p>
+      )}
       <p className="mt-1 text-xs leading-6 text-ink">
         Kế hoạch: {exercise.sets} hiệp × {exercise.repMin}–{exercise.repMax} lần
         · {UNIT_LABELS[exercise.loadUnit]}
