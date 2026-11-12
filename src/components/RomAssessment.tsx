@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { ClinicalEvidencePanel } from "./ClinicalEvidencePanel";
 import { HANDBOOK_EVIDENCE } from "@/lib/clinical/evidence-assessment";
 import {
@@ -128,12 +128,12 @@ export function RomAssessment({
 
         <div className="grid gap-4 lg:grid-cols-2">
           {REGIONS.map((region) => (
-            <fieldset key={region} className="rounded-lg border border-rule p-3">
+            <fieldset key={region} className="min-w-0 rounded-lg border border-rule p-3">
               <legend className="px-1 text-xs font-semibold text-ink">{region}</legend>
               <div className="space-y-2">
                 {ROM_MOVEMENTS.filter((m) => m.region === region).map((m) => (
-                  <div key={m.id} className="flex flex-wrap items-center gap-2">
-                    <span className="min-w-0 flex-1 text-xs text-ink">{m.label}</span>
+                  <div key={m.id} className="flex items-center gap-2">
+                    <span className="min-w-0 flex-1 wrap-anywhere text-sm leading-5 text-ink">{m.label}</span>
                     {m.sides.map((side) => {
                       const key = `${m.id}:${side}`;
                       return (
@@ -142,7 +142,7 @@ export function RomAssessment({
                           inputMode="decimal"
                           aria-label={`${m.label} – ${SIDE_LABELS[side]}`}
                           placeholder={SIDE_LABELS[side]}
-                          className="w-20 px-2 py-1.5 font-mono text-sm"
+                          className="min-h-11 w-[clamp(3.5rem,18vw,5rem)] shrink-0 px-1.5 py-1.5 text-center font-mono text-sm"
                           value={values[key] ?? ""}
                           onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
                         />
@@ -197,6 +197,25 @@ export function RomAssessment({
   );
 }
 
+function RomResultCell({
+  label,
+  children,
+  className = "",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <td role="cell" className={`min-w-0 wrap-anywhere md:py-2 md:pr-3 ${className}`}>
+      <span aria-hidden="true" className="mb-0.5 block font-medium text-slate md:hidden">
+        {label}
+      </span>
+      {children}
+    </td>
+  );
+}
+
 function LatestSession({ client, records }: { client: Client; records: BiomarkerRecord[] }) {
   const [latest, ...older] = records;
   const { instrument, entries } = metricsOf(latest);
@@ -220,28 +239,34 @@ function LatestSession({ client, records }: { client: Client; records: Biomarker
         <p className="mt-0.5 text-xs text-slate">{INSTRUMENT_LABELS[instrument]}</p>
       </div>
       {previousInstrument && previousInstrument !== instrument ? (
-        <p className="rounded-md border border-caution/30 bg-caution-soft/60 p-3 text-xs text-caution" role="status">
+        <p className="rounded-md border border-caution/30 bg-caution-soft/60 p-3 text-xs text-ink" role="status">
           Dụng cụ khác lần trước ({INSTRUMENT_LABELS[previousInstrument]}). Thay đổi giữa hai lần đo có
           thể do dụng cụ, không nhất thiết do học viên.
         </p>
       ) : null}
 
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-left text-xs">
-          <thead className="border-b border-rule text-slate">
-            <tr>
-              <th className="py-2 pr-3 font-medium">Động tác</th>
-              <th className="py-2 pr-3 font-medium">Bên</th>
-              <th className="py-2 pr-3 font-medium">Số đo</th>
-              <th className="py-2 pr-3 font-medium">Trung bình tham chiếu</th>
-              <th className="py-2 pr-3 font-medium">Lệch</th>
-              <th className="py-2 font-medium">So với lần trước</th>
+      <div className="md:overflow-x-auto">
+        {/* Keep table roles for browsers that drop native semantics when the mobile layout uses block and grid. */}
+        <table
+          role="table"
+          aria-label="So sánh số đo biên độ khớp"
+          className="block w-full text-left text-sm leading-5 md:table md:min-w-[640px] md:text-xs"
+        >
+          <thead role="rowgroup" className="sr-only border-b border-rule text-slate md:not-sr-only md:table-header-group">
+            <tr role="row">
+              <th role="columnheader" scope="col" className="py-2 pr-3 font-medium">Động tác</th>
+              <th role="columnheader" scope="col" className="py-2 pr-3 font-medium">Bên</th>
+              <th role="columnheader" scope="col" className="py-2 pr-3 font-medium">Số đo</th>
+              <th role="columnheader" scope="col" className="py-2 pr-3 font-medium">Trung bình tham chiếu</th>
+              <th role="columnheader" scope="col" className="py-2 pr-3 font-medium">Lệch</th>
+              <th role="columnheader" scope="col" className="py-2 font-medium">So với lần trước</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-rule">
+          <tbody role="rowgroup" className="block divide-y divide-rule md:table-row-group">
             {entries.map((e) => {
               const m = movementById(e.movement);
               const norm = normFor(e.movement, client.age, client.sex);
+              const hasReference = "mean" in norm;
               const left = entries.find((x) => x.movement === e.movement && x.side === "L");
               const right = entries.find((x) => x.movement === e.movement && x.side === "R");
               const prev = previousEntry(e);
@@ -250,29 +275,37 @@ function LatestSession({ client, records }: { client: Client; records: Biomarker
                   ? changeVsPrevious(e.movement, instrument, prev.value, e.value)
                   : null;
               return (
-                <tr key={`${e.movement}:${e.side}`} className="align-top">
-                  <td className="py-2 pr-3 text-ink">
+                <tr
+                  key={`${e.movement}:${e.side}`}
+                  role="row"
+                  className="grid grid-cols-2 gap-x-4 gap-y-3 py-3 align-top md:table-row md:py-0"
+                >
+                  <th role="rowheader" scope="row" className="col-span-2 text-ink md:py-2 md:pr-3 md:font-normal">
                     {m?.label ?? e.movement}
                     {e.side === "L" && left && right ? (
-                      <span className="block text-[11px] text-slate">
+                      <span className="block text-xs font-normal text-slate">
                         Chênh trái/phải: {sideGap(left.value, right.value).toFixed(1)}°
                       </span>
                     ) : null}
-                  </td>
-                  <td className="py-2 pr-3">{SIDE_LABELS[e.side]}</td>
-                  <td className="py-2 pr-3 font-mono font-semibold text-ink">{e.value}°</td>
-                  <td className="py-2 pr-3">
-                    {"mean" in norm ? (
+                  </th>
+                  <RomResultCell label="Bên">{SIDE_LABELS[e.side]}</RomResultCell>
+                  <RomResultCell label="Số đo">
+                    <span className="font-mono font-semibold text-ink">{e.value}°</span>
+                  </RomResultCell>
+                  <RomResultCell label="Trung bình tham chiếu" className={hasReference ? "" : "col-span-2"}>
+                    {hasReference ? (
                       <>
                         <span className="font-mono">{norm.mean}°</span>
-                        <span className="block text-[11px] text-slate">{norm.population}</span>
+                        <span className="block text-xs text-slate">{norm.population}</span>
                       </>
                     ) : (
                       <span className="text-slate">{norm.reason}</span>
                     )}
-                  </td>
-                  <td className="py-2 pr-3 font-mono">{"mean" in norm ? fmt(e.value - norm.mean) : "—"}</td>
-                  <td className="py-2">
+                  </RomResultCell>
+                  <RomResultCell label="Lệch">
+                    <span className="font-mono">{hasReference ? fmt(e.value - norm.mean) : "—"}</span>
+                  </RomResultCell>
+                  <RomResultCell label="So với lần trước" className={hasReference ? "col-span-2 md:pr-0" : "md:pr-0"}>
                     {!prev ? (
                       <span className="text-slate">Lần đầu</span>
                     ) : !change ? (
@@ -281,7 +314,7 @@ function LatestSession({ client, records }: { client: Client; records: Biomarker
                       <>
                         <span className="font-mono">{fmt(change.delta)}</span>
                         <span
-                          className={`block text-[11px] ${change.beyondError ? "font-semibold text-cleared" : "text-slate"}`}
+                          className={`block text-xs ${change.beyondError ? "font-semibold text-ink" : "text-slate"}`}
                         >
                           {change.beyondError == null
                             ? "Chưa xác nhận quy trình để áp MDC"
@@ -291,7 +324,7 @@ function LatestSession({ client, records }: { client: Client; records: Biomarker
                         </span>
                       </>
                     )}
-                  </td>
+                  </RomResultCell>
                 </tr>
               );
             })}

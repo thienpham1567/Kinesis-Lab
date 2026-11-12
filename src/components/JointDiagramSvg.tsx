@@ -528,11 +528,11 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
       {/* Top Bar: Title + Plate Switcher */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule bg-surface/60 px-4 py-3">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded bg-cobalt px-2 py-0.5 font-mono text-[10px] font-bold text-on-cobalt">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="rounded bg-cobalt px-2 py-0.5 font-mono text-xs font-bold text-on-cobalt">
               HÌNH MINH HỌA CÓ NGUỒN
             </span>
-            <span className="text-[11px] font-medium text-slate">
+            <span className="text-xs font-medium text-slate">
               {activePlate.sourceCredit}
             </span>
           </div>
@@ -548,7 +548,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
                 key={p.id}
                 type="button"
                 onClick={() => setPlateIdx(idx)}
-                className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                className={`min-h-11 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
                   idx === plateIdx
                     ? "bg-cobalt text-on-cobalt"
                     : "border border-rule bg-sheet text-slate hover:text-ink"
@@ -573,12 +573,12 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
               onClick={() => setZoomOpen(true)}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between border-t border-rule pt-2 text-xs text-slate">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 border-t border-rule pt-2 text-xs text-slate">
             <span>{activePlate.subtitle}</span>
             <button
               type="button"
               onClick={() => setZoomOpen(true)}
-              className="shrink-0 font-semibold text-cobalt hover:underline"
+              className="min-h-11 font-semibold text-ink underline"
             >
               Phóng to hình giải phẫu
             </button>
@@ -608,7 +608,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
                       <span className="font-display font-bold text-ink">
                         {lm.vnLabel}
                       </span>
-                      <span className="ml-1.5 rounded bg-cobalt-soft px-1.5 py-0.5 font-mono text-[11px] font-medium text-cobalt">
+                      <span className="ml-1.5 rounded bg-cobalt-soft px-1.5 py-0.5 font-mono text-xs font-medium text-ink">
                         {lm.enLabel}
                       </span>
                     </div>
@@ -649,7 +649,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
             className="max-h-[92dvh] max-w-5xl overflow-auto rounded-lg border border-rule bg-white p-4 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-3 flex items-center justify-between gap-4 border-b border-rule pb-2">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-rule pb-2">
               <div>
                 <h4 className="font-display text-base font-bold text-ink">
                   {activePlate.title}
@@ -659,7 +659,7 @@ export function JointDiagramSvg({ regionId }: { regionId: AnatomyRegionId }) {
               <button
                 type="button"
                 onClick={() => setZoomOpen(false)}
-                className="rounded-md bg-ink px-3 py-1.5 text-xs font-semibold text-on-cobalt"
+                className="button-primary"
               >
                 Đóng (ESC)
               </button>

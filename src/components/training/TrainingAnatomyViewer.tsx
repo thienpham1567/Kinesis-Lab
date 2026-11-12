@@ -258,10 +258,10 @@ export function TrainingAnatomyViewer({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-rule px-4 py-2">
-          <label className="flex min-h-11 items-center gap-2 text-xs font-medium text-ink">
+          <label className="flex min-h-11 min-w-0 max-w-full flex-wrap items-center gap-2 text-xs font-medium text-ink">
             Nhóm cơ
             <select
-              className="!min-h-11 !w-auto"
+              className="!min-h-11 !w-auto min-w-0 max-w-full"
               value={activeGroup}
               onChange={(e) => {
                 setGroup(e.target.value);
@@ -302,8 +302,8 @@ export function TrainingAnatomyViewer({
       <div
         className={
           person
-            ? "relative h-[640px] min-w-0 bg-surface"
-            : "relative h-[440px] min-w-0 bg-surface sm:h-[560px]"
+            ? "relative h-[clamp(12rem,62svh,40rem)] min-w-0 bg-surface"
+            : "relative h-[clamp(12rem,62svh,27.5rem)] min-w-0 bg-surface sm:h-[clamp(12rem,62svh,35rem)]"
         }
         data-anatomy-exercise={exercise.id}
       >

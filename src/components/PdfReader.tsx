@@ -201,7 +201,7 @@ export default function PdfReader({
   return (
     <div
       ref={wrap}
-      className="pdf-reader-wrap @container flex min-w-0 flex-col bg-sheet"
+      className="pdf-reader-wrap @container flex min-w-0 flex-col bg-sheet max-lg:max-h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] [&:fullscreen]:max-h-none"
     >
       <div
         role="group"
@@ -339,7 +339,7 @@ export default function PdfReader({
         }}
         tabIndex={0}
         role="region"
-        className="pdf-scroll-box relative h-[72dvh] overflow-auto scroll-smooth rounded-b-lg border-x border-b border-rule bg-surface [overflow-anchor:none] focus:outline-2 focus:outline-cobalt lg:h-[calc(100dvh-14rem)]"
+        className="pdf-scroll-box relative h-[72dvh] min-h-0 overflow-auto scroll-smooth rounded-b-lg border-x border-b border-rule bg-surface [overflow-anchor:none] focus:outline-2 focus:outline-cobalt lg:h-[calc(100dvh-14rem)]"
         aria-label="Nội dung PDF. Cuộn để đọc liền các trang."
       >
         {/* suspense={false}: trang mới hiện bằng khung chờ riêng, không treo
@@ -355,7 +355,7 @@ export default function PdfReader({
             </p>
           }
         >
-          <div className="flex flex-col items-center gap-5 p-4">
+          <div className="flex w-max min-w-full flex-col items-center gap-5 p-4">
             {pages > 0 &&
               pageWidth > 0 &&
               Array.from({ length: pages }, (_, i) => i + 1).map((p) => {
@@ -379,7 +379,7 @@ export default function PdfReader({
                         }
                       />
                     ) : (
-                      <span className="absolute inset-0 flex items-center justify-center font-mono text-xs text-slate/60">
+                      <span className="absolute inset-0 flex items-center justify-center bg-sheet font-mono text-xs text-ink">
                         Trang {p}
                       </span>
                     )}

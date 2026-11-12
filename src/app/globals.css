@@ -18,8 +18,8 @@ html[data-theme="linen"] {
   --sheet: #fffcfa;
   --surface: var(--p2);
   --ink: #554c41;
-  --slate: color-mix(in srgb, #554c41 72%, var(--p4));
-  --cobalt: #817464;
+  --slate: color-mix(in srgb, var(--ink) 80%, var(--p4));
+  --cobalt: #716454;
   --cobalt-soft: color-mix(in srgb, var(--p4) 38%, var(--sheet));
   --on-cobalt: #ffffff;
   --cleared: #817464;
@@ -42,157 +42,6 @@ html[data-theme="linen"] {
   --header-h: 4.5rem;
 }
 
-html[data-theme="navy"] {
-  --p1: #0f2854;
-  --p2: #1c4d8d;
-  --p3: #4988c4;
-  --p4: #bde8f5;
-  --p5: #0f2854;
-  --p6: #1c4d8d;
-  --p7: #4988c4;
-  --p8: #bde8f5;
-  --p9: #4988c4;
-  --p10: #bde8f5;
-  --canvas: color-mix(in srgb, var(--p4) 38%, #f7fcfe);
-  --sheet: #f7fcfe;
-  --surface: var(--p4);
-  --ink: var(--p1);
-  --slate: var(--p2);
-  --cobalt: var(--p2);
-  --cobalt-soft: color-mix(in srgb, var(--p4) 55%, var(--sheet));
-  --on-cobalt: #ffffff;
-  --cleared: var(--p3);
-  --cleared-soft: color-mix(in srgb, var(--p4) 48%, var(--sheet));
-  --on-cleared: #ffffff;
-  --caution: var(--p2);
-  --caution-soft: color-mix(in srgb, var(--p3) 22%, var(--sheet));
-  --on-caution: #ffffff;
-  --crimson: var(--p1);
-  --crimson-soft: color-mix(in srgb, var(--p1) 12%, var(--sheet));
-  --on-crimson: #ffffff;
-  --rule: color-mix(in srgb, var(--p4) 62%, var(--p3));
-  --rule-strong: color-mix(in srgb, var(--p2) 28%, var(--p4));
-  --toolbar: var(--p1);
-  --toolbar-muted: var(--p4);
-  --mark: var(--p3);
-  --mark-soft: color-mix(in srgb, var(--p3) 22%, var(--sheet));
-  --ember: var(--p3);
-  --flare: var(--p2);
-}
-
-html[data-theme="coral"] {
-  --p1: #feeac9;
-  --p2: #ffcdc9;
-  --p3: #fdacac;
-  --p4: #fd7979;
-  --p5: #feeac9;
-  --p6: #ffcdc9;
-  --p7: #fdacac;
-  --p8: #fd7979;
-  --p9: #fdacac;
-  --p10: #fd7979;
-  --canvas: color-mix(in srgb, var(--p1) 48%, #fffaf3);
-  --sheet: #fffaf3;
-  --surface: var(--p1);
-  --ink: #723c3a;
-  --slate: color-mix(in srgb, #723c3a 78%, var(--p4));
-  --cobalt: #b85a59;
-  --cobalt-soft: color-mix(in srgb, var(--p3) 32%, var(--sheet));
-  --on-cobalt: #ffffff;
-  --cleared: #b85a59;
-  --cleared-soft: color-mix(in srgb, var(--p2) 38%, var(--sheet));
-  --on-cleared: #ffffff;
-  --caution: var(--p4);
-  --caution-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
-  --on-caution: #723c3a;
-  --crimson: #b85a59;
-  --crimson-soft: color-mix(in srgb, #b85a59 16%, var(--sheet));
-  --on-crimson: #ffffff;
-  --rule: color-mix(in srgb, var(--p3) 42%, var(--p1));
-  --rule-strong: color-mix(in srgb, #723c3a 22%, var(--p1));
-  --toolbar: #723c3a;
-  --toolbar-muted: var(--p1);
-  --mark: var(--p4);
-  --mark-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
-  --ember: var(--p4);
-  --flare: #b85a59;
-}
-
-html[data-theme="mint"] {
-  --p1: #a8df8e;
-  --p2: #f0ffdf;
-  --p3: #ffd8df;
-  --p4: #ffaab8;
-  --p5: #a8df8e;
-  --p6: #f0ffdf;
-  --p7: #ffd8df;
-  --p8: #ffaab8;
-  --p9: #ffd8df;
-  --p10: #ffaab8;
-  --canvas: color-mix(in srgb, var(--p2) 55%, #ffffff);
-  --sheet: #fbfff6;
-  --surface: var(--p2);
-  --ink: #68484b;
-  --slate: color-mix(in srgb, #68484b 72%, #3d5a38);
-  --cobalt: #96666c;
-  --cobalt-soft: color-mix(in srgb, var(--p3) 38%, var(--sheet));
-  --on-cobalt: #ffffff;
-  --cleared: #6a994e;
-  --cleared-soft: color-mix(in srgb, var(--p1) 38%, var(--sheet));
-  --on-cleared: #ffffff;
-  --caution: var(--p4);
-  --caution-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
-  --on-caution: #68484b;
-  --crimson: #96666c;
-  --crimson-soft: color-mix(in srgb, #96666c 14%, var(--sheet));
-  --on-crimson: #ffffff;
-  --rule: color-mix(in srgb, var(--p1) 42%, var(--p2));
-  --rule-strong: color-mix(in srgb, #68484b 18%, var(--p2));
-  --toolbar: #68484b;
-  --toolbar-muted: var(--p2);
-  --mark: var(--p1);
-  --mark-soft: color-mix(in srgb, var(--p1) 28%, var(--sheet));
-  --ember: var(--p4);
-  --flare: #96666c;
-}
-
-html[data-theme="wine"] {
-  --p1: #fcf5ee;
-  --p2: #ffc4c4;
-  --p3: #ee6983;
-  --p4: #850e35;
-  --p5: #fcf5ee;
-  --p6: #ffc4c4;
-  --p7: #ee6983;
-  --p8: #850e35;
-  --p9: #ee6983;
-  --p10: #850e35;
-  --canvas: color-mix(in srgb, var(--p1) 70%, #fffdfa);
-  --sheet: #fffdfa;
-  --surface: var(--p1);
-  --ink: var(--p4);
-  --slate: color-mix(in srgb, var(--p4) 78%, var(--p3));
-  --cobalt: var(--p4);
-  --cobalt-soft: color-mix(in srgb, var(--p2) 42%, var(--sheet));
-  --on-cobalt: #ffffff;
-  --cleared: var(--p3);
-  --cleared-soft: color-mix(in srgb, var(--p2) 38%, var(--sheet));
-  --on-cleared: #ffffff;
-  --caution: var(--p3);
-  --caution-soft: color-mix(in srgb, var(--p2) 32%, var(--sheet));
-  --on-caution: var(--p4);
-  --crimson: var(--p4);
-  --crimson-soft: color-mix(in srgb, var(--p4) 12%, var(--sheet));
-  --on-crimson: #ffffff;
-  --rule: color-mix(in srgb, var(--p2) 55%, var(--p1));
-  --rule-strong: color-mix(in srgb, var(--p3) 32%, var(--p1));
-  --toolbar: var(--p4);
-  --toolbar-muted: var(--p2);
-  --mark: var(--p3);
-  --mark-soft: color-mix(in srgb, var(--p3) 18%, var(--sheet));
-  --ember: var(--p3);
-  --flare: var(--p4);
-}
 
 html[data-theme="slate"] {
   --p1: #213448;
@@ -209,7 +58,7 @@ html[data-theme="slate"] {
   --sheet: #fbf8f1;
   --surface: var(--p4);
   --ink: var(--p1);
-  --slate: var(--p2);
+  --slate: color-mix(in srgb, var(--ink) 28%, var(--p2));
   --cobalt: var(--p1);
   --cobalt-soft: color-mix(in srgb, var(--p3) 32%, var(--sheet));
   --on-cobalt: #ffffff;
@@ -232,43 +81,6 @@ html[data-theme="slate"] {
   --flare: var(--p2);
 }
 
-html[data-theme="sky"] {
-  --p1: #355872;
-  --p2: #7aaace;
-  --p3: #9cd5ff;
-  --p4: #f7f8f0;
-  --p5: #355872;
-  --p6: #7aaace;
-  --p7: #9cd5ff;
-  --p8: #f7f8f0;
-  --p9: #9cd5ff;
-  --p10: #f7f8f0;
-  --canvas: color-mix(in srgb, var(--p4) 70%, #ffffff);
-  --sheet: #ffffff;
-  --surface: color-mix(in srgb, var(--p3) 28%, var(--sheet));
-  --ink: var(--p1);
-  --slate: var(--p1);
-  --cobalt: var(--p1);
-  --cobalt-soft: color-mix(in srgb, var(--p3) 38%, var(--sheet));
-  --on-cobalt: #ffffff;
-  --cleared: var(--p2);
-  --cleared-soft: color-mix(in srgb, var(--p3) 42%, var(--sheet));
-  --on-cleared: var(--p1);
-  --caution: var(--p2);
-  --caution-soft: color-mix(in srgb, var(--p3) 28%, var(--sheet));
-  --on-caution: var(--p1);
-  --crimson: var(--p1);
-  --crimson-soft: color-mix(in srgb, var(--p1) 12%, var(--sheet));
-  --on-crimson: #ffffff;
-  --rule: color-mix(in srgb, var(--p3) 48%, var(--p4));
-  --rule-strong: color-mix(in srgb, var(--p2) 32%, var(--p4));
-  --toolbar: var(--p1);
-  --toolbar-muted: var(--p3);
-  --mark: var(--p2);
-  --mark-soft: color-mix(in srgb, var(--p3) 32%, var(--sheet));
-  --ember: var(--p2);
-  --flare: var(--p1);
-}
 
 html[data-theme="dusk"] {
   --p1: #81a6c6;
@@ -286,7 +98,7 @@ html[data-theme="dusk"] {
   --surface: var(--p3);
   --ink: #3b4650;
   --slate: color-mix(in srgb, #3b4650 78%, var(--p1));
-  --cobalt: #5c7386;
+  --cobalt: #4e6476;
   --cobalt-soft: color-mix(in srgb, var(--p2) 42%, var(--sheet));
   --on-cobalt: #ffffff;
   --cleared: var(--p1);
@@ -308,48 +120,14 @@ html[data-theme="dusk"] {
   --flare: #5c7386;
 }
 
-html[data-theme="lilac"] {
-  --p1: #f2eae0;
-  --p2: #b4d3d9;
-  --p3: #bda6ce;
-  --p4: #9b8ec7;
-  --p5: #f2eae0;
-  --p6: #b4d3d9;
-  --p7: #bda6ce;
-  --p8: #9b8ec7;
-  --p9: #bda6ce;
-  --p10: #9b8ec7;
-  --canvas: color-mix(in srgb, var(--p1) 58%, #fbf8f3);
-  --sheet: #fbf8f3;
-  --surface: var(--p1);
-  --ink: #524a62;
-  --slate: color-mix(in srgb, #524a62 78%, var(--p4));
-  --cobalt: #7a6f99;
-  --cobalt-soft: color-mix(in srgb, var(--p3) 32%, var(--sheet));
-  --on-cobalt: #ffffff;
-  --cleared: var(--p2);
-  --cleared-soft: color-mix(in srgb, var(--p2) 38%, var(--sheet));
-  --on-cleared: #524a62;
-  --caution: var(--p4);
-  --caution-soft: color-mix(in srgb, var(--p3) 24%, var(--sheet));
-  --on-caution: #ffffff;
-  --crimson: #524a62;
-  --crimson-soft: color-mix(in srgb, #524a62 12%, var(--sheet));
-  --on-crimson: #ffffff;
-  --rule: color-mix(in srgb, var(--p3) 38%, var(--p1));
-  --rule-strong: color-mix(in srgb, var(--p4) 28%, var(--p1));
-  --toolbar: #524a62;
-  --toolbar-muted: var(--p3);
-  --mark: var(--p4);
-  --mark-soft: color-mix(in srgb, var(--p4) 22%, var(--sheet));
-  --ember: var(--p3);
-  --flare: var(--p4);
-}
 
 /* Resolve these from the active theme before applying them to the learning surfaces. */
 :root {
   --learning-accent-ink: color-mix(in srgb, var(--ink) 65%, var(--cobalt));
   --learning-secondary-ink: color-mix(in srgb, var(--ink) 35%, var(--slate));
+  --cleared-ink: color-mix(in srgb, var(--ink) 82%, var(--cleared));
+  --caution-ink: color-mix(in srgb, var(--ink) 82%, var(--caution));
+  --crimson-ink: color-mix(in srgb, var(--ink) 55%, var(--crimson));
 }
 
 #atlas-learning-studio,
@@ -387,6 +165,18 @@ html[data-theme="lilac"] {
   --font-sans: var(--font-body);
   --font-display: var(--font-body);
   --font-mono: var(--font-lab);
+}
+
+@layer utilities {
+  .text-cleared {
+    color: var(--cleared-ink);
+  }
+  .text-caution {
+    color: var(--caution-ink);
+  }
+  .text-crimson {
+    color: var(--crimson-ink);
+  }
 }
 
 html,
@@ -802,6 +592,22 @@ select:focus {
   text-wrap: pretty;
 }
 
+.movement-anchor {
+  scroll-margin-top: var(--movement-anchor-offset, 5.5rem);
+}
+
+@media (max-width: 639px) {
+  .movement-article {
+    --movement-anchor-offset: 8rem;
+  }
+}
+
+@media (min-width: 640px) and (max-height: 450px) {
+  .movement-article {
+    --movement-anchor-offset: 4.25rem;
+  }
+}
+
 .skip-link {
   position: fixed;
   top: 10px;
@@ -1026,12 +832,27 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   line-height: 1.8;
   max-width: 54ch;
 }
-@media (max-width: 639px) {
+@media (max-width: 639px), (max-width: 1023px) and (pointer: coarse) {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
   textarea,
   select {
     font-size: 1rem;
   }
+  select:not([multiple]):not([size]),
+  select[size="1"] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 44px;
+    padding-inline-end: 2rem;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--slate) 50%),
+      linear-gradient(135deg, var(--slate) 50%, transparent 50%);
+    background-position: right 1.0625rem center, right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
+  }
+}
+@media (max-width: 639px) {
   .page-description {
     font-size: 14px;
     max-width: 65ch;
@@ -1264,10 +1085,6 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   border-left: 1px solid var(--rule);
 }
 
-.workspace-current-page {
-  left: 4.5rem;
-  right: 8rem;
-}
 .workspace-body {
   --study-drawer-width: clamp(460px, 36vw, 520px);
   display: grid;
@@ -1383,7 +1200,7 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   padding: 10px 30px 10px 12px;
   border: 1px solid var(--rule);
   border-radius: 10px;
-  background: var(--sheet);
+  background-color: var(--sheet);
   color: var(--ink);
   font-size: 13px;
 }
@@ -1447,10 +1264,12 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
   padding-inline: 8px;
   line-height: 1.5;
 }
-@media (max-width: 639px) {
+@media (max-width: 639px), (max-width: 1023px) and (pointer: coarse) {
   .study-model-select {
-    font-size: 16px;
+    font-size: 1rem;
   }
+}
+@media (max-width: 639px) {
   .study-drawer {
     width: 100%;
     box-shadow: none;
@@ -1475,9 +1294,33 @@ header.workspace-toolbar .theme-picker-trigger:focus-visible {
     display: none;
   }
 }
-@media (min-width: 640px) and (max-width: 1023px) {
-  .workspace-current-page {
-    right: 10rem;
+@media (max-height: 450px) {
+  .study-drawer-header {
+    padding-bottom: 8px;
+  }
+  .study-drawer-model-row {
+    margin-top: 6px;
+  }
+  .study-drawer-tab {
+    min-height: 44px;
+    padding-block: 8px;
+  }
+  .study-drawer-messages {
+    padding-block: 12px;
+  }
+  .study-drawer-composer {
+    padding-top: 6px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .study-library {
+    display: block;
+    overflow-y: auto;
+  }
+  .study-library-results {
+    overflow-y: visible;
+  }
+  .reading-contents {
+    padding-block: 0;
   }
 }
 @media (min-width: 1280px) {

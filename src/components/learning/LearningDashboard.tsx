@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { NCSF_DOMAINS } from "@/lib/ncsf-quiz";
 import { SHORT_SESSION_MAX_ITEMS } from "@/lib/learning/schedule";
-import type { LearningDraft } from "@/lib/learning/types";
+import type { DomainLearningSummary, LearningDraft } from "@/lib/learning/types";
 import type { UseLearningProgressResult } from "./useLearningProgress";
 
 export type ReadingBookmark = {
@@ -11,6 +11,25 @@ export type ReadingBookmark = {
   chapterTitle: string;
   page: number;
 };
+
+const DOMAIN_METRICS: {
+  label: string;
+  value: (domain: DomainLearningSummary) => string | number;
+}[] = [
+  { label: "Số câu từng gặp", value: (domain) => domain.seenCount },
+  { label: "Số lần thử", value: (domain) => domain.attempts },
+  {
+    label: "Đúng lần đầu",
+    value: (domain) =>
+      `${domain.firstTryRate}% (${domain.firstTryCorrectCount}/${domain.seenCount})`,
+  },
+  {
+    label: "Đúng gần nhất",
+    value: (domain) =>
+      `${domain.latestRate}% (${domain.latestCorrectCount}/${domain.seenCount})`,
+  },
+  { label: "Đến hạn ôn", value: (domain) => domain.dueCount },
+];
 
 function formatLocalDateTime(iso: string): string {
   const ms = Date.parse(iso);
@@ -351,70 +370,85 @@ export function LearningDashboard({
             tập hoặc Đề thi thử để xem thống kê theo chủ đề.
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="learning-table w-full min-w-[620px] text-left text-sm">
-              <thead className="border-b border-rule text-xs text-slate">
-                <tr>
-                  <th scope="col" className="pb-2 pr-3 font-semibold">
-                    Chủ đề
-                  </th>
-                  <th scope="col" className="pb-2 px-3 font-semibold">
-                    Số câu từng gặp
-                  </th>
-                  <th scope="col" className="pb-2 px-3 font-semibold">
-                    Số lần thử
-                  </th>
-                  <th scope="col" className="pb-2 px-3 font-semibold">
-                    Đúng lần đầu
-                  </th>
-                  <th scope="col" className="pb-2 px-3 font-semibold">
-                    Đúng gần nhất
-                  </th>
-                  <th scope="col" className="pb-2 px-3 font-semibold">
-                    Đến hạn ôn
-                  </th>
-                  <th scope="col" className="pb-2 pl-3 font-semibold">
-                    Thao tác
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-rule">
-                {summary.domains.map((d) => (
-                  <tr key={d.domain}>
-                    <td className="py-2.5 pr-3 font-medium text-ink">
-                      {d.label}
-                    </td>
-                    <td className="px-3 py-2.5 font-mono text-ink">
-                      {d.seenCount}
-                    </td>
-                    <td className="px-3 py-2.5 font-mono text-ink">
-                      {d.attempts}
-                    </td>
-                    <td className="px-3 py-2.5 font-mono text-ink">
-                      {d.firstTryRate}% ({d.firstTryCorrectCount}/{d.seenCount})
-                    </td>
-                    <td className="px-3 py-2.5 font-mono text-ink">
-                      {d.latestRate}% ({d.latestCorrectCount}/{d.seenCount})
-                    </td>
-                    <td className="px-3 py-2.5 font-mono text-ink">
-                      {d.dueCount}
-                    </td>
-                    <td className="py-2.5 pl-3">
-                      {d.domain !== "unclassified" && (
-                        <button
-                          type="button"
-                          className="font-semibold text-cobalt underline"
-                          onClick={() => onStartDomainStudy(d.domain)}
-                        >
-                          Luyện chủ đề này
-                        </button>
-                      )}
-                    </td>
+          <>
+            <ul className="divide-y divide-rule md:hidden">
+              {summary.domains.map((domain) => (
+                <li
+                  key={domain.domain}
+                  className="space-y-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <h4 className="text-sm font-semibold text-ink">
+                    {domain.label}
+                  </h4>
+                  <dl className="grid grid-cols-2 gap-3">
+                    {DOMAIN_METRICS.map((metric) => (
+                      <div key={metric.label} className="min-w-0">
+                        <dt className="text-xs leading-5 text-slate">
+                          {metric.label}
+                        </dt>
+                        <dd className="font-mono text-sm text-ink">
+                          {metric.value(domain)}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  {domain.domain !== "unclassified" && (
+                    <button
+                      type="button"
+                      className="button-secondary"
+                      onClick={() => onStartDomainStudy(domain.domain)}
+                    >
+                      Luyện chủ đề này
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="learning-table w-full min-w-[620px] text-left text-sm">
+                <thead>
+                  <tr>
+                    <th scope="col" className="pb-2 pr-3 font-semibold">
+                      Chủ đề
+                    </th>
+                    {DOMAIN_METRICS.map(({ label }) => (
+                      <th key={label} scope="col" className="px-3 pb-2 font-semibold">
+                        {label}
+                      </th>
+                    ))}
+                    <th scope="col" className="pb-2 pl-3 font-semibold">
+                      Thao tác
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-rule">
+                  {summary.domains.map((domain) => (
+                    <tr key={domain.domain}>
+                      <td className="py-2.5 pr-3 font-medium text-ink">
+                        {domain.label}
+                      </td>
+                      {DOMAIN_METRICS.map((metric) => (
+                        <td key={metric.label} className="px-3 py-2.5 font-mono text-ink">
+                          {metric.value(domain)}
+                        </td>
+                      ))}
+                      <td className="py-2.5 pl-3">
+                        {domain.domain !== "unclassified" && (
+                          <button
+                            type="button"
+                            className="font-semibold text-cobalt underline"
+                            onClick={() => onStartDomainStudy(domain.domain)}
+                          >
+                            Luyện chủ đề này
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </section>
 

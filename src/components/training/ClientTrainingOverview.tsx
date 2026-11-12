@@ -28,12 +28,12 @@ export function ClientTrainingOverview({
   return (
     <section className="panel p-5 sm:p-6" aria-label="Tổng quan tập luyện">
       <h2 className="text-lg font-bold text-ink">Hướng tập luyện hiện tại</h2>
-      <dl className="mt-5 divide-y divide-rule text-sm text-ink">
-        <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
+      <dl className="mt-5 divide-y divide-rule wrap-anywhere text-sm text-ink">
+        <div className="grid gap-1 py-3 sm:grid-cols-[180px_minmax(0,1fr)]">
           <dt className="text-slate">Mục tiêu học viên</dt>
           <dd>{clientGoal || "Chưa ghi mục tiêu trong hồ sơ."}</dd>
         </div>
-        <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
+        <div className="grid gap-1 py-3 sm:grid-cols-[180px_minmax(0,1fr)]">
           <dt className="text-slate">Giáo án đang áp dụng</dt>
           <dd>
             {active
@@ -41,7 +41,7 @@ export function ClientTrainingOverview({
               : "Chưa có giáo án đang áp dụng. Soạn và lưu một phiên bản để bắt đầu."}
           </dd>
         </div>
-        <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
+        <div className="grid gap-1 py-3 sm:grid-cols-[180px_minmax(0,1fr)]">
           <dt className="text-slate">Buổi kế tiếp theo lịch tuần</dt>
           <dd>
             {next
@@ -49,7 +49,7 @@ export function ClientTrainingOverview({
               : "Thiết lập lịch tuần trong chương trình tập luyện."}
           </dd>
         </div>
-        <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
+        <div className="grid gap-1 py-3 sm:grid-cols-[180px_minmax(0,1fr)]">
           <dt className="text-slate">Buổi đã hoàn thành</dt>
           <dd>{completed} buổi được ghi nhận thực tế</dd>
         </div>

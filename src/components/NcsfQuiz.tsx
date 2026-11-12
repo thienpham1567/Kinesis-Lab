@@ -29,6 +29,12 @@ import {
   NcsfAnswerReviewPanel,
   useNcsfAnswerReviews,
 } from "./NcsfAnswerReview";
+import {
+  countNcsfAnswerOutcomes,
+  ncsfAnswerOutcome,
+  NcsfAttemptBar,
+  type NcsfReviewFilter,
+} from "./NcsfAttemptBar";
 
 const LETTERS = ["A", "B", "C", "D"];
 export const QUIZ_DRAFT_ID = "ncsf-quiz-active";
@@ -233,6 +239,8 @@ export function NcsfQuiz({
   const [questionOrder, setQuestionOrder] = useState<number[]>([]);
   const [picked, setPicked] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [reviewFilter, setReviewFilter] = useState<NcsfReviewFilter>("all");
+  const attemptSectionRef = useRef<HTMLDivElement>(null);
   const [customSession, setCustomSession] = useState<CustomQuizSession | null>(
     null,
   );
@@ -448,10 +456,11 @@ export function NcsfQuiz({
             (!only || only.includes(it.idx)),
         );
 
-  const wrongItems = activeItems.filter(
-    (it) => picked[it.pickKey] !== it.q.answer,
+  const outcomes = activeItems.map((it) =>
+    ncsfAnswerOutcome(picked[it.pickKey], it.q.answer),
   );
-  const wrongIndices = wrongItems.map((it) => it.idx);
+  const counts = countNcsfAnswerOutcomes(outcomes);
+  const missedItems = activeItems.filter((_, i) => outcomes[i] !== "correct");
 
   const start = (
     nextCh: number,
@@ -479,7 +488,7 @@ export function NcsfQuiz({
 
   const restartCustomSession = (onlyWrong: boolean) => {
     if (!customSession) return;
-    const base = onlyWrong ? wrongItems : customSession.items;
+    const base = onlyWrong ? missedItems : customSession.items;
     const shuffledIndices = shuffleNcsfQuestionIndices(base.length);
     const nextItems = shuffledIndices.map((i) => {
       const item = base[i]!;
@@ -525,6 +534,7 @@ export function NcsfQuiz({
   };
 
   const handleSubmit = () => {
+    setReviewFilter("all");
     setSubmitted(true);
     const currentAttemptId = attemptIdRef.current;
     if (
@@ -619,7 +629,7 @@ export function NcsfQuiz({
             }
             target="_blank"
             rel="noreferrer"
-            className="text-xs font-semibold text-cobalt underline"
+            className="inline-flex min-h-11 items-center text-sm font-semibold text-ink underline underline-offset-4"
           >
             {lesson >= 0
               ? `Nguồn đề gốc Chương ${ch} · Bài ${lesson + 1}`
@@ -673,7 +683,7 @@ export function NcsfQuiz({
       </label>
       {only && !customSession && (
         <p className="text-sm font-semibold text-caution">
-          Đang làm lại {only.length} câu sai.
+          Đang làm lại {only.length} câu chưa đúng.
         </p>
       )}
       {activeItems.length === 0 && (
@@ -682,180 +692,207 @@ export function NcsfQuiz({
         </p>
       )}
 
-      <ol className="space-y-4">
-        {activeItems.map((item, n) => {
-          const { q, idx, order, pickKey } = item;
-          const itemCh = item.ch;
-          const itemSource = NCSF_CPT[itemCh - 1] ?? source;
-          return (
-            <li key={pickKey}>
-              <fieldset className="min-w-0 rounded-lg border border-rule p-4">
-                <legend className="px-1 text-sm font-semibold text-ink">
-                  Câu {n + 1}. {q.q}
-                </legend>
-                {q.figure && (
-                  <NcsfQuestionFigure
-                    key={`${itemCh}-${idx}-${q.figure.page}`}
-                    chapter={itemCh}
-                    page={q.figure.page}
-                    alt={q.figure.alt}
-                  />
+      <div ref={attemptSectionRef} className="space-y-4 scroll-mt-2">
+        <NcsfAttemptBar
+          review={
+            submitted
+              ? {
+                  ...counts,
+                  filter: reviewFilter,
+                  onChange: (filter) => {
+                    setReviewFilter(filter);
+                    attemptSectionRef.current?.scrollIntoView({
+                      block: "start",
+                    });
+                  },
+                }
+              : undefined
+          }
+        >
+          {submitted ? (
+            <>
+              <p className="text-sm font-semibold text-ink" role="status">
+                Kết quả: {counts.correct}/{activeItems.length} câu đúng
+              </p>
+              <div className="flex w-full gap-2 sm:w-auto sm:flex-wrap">
+                {missedItems.length > 0 && (
+                  <button
+                    type="button"
+                    className="button-secondary min-w-0 flex-1 px-2 py-1 text-center leading-tight sm:flex-none sm:px-2.5 sm:py-2.5"
+                    onClick={() =>
+                      customSession
+                        ? restartCustomSession(true)
+                        : start(ch, lesson, missedItems.map((it) => it.idx))
+                    }
+                  >
+                    {counts.unanswered > 0
+                      ? "Làm lại câu chưa đúng"
+                      : `Làm lại ${counts.wrong} câu sai`}
+                  </button>
                 )}
-                <div className="mt-2 space-y-1.5">
-                  {order.map((j, pos) => {
-                    const state = !submitted
-                      ? ""
-                      : j === q.answer
-                        ? "border-cleared bg-cleared-soft"
-                        : picked[pickKey] === j
-                          ? "border-crimson bg-crimson-soft"
-                          : "";
-                    return (
-                      <label
-                        key={j}
-                        className={`flex cursor-pointer items-start gap-2 rounded-md border px-2 py-1.5 text-sm ${state || "border-transparent hover:bg-surface"}`}
-                      >
-                        <input
-                          type="radio"
-                          name={`q${itemCh}-${idx}`}
-                          className="mt-1"
-                          checked={picked[pickKey] === j}
-                          disabled={submitted}
-                          onChange={() => handleSelectOption(item, j)}
-                        />
-                        <span>
-                          {LETTERS[pos]}. {q.options[j]}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-                {submitted && (
-                  <div className="mt-3 space-y-1.5 rounded-md bg-surface p-3 text-sm">
-                    <p className="font-semibold text-ink">
-                      {picked[pickKey] === q.answer
-                        ? "✓ Đúng"
-                        : picked[pickKey] === undefined
-                          ? "Chưa trả lời"
-                          : "✗ Sai"}{" "}
-                      — Đáp án {LETTERS[order.indexOf(q.answer)]}
-                    </p>
-                    <p className="text-ink">{q.explain}</p>
-                    {q.correction && (
-                      <div className="rounded-md border border-rule bg-sheet p-3 text-ink">
-                        <p className="font-semibold">Đính chính giáo trình</p>
-                        <p>{q.correction}</p>
-                      </div>
-                    )}
-                    <p className="text-slate">
-                      {q.basis === "supplement"
-                        ? "Dẫn chứng từ nguồn bổ sung"
-                        : q.source === "image"
-                          ? "Hình trong giáo trình"
-                          : "Giáo trình"}
-                      : “{q.evidence.replace(/​/g, "")}”{" "}
+                <button
+                  type="button"
+                  className="button-secondary shrink-0 px-2 py-1 text-center whitespace-nowrap sm:px-2.5 sm:py-2.5"
+                  onClick={() =>
+                    customSession
+                      ? restartCustomSession(false)
+                      : start(ch, lesson, null)
+                  }
+                >
+                  Làm lại tất cả
+                </button>
+              </div>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="button-primary ml-auto"
+              disabled={activeItems.length === 0}
+              onClick={handleSubmit}
+            >
+              Nộp bài ({activeItems.length - counts.unanswered}/
+              {activeItems.length})
+            </button>
+          )}
+        </NcsfAttemptBar>
+        <ol className="space-y-4">
+          {activeItems.map((item, n) => {
+            const outcome = outcomes[n];
+            if (submitted && reviewFilter !== "all" && outcome !== reviewFilter) {
+              return null;
+            }
+            const { q, idx, order, pickKey } = item;
+            const itemCh = item.ch;
+            const itemSource = NCSF_CPT[itemCh - 1] ?? source;
+            return (
+              <li key={pickKey}>
+                <fieldset className="min-w-0 rounded-lg border border-rule p-4">
+                  <legend className="max-w-full px-1 text-sm font-semibold wrap-anywhere text-ink">
+                    Câu {n + 1}. {q.q}
+                  </legend>
+                  {q.figure && (
+                    <NcsfQuestionFigure
+                      key={`${itemCh}-${idx}-${q.figure.page}`}
+                      chapter={itemCh}
+                      page={q.figure.page}
+                      alt={q.figure.alt}
+                    />
+                  )}
+                  <div className="mt-2 space-y-1.5">
+                    {order.map((j, pos) => {
+                      const state = !submitted
+                        ? ""
+                        : j === q.answer
+                          ? "border-cleared bg-cleared-soft"
+                          : picked[pickKey] === j
+                            ? "border-crimson bg-crimson-soft"
+                            : "";
+                      return (
+                        <label
+                          key={j}
+                          className={`flex cursor-pointer items-start gap-2 rounded-md border px-2 py-1.5 text-sm max-sm:min-h-11 max-sm:py-2.5 ${state || "border-transparent hover:bg-surface"}`}
+                        >
+                          <input
+                            type="radio"
+                            name={`q${itemCh}-${idx}`}
+                            className="mt-1 shrink-0"
+                            checked={picked[pickKey] === j}
+                            disabled={submitted}
+                            onChange={() => handleSelectOption(item, j)}
+                          />
+                          <span className="min-w-0 wrap-anywhere">
+                            {LETTERS[pos]}. {q.options[j]}
+                            {submitted && j === q.answer && (
+                              <span className="ml-2 font-semibold text-ink">
+                                Đáp án đúng
+                              </span>
+                            )}
+                            {submitted && picked[pickKey] === j && (
+                              <span className="ml-2 font-semibold">
+                                · Bạn chọn
+                              </span>
+                            )}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {submitted && (
+                    <div className="mt-3 space-y-1.5 rounded-md bg-surface p-3 text-sm">
+                      <p className="font-semibold text-ink">
+                        {outcome === "correct"
+                          ? "✓ Đúng"
+                          : outcome === "unanswered"
+                            ? "Chưa trả lời"
+                            : "✗ Sai"}{" "}
+                        — Đáp án {LETTERS[order.indexOf(q.answer)]}
+                      </p>
+                      <p className="text-ink">{q.explain}</p>
+                      {q.correction && (
+                        <div className="rounded-md border border-rule bg-sheet p-3 text-ink">
+                          <p className="font-semibold">Đính chính giáo trình</p>
+                          <p>{q.correction}</p>
+                        </div>
+                      )}
+                      <p className="text-slate">
+                        {q.basis === "supplement"
+                          ? "Dẫn chứng từ nguồn bổ sung"
+                          : q.source === "image"
+                            ? "Hình trong giáo trình"
+                            : "Giáo trình"}
+                        : “{q.evidence.replace(/​/g, "")}”
+                      </p>
                       <button
-                        className="font-semibold text-cobalt underline"
+                        type="button"
+                        className="inline-flex min-h-11 items-center text-left font-semibold text-ink underline underline-offset-4"
                         onClick={() => onOpenPage(itemSource.slug, q.page)}
                       >
                         {q.basis === "supplement"
                           ? "Phần liên quan trong giáo trình"
                           : `Xem trang ${q.page}`}
                       </button>
-                    </p>
-                    {q.references && (
-                      <NcsfSourceLinks references={q.references} />
-                    )}
-                    <NcsfAnswerReviewPanel
-                      review={answerReviews.reviews.get(item.itemId)}
-                      status={answerReviews.status}
-                      onRetry={answerReviews.retry}
-                      model={answerReviews.model}
-                      generatedAt={answerReviews.generatedAt}
-                      outcome={
-                        picked[pickKey] === undefined
-                          ? "unanswered"
-                          : picked[pickKey] === q.answer
-                            ? "correct"
-                            : "wrong"
-                      }
-                      correct={{
-                        label: LETTERS[order.indexOf(q.answer)],
-                        text: q.options[q.answer],
-                        optionId: item.optionIds[q.answer],
-                      }}
-                      picked={
-                        picked[pickKey] === undefined
-                          ? undefined
-                          : {
-                              label: LETTERS[order.indexOf(picked[pickKey])],
-                              text: q.options[picked[pickKey]],
-                              optionId: item.optionIds[picked[pickKey]],
-                            }
-                      }
-                      others={order
-                        .filter(
-                          (j) => j !== q.answer && j !== picked[pickKey],
-                        )
-                        .map((j) => ({
-                          label: LETTERS[order.indexOf(j)],
-                          text: q.options[j],
-                          optionId: item.optionIds[j],
-                        }))}
-                      onOpenPage={onOpenPage}
-                    />
-                  </div>
-                )}
-              </fieldset>
-            </li>
-          );
-        })}
-      </ol>
-
-      <div className="flex flex-wrap items-center gap-3">
-        {submitted ? (
-          <>
-            <p className="text-base font-semibold text-ink" role="status">
-              Kết quả: {activeItems.length - wrongItems.length}/
-              {activeItems.length} câu đúng
-            </p>
-            {wrongItems.length > 0 && (
-              <button
-                className="button-primary"
-                onClick={() =>
-                  customSession
-                    ? restartCustomSession(true)
-                    : start(ch, lesson, wrongIndices)
-                }
-              >
-                Làm lại {wrongItems.length} câu sai
-              </button>
-            )}
-            <button
-              className="button-secondary"
-              onClick={() =>
-                customSession
-                  ? restartCustomSession(false)
-                  : start(ch, lesson, null)
-              }
-            >
-              Làm lại tất cả
-            </button>
-          </>
-        ) : (
-          <button
-            className="button-primary"
-            disabled={activeItems.length === 0}
-            onClick={handleSubmit}
-          >
-            Nộp bài (
-            {
-              activeItems.filter((it) => picked[it.pickKey] !== undefined)
-                .length
-            }
-            /{activeItems.length})
-          </button>
-        )}
+                      {q.references && (
+                        <NcsfSourceLinks references={q.references} />
+                      )}
+                      <NcsfAnswerReviewPanel
+                        review={answerReviews.reviews.get(item.itemId)}
+                        status={answerReviews.status}
+                        onRetry={answerReviews.retry}
+                        model={answerReviews.model}
+                        generatedAt={answerReviews.generatedAt}
+                        outcome={outcome}
+                        correct={{
+                          label: LETTERS[order.indexOf(q.answer)],
+                          text: q.options[q.answer],
+                          optionId: item.optionIds[q.answer],
+                        }}
+                        picked={
+                          picked[pickKey] === undefined
+                            ? undefined
+                            : {
+                                label: LETTERS[order.indexOf(picked[pickKey])],
+                                text: q.options[picked[pickKey]],
+                                optionId: item.optionIds[picked[pickKey]],
+                              }
+                        }
+                        others={order
+                          .filter(
+                            (j) => j !== q.answer && j !== picked[pickKey],
+                          )
+                          .map((j) => ({
+                            label: LETTERS[order.indexOf(j)],
+                            text: q.options[j],
+                            optionId: item.optionIds[j],
+                          }))}
+                        onOpenPage={onOpenPage}
+                      />
+                    </div>
+                  )}
+                </fieldset>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </div>
   );

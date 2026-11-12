@@ -34,7 +34,7 @@ export function MovementSourceLinks({
             rel="noreferrer"
             title={source.title}
             aria-label={`Nguồn ${index + 1}: ${source.label}`}
-            className="rounded px-1 font-mono text-[11px] font-semibold text-cobalt underline decoration-cobalt/40 underline-offset-2 hover:bg-cobalt-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
+            className="inline-flex min-h-6 min-w-6 items-center justify-center rounded px-1 font-mono text-xs font-semibold text-cobalt underline decoration-cobalt/40 underline-offset-2 hover:bg-cobalt-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cobalt"
           >
             [{index + 1}]
           </a>
@@ -66,7 +66,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-36 space-y-3">
+    <section id={id} className="movement-anchor space-y-3">
       <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
       {children}
     </section>
@@ -150,7 +150,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
             : ""
         }
       >
-        <section id={`movement-${topic.id}-key`} aria-label="Kiến thức trọng tâm" className="min-w-0 scroll-mt-36 space-y-3">
+        <section id={`movement-${topic.id}-key`} aria-label="Kiến thức trọng tâm" className="movement-anchor min-w-0 space-y-3">
           <p className="eyebrow">Nắm chắc trước khi áp dụng</p>
           <div className="divide-y divide-rule rounded-xl border border-rule bg-sheet px-4 sm:px-5">
             {topic.keyPoints.map((point, index) => (
@@ -226,7 +226,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
         ) : null}
       </div>
 
-      <div id={`movement-${topic.id}-practice`} className="scroll-mt-36 space-y-7">
+      <div id={`movement-${topic.id}-practice`} className="movement-anchor space-y-7">
       {topic.parts.map((part) => (
         <Section key={part.label} title={part.label} id={part.id ? `movement-${topic.id}-${part.id}` : undefined}>
           {part.intro ? (
@@ -267,7 +267,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
           {part.guides && (
             <div className="divide-y divide-rule border-y border-rule">
               {part.guides.map((guide) => (
-                <details key={guide.id} id={`movement-${topic.id}-${guide.id}`} className="scroll-mt-36">
+                <details key={guide.id} id={`movement-${topic.id}-${guide.id}`} className="movement-anchor">
                   <summary className="min-h-11 cursor-pointer py-4 text-ink">
                     <span className="ml-1 text-base font-semibold leading-7">{guide.title}</span>
                     <span className="mt-1 block max-w-prose text-sm font-normal leading-6 text-slate">{guide.summary}</span>
@@ -281,40 +281,52 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
             </div>
           )}
           {part.table ? (
-            <div className="overflow-x-auto rounded-lg border border-rule bg-sheet">
-              <table className={`w-full text-left text-sm ${part.table.head.length > 2 && !part.table.compact ? "min-w-[520px]" : ""}`}>
-                <thead className="border-b border-rule bg-canvas text-xs text-slate">
-                  <tr>
-                    {part.table.head.map((h) => (
-                      <th
-                        key={h}
-                        scope="col"
-                        className="px-4 py-3 font-semibold"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-rule">
-                  {part.table.rows.map((row) => (
-                    <tr key={row.cells[0]} className="align-top">
-                      {row.cells.map((cell, index) => (
-                        <td
-                          key={part.table?.head[index] ?? cell}
-                          className="px-4 py-3 leading-6 text-ink"
+            <div>
+              <div
+                role="region"
+                aria-label={part.label}
+                tabIndex={part.table.head.length > 2 && !part.table.compact ? 0 : undefined}
+                className="overflow-x-auto rounded-lg border border-rule bg-sheet"
+              >
+                <table className={`w-full text-left text-sm ${part.table.head.length > 2 && !part.table.compact ? "min-w-[520px]" : ""}`}>
+                  <thead className="border-b border-rule bg-canvas text-xs text-slate">
+                    <tr>
+                      {part.table.head.map((h) => (
+                        <th
+                          key={h}
+                          scope="col"
+                          className="px-4 py-3 font-semibold"
                         >
-                          {cell}
-                          {/* A section-level authored label covers its authored rows; keep individual source links. */}
-                          {index === row.cells.length - 1 && (!part.authored || !row.authored || row.sourceIds?.length) ? (
-                            <Attribution block={row} topic={topic} />
-                          ) : null}
-                        </td>
+                          {h}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-rule">
+                    {part.table.rows.map((row) => (
+                      <tr key={row.cells[0]} className="align-top">
+                        {row.cells.map((cell, index) => (
+                          <td
+                            key={part.table?.head[index] ?? cell}
+                            className="px-4 py-3 leading-6 text-ink"
+                          >
+                            {cell}
+                            {/* A section-level authored label covers its authored rows; keep individual source links. */}
+                            {index === row.cells.length - 1 && (!part.authored || !row.authored || row.sourceIds?.length) ? (
+                              <Attribution block={row} topic={topic} />
+                            ) : null}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {part.table.head.length > 2 && !part.table.compact && (
+                <p className="mt-2 text-xs text-slate min-[560px]:hidden">
+                  Cuộn ngang để xem các cột còn lại.
+                </p>
+              )}
             </div>
           ) : null}
           {part.chart === "knee-flexion" && knee ? (
@@ -388,7 +400,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
       <section
         id={`movement-${topic.id}-apply`}
         aria-label="Áp dụng trong buổi tập"
-        className="scroll-mt-36 space-y-3 rounded-xl border border-cobalt/20 bg-cobalt-soft/50 p-5"
+        className="movement-anchor space-y-3 rounded-xl border border-cobalt/20 bg-cobalt-soft/50 p-5"
       >
         <h3 className="font-display text-lg font-semibold text-ink">
           Áp dụng trong buổi tập
@@ -425,7 +437,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
       <section
         id={`movement-${topic.id}-sources`}
         aria-label="Nguồn và phạm vi đã đọc"
-        className="panel scroll-mt-36 space-y-4 p-5 sm:p-6"
+        className="panel movement-anchor space-y-4 p-5 sm:p-6"
       >
         <div>
           <h3 className="mt-2 font-display text-xl font-semibold text-ink">
@@ -456,7 +468,7 @@ export function MovementTopic({ topic }: { topic: HandbookTopic }) {
                   >
                     {s.label} — {s.title} ↗
                   </a>
-                  <p className="mt-2 max-w-[56ch] text-sm leading-6 text-slate">
+                  <p className="mt-2 max-w-[56ch] text-sm leading-6 text-slate [overflow-wrap:anywhere]">
                     {s.access}
                   </p>
                 </div>

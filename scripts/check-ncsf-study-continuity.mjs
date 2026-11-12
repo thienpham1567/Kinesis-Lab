@@ -181,10 +181,45 @@ test("retry-wrong starts a new attempt containing only missed question identitie
   const completed = nodes(tree, node => node.type === "input" && node.props.checked)[0].node.props.name;
   button(tree, "Nộp bài (1/3)").props.onClick(); tree = quiz.render();
   assert.match(text(tree), /Kết quả: 1\/3 câu đúng/);
-  f.setRandom(0.95); button(tree, "Làm lại 2 câu sai").props.onClick(); tree = quiz.render();
+  f.setRandom(0.95); button(tree, "Làm lại câu chưa đúng").props.onClick(); tree = quiz.render();
   const remaining = nodes(tree, node => node.type === "input");
   assert.equal(new Set(remaining.map(({ node }) => node.props.name)).size, 2);
   assert.ok(remaining.every(({ node }) => node.props.name !== completed && !node.props.checked && !node.props.disabled));
+});
+
+test("post-submit review filters wrong and blank answers without renumbering questions", async () => {
+  const f = fixture({ quizResponses: [ok(bank())] });
+  const quiz = f.mount(f.quiz, { onOpenPage() {} });
+  quiz.render(); await settle(); let tree = quiz.render();
+  const select = (index, option) => {
+    const fieldset = nodes(tree, node => node.type === "fieldset")[index].node;
+    const label = nodes(fieldset, node => node.type === "label" && text(node).endsWith(option))[0].node;
+    nodes(label, node => node.type === "input")[0].node.props.onChange();
+    tree = quiz.render();
+  };
+  select(0, "Two");
+  select(2, "One");
+  const legends = () => nodes(tree, node => node.type === "legend").map(({ node }) => text(node));
+  const original = legends();
+  button(tree, "Nộp bài (2/3)").props.onClick();
+  tree = quiz.render();
+
+  const filter = (label) => {
+    const bar = nodes(tree, node => node.props?.review?.onChange)[0]?.node;
+    assert.ok(bar, "submitted quizzes show review filters");
+    button(bar.type(bar.props), label).props.onClick();
+    tree = quiz.render();
+  };
+  filter("Xem 1 câu sai");
+  assert.deepEqual(legends(), [original[2]]);
+  assert.match(text(tree), /Bạn chọn/);
+  assert.match(text(tree), /Đáp án đúng/);
+  filter("Bỏ trống (1)");
+  assert.deepEqual(legends(), [original[1]]);
+  filter("Tất cả");
+  assert.deepEqual(legends(), original);
+  assert.equal(nodes(tree, node => node.type === "input" && node.props.checked).length, 2);
+  assert.match(text(tree), /Kết quả: 1\/3 câu đúng/);
 });
 
 test("mock exams keep their declared reshuffle-on-open behavior without resetting quiz identity", () => {

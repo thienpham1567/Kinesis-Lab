@@ -732,7 +732,7 @@ export default function Atlas3DExplorer({
         <div className="min-w-0 flex-1 basis-64">
           <div className="flex flex-wrap items-center justify-between gap-x-3">
             <label htmlFor="atlas-learning-area" className="field-label">Vùng học giải phẫu</label>
-            <a href="#atlas-3d-model" className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-cobalt underline underline-offset-4">
+            <a href="#atlas-3d-stage" className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-ink underline underline-offset-4">
               Đến mô hình 3D
               <Icon name="arrow-right" className="size-3.5" />
             </a>
@@ -898,7 +898,7 @@ export default function Atlas3DExplorer({
                         title={item.instruction}
                         aria-pressed={current}
                         onClick={() => applyLearningStep(index)}
-                        className={`button-secondary ${current ? "!bg-cobalt-soft !text-cobalt" : ""}`}
+                        className={`button-secondary ${current ? "!border-cobalt !bg-cobalt-soft !text-ink" : ""}`}
                       >
                         {item.short}
                       </button>
@@ -944,7 +944,8 @@ export default function Atlas3DExplorer({
             </div>
             <div
               id="atlas-3d-stage"
-              className="scroll-mt-20 relative h-[58svh] min-h-[360px] max-h-[680px] bg-surface sm:min-h-[420px]"
+              tabIndex={-1}
+              className="relative h-[clamp(12rem,58svh,42.5rem)] scroll-mt-3 bg-surface"
             >
               <Atlas3DCanvas
                 bundleUrl={bundle.url}
@@ -986,7 +987,7 @@ export default function Atlas3DExplorer({
                     className="mt-2 h-2 rounded-full bg-[linear-gradient(to_right,var(--p3),var(--p4),var(--p6),var(--p8),var(--p10))]"
                     aria-hidden="true"
                   />
-                  <div className="mt-1 flex justify-between font-mono text-[10px]">
+                  <div className="mt-1 flex justify-between font-mono text-xs">
                     <span>0 mm</span>
                     <span>50 mm</span>
                     <span>100+ mm</span>

@@ -485,9 +485,9 @@ function NcsfContent({
               </nav>
               {lessons && (
                 <section className="panel p-3" aria-label="Bài trong chương">
-                  <h3 className="px-1 text-sm font-semibold text-ink">
+                  <h2 className="px-1 text-sm font-semibold text-ink">
                     Bài trong chương
-                  </h3>
+                  </h2>
                   <label className="ncsf-lesson-select mt-2 block lg:hidden">
                     <span className="sr-only">Chọn bài</span>
                     <select

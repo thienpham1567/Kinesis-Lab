@@ -418,13 +418,13 @@ export function BodyMapExplorer({
               aria-pressed={isSelected}
               className={`flex items-center justify-between rounded border px-2.5 py-2 text-left text-xs transition-colors ${
                 isSelected
-                  ? "border-cobalt bg-cobalt-soft font-semibold text-cobalt"
+                  ? "border-cobalt bg-cobalt-soft font-semibold text-ink"
                   : alert
                     ? "border-caution/40 bg-caution-soft/60 font-medium text-ink"
                     : "border-rule bg-canvas/60 text-slate hover:text-ink"
               }`}
             >
-              <span className="line-clamp-2">{r.name}</span>
+              <span className="min-w-0 text-pretty">{r.name}</span>
               {alert && (
                 <span className="ml-1.5 h-2 w-2 shrink-0 rounded-full bg-crimson" />
               )}
@@ -451,7 +451,7 @@ export function BodyMapExplorer({
 
     return (
       <div className="flex flex-col items-center">
-        <span className="mb-1.5 font-mono text-[10px] font-bold tracking-wider text-slate">
+        <span className="mb-1.5 font-mono text-xs font-bold tracking-wider text-slate">
           {title}
         </span>
         <div className="relative w-full overflow-hidden rounded-md border border-rule bg-white">
@@ -583,14 +583,14 @@ export function BodyMapExplorer({
     <div className="space-y-4">
       {mode === "full" && (
         <div className="panel flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="grid w-full grid-cols-2 gap-1.5 sm:flex sm:w-auto sm:flex-wrap">
             {(["all", "spine_core", "upper_limb", "lower_limb"] as const).map((g) => (
               <button
                 key={g}
                 type="button"
                 onClick={() => setGroupFilter(g)}
                 aria-pressed={groupFilter === g}
-                className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                className={`rounded-md px-2 py-1.5 text-xs font-semibold transition-colors sm:px-3 ${
                   groupFilter === g
                     ? "bg-cobalt text-on-cobalt"
                     : "bg-surface text-slate hover:text-ink"
@@ -601,9 +601,9 @@ export function BodyMapExplorer({
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-3 sm:w-auto">
             {clients.length > 0 && onSelectClient && (
-              <label className="flex min-w-0 flex-col gap-2 text-xs text-slate sm:flex-row sm:items-center">
+              <label className="flex w-full min-w-0 max-w-full flex-col gap-2 text-xs text-slate sm:w-auto sm:flex-row sm:items-center">
                 <span>Áp bệnh án học viên:</span>
                 <select
                   aria-label="Áp bệnh án học viên lên bản đồ giải phẫu"
@@ -615,7 +615,7 @@ export function BodyMapExplorer({
                     const first = Object.keys(alerts)[0] as AnatomyRegionId | undefined;
                     if (first) setSelectedId(first);
                   }}
-                  className="min-h-10 w-full max-w-full px-2.5 py-1 text-xs font-medium text-ink sm:w-auto"
+                  className="min-h-11 w-full min-w-0 max-w-full px-2.5 py-1 text-xs font-medium text-ink sm:w-auto"
                 >
                   <option value="">Tra cứu kiến thức (Không gắn học viên)</option>
                   {clients.map((c) => (
@@ -696,7 +696,7 @@ export function BodyMapExplorer({
 
             {mode === "client" && (
               <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono text-[10px] font-bold uppercase text-slate">
+                <span className="font-mono text-xs font-bold uppercase text-slate">
                   Chế độ xem hình:
                 </span>
                 <div className="inline-flex flex-wrap rounded-md border border-rule bg-canvas p-0.5 text-[11px]">
@@ -834,7 +834,7 @@ export function BodyMapExplorer({
           <div className="flex flex-wrap items-start justify-between gap-3 border-b border-rule pb-4">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded bg-cobalt-soft px-2.5 py-0.5 font-mono text-xs font-semibold text-cobalt">
+                <span className="rounded bg-cobalt-soft px-2.5 py-1 font-mono text-xs font-semibold text-ink">
                   {activeRegion.latinName}
                 </span>
                 {activeAlert && (
@@ -894,7 +894,7 @@ export function BodyMapExplorer({
 
           {/* Biomechanics Key Callout */}
           <div className="rounded-md border border-cobalt/25 bg-cobalt-soft/50 p-3.5 text-xs leading-6 text-ink">
-            <span className="font-display font-bold text-cobalt">
+            <span className="font-display font-bold text-ink">
               Cơ sinh học & hướng dẫn liên quan:{" "}
             </span>
             {activeRegion.biomechanicsKey}
@@ -941,7 +941,7 @@ export function BodyMapExplorer({
                   className="rounded-md border border-rule bg-canvas/60 p-3 text-xs"
                 >
                   <p className="font-display font-bold text-ink">{st.name}</p>
-                  <p className="font-mono text-[11px] text-cobalt">{st.latin}</p>
+                  <p className="font-mono text-xs text-slate">{st.latin}</p>
                   <p className="mt-1.5 text-slate">
                     <strong className="text-ink">Vị trí / điểm bám:</strong> {st.originInsertion}
                   </p>
@@ -1021,7 +1021,7 @@ export function BodyMapExplorer({
                   className="grid gap-3 rounded-md border border-rule bg-canvas/40 p-3.5 text-xs md:grid-cols-2"
                 >
                   <div className="rounded border border-crimson/25 bg-crimson-soft/40 p-2.5">
-                    <span className="inline-block rounded bg-crimson px-1.5 py-0.5 text-[10px] font-bold text-on-crimson">
+                    <span className="inline-block rounded bg-crimson px-1.5 py-0.5 text-xs font-bold text-on-crimson">
                       CẦN THẬN TRỌNG
                     </span>
                     <p className="mt-1.5 font-display font-bold text-ink">{p.avoid}</p>
@@ -1029,13 +1029,13 @@ export function BodyMapExplorer({
                   </div>
 
                   <div className="rounded border border-cleared/30 bg-cleared-soft/40 p-2.5">
-                    <span className="inline-block rounded bg-cleared px-1.5 py-0.5 text-[10px] font-bold text-on-cleared">
+                    <span className="inline-block rounded bg-cleared px-1.5 py-1 text-xs font-bold text-on-cleared">
                       HƯỚNG THAY THẾ · TRAO ĐỔI VỚI CHUYÊN VIÊN
                     </span>
                     <p className="mt-1.5 font-display font-bold text-ink">
                       {p.rehabAlternative}
                     </p>
-                    <p className="mt-1 font-mono text-xs text-cleared">
+                    <p className="mt-1 font-mono text-xs text-ink">
                       {p.cuesAndTempo}
                     </p>
                   </div>

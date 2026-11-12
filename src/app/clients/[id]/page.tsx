@@ -232,15 +232,15 @@ function ClientDetailPageInner({ id }: { id: string }) {
     <div className="client-detail-workspace min-w-0 space-y-6">
       <Link
         href="/clients"
-        className="inline-flex min-h-10 items-center gap-2 text-xs font-medium text-slate hover:text-cobalt"
+        className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate hover:text-cobalt"
       >
         <Icon name="arrow-left" className="size-4" />
         Danh sách học viên
       </Link>
       <div className="panel p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="break-words font-display text-3xl font-bold tracking-tight text-ink">
+          <div className="min-w-0 flex-1 wrap-anywhere">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl">
               {client.name}
             </h1>
             <p className="mt-1 text-sm text-slate">
@@ -258,7 +258,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
               <span className="font-medium text-cobalt">Đang lưu...</span>
             )}
             {savedToast && (
-              <span className="rounded bg-cleared-soft px-2.5 py-1 font-medium text-cleared">
+              <span className="rounded bg-cleared-soft px-2.5 py-1 font-medium text-ink">
                 {savedToast}
               </span>
             )}
@@ -270,7 +270,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
             <Icon name="shield" className="size-4" />
             Lưu ý an toàn & điều chỉnh tải
           </h2>
-          <ul className="mt-1.5 space-y-1 text-xs leading-5 text-ink">
+          <ul className="mt-1.5 space-y-1 wrap-anywhere text-sm leading-6 text-ink sm:text-xs sm:leading-5">
             {autoWarnings.map((w) => (
               <li key={w}>• {w}</li>
             ))}
@@ -499,10 +499,10 @@ function RedFlagForm({
           </p>
         </div>
         <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+          className={`rounded-full border px-3 py-1 text-xs font-semibold text-ink ${
             positiveCount > 0
-              ? "border-caution/30 bg-caution-soft text-caution"
-              : "border-cleared/30 bg-cleared-soft text-cleared"
+              ? "border-caution/30 bg-caution-soft"
+              : "border-cleared/30 bg-cleared-soft"
           }`}
         >
           {positiveCount > 0
@@ -531,8 +531,8 @@ function RedFlagForm({
                         ? "bg-crimson text-on-crimson"
                         : v === false
                           ? "bg-cleared text-on-cleared"
-                          : "bg-ink text-white"
-                      : "bg-surface text-slate hover:text-ink"
+                          : "bg-ink text-sheet"
+                      : "bg-surface text-ink hover:bg-cobalt-soft"
                   }`}
                 >
                   {v === true ? "Có" : v === false ? "Không" : "Chưa hỏi"}
@@ -769,10 +769,10 @@ function Labs({
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-3">
               <div>
                 <span
-                  className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${
+                  className={`inline-block rounded px-2 py-0.5 text-xs font-semibold text-ink ${
                     r.kind === "inbody"
-                      ? "bg-cobalt-soft text-cobalt"
-                      : "bg-cleared-soft text-cleared"
+                      ? "bg-cobalt-soft"
+                      : "bg-cleared-soft"
                   }`}
                 >
                   {r.kind === "inbody"
@@ -794,7 +794,7 @@ function Labs({
               </button>
             </div>
 
-            <dl className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+            <dl className="mt-3 grid gap-2.5 min-[380px]:grid-cols-2 sm:grid-cols-3">
               {Object.entries(r.metrics ?? {}).map(([k, v]) => {
                 const metric =
                   v && typeof v === "object" && "value" in v
@@ -813,32 +813,34 @@ function Labs({
                 const isHigh = metric.flag === "high";
                 const isLow = metric.flag === "low";
                 const badgeCls = isHigh
-                  ? "border-crimson/30 bg-crimson-soft/60 text-crimson"
+                  ? "border-crimson/30 bg-crimson-soft/60"
                   : isLow
-                    ? "border-caution/30 bg-caution-soft/60 text-caution"
-                    : "border-rule bg-canvas/70 text-ink";
+                    ? "border-caution/30 bg-caution-soft/60"
+                    : "border-rule bg-canvas/70";
                 return (
                   <div
                     key={k}
-                    className={`rounded-md border p-2.5 ${badgeCls}`}
+                    className={`min-w-0 wrap-anywhere rounded-md border p-2.5 text-ink ${badgeCls}`}
                   >
-                    <dt className="text-[11px] font-medium text-slate">{k}</dt>
-                    <dd className="mt-0.5 font-mono text-sm font-semibold">
-                      {String(metric.value)} {metric.unit ?? ""}
-                    </dd>
-                    <p className="mt-1 text-xs">
-                      Khoảng trên phiếu: {metric.reference_range || "chưa có"} ·{" "}
-                      {metric.flag === "unknown" || !metric.flag
-                        ? "Chưa có cờ"
-                        : metric.flag === "normal"
-                          ? "Phiếu gắn cờ trong khoảng"
-                          : ""}
-                    </p>
-                    {(isHigh || isLow) && (
-                      <span className="mt-0.5 inline-block text-[10px] font-semibold">
-                        {isHigh ? "Phiếu gắn cờ cao" : "Phiếu gắn cờ thấp"}
+                    <dt className="text-xs font-medium">{k}</dt>
+                    <dd className="mt-0.5">
+                      <span className="block font-mono text-sm font-semibold">
+                        {String(metric.value)} {metric.unit ?? ""}
                       </span>
-                    )}
+                      <span className="mt-1 block text-xs">
+                        Khoảng trên phiếu: {metric.reference_range || "chưa có"} ·{" "}
+                        {metric.flag === "unknown" || !metric.flag
+                          ? "Chưa có cờ"
+                          : metric.flag === "normal"
+                            ? "Phiếu gắn cờ trong khoảng"
+                            : ""}
+                      </span>
+                      {(isHigh || isLow) && (
+                        <span className="mt-0.5 block text-xs font-semibold">
+                          {isHigh ? "Phiếu gắn cờ cao" : "Phiếu gắn cờ thấp"}
+                        </span>
+                      )}
+                    </dd>
                   </div>
                 );
               })}
@@ -849,7 +851,7 @@ function Labs({
                 <p className="font-display font-semibold text-ink">
                   Ghi chú AI / bản cũ có thể chưa được rà soát y khoa:
                 </p>
-                <p className="mt-1 whitespace-pre-wrap">{r.ai_summary}</p>
+                <p className="mt-1 wrap-anywhere whitespace-pre-wrap">{r.ai_summary}</p>
               </div>
             ) : null}
           </article>

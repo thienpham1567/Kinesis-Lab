@@ -72,11 +72,11 @@ export function TriggerPointExplorer({
               key={mode.id}
               type="button"
               onClick={() => { setLookupMode(mode.id); setBodySide("both"); }}
-                  aria-pressed={lookupMode === mode.id}
-              className={`rounded px-3 py-1.5 text-xs font-bold transition-colors ${
+              aria-pressed={lookupMode === mode.id}
+              className={`rounded px-1 py-1.5 text-xs font-bold transition-colors sm:px-3 ${
                 lookupMode === mode.id
                   ? mode.id === "pain_to_muscle"
-                    ? "bg-caution text-on-caution"
+                    ? "bg-caution-soft text-ink"
                     : mode.id === "handbook"
                       ? "bg-ink text-white"
                       : "bg-crimson text-on-crimson"
@@ -89,7 +89,7 @@ export function TriggerPointExplorer({
         </div>
 
         {lookupMode === "muscle_to_pain" && (
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="grid w-full grid-cols-2 gap-1.5 sm:flex sm:w-auto sm:flex-wrap">
             {(["all", "neck_shoulder", "trunk", "hip_leg"] as const).map(
               (cat) => (
                 <button
@@ -97,7 +97,7 @@ export function TriggerPointExplorer({
                   type="button"
                   onClick={() => setCategoryFilter(cat)}
                   aria-pressed={categoryFilter === cat}
-                  className={`shrink-0 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors ${
+                  className={`rounded-md px-2 py-1.5 text-xs font-semibold transition-colors sm:px-2.5 ${
                     categoryFilter === cat
                       ? "bg-crimson-soft text-crimson"
                       : "bg-surface text-slate hover:text-ink"
@@ -141,7 +141,7 @@ export function TriggerPointExplorer({
                   aria-pressed={selectedPainSiteId === site.id}
               className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
                 site.id === selectedPainSiteId
-                  ? "border-caution bg-caution text-on-caution"
+                  ? "border-caution bg-caution-soft text-ink"
                   : "border-rule bg-sheet text-slate hover:border-caution hover:text-ink"
               }`}
             >
@@ -168,9 +168,9 @@ export function TriggerPointExplorer({
                     if (target) selectMuscle(target.id);
                   }}
                 />
-                <details className="rounded-lg border border-rule p-3 text-xs">
-                  <summary className="cursor-pointer font-semibold text-ink">Đối chiếu hình giải phẫu có nguồn</summary>
-                  <div className="mt-3"><TriggerSourceAnatomy muscle={activeMuscle} /></div>
+                <details className="rounded-lg border border-rule text-xs">
+                  <summary className="min-h-11 cursor-pointer px-3 py-3 font-semibold text-ink">Đối chiếu hình giải phẫu có nguồn</summary>
+                  <div className="px-3 pb-3"><TriggerSourceAnatomy muscle={activeMuscle} /></div>
                 </details>
               </div>
             ) : (
@@ -225,7 +225,7 @@ function MuscleClinicalPanel({
       <ClinicalEvidencePanel evidence={TRIGGER_POINT_EVIDENCE[muscle.id]} />
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-rule pb-4">
         <div className="min-w-0 flex-1">
-          <span className="rounded bg-crimson-soft px-2.5 py-0.5 font-mono text-[11px] font-semibold text-crimson">
+          <span className="rounded bg-crimson-soft px-2.5 py-0.5 font-mono text-xs font-semibold text-crimson">
             {muscle.latinName}
           </span>
           <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight text-ink sm:text-2xl">
@@ -272,7 +272,7 @@ function MuscleClinicalPanel({
 
       {relatedSites.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
-          <span className="self-center text-[11px] font-semibold text-slate">
+          <span className="self-center text-xs font-semibold text-slate">
             Vùng đau liên quan để tra cứu:
           </span>
           {relatedSites.map((site) => (
@@ -280,7 +280,7 @@ function MuscleClinicalPanel({
               key={site.id}
               type="button"
               onClick={() => onJumpToPainSite(site.id)}
-              className="rounded-full border border-caution/40 bg-caution-soft px-2.5 py-1 text-[11px] font-semibold text-caution hover:border-caution"
+              className="rounded-full border border-caution/40 bg-caution-soft px-2.5 py-1 text-xs font-semibold text-ink hover:border-caution"
             >
               {site.shortName} →
             </button>
@@ -313,14 +313,14 @@ function MuscleClinicalPanel({
         </h3>
         <div className="rounded-lg border border-rule bg-canvas/60 p-4 text-xs leading-6">
           <p>
-            <span className="rounded bg-caution-soft px-1.5 py-0.5 font-mono text-[10px] font-bold text-caution">
+            <span className="rounded bg-caution-soft px-1.5 py-0.5 font-mono text-xs font-bold text-ink">
               {muscle.chain.overloadedState}
             </span>
           </p>
           <p className="mt-2 text-slate">{muscle.chain.biomechanicalReason}</p>
           <div className="mt-3 grid gap-2.5 md:grid-cols-2">
             <div className="rounded border border-cleared/30 bg-cleared-soft/50 p-2.5">
-              <span className="inline-block rounded bg-cleared px-1.5 py-0.5 font-mono text-[10px] font-bold text-on-cleared">
+              <span className="inline-block rounded bg-cleared px-1.5 py-1 font-mono text-xs font-bold text-on-cleared">
                 Vận động/bài tập có thể cân nhắc sau đánh giá
               </span>
               <p className="mt-1.5 font-display font-bold text-ink">
@@ -335,7 +335,7 @@ function MuscleClinicalPanel({
               </p>
             </div>
             <div className="rounded border border-rule bg-sheet p-2.5">
-              <span className="font-mono text-[10px] font-bold uppercase text-slate">
+              <span className="font-mono text-xs font-bold uppercase text-slate">
                 Cấu trúc lân cận cần phân biệt
               </span>
               <ul className="mt-1.5 list-disc space-y-0.5 pl-4 text-ink">
@@ -428,7 +428,7 @@ function PainSitePanel({
     <>
       <ClinicalEvidencePanel evidence={TRIGGER_GENERAL_EVIDENCE} />
       <div className="border-b border-rule pb-4">
-        <span className="rounded bg-caution-soft px-2.5 py-0.5 font-mono text-[11px] font-semibold text-caution">
+        <span className="rounded bg-caution-soft px-2.5 py-0.5 font-mono text-xs font-semibold text-ink">
           Đau có thể có nhiều nguyên nhân
         </span>
         <h2 className="mt-1.5 font-display text-xl font-bold tracking-tight text-ink sm:text-2xl">
@@ -605,7 +605,7 @@ function PalpationCard({
           : "border-rule bg-canvas/60"
       }`}
     >
-      <p className="font-mono text-[10px] font-bold uppercase text-slate">
+      <p className="font-mono text-xs font-bold uppercase text-slate">
         {label}
       </p>
       <p className="mt-1 leading-5 text-ink">{value}</p>
@@ -632,7 +632,7 @@ function ProtocolStep({
   }[tone];
   const badgeCls = {
     crimson: "bg-crimson text-on-crimson",
-    caution: "bg-caution text-on-caution",
+    caution: "bg-caution-soft text-ink",
     cleared: "bg-cleared text-on-cleared",
     cobalt: "bg-cobalt text-on-cobalt",
   }[tone];

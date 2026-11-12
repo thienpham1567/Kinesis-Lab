@@ -318,7 +318,7 @@ function ContextualAnatomyPanel({
           type="button"
           className={
             compactChrome
-              ? `button-secondary ${side === value ? "!bg-cobalt-soft !text-cobalt" : ""}`
+              ? `button-secondary ${side === value ? "!border-cobalt !bg-cobalt-soft !text-ink" : ""}`
               : "button-secondary min-h-10 px-3 text-xs"
           }
           aria-pressed={side === value}
@@ -395,8 +395,8 @@ function ContextualAnatomyPanel({
       <div
         className={
           wholeBody
-            ? "relative h-[640px] min-w-0 bg-surface"
-            : "relative h-[360px] min-w-0 bg-surface sm:h-[460px]"
+            ? "relative h-[clamp(12rem,62svh,40rem)] min-w-0 bg-surface"
+            : "relative h-[clamp(12rem,62svh,22.5rem)] min-w-0 bg-surface sm:h-[clamp(12rem,62svh,28.75rem)]"
         }
       >
         <Canvas

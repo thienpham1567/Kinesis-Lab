@@ -41,7 +41,7 @@ export function StudyAnswer({
   return (
     <div className="space-y-2.5">
       {message.study?.context && (
-        <p className="text-[11px] font-medium leading-5 text-slate">
+        <p className="text-xs font-medium leading-5 text-slate">
           Về: {studyContextLabel(message.study.context)}
         </p>
       )}
@@ -65,7 +65,7 @@ export function StudyAnswer({
               key={action.href}
               href={action.href}
               onClick={onNavigate}
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-cobalt/20 bg-cobalt-soft px-2.5 py-1 text-xs font-medium text-cobalt"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-cobalt/20 bg-cobalt-soft px-2.5 py-1 text-xs font-medium text-cobalt"
             >
               <Icon name="arrow-right" className="size-3.5" />
               {action.label}
@@ -73,14 +73,14 @@ export function StudyAnswer({
           ))}
         </div>
       )}
-      <div className="flex min-h-9 flex-wrap items-center gap-1 border-t border-rule pt-1">
+      <div className="flex flex-wrap items-center gap-1 border-t border-rule pt-1">
         <button
           type="button"
           onClick={() => void copy()}
           disabled={busy}
           aria-label="Sao chép câu trả lời"
           title="Sao chép câu trả lời và nguồn"
-          className="inline-flex size-9 items-center justify-center rounded-lg text-slate hover:bg-canvas hover:text-cobalt disabled:opacity-40"
+          className="inline-flex size-11 items-center justify-center rounded-lg text-slate hover:bg-canvas hover:text-cobalt disabled:opacity-40"
         >
           <Icon
             name={copyStatus === "Đã sao chép" ? "check" : "copy"}
@@ -94,11 +94,11 @@ export function StudyAnswer({
           aria-label={saved ? "Bỏ lưu câu trả lời" : "Lưu câu trả lời"}
           aria-pressed={saved}
           title={saved ? "Bỏ lưu" : "Lưu kiến thức"}
-          className={`inline-flex size-9 items-center justify-center rounded-lg hover:bg-canvas disabled:opacity-40 ${saved ? "text-cobalt" : "text-slate"}`}
+          className={`inline-flex size-11 items-center justify-center rounded-lg hover:bg-canvas disabled:opacity-40 ${saved ? "text-cobalt" : "text-slate"}`}
         >
           <Icon name="bookmark" className="size-4" />
         </button>
-        <span role="status" className="min-w-0 text-[11px] text-slate">
+        <span role="status" className="min-w-0 text-xs text-slate">
           {copyStatus || (saved ? "Đã lưu" : "")}
         </span>
       </div>

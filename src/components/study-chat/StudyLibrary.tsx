@@ -27,7 +27,7 @@ export function StudyLibrary({
   const saved = searchStudyBookmarks(library, query);
   const history = searchStudyConversations(library, query);
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="study-library flex min-h-0 flex-1 flex-col">
       <div className="space-y-3 border-b border-rule bg-canvas/50 px-4 py-3">
         <label className="input-with-icon block">
           <Icon name="search" className="size-4 shrink-0 text-slate" />
@@ -40,7 +40,7 @@ export function StudyLibrary({
           />
         </label>
         <div
-          className="flex gap-2"
+          className="flex flex-wrap gap-2"
           role="group"
           aria-label="Loại nội dung đã lưu"
         >
@@ -48,7 +48,7 @@ export function StudyLibrary({
             type="button"
             aria-pressed={tab === "saved"}
             onClick={() => setTab("saved")}
-            className={`min-h-9 rounded-lg px-3 text-xs font-semibold ${tab === "saved" ? "bg-cobalt-soft text-cobalt" : "text-slate"}`}
+            className={`min-h-11 rounded-lg px-3 text-xs font-semibold ${tab === "saved" ? "bg-cobalt-soft text-cobalt" : "text-slate"}`}
           >
             Đã lưu · {library.saved.length}
           </button>
@@ -56,17 +56,17 @@ export function StudyLibrary({
             type="button"
             aria-pressed={tab === "history"}
             onClick={() => setTab("history")}
-            className={`min-h-9 rounded-lg px-3 text-xs font-semibold ${tab === "history" ? "bg-cobalt-soft text-cobalt" : "text-slate"}`}
+            className={`min-h-11 rounded-lg px-3 text-xs font-semibold ${tab === "history" ? "bg-cobalt-soft text-cobalt" : "text-slate"}`}
           >
             Hội thoại · {library.conversations.length}
           </button>
         </div>
-        <p className="text-[11px] leading-5 text-slate">
+        <p className="text-xs leading-5 text-slate">
           Lưu trên trình duyệt này · 30 hội thoại gần nhất, tối đa 100 câu trả
           lời đã lưu.
         </p>
       </div>
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+      <div className="study-library-results min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
         {tab === "saved" ? (
           saved.length ? (
             saved.map((bookmark) => (
@@ -77,7 +77,7 @@ export function StudyLibrary({
                 <p className="mb-2 text-xs font-semibold leading-5 text-ink">
                   {bookmark.question}
                 </p>
-                <p className="mb-3 text-[11px] text-slate">
+                <p className="mb-3 text-xs text-slate">
                   {new Date(bookmark.savedAt).toLocaleDateString("vi-VN")}
                 </p>
                 <StudyAnswer
@@ -106,7 +106,7 @@ export function StudyLibrary({
               <span className="block text-[13px] font-semibold leading-5 text-ink">
                 {conversation.title}
               </span>
-              <span className="mt-1 block text-[11px] text-slate">
+              <span className="mt-1 block text-xs text-slate">
                 {conversation.messages.length} tin nhắn ·{" "}
                 {new Date(conversation.updatedAt).toLocaleDateString("vi-VN")} ·
                 Mở lại

@@ -67,7 +67,7 @@ export function ProgramEditor({
         </span>
       </div>
       <div className="my-5 flex flex-wrap items-end gap-3">
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 basis-full sm:flex-1">
           <ProgramField label="Mở phiên bản để xem / tái sử dụng">
             <select
               value={state.selectedPlanId ?? ""}

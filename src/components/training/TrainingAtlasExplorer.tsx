@@ -350,7 +350,7 @@ export function TrainingAtlasExplorer({
                         className="rounded-lg border border-rule p-3"
                       >
                         <span
-                          className={`inline-block rounded border px-2 py-0.5 text-[10px] font-semibold ${ROLE_STYLE[t.role]}`}
+                          className={`inline-block rounded border px-2 py-0.5 text-xs font-semibold ${ROLE_STYLE[t.role]}`}
                         >
                           {TRAINING_ROLE_LABELS[t.role]}
                         </span>
@@ -370,7 +370,7 @@ export function TrainingAtlasExplorer({
                         )}
                         <div className="mt-2">
                           <Link
-                            className="text-xs font-semibold text-cobalt underline"
+                            className="inline-flex min-h-11 items-center text-xs font-semibold text-ink underline"
                             href={atlasGroupHref(m.id)}
                           >
                             Xem nhóm cơ 3D ↗
@@ -398,7 +398,7 @@ export function TrainingAtlasExplorer({
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-caution">
+                    <p className="text-xs font-semibold text-ink">
                       Điểm cần quan sát
                     </p>
                     <p className="mt-2 text-sm leading-6 text-ink">
@@ -448,7 +448,7 @@ export function TrainingAtlasExplorer({
                         className="rounded-lg border border-rule p-4 text-left hover:border-cobalt hover:bg-cobalt-soft"
                       >
                         <span
-                          className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${ROLE_STYLE[role]}`}
+                          className={`rounded border px-2 py-0.5 text-xs font-semibold ${ROLE_STYLE[role]}`}
                         >
                           {TRAINING_ROLE_LABELS[role]}
                         </span>

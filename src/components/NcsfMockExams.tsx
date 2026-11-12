@@ -10,7 +10,6 @@ import {
   type Ref,
 } from "react";
 import {
-  mockAnsweredCount,
   mockQuestionText,
   mockOptionText,
   shuffleMockExam,
@@ -20,7 +19,6 @@ import {
   type NcsfMockImage,
 } from "@/lib/ncsf-mock-exams";
 import {
-  gradeMockExam,
   mockFeedbackText,
   prepareMockPractice,
   type MockPracticeBank,
@@ -39,6 +37,12 @@ import {
   NcsfAnswerReviewPanel,
   useNcsfAnswerReviews,
 } from "./NcsfAnswerReview";
+import {
+  countNcsfAnswerOutcomes,
+  ncsfAnswerOutcome,
+  NcsfAttemptBar,
+  type NcsfReviewFilter,
+} from "./NcsfAttemptBar";
 
 export const MOCK_DRAFT_ID = "ncsf-mock-active";
 
@@ -144,6 +148,8 @@ export function NcsfMockExams({
   >({ 1: {}, 2: {} });
   const [orders, setOrders] = useState<Record<number, NcsfMockOrder>>({});
   const [finished, setFinished] = useState<Record<number, boolean>>({});
+  const [reviewFilter, setReviewFilter] = useState<NcsfReviewFilter>("all");
+  const attemptSectionRef = useRef<HTMLDivElement>(null);
   const [resumedNotice, setResumedNotice] = useState<string | null>(null);
   const answerReviews = useNcsfAnswerReviews(
     "mock",
@@ -316,17 +322,21 @@ export function NcsfMockExams({
   }, [bank, identifiedBank, pendingDraft, applyDraft, onDraftConsumed]);
 
   const reshuffle = useCallback(
-    (examId?: number) => {
+    (examId?: number, restart = false) => {
       if (!bank) return;
       const updated = Object.fromEntries(
         bank.exams
-          .filter((e) => examId === undefined || e.id === examId)
+          .filter(
+            (e) =>
+              (examId === undefined || e.id === examId) &&
+              (restart || !finished[e.id]),
+          )
           .map((e) => [e.id, shuffleMockExam(e, orders[e.id])]),
       );
       setOrders({ ...orders, ...updated });
       setResumedNotice(null);
     },
-    [bank, orders],
+    [bank, finished, orders],
   );
 
   useImperativeHandle(
@@ -374,9 +384,14 @@ export function NcsfMockExams({
   const exam = bank.exams[active - 1];
   const order = orders[active];
   const selections = answers[active];
-  const count = mockAnsweredCount(exam, selections);
   const done = !!finished[active];
-  const grade = gradeMockExam(exam, selections);
+  const outcomes = order.questions.map((sourceIndex) =>
+    ncsfAnswerOutcome(
+      selections[sourceIndex],
+      exam.questions[sourceIndex].answer,
+    ),
+  );
+  const counts = countNcsfAnswerOutcomes(outcomes);
   const clarified = exam.questions.filter((q) => q.original).length;
   const savedMockDraft =
     progress?.drafts.find(
@@ -424,6 +439,8 @@ export function NcsfMockExams({
   };
 
   const handleCompleteExam = () => {
+    if (done) return;
+    setReviewFilter("all");
     setFinished((v) => ({ ...v, [active]: true }));
     const examIdentified = identifiedBank?.byExam.get(active);
     const currentAttemptId =
@@ -533,6 +550,7 @@ export function NcsfMockExams({
             aria-pressed={active === e.id}
             onClick={() => {
               reshuffle(e.id);
+              if (e.id !== active) setReviewFilter("all");
               setActive(e.id);
             }}
           >
@@ -545,8 +563,8 @@ export function NcsfMockExams({
           Đề thi thử NCSF · Bộ {active}
         </h2>
         <p>
-          Câu hỏi và lựa chọn được xáo trộn mỗi lần mở đề; đáp án đi cùng nội
-          dung. Đáp án được đối chiếu nguồn ngày{" "}
+          Câu hỏi và lựa chọn được xáo trộn khi mở đề đang làm hoặc làm lại.
+          Đáp án được đối chiếu nguồn ngày{" "}
           {bank.checkedAt.split("-").reverse().join("/")}.
         </p>
         <p>
@@ -564,234 +582,234 @@ export function NcsfMockExams({
           Mở đề gốc NCSF
         </a>
       </div>
-      <div className="sticky top-20 z-10 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-rule bg-sheet p-3 shadow-sm">
-        <p className="text-sm font-semibold text-ink" role="status">
-          {done
-            ? `Đúng ${grade.correct}/${order.questions.length} câu`
-            : `Đã trả lời · ${count}/${order.questions.length} câu`}
-        </p>
-        {done ? (
-          <button
-            type="button"
-            className="button-secondary"
-            onClick={(event) => {
-              // This node becomes the submit control after reset; cancel the original click first.
-              event.preventDefault();
-              reshuffle(active);
-              setAnswers((v) => ({ ...v, [active]: {} }));
-              setFinished((v) => ({ ...v, [active]: false }));
-              attemptIdsRef.current[active] = nextMockAttemptId(active);
-            }}
-          >
-            Làm lại bộ đề {active}
-          </button>
-        ) : (
-          <button
-            type="submit"
-            form={`ncsf-mock-${active}`}
-            className="button-primary"
-          >
-            Hoàn thành bài
-          </button>
-        )}
-      </div>
-      {done && (
-        <p
-          className="rounded-lg border border-rule bg-surface p-3 text-sm"
-          role="status"
+      <div ref={attemptSectionRef} className="space-y-5 scroll-mt-2">
+        <NcsfAttemptBar
+          review={
+            done
+              ? {
+                  ...counts,
+                  filter: reviewFilter,
+                  onChange: (filter) => {
+                    setReviewFilter(filter);
+                    attemptSectionRef.current?.scrollIntoView({
+                      block: "start",
+                    });
+                  },
+                }
+              : undefined
+          }
         >
-          Kết quả luyện tập: {grade.correct} câu đúng, {grade.wrong} câu sai,{" "}
-          {grade.unanswered} câu chưa trả lời. Điểm tính trên toàn bộ{" "}
-          {grade.total} câu. Xem đáp án, giải thích và nguồn bên dưới.
-        </p>
-      )}
-      <form
-        id={`ncsf-mock-${active}`}
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleCompleteExam();
-        }}
-        className="space-y-5"
-      >
-        {order.questions.map((sourceIndex, displayIndex) => {
-          const q = exam.questions[sourceIndex];
-          const identity = identifiedBank?.byExam.get(active)?.[sourceIndex];
-          const optionOrder = order.options[sourceIndex];
-          const reviewOption = (optionIndex: number) => ({
-            label: String.fromCharCode(65 + optionOrder.indexOf(optionIndex)),
-            text: mockOptionText(q.options[optionIndex]),
-            optionId: identity?.optionIds[optionIndex] ?? "",
-          });
-          const selected = selections[sourceIndex];
-          return (
-            <fieldset
-              key={`${active}-${q.position}`}
-              data-position={q.position}
-              data-source-title={q.original?.title ?? q.title}
-              data-clarified={q.original ? "true" : undefined}
-              className="min-w-0 rounded-lg border border-rule px-4 pb-4 pt-2 sm:px-5"
+          <p className="text-sm font-semibold text-ink" role="status">
+            {done
+              ? `Kết quả: ${counts.correct}/${order.questions.length} câu đúng`
+              : `Đã trả lời · ${order.questions.length - counts.unanswered}/${order.questions.length} câu`}
+          </p>
+          {done ? (
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={(event) => {
+                // Cancel the original click before this node becomes a submit button again.
+                event.preventDefault();
+                reshuffle(active, true);
+                setAnswers((v) => ({ ...v, [active]: {} }));
+                setFinished((v) => ({ ...v, [active]: false }));
+                attemptIdsRef.current[active] = nextMockAttemptId(active);
+              }}
             >
-              <legend className="max-w-full whitespace-pre-wrap break-words px-1 text-sm font-semibold leading-6 text-ink">
-                Câu {displayIndex + 1}: {mockQuestionText(q.title)}
-              </legend>
-              {q.original && (
-                <details className="my-2 rounded-lg border border-rule bg-surface px-3 py-2 text-sm">
-                  <summary className="cursor-pointer font-semibold text-cobalt">
-                    Câu đã làm rõ · Xem câu gốc
-                  </summary>
-                  <div className="mt-3 space-y-2 whitespace-pre-wrap break-words text-slate">
-                    <p>{q.original.title}</p>
-                    <ul className="space-y-1 pl-4">
-                      {q.original.options.map((option, index) => (
-                        <li key={index}>{option}</li>
-                      ))}
-                    </ul>
-                    {done && (
-                      <p className="border-t border-rule pt-2">
-                        Đối chiếu câu gốc: {q.original.reason}
-                      </p>
-                    )}
-                  </div>
-                </details>
-              )}
-              {q.images.map((image) => (
-                <MockImage
-                  key={`${active}-${q.position}-${image.index}`}
-                  exam={active}
-                  position={q.position}
-                  image={image}
-                />
-              ))}
-              <div className="mt-2 space-y-1">
-                {order.options[sourceIndex].map(
-                  (optionIndex, displayOptionIndex) => (
-                    <label
-                      key={optionIndex}
-                      className={`flex min-h-11 items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${done ? "cursor-default" : "cursor-pointer"} ${done && optionIndex === q.answer ? "bg-cleared-soft text-ink" : done && selections[sourceIndex] === optionIndex ? "bg-crimson-soft text-ink" : selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
-                    >
-                      <input
-                        type="radio"
-                        disabled={done}
-                        className="mt-1 shrink-0 accent-cobalt"
-                        name={`mock-${active}-${q.position}`}
-                        value={optionIndex}
-                        checked={selections[sourceIndex] === optionIndex}
-                        onChange={() =>
-                          handleSelectOption(sourceIndex, optionIndex)
-                        }
-                      />
-                      <span className="min-w-0 whitespace-pre-wrap break-words">
-                        {String.fromCharCode(65 + displayOptionIndex)}.{" "}
-                        {mockOptionText(q.options[optionIndex])}
-                        {done && optionIndex === q.answer && (
-                          <span className="ml-2 font-semibold text-cleared">
-                            ✓ Đáp án đúng
-                          </span>
-                        )}
-                        {done && selections[sourceIndex] === optionIndex && (
-                          <span className="ml-2 font-semibold">· Bạn chọn</span>
-                        )}
-                      </span>
-                    </label>
-                  ),
-                )}
-              </div>
-              {done && (
-                <div
-                  className="mt-3 space-y-3 border-t border-rule pt-3 text-sm leading-6"
-                  data-feedback
-                >
-                  <p className="font-semibold text-ink">
-                    {selections[sourceIndex] === undefined
-                      ? "Chưa trả lời"
-                      : selections[sourceIndex] === q.answer
-                        ? "✓ Đúng"
-                        : "✕ Sai"}
-                    {" · Đáp án "}
-                    {String.fromCharCode(
-                      65 + order.options[sourceIndex].indexOf(q.answer),
-                    )}
-                    {": "}
-                    {mockOptionText(q.options[q.answer])}
-                  </p>
-                  <p className="whitespace-pre-wrap break-words text-ink">
-                    {mockFeedbackText(q.explanation, order.options[sourceIndex])}
-                  </p>
-                  {(q.qualified || q.notes) && (
-                    <div className="rounded-lg bg-surface p-3 text-slate">
-                      {q.qualified && (
-                        <p className="font-semibold text-ink">
-                          Lưu ý phạm vi áp dụng
-                        </p>
-                      )}
-                      {q.notes && (
-                        <p className="whitespace-pre-wrap break-words">
-                          {mockFeedbackText(q.notes, order.options[sourceIndex])}
+              Làm lại bộ đề {active}
+            </button>
+          ) : (
+            <button
+              type="submit"
+              form={`ncsf-mock-${active}`}
+              className="button-primary"
+            >
+              Hoàn thành bài
+            </button>
+          )}
+        </NcsfAttemptBar>
+        <form
+          id={`ncsf-mock-${active}`}
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCompleteExam();
+          }}
+          className="space-y-5"
+        >
+          {order.questions.map((sourceIndex, displayIndex) => {
+            const outcome = outcomes[displayIndex];
+            if (done && reviewFilter !== "all" && outcome !== reviewFilter) {
+              return null;
+            }
+            const q = exam.questions[sourceIndex];
+            const identity = identifiedBank?.byExam.get(active)?.[sourceIndex];
+            const optionOrder = order.options[sourceIndex];
+            const reviewOption = (optionIndex: number) => ({
+              label: String.fromCharCode(65 + optionOrder.indexOf(optionIndex)),
+              text: mockOptionText(q.options[optionIndex]),
+              optionId: identity?.optionIds[optionIndex] ?? "",
+            });
+            const selected = selections[sourceIndex];
+            return (
+              <fieldset
+                key={`${active}-${q.position}`}
+                data-position={q.position}
+                data-source-title={q.original?.title ?? q.title}
+                data-clarified={q.original ? "true" : undefined}
+                className="min-w-0 rounded-lg border border-rule px-4 pb-4 pt-2 sm:px-5"
+              >
+                <legend className="max-w-full whitespace-pre-wrap break-words px-1 text-sm font-semibold leading-6 text-ink">
+                  Câu {displayIndex + 1}: {mockQuestionText(q.title)}
+                </legend>
+                {q.original && (
+                  <details className="my-2 rounded-lg border border-rule bg-surface px-3 py-2 text-sm">
+                    <summary className="cursor-pointer font-semibold text-cobalt">
+                      Câu đã làm rõ · Xem câu gốc
+                    </summary>
+                    <div className="mt-3 space-y-2 whitespace-pre-wrap break-words text-slate">
+                      <p>{q.original.title}</p>
+                      <ul className="space-y-1 pl-4">
+                        {q.original.options.map((option, index) => (
+                          <li key={index}>{option}</li>
+                        ))}
+                      </ul>
+                      {done && (
+                        <p className="border-t border-rule pt-2">
+                          Đối chiếu câu gốc: {q.original.reason}
                         </p>
                       )}
                     </div>
-                  )}
-                  <NcsfAnswerReviewPanel
-                    review={
-                      identity
-                        ? answerReviews.reviews.get(identity.itemId)
-                        : undefined
-                    }
-                    status={answerReviews.status}
-                    onRetry={answerReviews.retry}
-                    model={answerReviews.model}
-                    generatedAt={answerReviews.generatedAt}
-                    outcome={
-                      selected === undefined
-                        ? "unanswered"
-                        : selected === q.answer
-                          ? "correct"
-                          : "wrong"
-                    }
-                    correct={reviewOption(q.answer)}
-                    picked={
-                      selected === undefined ? undefined : reviewOption(selected)
-                    }
-                    others={optionOrder
-                      .filter((j) => j !== q.answer && j !== selected)
-                      .map(reviewOption)}
-                    onOpenPage={onOpenPage}
-                  />
-                  <details className="text-slate">
-                    <summary className="cursor-pointer font-semibold text-cobalt">
-                      Nguồn đối chiếu ({q.sources.length})
-                    </summary>
-                    <ul className="mt-2 space-y-3 pl-4">
-                      {q.sources.map((source, index) => (
-                        <li key={index} className="break-words">
-                          <a
-                            href={source.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-cobalt underline underline-offset-4"
-                          >
-                            {source.title}
-                          </a>
-                          <p>{source.locator}</p>
-                          <p>
-                            {source.scope} · Đọc ngày{" "}
-                            {source.checkedAt.split("-").reverse().join("/")}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
                   </details>
+                )}
+                {q.images.map((image) => (
+                  <MockImage
+                    key={`${active}-${q.position}-${image.index}`}
+                    exam={active}
+                    position={q.position}
+                    image={image}
+                  />
+                ))}
+                <div className="mt-2 space-y-1">
+                  {order.options[sourceIndex].map(
+                    (optionIndex, displayOptionIndex) => (
+                      <label
+                        key={optionIndex}
+                        className={`flex min-h-11 items-start gap-3 rounded-lg px-2 py-3 text-sm leading-6 ${done ? "cursor-default" : "cursor-pointer"} ${done && optionIndex === q.answer ? "bg-cleared-soft text-ink" : done && selections[sourceIndex] === optionIndex ? "bg-crimson-soft text-ink" : selections[sourceIndex] === optionIndex ? "bg-cobalt-soft text-ink" : "text-ink hover:bg-surface"}`}
+                      >
+                        <input
+                          type="radio"
+                          disabled={done}
+                          className="mt-1 shrink-0 accent-cobalt"
+                          name={`mock-${active}-${q.position}`}
+                          value={optionIndex}
+                          checked={selections[sourceIndex] === optionIndex}
+                          onChange={() =>
+                            handleSelectOption(sourceIndex, optionIndex)
+                          }
+                        />
+                        <span className="min-w-0 whitespace-pre-wrap break-words">
+                          {String.fromCharCode(65 + displayOptionIndex)}.{" "}
+                          {mockOptionText(q.options[optionIndex])}
+                          {done && optionIndex === q.answer && (
+                            <span className="ml-2 font-semibold text-ink">
+                              ✓ Đáp án đúng
+                            </span>
+                          )}
+                          {done && selections[sourceIndex] === optionIndex && (
+                            <span className="ml-2 font-semibold">· Bạn chọn</span>
+                          )}
+                        </span>
+                      </label>
+                    ),
+                  )}
                 </div>
-              )}
-            </fieldset>
-          );
-        })}
-        {!done && (
-          <button type="submit" className="button-primary">
-            Hoàn thành bài
-          </button>
-        )}
-      </form>
+                {done && (
+                  <div
+                    className="mt-3 space-y-3 border-t border-rule pt-3 text-sm leading-6"
+                    data-feedback
+                  >
+                    <p className="font-semibold text-ink">
+                      {outcome === "unanswered"
+                        ? "Chưa trả lời"
+                        : outcome === "correct"
+                          ? "✓ Đúng"
+                          : "✕ Sai"}
+                      {" · Đáp án "}
+                      {String.fromCharCode(
+                        65 + order.options[sourceIndex].indexOf(q.answer),
+                      )}
+                      {": "}
+                      {mockOptionText(q.options[q.answer])}
+                    </p>
+                    <p className="whitespace-pre-wrap break-words text-ink">
+                      {mockFeedbackText(q.explanation, order.options[sourceIndex])}
+                    </p>
+                    {(q.qualified || q.notes) && (
+                      <div className="rounded-lg bg-surface p-3 text-slate">
+                        {q.qualified && (
+                          <p className="font-semibold text-ink">
+                            Lưu ý phạm vi áp dụng
+                          </p>
+                        )}
+                        {q.notes && (
+                          <p className="whitespace-pre-wrap break-words">
+                            {mockFeedbackText(q.notes, order.options[sourceIndex])}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    <NcsfAnswerReviewPanel
+                      review={
+                        identity
+                          ? answerReviews.reviews.get(identity.itemId)
+                          : undefined
+                      }
+                      status={answerReviews.status}
+                      onRetry={answerReviews.retry}
+                      model={answerReviews.model}
+                      generatedAt={answerReviews.generatedAt}
+                      outcome={outcome}
+                      correct={reviewOption(q.answer)}
+                      picked={
+                        selected === undefined ? undefined : reviewOption(selected)
+                      }
+                      others={optionOrder
+                        .filter((j) => j !== q.answer && j !== selected)
+                        .map(reviewOption)}
+                      onOpenPage={onOpenPage}
+                    />
+                    <details className="text-slate">
+                      <summary className="cursor-pointer font-semibold text-cobalt">
+                        Nguồn đối chiếu ({q.sources.length})
+                      </summary>
+                      <ul className="mt-2 space-y-3 pl-4">
+                        {q.sources.map((source, index) => (
+                          <li key={index} className="break-words">
+                            <a
+                              href={source.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-cobalt underline underline-offset-4"
+                            >
+                              {source.title}
+                            </a>
+                            <p>{source.locator}</p>
+                            <p>
+                              {source.scope} · Đọc ngày{" "}
+                              {source.checkedAt.split("-").reverse().join("/")}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </div>
+                )}
+              </fieldset>
+            );
+          })}
+        </form>
+      </div>
     </div>
   );
 }

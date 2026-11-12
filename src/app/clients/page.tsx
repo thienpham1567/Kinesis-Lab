@@ -169,75 +169,154 @@ export default function ClientsPage() {
         </button>
       </PageHeading>
 
-      {loading ? (
+      {(loading || (!listError && clients.length > 0)) && (
         <dl
-          className="grid grid-cols-3 gap-2 sm:gap-3"
-          aria-label="Đang tải chỉ số học viên"
-          aria-busy="true"
+          className="grid divide-y divide-rule rounded-xl border border-rule bg-sheet sm:grid-cols-3 sm:gap-3 sm:divide-y-0 sm:rounded-none sm:border-0 sm:bg-transparent"
+          aria-label={loading ? "Đang tải chỉ số học viên" : undefined}
+          aria-busy={loading}
         >
           {[
-            "Hồ sơ học viên",
-            "Cần điều chỉnh tập luyện",
-            "Cần chuyển khám bác sĩ",
-          ].map((label) => (
-            <div key={label} className="panel p-3 sm:p-5">
-              <dt className="min-h-10 text-xs leading-5 text-slate sm:min-h-0">
-                {label}
+            {
+              label: "Hồ sơ học viên",
+              value: clients.length,
+              icon: "users" as const,
+              color: "text-ink bg-cobalt-soft",
+            },
+            {
+              label: "Cần điều chỉnh tập luyện",
+              value: cautionCount,
+              icon: "activity" as const,
+              color: "text-ink bg-caution-soft",
+            },
+            {
+              label: "Cần chuyển khám bác sĩ",
+              value: referralCount,
+              icon: "shield" as const,
+              color: "text-ink bg-crimson-soft",
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="relative grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-2 sm:grid-cols-1 sm:rounded-2xl sm:border sm:border-rule sm:bg-sheet sm:py-5 sm:pr-5 sm:pl-20"
+            >
+              <dt className="text-sm leading-5 text-slate sm:text-xs">
+                <span
+                  aria-hidden="true"
+                  className={`absolute top-1/2 left-5 hidden size-11 -translate-y-1/2 items-center justify-center rounded-xl sm:flex ${item.color}`}
+                >
+                  <Icon name={item.icon} />
+                </span>
+                {item.label}
               </dt>
-              <dd className="mt-2 h-7 w-12 animate-pulse rounded-md bg-surface" />
+              <dd className="font-mono text-lg font-medium text-ink sm:mt-1 sm:text-2xl">
+                {loading ? (
+                  <span className="block h-6 w-7 animate-pulse rounded-md bg-surface" />
+                ) : item.value}
+              </dd>
             </div>
           ))}
         </dl>
-      ) : !listError && clients.length > 0 ? (
-      <dl className="grid grid-cols-3 gap-2 sm:gap-3">
-        {[
-          {
-            label: "Hồ sơ học viên",
-            value: clients.length,
-            icon: "users" as const,
-            color: "text-ink bg-cobalt-soft",
-          },
-          {
-            label: "Cần điều chỉnh tập luyện",
-            value: cautionCount,
-            icon: "activity" as const,
-            color: "text-ink bg-caution-soft",
-          },
-          {
-            label: "Cần chuyển khám bác sĩ",
-            value: referralCount,
-            icon: "shield" as const,
-            color: "text-ink bg-crimson-soft",
-          },
-        ].map((item) => (
-          <div
-            key={item.label}
-            className="panel flex min-w-0 items-center gap-4 p-3 sm:p-5"
-          >
-            <span
-              className={`hidden size-11 shrink-0 items-center justify-center rounded-xl sm:flex ${item.color}`}
-            >
-              <Icon name={item.icon} />
-            </span>
-            <div className="min-w-0">
-              <dt className="min-h-10 text-xs leading-5 text-slate sm:min-h-0">
-                {item.label}
-              </dt>
-              <dd className="mt-0.5 font-mono text-xl font-medium text-ink sm:text-2xl">
-                {item.value}
-              </dd>
-            </div>
-          </div>
-        ))}
-      </dl>
-      ) : null}
+      )}
 
       <div
         className={`grid items-start gap-6 ${formOpen ? "xl:grid-cols-[minmax(0,1fr)_340px]" : ""}`}
       >
+        {formOpen && (
+          <section
+            id="new-client-form"
+            className="panel min-w-0 p-5 sm:p-6 xl:sticky xl:top-24 xl:col-start-2 xl:row-start-1"
+            aria-label="Tạo hồ sơ học viên"
+          >
+            <SectionHeading number="02" title="Học viên mới">
+              <button type="button" className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-slate hover:text-cobalt" onClick={closeForm}>
+                <Icon name="close" className="size-4" />
+                Đóng biểu mẫu
+              </button>
+            </SectionHeading>
+            <p className="mt-3 text-sm leading-6 text-slate">
+              Bắt đầu với thông tin cơ bản. Bổ sung chi tiết lâm sàng sau khi tạo
+              hồ sơ.
+            </p>
+            <form onSubmit={create} className="mt-6 space-y-4" aria-busy={busy}>
+              <label className="block">
+                <span className="field-label">
+                  Họ và tên <span className="text-crimson">*</span>
+                </span>
+                <input
+                  ref={nameInput}
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="VD: Lê Hoàng Nam"
+                  className="min-h-11 w-full px-3 text-sm"
+                  autoComplete="name"
+                  required
+                  maxLength={160}
+                />
+              </label>
+              <label className="block">
+                <span className="field-label">
+                  Tuổi{" "}
+                  <span className="font-normal text-slate">(không bắt buộc)</span>
+                </span>
+                <input
+                  type="number"
+                  min={1}
+                  max={120}
+                  step={1}
+                  value={age}
+                  onChange={(event) => setAge(event.target.value)}
+                  placeholder="VD: 38"
+                  className="min-h-11 w-full px-3 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="field-label">Mục tiêu / Ghi chú ban đầu</span>
+                <textarea
+                  value={goals}
+                  onChange={(event) => setGoals(event.target.value)}
+                  placeholder="VD: Giảm mỡ nội tạng; đau gối trái khi xuống cầu thang"
+                  className="min-h-28 w-full resize-y px-3 py-3 text-sm leading-6"
+                  rows={4}
+                />
+              </label>
+              <div aria-live="polite">
+                {formError && (
+                  <p className="alert-error" role="alert">
+                    {formError}
+                  </p>
+                )}
+                {message && (
+                  <div className="rounded-lg bg-cleared-soft p-3 text-sm leading-6 text-ink">
+                    <p>{message}</p>
+                    {createdClient && (
+                      <Link href={`/clients/${encodeURIComponent(createdClient.id)}`} className="mt-2 inline-flex min-h-11 items-center font-semibold text-cobalt underline underline-offset-4">
+                        Mở hồ sơ {createdClient.name}
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={busy || !name.trim()}
+                className="button-primary w-full"
+              >
+                <Icon
+                  name={busy ? "spinner" : "plus"}
+                  className={`size-4 ${busy ? "animate-spin" : ""}`}
+                />
+                {busy ? "Đang tạo hồ sơ…" : "Tạo hồ sơ học viên"}
+              </button>
+            </form>
+            <p className="mt-5 border-t border-rule pt-4 text-xs leading-5 text-slate">
+              Phân tầng nguy cơ dựa trên thông tin đã nhập. Luôn hoàn tất sàng lọc
+              trước khi thiết kế chương trình tập.
+            </p>
+          </section>
+        )}
         <section
-          aria-labelledby="client-list-heading"
-          className="min-w-0 space-y-4"
+          aria-label="Danh sách học viên"
+          className="min-w-0 space-y-4 xl:col-start-1 xl:row-start-1"
         >
           <SectionHeading number="01" title="Danh sách học viên">
             <span className="font-mono text-xs text-slate">
@@ -245,7 +324,7 @@ export default function ClientsPage() {
             </span>
           </SectionHeading>
           <div className="relative">
-            <label htmlFor="client-search" id="client-list-heading" className="sr-only">
+            <label htmlFor="client-search" className="sr-only">
               Tìm hồ sơ học viên
             </label>
             <span className="input-with-icon block">
@@ -254,11 +333,10 @@ export default function ClientsPage() {
                 ref={searchInput}
                 id="client-search"
                 type="search"
-                className="min-h-11 w-full min-w-0 pr-12 text-sm"
-                style={{ paddingRight: "3.25rem" }}
+                className={`min-h-11 w-full min-w-0 text-sm ${query ? "pr-13" : ""}`}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Tìm theo tên, bệnh lý hoặc mục tiêu…"
+                placeholder="Tên, bệnh lý, mục tiêu"
                 aria-label="Tìm theo tên, bệnh lý hoặc mục tiêu"
               />
             </span>
@@ -268,7 +346,7 @@ export default function ClientsPage() {
               </button>
             )}
           </div>
-          {query.trim() && !loading && !listError && <p role="status" className="text-xs text-slate">Tìm thấy {matchingClients.length} hồ sơ cho “{query.trim()}”.</p>}
+          {query.trim() && !loading && !listError && <p role="status" className="wrap-anywhere text-xs text-slate">Tìm thấy {matchingClients.length} hồ sơ cho “{query.trim()}”.</p>}
           <div aria-live="polite">
             {listError && (
               <div className="alert-error mb-4">
@@ -336,99 +414,6 @@ export default function ClientsPage() {
           </div>
         </section>
 
-        {formOpen && (
-        <section
-          id="new-client-form"
-          className="panel min-w-0 p-5 sm:p-6 xl:sticky xl:top-24"
-          aria-label="Tạo hồ sơ học viên"
-        >
-          <SectionHeading number="02" title="Học viên mới">
-            <button type="button" className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold text-slate hover:text-cobalt" onClick={closeForm}>
-              <Icon name="close" className="size-4" />
-              Đóng biểu mẫu
-            </button>
-          </SectionHeading>
-          <p className="mt-3 text-sm leading-6 text-slate">
-            Bắt đầu với thông tin cơ bản. Bổ sung chi tiết lâm sàng sau khi tạo
-            hồ sơ.
-          </p>
-          <form onSubmit={create} className="mt-6 space-y-4" aria-busy={busy}>
-            <label className="block">
-              <span className="field-label">
-                Họ và tên <span className="text-crimson">*</span>
-              </span>
-              <input
-                ref={nameInput}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="VD: Lê Hoàng Nam"
-                className="min-h-11 w-full px-3 text-sm"
-                autoComplete="name"
-                required
-                maxLength={160}
-              />
-            </label>
-            <label className="block">
-              <span className="field-label">
-                Tuổi{" "}
-                <span className="font-normal text-slate">(không bắt buộc)</span>
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={120}
-                step={1}
-                value={age}
-                onChange={(event) => setAge(event.target.value)}
-                placeholder="VD: 38"
-                className="min-h-11 w-full px-3 text-sm"
-              />
-            </label>
-            <label className="block">
-              <span className="field-label">Mục tiêu / Ghi chú ban đầu</span>
-              <textarea
-                value={goals}
-                onChange={(event) => setGoals(event.target.value)}
-                placeholder="VD: Giảm mỡ nội tạng; đau gối trái khi xuống cầu thang"
-                className="min-h-28 w-full resize-y px-3 py-3 text-sm leading-6"
-                rows={4}
-              />
-            </label>
-            <div aria-live="polite">
-              {formError && (
-                <p className="alert-error" role="alert">
-                  {formError}
-                </p>
-              )}
-              {message && (
-                <div className="rounded-lg bg-cleared-soft p-3 text-sm leading-6 text-ink">
-                  <p>{message}</p>
-                  {createdClient && (
-                    <Link href={`/clients/${encodeURIComponent(createdClient.id)}`} className="mt-2 inline-flex min-h-11 items-center font-semibold text-cobalt underline underline-offset-4">
-                      Mở hồ sơ {createdClient.name}
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
-            <button
-              type="submit"
-              disabled={busy || !name.trim()}
-              className="button-primary w-full"
-            >
-              <Icon
-                name={busy ? "spinner" : "plus"}
-                className={`size-4 ${busy ? "animate-spin" : ""}`}
-              />
-              {busy ? "Đang tạo hồ sơ…" : "Tạo hồ sơ học viên"}
-            </button>
-          </form>
-          <p className="mt-5 border-t border-rule pt-4 text-xs leading-5 text-slate">
-            Phân tầng nguy cơ dựa trên thông tin đã nhập. Luôn hoàn tất sàng lọc
-            trước khi thiết kế chương trình tập.
-          </p>
-        </section>
-        )}
       </div>
     </div>
   );

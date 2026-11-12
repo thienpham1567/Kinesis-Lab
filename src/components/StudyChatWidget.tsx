@@ -389,7 +389,7 @@ export function StudyChatWidget({
             <Icon name="close" className="size-5" />
           </button>
         </div>
-        <div className="mt-4 flex items-center gap-2">
+        <div className="study-drawer-model-row mt-4 flex items-center gap-2">
           <label className="min-w-0 flex-1">
             <span className="sr-only">Model trả lời</span>
             <select
@@ -545,7 +545,7 @@ export function StudyChatWidget({
                 if (scroller.current)
                   scroller.current.scrollTop = scroller.current.scrollHeight;
               }}
-              className="mx-auto mb-2 inline-flex min-h-9 items-center gap-1 rounded-full border border-cobalt/20 bg-cobalt-soft px-3 text-xs font-semibold text-cobalt"
+              className="mx-auto mb-2 inline-flex min-h-11 items-center gap-1 rounded-full border border-cobalt/20 bg-cobalt-soft px-3 text-xs font-semibold text-cobalt"
             >
               <Icon name="chevron-down" className="size-3.5" />
               Có nội dung mới

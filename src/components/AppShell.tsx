@@ -60,10 +60,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </a>
       <div className="workspace-content flex h-dvh flex-col overflow-hidden">
         <header className="workspace-toolbar z-30 shrink-0">
-          <div className="relative flex h-16 w-full items-center gap-3 px-5 sm:px-7 lg:px-8">
+          <div className="relative flex min-h-16 w-full items-center gap-2 px-4 py-2 sm:gap-3 sm:px-7 lg:h-16 lg:px-8 lg:py-0">
             <Link
               href="/atlas"
-              className="group flex shrink-0 items-center gap-3 rounded-lg"
+              className="group flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-3 rounded-lg"
               aria-label="Kinesis Lab — Trang chủ"
             >
               <KinesisLogo className="size-9 max-w-none shrink-0 rounded-xl ring-1 ring-white/15 transition-transform duration-150 group-hover:scale-[1.03]" />
@@ -122,12 +122,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            <p className="workspace-current-page pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center justify-center gap-2 lg:hidden">
+            <p className="workspace-current-page flex min-w-0 flex-1 items-center justify-center gap-2 text-center lg:hidden">
               <Icon
                 name={current.icon}
-                className="size-3.5 text-[var(--mark)]"
+                className="hidden size-3.5 shrink-0 text-[var(--mark)] min-[360px]:block"
               />
-              <span className="truncate text-[13px] font-semibold tracking-tight text-white">
+              <span className="min-w-0 text-[13px] leading-tight font-semibold tracking-tight text-balance text-white">
                 {current.label}
               </span>
             </p>

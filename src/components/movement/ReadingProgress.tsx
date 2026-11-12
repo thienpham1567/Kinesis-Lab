@@ -29,11 +29,20 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
   useEffect(() => {
     const article = document.getElementById(`movement-article-${topicId}`);
     if (!article) return;
+    const nav = navRef.current;
+    if (!nav) return;
     const scroller = article.closest<HTMLElement>("[data-workspace-scroll]");
     const sections = links.map((link) => document.getElementById(`movement-${topicId}-${link.hash}`));
     const bottomNav = document.querySelector<HTMLElement>(".workspace-mobile-nav");
     let raf = 0;
+    let anchorOffset = 0;
     const update = () => {
+      const navHeight = nav.offsetHeight;
+      const nextOffset = navHeight + 12;
+      if (anchorOffset !== nextOffset) {
+        anchorOffset = nextOffset;
+        article.style.setProperty("--movement-anchor-offset", `${anchorOffset}px`);
+      }
       const rect = article.getBoundingClientRect();
       const viewport = scroller?.getBoundingClientRect();
       const bottom = bottomNav?.getBoundingClientRect();
@@ -42,8 +51,8 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
         articleBottom: rect.bottom,
         viewportTop: viewport?.top ?? 0,
         viewportBottom: Math.min(viewport?.bottom ?? window.innerHeight, bottom && bottom.height > 0 ? bottom.top : window.innerHeight),
-        navHeight: navRef.current?.offsetHeight ?? 0,
-        sectionScrollMargin: Math.max(0, ...sections.map((section) => section ? parseFloat(getComputedStyle(section).scrollMarginTop) || 0 : 0)),
+        navHeight,
+        sectionScrollMargin: anchorOffset,
         sectionTops: sections.map((section) => section?.getBoundingClientRect().top ?? Infinity),
       });
       setPosition((current) => current.percent === next.percent && current.activeIndex === next.activeIndex ? current : next);
@@ -58,6 +67,7 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
     window.addEventListener("resize", onScroll);
     const observer = new ResizeObserver(onScroll);
     observer.observe(article);
+    observer.observe(nav);
     if (scroller) observer.observe(scroller);
     return () => {
       cancelAnimationFrame(raf);
@@ -71,16 +81,16 @@ export function ReadingProgress({ topicId }: { topicId: string }) {
     <nav
       ref={navRef}
       aria-label="Mục lục bài"
-      className="reading-contents sticky top-0 z-20 -mx-1 bg-canvas/95 px-1 py-2 backdrop-blur-md"
+      className="reading-contents sticky top-0 z-20 -mx-1 bg-canvas/95 px-1 py-1 backdrop-blur-md"
     >
       <div className="overflow-hidden rounded-xl border border-rule bg-sheet shadow-sm">
-        <div className="flex flex-wrap items-center gap-1.5 p-1.5">
+        <div className="flex flex-wrap items-center gap-1 p-1">
           {links.map((link, index) => (
             <a
               key={link.hash}
               href={`#movement-${topicId}-${link.hash}`}
               aria-current={position.activeIndex === index ? "location" : undefined}
-              className={`inline-flex min-h-11 items-center rounded-lg px-3 text-xs font-semibold transition-colors hover:bg-cobalt-soft hover:text-cobalt ${position.activeIndex === index ? "bg-cobalt-soft text-cobalt underline decoration-2 underline-offset-4" : "text-slate"}`}
+              className={`inline-flex min-h-11 items-center rounded-lg px-2.5 text-xs font-semibold transition-colors hover:bg-cobalt-soft hover:text-cobalt focus-visible:-outline-offset-2 ${position.activeIndex === index ? "bg-cobalt-soft text-cobalt underline decoration-2 underline-offset-4" : "text-slate"}`}
             >
               {link.label}
             </a>

@@ -60,7 +60,7 @@ export function ClientRecordCard({ client }: { client: Client }) {
       className="panel group flex min-w-0 flex-col p-5 transition-colors hover:border-cobalt/50"
     >
       <div className="flex items-start gap-3.5">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-rule bg-canvas text-sm font-semibold text-cobalt">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-rule bg-canvas text-sm font-semibold text-ink">
           {initials}
         </span>
         <div className="min-w-0">
@@ -87,7 +87,7 @@ export function ClientRecordCard({ client }: { client: Client }) {
         {(client.medical_conditions ?? []).map((condition, index) => (
           <span
             key={`${condition.name}-${index}`}
-            className="max-w-full break-words rounded-md bg-surface px-2 py-1 text-xs leading-5 text-slate"
+            className="max-w-full break-words rounded-md bg-surface px-2 py-1 text-xs leading-5 text-ink"
           >
             {condition.name}
           </span>
@@ -95,7 +95,7 @@ export function ClientRecordCard({ client }: { client: Client }) {
         {(client.medications ?? []).map((medication, index) => (
           <span
             key={`${medication.name}-${index}`}
-            className="max-w-full break-words rounded-md bg-caution-soft px-2 py-1 text-xs leading-5 text-caution"
+            className="max-w-full break-words rounded-md bg-caution-soft px-2 py-1 text-xs leading-5 text-ink"
           >
             Thuốc: {medication.name}
           </span>
@@ -103,17 +103,17 @@ export function ClientRecordCard({ client }: { client: Client }) {
         {(client.orthopedic_issues ?? []).map((issue, index) => (
           <span
             key={`${issue.region}-${index}`}
-            className="max-w-full break-words rounded-md bg-cobalt-soft px-2 py-1 text-xs leading-5 text-cobalt"
+            className="max-w-full break-words rounded-md bg-cobalt-soft px-2 py-1 text-xs leading-5 text-ink"
           >
             Cơ xương khớp: {issue.region}
           </span>
         ))}
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-4 text-xs">
-        <span className="text-slate">
+        <span className="min-w-0 wrap-anywhere text-slate">
           {client.training_level ?? "Chưa phân cấp độ"}
         </span>
-        <span className="flex items-center gap-2 font-semibold text-cobalt">
+        <span className="flex items-center gap-2 font-semibold text-ink">
           Mở hồ sơ
           <Icon name="arrow-right" className="size-4" />
         </span>

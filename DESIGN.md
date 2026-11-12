@@ -139,7 +139,7 @@ The palette character changes with the selected theme; the semantic role names r
 - **Quiet border / Field border:** `rule` and `rule-strong` establish container and input boundaries.
 - **Toolbar ink / Toolbar secondary text:** `toolbar` and `toolbar-muted` support the dark header; its primary labels are white in the implementation.
 
-Nine themes remain supported: `linen` (default), `navy`, `coral`, `mint`, `wine`, `slate`, `sky`, `dusk` and `lilac`. The root uses `data-theme`; the provider persists the selection as `kinesis-theme`. The theme picker and toolbar spectrum legitimately use the source palette slots `p1` through `p10`.
+Three themes remain supported: `linen` (default), `slate` and `dusk`. The root uses `data-theme`; the provider persists the selection as `kinesis-theme`. The theme picker and toolbar spectrum legitimately use the source palette slots `p1` through `p10`.
 
 The sidecar's derived tonal ramps are preview metadata, not new production tokens or replacements for these theme mappings.
 
