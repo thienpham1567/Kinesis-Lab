@@ -106,17 +106,17 @@ export type CaseSubmission = {
 
 ## Task 1 — Viết bốn kịch bản và rubric
 
-- [ ] Tạo case `intake-missing-information` về việc hỏi tiếp dữ liệu còn thiếu trước khi chọn hướng tập. Phản hồi dựa trên policy và nguồn sàng lọc đang dùng, không thêm ngưỡng triệu chứng chưa đối chiếu.
-- [ ] Tạo case `equipment-change` về nhận biết khác biệt thiết bị/biến thể, trao đổi với học viên và ghi lại lựa chọn. Nếu có kiến thức về tác động bài tập, đối chiếu nguồn đúng bài/thiết lập.
-- [ ] Tạo case `explain-an-exercise` về giải thích mục đích, đưa lời hướng dẫn ngắn và hỏi lại sự hiểu của học viên. Ví dụ lời nói là nội dung biên soạn, không khẳng định là phương pháp sửa lỗi có hiệu quả đã xác nhận.
-- [ ] Tạo case `review-an-unrecorded-session` về phân biệt lịch dự kiến với kết quả chưa ghi, hỏi học viên và quyết định bước tiếp theo. Không đánh dấu đã tập chỉ để lấp lịch.
-- [ ] Với mỗi case, viết 3–5 checkpoint và một đường đi mẫu đầy đủ; giữ ít nhất một nhánh chấp nhận nhiều lựa chọn phù hợp.
-- [ ] Đối chiếu nguồn thực sự đã đọc, giữ ngày và phạm vi gốc; thêm ngày đọc mới chỉ khi đã mở nguồn. Để `reviewedBy: null` nếu chưa có review.
+- [x] Tạo case `intake-missing-information` về việc hỏi tiếp dữ liệu còn thiếu trước khi chọn hướng tập. Phản hồi dựa trên policy và nguồn sàng lọc đang dùng, không thêm ngưỡng triệu chứng chưa đối chiếu.
+- [x] Tạo case `equipment-change` về nhận biết khác biệt thiết bị/biến thể, trao đổi với học viên và ghi lại lựa chọn. Nếu có kiến thức về tác động bài tập, đối chiếu nguồn đúng bài/thiết lập.
+- [x] Tạo case `explain-an-exercise` về giải thích mục đích, đưa lời hướng dẫn ngắn và hỏi lại sự hiểu của học viên. Ví dụ lời nói là nội dung biên soạn, không khẳng định là phương pháp sửa lỗi có hiệu quả đã xác nhận.
+- [x] Tạo case `review-an-unrecorded-session` về phân biệt lịch dự kiến với kết quả chưa ghi, hỏi học viên và quyết định bước tiếp theo. Không đánh dấu đã tập chỉ để lấp lịch.
+- [x] Với mỗi case, viết 3–5 checkpoint và một đường đi mẫu đầy đủ; giữ ít nhất một nhánh chấp nhận nhiều lựa chọn phù hợp.
+- [x] Đối chiếu nguồn thực sự đã đọc, giữ ngày và phạm vi gốc; thêm ngày đọc mới chỉ khi đã mở nguồn. Để `reviewedBy: null` nếu chưa có review.
 
 ## Task 2 — Engine có thể kiểm tra
 
-- [ ] Viết `evaluateCaseChoices(caseDefinition: PtCase, choiceIds: string[]): CaseEvaluation` nhận danh sách choice ID theo thứ tự và trả ba nhóm tiêu chí cùng checkpoint tiếp theo. Dùng `checkpoint.criterionIds` để phân biệt tiêu chí đã được hỏi nhưng chưa đạt với tiêu chí chưa đi đến; mọi criterion của choice phải thuộc checkpoint đó.
-- [ ] Bổ sung kiểm tra bằng một case hoàn chỉnh giả lập trước khi viết engine.
+- [x] Viết `evaluateCaseChoices(caseDefinition: PtCase, choiceIds: string[]): CaseEvaluation` nhận danh sách choice ID theo thứ tự và trả ba nhóm tiêu chí cùng checkpoint tiếp theo. Dùng `checkpoint.criterionIds` để phân biệt tiêu chí đã được hỏi nhưng chưa đạt với tiêu chí chưa đi đến; mọi criterion của choice phải thuộc checkpoint đó.
+- [x] Bổ sung kiểm tra bằng một case hoàn chỉnh giả lập trước khi viết engine.
 
 ```js
 import assert from "node:assert/strict";
@@ -141,25 +141,25 @@ test("different authored choices can address the same criterion", () => {
 });
 ```
 
-- [ ] Chạy `node --test scripts/check-pt-case-practice.mjs`, xác nhận fail vì engine chưa có rồi triển khai.
-- [ ] Kiểm tra lựa chọn không thuộc checkpoint hiện tại, ID không tồn tại, nhánh kết thúc sớm, lặp choice và case version cũ.
-- [ ] Nếu PT đổi câu trả lời trước đó, xóa các lựa chọn downstream không còn thuộc nhánh mới; không giữ rubric đạt từ nhánh đã bỏ.
-- [ ] Metadata kết thúc lưu case ID/version, các choice ID, tiêu chí theo ba nhóm và timestamp. Không lưu bối cảnh, phần tự luận hoặc hồ sơ người dùng nhập.
+- [x] Chạy `node --test scripts/check-pt-case-practice.mjs`, xác nhận fail vì engine chưa có rồi triển khai.
+- [x] Kiểm tra lựa chọn không thuộc checkpoint hiện tại, ID không tồn tại, nhánh kết thúc sớm, lặp choice và case version cũ.
+- [x] Nếu PT đổi câu trả lời trước đó, xóa các lựa chọn downstream không còn thuộc nhánh mới; không giữ rubric đạt từ nhánh đã bỏ.
+- [x] Metadata kết thúc lưu case ID/version, các choice ID, tiêu chí theo ba nhóm và timestamp. Không lưu bối cảnh, phần tự luận hoặc hồ sơ người dùng nhập.
 
 ## Task 3 — Giao diện luyện và phản hồi
 
-- [ ] Tạo danh mục bốn case với mục tiêu, thời lượng dự kiến và nguồn đọc trước. Thời lượng là ước lượng sản phẩm, điều chỉnh sau dùng thử.
-- [ ] `CasePracticeRunner` hiển thị bối cảnh và một checkpoint tại một thời điểm, cho quay lại và sửa lựa chọn. Radio có legend, chuyển checkpoint chuyển focus vào tiêu đề mới.
-- [ ] Cho ô “Lý do lựa chọn” tùy chọn, giới hạn 1.000 ký tự, gợi ý không nhập tên hoặc hồ sơ người thật. Giữ ô trong state phiên, không gửi AI hoặc kho progress.
-- [ ] Trước khi hiện rubric, PT xác nhận xem phản hồi. Hiển thị tiêu chí đã xử lý, cần xem lại và chưa thực hành kèm lý do và nguồn liên quan.
-- [ ] Mở nguồn/Atlas không mất nhánh đã chọn; đóng trở về checkpoint cũ. Nếu thẻ task 03 có sẵn, dẫn đến ID chính xác.
-- [ ] Retry case tạo attempt ID mới nhưng giữ lịch sử trước đó. Một lần nộp lại cùng attempt ID không tăng số lần hoàn thành.
-- [ ] Lỗi lưu vẫn cho đọc phản hồi và thử lưu lại. Case sửa version cho biết có bản mới, không ghi đè kết quả phiên bản cũ.
+- [x] Tạo danh mục bốn case với mục tiêu, thời lượng dự kiến và nguồn đọc trước. Thời lượng là ước lượng sản phẩm, điều chỉnh sau dùng thử.
+- [x] `CasePracticeRunner` hiển thị bối cảnh và một checkpoint tại một thời điểm, cho quay lại và sửa lựa chọn. Radio có legend, chuyển checkpoint chuyển focus vào tiêu đề mới.
+- [x] Cho ô “Lý do lựa chọn” tùy chọn, giới hạn 1.000 ký tự, gợi ý không nhập tên hoặc hồ sơ người thật. Giữ ô trong state phiên, không gửi AI hoặc kho progress.
+- [x] Trước khi hiện rubric, PT xác nhận xem phản hồi. Hiển thị tiêu chí đã xử lý, cần xem lại và chưa thực hành kèm lý do và nguồn liên quan.
+- [x] Mở nguồn/Atlas không mất nhánh đã chọn; đóng trở về checkpoint cũ. Nếu thẻ task 03 có sẵn, dẫn đến ID chính xác.
+- [x] Retry case tạo attempt ID mới nhưng giữ lịch sử trước đó. Một lần nộp lại cùng attempt ID không tăng số lần hoàn thành.
+- [x] Lỗi lưu vẫn cho đọc phản hồi và thử lưu lại. Case sửa version cho biết có bản mới, không ghi đè kết quả phiên bản cũ.
 
 ## Task 4 — Tích hợp tiến độ và nghiệm thu
 
-- [ ] Thêm mục luyện tình huống trong `/knowledge` và phần tiến độ riêng ở `LearningDashboard`. Không cộng tiêu chí rubric vào tỷ lệ đúng NCSF.
-- [ ] Bổ sung kiểm tra giữ state khi đổi mục, mở nguồn, storage hỏng và cùng attempt gửi hai lần.
+- [x] Thêm mục luyện tình huống trong `/knowledge` và phần tiến độ riêng ở `LearningDashboard`. Không cộng tiêu chí rubric vào tỷ lệ đúng NCSF.
+- [x] Bổ sung kiểm tra giữ state khi đổi mục, mở nguồn, storage hỏng và cùng attempt gửi hai lần.
 
 ```sh
 node --test scripts/check-pt-case-practice.mjs scripts/check-learning-progress.mjs scripts/check-ncsf-study-continuity.mjs
@@ -170,13 +170,20 @@ npx -y react-doctor@latest . --verbose --scope changed
 npm run design:check
 ```
 
-- [ ] Chạy app ở port 3051 và dùng Playwright chặn `/api/ncsf/session` với session tổng hợp trước khi mở `/knowledge`. Nếu tab giáo trình/quiz được mở trong kiểm tra hồi quy, chặn cả API/PDF NCSF bằng fixture riêng tư giả lập. Kiểm tra mục tình huống ở 390/768/1440px, bàn phím và theme Linen/Slate.
-- [ ] Quét route đã render bằng `npm run design:check:page -- --viewport 390x844 http://127.0.0.1:3051/knowledge`; dùng CDP để giữ đúng trạng thái panel khi cần.
-- [ ] Đi hết mọi nhánh của bốn case và kiểm tra nguồn của mọi feedback có khẳng định y khoa. Tách kết quả kiểm tra logic khỏi đánh giá chuyên môn.
+- [x] Chạy app ở port 3051 và dùng Playwright chặn `/api/ncsf/session` với session tổng hợp trước khi mở `/knowledge`. Nếu tab giáo trình/quiz được mở trong kiểm tra hồi quy, chặn cả API/PDF NCSF bằng fixture riêng tư giả lập. Kiểm tra mục tình huống ở 390/768/1440px, bàn phím và theme Linen/Slate.
+- [x] Quét route đã render bằng `npm run design:check:page -- --viewport 390x844 http://127.0.0.1:3051/knowledge`; dùng CDP để giữ đúng trạng thái panel khi cần.
+- [x] Đi hết mọi nhánh của bốn case và kiểm tra nguồn của mọi feedback có khẳng định y khoa. Tách kết quả kiểm tra logic khỏi đánh giá chuyên môn.
 - [ ] Thử với ít nhất một PT bằng dữ liệu giả lập, ghi checkpoint khó hiểu và lý do phản hồi chưa thuyết phục; chỉnh câu chữ trước khi coi là hoàn thành.
-- [ ] Ghi giới hạn còn lại và kiểm tra chưa chạy, rồi commit riêng phạm vi task.
+- [x] Ghi giới hạn còn lại và kiểm tra chưa chạy, rồi commit riêng phạm vi task.
 
 **Hoàn thành khi** bốn case có branch đúng, feedback truy được lý do/nguồn, lựa chọn hợp lệ không bị chấm sai chỉ vì khác một đường đi mẫu, và lịch sử lưu đúng phiên bản.
+
+## Kết quả triển khai — 2026-11-13
+
+- `npm run check:ui`: 48/48; `npm run check:ncsf-runtime`: 17/17. TypeScript (sau `npx next typegen`) và ESLint phần liên quan đều qua. Kiểm tra logic duyệt 36 đường đi kết thúc của 4 tình huống, gồm nhánh kết thúc sớm.
+- Playwright dùng session NCSF giả lập và chặn quiz/PDF riêng tư: qua ở 390, 768 và 1440 px, với Linen và Slate. Kiểm tra bàn phím, focus sau chuyển bước, sửa nhánh, quay lại từ danh mục, đổi mục, mở Atlas/nguồn rồi trở lại. Mô phỏng lỗi ghi IndexedDB: vẫn hiện phản hồi, lần thử lại giữ nguyên mã và chỉ thêm một kết quả. Sau tải lại, lịch sử giữ phiên bản và mã lựa chọn, không chứa lý do tự ghi.
+- Impeccable trên màn phản hồi 390 px không có phát hiện. Quét source còn hai cảnh báo viền trong CSS chung có từ trước. React Doctor ghi hai cảnh báo độ phức tạp của trang học và bộ chạy, và một cảnh báo tìm kiếm tuyến tính trên tối đa 5 checkpoint mỗi case; giữ phạm vi thay đổi ở Task 05.
+- Đã đối chiếu hai nội dung kiến thức với CSEP (sàng lọc trước tập) và OpenStax (vai trò cơ tam đầu khi duỗi khuỷu). Kiểm tra luồng không thay cho việc quan sát PT dùng thử. Chưa có phiên dùng thử với PT; ước lượng 5–10 phút chưa được đo.
 
 ## Phụ thuộc và bàn giao
 

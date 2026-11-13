@@ -52,7 +52,8 @@ export function summarizeLearningProgress(
   const safeNowMs = Number.isFinite(nowMs) ? nowMs : Date.now();
   const safeNowIso = new Date(safeNowMs).toISOString();
 
-  const ordered = [...submissions]
+  const ordered = submissions
+    .filter((submission) => submission.source !== "pt-case")
     .map((submission, index) => ({
       submission,
       index,
@@ -182,7 +183,7 @@ export function summarizeLearningProgress(
 
   return {
     nowIso: safeNowIso,
-    totalSubmissions: submissions.length,
+    totalSubmissions: ordered.length,
     totalSeenItems: allSchedules.length,
     dueItems,
     itemsById,

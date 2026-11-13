@@ -233,22 +233,31 @@ export function useLearningProgress(options?: {
     }
     inFlightSubmissionsRef.current.add(submission.id);
 
-    // Update in-memory state immediately so the user sees their graded result even if IDB fails.
-    setSubmissions((prev) => {
-      if (prev.some((s) => s.id === submission.id)) return prev;
-      return [submission, ...prev];
-    });
-    setDrafts((prev) => prev.filter((d) => d.id !== targetDraftId));
-    delete revisionsRef.current[targetDraftId];
+    const addToHistory = (attempt: LearningSubmission) =>
+      setSubmissions((prev) => {
+        if (prev.some((s) => s.id === attempt.id)) return prev;
+        return [attempt, ...prev];
+      });
+    if (submission.source !== "pt-case") {
+      addToHistory(submission);
+      setDrafts((prev) => prev.filter((d) => d.id !== targetDraftId));
+      delete revisionsRef.current[targetDraftId];
+    }
 
     try {
-      await storeRef.current.submitAttempt(submission, targetDraftId);
+      const stored = await storeRef.current.submitAttempt(submission, targetDraftId);
+      if (submission.source === "pt-case") {
+        if (mountedRef.current) addToHistory(stored.submission);
+        return true;
+      }
       if (mountedRef.current) {
         setSaveError(null);
       }
       retryCallbackRef.current = null;
       return true;
     } catch (err) {
+      // The case panel displays its own feedback and can retry this same attempt.
+      if (submission.source === "pt-case") return false;
       if (mountedRef.current) {
         const detail =
           err instanceof Error

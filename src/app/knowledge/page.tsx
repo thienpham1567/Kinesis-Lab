@@ -8,6 +8,7 @@ import {
 } from "@/components/NcsfMockExams";
 import { NcsfQuiz, type NcsfQuizSessionRequest } from "@/components/NcsfQuiz";
 import { NcsfPageCorrections } from "@/components/NcsfCorrections";
+import { CasePracticeLibrary } from "@/components/learning/CasePracticeLibrary";
 import { LearningDashboard } from "@/components/learning/LearningDashboard";
 import { useLearningProgress } from "@/components/learning/useLearningProgress";
 import { Icon, PageHeading } from "@/components/WorkspaceUI";
@@ -246,9 +247,10 @@ function NcsfContent({
   heading: React.ReactNode;
   onSessionExpired?: () => void;
 }) {
-  const [view, setView] = useState<"read" | "quiz" | "mock" | "progress">(
+  const [view, setView] = useState<"read" | "quiz" | "mock" | "cases" | "progress">(
     "read",
   );
+  const [casesOpened, setCasesOpened] = useState(false);
   const [quizOpened, setQuizOpened] = useState(false);
   // Which practice view opened the cited page, so "back" returns to that attempt.
   const [citationFrom, setCitationFrom] = useState<"quiz" | "mock" | null>(
@@ -289,6 +291,11 @@ function NcsfContent({
     setCurrentPage(p);
     setCitationFrom(from);
     setView("read");
+  };
+
+  const openCases = () => {
+    setCasesOpened(true);
+    setView("cases");
   };
 
   const handleResumeDraft = (draft: LearningDraft) => {
@@ -335,7 +342,7 @@ function NcsfContent({
   return (
     <div className="ncsf-study-page space-y-7 [&_.page-description]:max-sm:hidden">
       {heading}
-      <div className="tab-bar" aria-label="Chế độ học">
+      <div className="tab-bar grid grid-cols-3 sm:flex [&_.tab-button]:px-2 [&_.tab-button]:text-center sm:[&_.tab-button]:px-3" aria-label="Chế độ học">
         <button
           type="button"
           aria-pressed={view === "read"}
@@ -369,6 +376,14 @@ function NcsfContent({
         </button>
         <button
           type="button"
+          aria-pressed={view === "cases"}
+          className="tab-button"
+          onClick={openCases}
+        >
+          Luyện tình huống
+        </button>
+        <button
+          type="button"
           aria-pressed={view === "progress"}
           className="tab-button"
           onClick={() => setView("progress")}
@@ -384,6 +399,7 @@ function NcsfContent({
             chapterTitle: current.title,
             page: currentPage,
           }}
+          onOpenCases={openCases}
           onResumeDraft={handleResumeDraft}
           onStartDueReview={handleStartDueReview}
           onStartDomainStudy={handleStartDomainStudy}
@@ -392,6 +408,14 @@ function NcsfContent({
             setView("read");
           }}
         />
+      )}
+      {casesOpened && (
+        <div hidden={view !== "cases"}>
+          <CasePracticeLibrary
+            attempts={progress.submissions.filter((attempt) => attempt.source === "pt-case")}
+            onSubmit={progress.submitAttempt}
+          />
+        </div>
       )}
       {mockOpened && (
         <section

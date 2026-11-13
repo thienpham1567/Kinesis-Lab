@@ -644,3 +644,40 @@ test("progress store rolls back draft deletion if submission write fails, filter
   );
 });
 
+
+test("case history preserves versions, rejects free text, and leaves NCSF progress intact", async () => {
+  const submittedAt = "2026-11-13T08:00:00.000Z";
+  const draft = {
+    id: "draft-keep", source: "ncsf-quiz", revision: 1,
+    updatedAt: submittedAt,
+    items: [{ itemId: "question", optionOrder: ["option", "other"], selectedOptionId: null }],
+    currentItemId: "question",
+  };
+  const quizAttempt = {
+    id: "quiz-result", source: "ncsf-quiz", submittedAt,
+    items: [{ itemId: "question", selectedOptionId: "option", correct: true, domain: "functional-anatomy" }],
+  };
+  const idbFactory = createFakeIdbFactory({ initialDrafts: [draft], initialSubmissions: [quizAttempt] });
+  const store = createProgressStore({ idbFactory });
+  const attempt = {
+    id: "pt-case:attempt", source: "pt-case", submittedAt,
+    caseId: "equipment-change", caseVersion: 1, choiceIds: ["copy-load"],
+    evaluation: {
+      addressedCriterionIds: [], revisitCriterionIds: ["compare"],
+      unpracticedCriterionIds: ["agree", "document"], nextCheckpointId: null,
+    },
+  };
+  const summaryBefore = summarizeLearningProgress((await store.readSnapshot()).submissions, submittedAt);
+  assert.equal((await store.submitAttempt(attempt, draft.id)).status, "saved");
+  assert.equal((await store.submitAttempt(attempt, draft.id)).status, "idempotent");
+  await assert.rejects(() => store.submitAttempt({ ...attempt, caseVersion: 2 }),
+    (err) => err.code === "submission-conflict");
+  await assert.rejects(() => store.submitAttempt({ ...attempt, id: "pt-case:extra", reason: "session only" }),
+    (err) => err.code === "invalid-payload");
+  await store.submitAttempt({ ...attempt, id: "pt-case:later", caseVersion: 2 });
+  const snapshot = await store.readSnapshot();
+  assert.equal(snapshot.drafts.length, 1);
+  assert.equal(snapshot.submissions.length, 3);
+  assert.equal(snapshot.submissions.find(({ id }) => id === attempt.id).caseVersion, 1);
+  assert.deepEqual(summarizeLearningProgress(snapshot.submissions, submittedAt), summaryBefore);
+});
