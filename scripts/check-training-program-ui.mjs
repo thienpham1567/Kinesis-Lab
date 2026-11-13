@@ -479,3 +479,22 @@ test("direct workout entry defaults to the selected session occurrence and prese
     "Model rerenders must preserve an explicit date choice",
   );
 });
+
+test("teaching projection uses the selected saved revision while the program draft keeps its edits", () => {
+  const { createSessionTeachingView } = createAppLoader()("src/lib/training/teaching-view.ts");
+  const m = setup(async () => response({}));
+  const saved = { ...plan, revision: 7 };
+  m.selectPlan(saved);
+  const original = saved.program.sessions[0];
+  m.editDraft({
+    ...m.getSnapshot().draft,
+    sessions: [{ ...original, name: "Draft-only name" }],
+  });
+  const view = createSessionTeachingView({
+    kind: "plan", planId: saved.id, revision: saved.revision, sessionId: original.id,
+  }, original);
+  assert.equal(view.origin.revision, 7);
+  assert.equal(view.title, original.name);
+  assert.equal(m.getSnapshot().draft.sessions[0].name, "Draft-only name");
+  assert.equal(m.getSnapshot().dirty, true);
+});

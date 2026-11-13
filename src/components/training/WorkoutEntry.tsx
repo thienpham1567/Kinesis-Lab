@@ -11,6 +11,8 @@ import type {
 import { NumberField, ProgramField } from "./ProgramFields";
 import { RestTimer } from "./RestTimer";
 import { WorkoutActionBar } from "./WorkoutActionBar";
+import { TeachingLaunchButton } from "../teaching/TeachingLaunchButton";
+import { createSavedWorkoutTeachingView } from "@/lib/training/teaching-view";
 import { WorkoutExercise } from "./WorkoutExercise";
 
 type Rest = {
@@ -175,6 +177,17 @@ export function WorkoutEntry({
           <Icon name="clock" className="size-4" />
           Chế độ phòng tập
         </button>
+      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {saved ? (
+          <>
+            <TeachingLaunchButton disabled={!!state.busy}
+              getView={() => createSavedWorkoutTeachingView(workout.id, state.workouts)}>
+              Trình bày buổi này
+            </TeachingLaunchButton>
+            {state.workoutDirty && <p className="text-sm text-slate">Trình bày dùng bản chụp buổi đã lưu.</p>}
+          </>
+        ) : <p className="text-sm text-slate">Lưu tiến độ buổi tập để mở chế độ trình bày.</p>}
       </div>
       <fieldset
         disabled={!!state.busy}

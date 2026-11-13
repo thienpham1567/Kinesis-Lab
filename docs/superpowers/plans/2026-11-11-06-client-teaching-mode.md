@@ -49,6 +49,7 @@ export type TeachingOrigin =
   | { kind: "workout"; workoutId: string; planId: string; sessionId: string; performedAt: string };
 
 export type TeachingExercise = {
+  id: string;
   name: string;
   exerciseId: string | null;
   planned: {
@@ -82,8 +83,8 @@ export type TeachingView = {
 
 ## Task 1 — Projection có thể kiểm tra
 
-- [ ] Viết `createSessionTeachingView(origin, session)` nhận origin dạng plan/workout cùng `ProgramSession`; chỉ trả các trường allowlist. Viết `createExerciseTeachingView(exerciseId)` trả projection từ thẻ hoặc null.
-- [ ] Thêm kiểm tra chống copy lan trường thừa trước khi triển khai.
+- [x] Viết `createSessionTeachingView(origin, session)` nhận origin dạng plan/workout cùng `ProgramSession`; chỉ trả các trường allowlist. Viết `createExerciseTeachingView(exerciseId)` trả projection từ thẻ hoặc null.
+- [x] Thêm kiểm tra chống copy lan trường thừa trước khi triển khai.
 
 ```js
 import assert from "node:assert/strict";
@@ -107,33 +108,33 @@ test("a teaching handout contains selected prescription fields only", () => {
 });
 ```
 
-- [ ] Chạy `node --test scripts/check-teaching-view.mjs`, xác nhận thiếu module/hành vi, rồi triển khai projection theo phép copy field tường minh, không dùng spread object nguồn.
-- [ ] Kiểm tra session ID không khớp origin bị từ chối; tập bài empty/unknown có thông báo; bản workout dùng snapshot dù active plan đã đổi.
-- [ ] Thêm fixture superset, bodyweight, assisted, null load, bài custom và tên/tiêu đề dài. Không dùng tên người thật trong test.
+- [x] Chạy `node --test scripts/check-teaching-view.mjs`, xác nhận thiếu module/hành vi, rồi triển khai projection theo phép copy field tường minh, không dùng spread object nguồn.
+- [x] Kiểm tra session ID không khớp origin bị từ chối; tập bài empty/unknown có thông báo; bản workout dùng snapshot dù active plan đã đổi.
+- [x] Thêm fixture superset, bodyweight, assisted, null load, bài custom và tên/tiêu đề dài. Không dùng tên người thật trong test.
 
 ## Task 2 — Chế độ trình bày
 
-- [ ] Tạo `TeachingDialog` bằng native `dialog.showModal()` và React portal. Render con chỉ nhận `TeachingView`; nguồn thẻ hướng dẫn được lookup riêng theo ID.
-- [ ] Tiêu đề, bước chính và minh họa có thứ bậc đọc rõ. Desktop cho một bài/slide, mobile xếp dọc; dùng nút bài trước/sau cùng bộ đếm.
-- [ ] Cho PT bật/tắt các mục minh họa và nguồn chi tiết trong trình bày; credit media và đường dẫn nguồn vẫn đi vào phần tham khảo của bản in.
-- [ ] Fullscreen là lựa chọn của PT. Nếu API không hỗ trợ hoặc bị từ chối, giữ dialog hoạt động và hiển thị thông báo ngắn.
-- [ ] Esc đóng theo hành vi native và trả focus về nút mở, không làm mất draft giáo án/buổi. Arrow keys chỉ đổi bài khi focus ở vùng trình bày, không chiếm phím khi đang gõ lời nhắc.
-- [ ] Mở dialog không phát video tự động, không gửi dữ liệu đến dịch vụ ngoài. Dừng playback khi chuyển bài hoặc đóng.
+- [x] Tạo `TeachingDialog` bằng native `dialog.showModal()` và React portal. Render con chỉ nhận `TeachingView`; nguồn thẻ hướng dẫn được lookup riêng theo ID.
+- [x] Tiêu đề, bước chính và minh họa có thứ bậc đọc rõ. Desktop cho một bài/slide, mobile xếp dọc; dùng nút bài trước/sau cùng bộ đếm.
+- [x] Cho PT bật/tắt các mục minh họa và nguồn chi tiết trong trình bày; credit media và đường dẫn nguồn vẫn đi vào phần tham khảo của bản in.
+- [x] Fullscreen là lựa chọn của PT. Nếu API không hỗ trợ hoặc bị từ chối, giữ dialog hoạt động và hiển thị thông báo ngắn.
+- [x] Esc đóng theo hành vi native và trả focus về nút mở, không làm mất draft giáo án/buổi. Arrow keys chỉ đổi bài khi focus ở vùng trình bày, không chiếm phím khi đang gõ lời nhắc.
+- [x] Mở dialog không phát video tự động, không gửi dữ liệu đến dịch vụ ngoài. Dừng playback khi chuyển bài hoặc đóng.
 
 ## Task 3 — Preview và bản in
 
-- [ ] `TeachingHandout` render từ cùng payload đang preview. Có tên buổi/bài, nguồn phiên bản, thông số dự kiến, lời nhắc và nguồn/credit cần giữ.
-- [ ] In chỉ phần root trình bày bằng CSS `@media print`; ẩn app shell, thanh chat, button và dialog backdrop trong bản in. Tránh `break-inside` cắt dòng bài hoặc credit khỏi media.
-- [ ] Trong bản in, video thay bằng poster và URL nguồn/credit dạng chữ, không đưa một player rỗng vào trang.
-- [ ] Đặt control “In / Lưu PDF”, gọi `window.print()` từ click. Không tự upload, lưu server, mở email hoặc phát hành URL chia sẻ.
-- [ ] Bản in không gán “đã hoàn thành”, “an toàn” hay “đã được chuyên gia duyệt” từ trạng thái giáo án. Giới hạn quan trọng từ thẻ vẫn hiển thị đúng nơi liên quan.
-- [ ] Khi media chưa tải hoặc lỗi, bản in vẫn có hướng dẫn chữ. Preview phải cho PT thấy chính xác phần nào thiếu hình trước khi in.
+- [x] `TeachingHandout` render từ cùng payload đang preview. Có tên buổi/bài, nguồn phiên bản, thông số dự kiến, lời nhắc và nguồn/credit cần giữ.
+- [x] In chỉ phần root trình bày bằng CSS `@media print`; ẩn app shell, thanh chat, button và dialog backdrop trong bản in. Tránh `break-inside` cắt dòng bài hoặc credit khỏi media.
+- [x] Trong bản in, video thay bằng poster và URL nguồn/credit dạng chữ, không đưa một player rỗng vào trang.
+- [x] Đặt control “In / Lưu PDF”, gọi `window.print()` từ click. Không tự upload, lưu server, mở email hoặc phát hành URL chia sẻ.
+- [x] Bản in không gán “đã hoàn thành”, “an toàn” hay “đã được chuyên gia duyệt” từ trạng thái giáo án. Giới hạn quan trọng từ thẻ vẫn hiển thị đúng nơi liên quan.
+- [x] Khi media chưa tải hoặc lỗi, bản in vẫn có hướng dẫn chữ. Preview phải cho PT thấy chính xác phần nào thiếu hình trước khi in.
 
 ## Task 4 — Nối entry point và kiểm tra
 
-- [ ] Trong thẻ task 03, thêm “Giải thích cho học viên”. Trong `WorkoutRunner`, thêm “Trình bày buổi này” dùng snapshot của buổi đã lưu; buổi mới chưa lưu có hướng dẫn lưu trước.
-- [ ] Trong trình soạn, entry point chỉ lấy saved revision đang được xem. Nếu bản đang soạn khác bản đã lưu, nhãn nói rõ phiên bản sẽ trình bày và cho PT quay lại lưu trước.
-- [ ] Giữ nguyên nội dung đang soạn khi mở/đóng dialog và khi hủy hộp thoại in. Không đánh dấu đã lưu từ việc tạo preview.
+- [x] Trong thẻ task 03, thêm “Giải thích cho học viên”. Trong `WorkoutRunner`, thêm “Trình bày buổi này” dùng snapshot của buổi đã lưu; buổi mới chưa lưu có hướng dẫn lưu trước.
+- [x] Trong trình soạn, entry point chỉ lấy saved revision đang được xem. Nếu bản đang soạn khác bản đã lưu, nhãn nói rõ phiên bản sẽ trình bày và cho PT quay lại lưu trước.
+- [x] Giữ nguyên nội dung đang soạn khi mở/đóng dialog và khi hủy hộp thoại in. Không đánh dấu đã lưu từ việc tạo preview.
 
 ```sh
 node --test scripts/check-teaching-view.mjs scripts/check-exercise-instructions.mjs scripts/check-training-program-ui.mjs
@@ -144,14 +145,23 @@ npx -y react-doctor@latest . --verbose --scope changed
 npm run design:check
 ```
 
-- [ ] Chạy app ở port 3051. Trước khi mở `/clients/synthetic-client?tab=workouts`, dùng Playwright chặn `/api/clients/synthetic-client`, `/api/training-plans` và `/api/training-workouts`, trả học viên/giáo án/buổi giả lập trong bộ nhớ. Kiểm tra thêm entry point `/atlas?tab=hypertrophy&exercise=incline-db-press` ở 390/768/1440px.
-- [ ] Quét trạng thái dialog đã mở bằng `npm run design:check:page -- --cdp 9222 --target /clients/` trên Chrome fixture có cổng debugging 9222; nếu dùng cổng khác, thay bằng đúng cổng đang chạy.
-- [ ] Kiểm tra focus, Esc, fullscreen bị từ chối, bài custom, media lỗi, giảm chuyển động và theme Linen/Slate.
-- [ ] Xuất PDF A4 bằng Chrome fixture, render từng trang để xem khoảng trắng, tiếng Việt, cắt bảng, nguồn và credit. Chỉ dùng dữ liệu tổng hợp; nếu chỉnh artifact PDF bằng tay phải áp dụng skill PDF.
-- [ ] Đặt giá trị canary `PRIVATE_NOTE`/`PRIVATE_MEDICAL` trong fixture gốc rồi xác nhận projection, phần trình bày và PDF không chứa chúng. Việc này kiểm tra allowlist, không biến dialog thành cơ chế phân quyền tài khoản.
-- [ ] Ghi kiểm tra chưa chạy và cảnh báo detector còn lại, rồi commit riêng phạm vi task.
+- [x] Chạy app ở port 3051. Trước khi mở `/clients/synthetic-client?tab=workouts`, dùng Playwright chặn `/api/clients/synthetic-client`, `/api/training-plans` và `/api/training-workouts`, trả học viên/giáo án/buổi giả lập trong bộ nhớ. Kiểm tra thêm entry point `/atlas?tab=hypertrophy&exercise=incline-db-press` ở 390/768/1440px.
+- [x] Quét trạng thái dialog đã mở bằng `npm run design:check:page -- --cdp 9222 --target /clients/` trên Chrome fixture có cổng debugging 9222; nếu dùng cổng khác, thay bằng đúng cổng đang chạy.
+- [x] Kiểm tra focus, Esc, fullscreen bị từ chối, bài custom, media lỗi, giảm chuyển động và theme Linen/Slate.
+- [x] Xuất PDF A4 bằng Chrome fixture, render từng trang để xem khoảng trắng, tiếng Việt, cắt bảng, nguồn và credit. Chỉ dùng dữ liệu tổng hợp; nếu chỉnh artifact PDF bằng tay phải áp dụng skill PDF.
+- [x] Đặt giá trị canary `PRIVATE_NOTE`/`PRIVATE_MEDICAL` trong fixture gốc rồi xác nhận projection, phần trình bày và PDF không chứa chúng. Việc này kiểm tra allowlist, không biến dialog thành cơ chế phân quyền tài khoản.
+- [x] Ghi kiểm tra chưa chạy và cảnh báo detector còn lại, rồi commit riêng phạm vi task.
 
 **Hoàn thành khi** PT trình bày đúng bài/buổi/phiên bản, đọc và in được tiếng Việt, giữ các thông số quan trọng và không đưa các trường hồ sơ bị loại vào payload hoặc bản in.
+
+## Kết quả triển khai — 2026-11-13
+
+- PT mở chế độ trình bày từ thẻ Atlas, buổi tập đã lưu hoặc buổi trong phiên bản giáo án đang xem. Phần chỉnh tiêu đề và lời nhắc nằm trong bản xem trước. Mở, đóng và in giữ nguyên bản đang soạn.
+- Kiểm tra chương trình qua 33/33, thẻ hướng dẫn qua 7/7 và UI qua 44/44. TypeScript và ESLint phần thay đổi đều qua.
+- Playwright qua ở 390, 768 và 1440 px với Linen và Slate. Đã kiểm tra phím mũi tên, Esc, trả focus, toàn màn hình thật ở 1440 px và mô phỏng yêu cầu bị từ chối ở kích thước còn lại. App thử nghiệm dùng port 3053 vì 3051 đang được sử dụng.
+- Chrome xuất hai PDF A4 với dữ liệu giả lập, một bản chữ và một bản có poster/credit giả lập. Đã xem ảnh render của từng trang và kiểm tra phần văn bản trích xuất có tiếng Việt, nguồn và các thông số đã chọn. Các trường đánh dấu `PRIVATE_` không xuất hiện trong nội dung trình bày hoặc PDF.
+- Kiểm tra video bằng fixture có phụ đề. Mô phỏng lỗi tải, thử lại thành công và dừng khi đổi bài. Kiểm tra trạng thái poster lỗi và vẫn in được hướng dẫn chữ. Sáu thẻ hiện chưa có clip đủ quyền sử dụng nên vòng kiểm tra với video hướng dẫn thực còn mở.
+- Impeccable dùng CDP 9224 để quét bản xem trước ở 390 px. Phát hiện còn lại nằm ở nội dung hồ sơ và nhập hiệp phía sau dialog. Quét source còn hai cảnh báo đường viền CSS chung. React Doctor còn hai cảnh báo về độ dài dialog và độ phức tạp của trình soạn giáo án.
 
 ## Phụ thuộc và bàn giao
 
