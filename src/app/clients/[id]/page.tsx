@@ -25,6 +25,7 @@ type Tab =
   | "overview"
   | "program"
   | "workouts"
+  | "progress"
   | "ban-do"
   | "ho-so"
   | "co-do"
@@ -70,6 +71,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
     "overview",
     "program",
     "workouts",
+    "progress",
     "ban-do",
     "ho-so",
     "co-do",
@@ -250,6 +252,7 @@ function ClientDetailPageInner({ id }: { id: string }) {
     { id: "overview", label: "Tổng quan" },
     { id: "program", label: "Chương trình" },
     { id: "workouts", label: "Buổi tập & lịch sử" },
+    { id: "progress", label: "Tiến triển" },
     { id: "ho-so", label: "Hồ sơ & đánh giá" },
     { id: "chat", label: "Tư vấn" },
   ];
@@ -373,7 +376,14 @@ function ClientDetailPageInner({ id }: { id: string }) {
         {primaryTabs.map(t => <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-pressed={t.id === "ho-so" ? clinicalActive : tab === t.id} className="tab-button">{t.label}</button>)}
       </nav>
       <p className="text-xs leading-6 text-slate">Bản đang soạn được giữ khi chuyển các phần của học viên này. Hãy lưu trước khi tải lại trang hoặc rời học viên; bản nháp chỉ nằm trong phiên hiện tại.</p>
-      <ClientTrainingWorkspace key={client.id} clientId={client.id} clientGoal={client.goals} destination={tab === "overview" || tab === "program" || tab === "workouts" ? tab : null} onNavigate={setTab} />
+      <ClientTrainingWorkspace
+        key={client.id}
+        clientId={client.id}
+        clientGoal={client.goals}
+        destination={tab === "overview" || tab === "program" || tab === "workouts" || tab === "progress" ? tab : null}
+        onNavigate={setTab}
+        onOpenLegacy={() => setTab("training")}
+      />
       {clinicalActive && <nav className="tab-bar flex-wrap" aria-label="Đánh giá lâm sàng và nhật ký trước đây">
         {clinicalTabs.map(t => <button key={t.id} type="button" onClick={() => setTab(t.id)} aria-pressed={tab === t.id} className="tab-button">{t.label}{t.badge != null && t.badge > 0 && <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-ink">{t.badge}</span>}</button>)}
       </nav>}

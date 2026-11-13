@@ -479,3 +479,33 @@ test("direct workout entry defaults to the selected session occurrence and prese
     "Model rerenders must preserve an explicit date choice",
   );
 });
+
+test("opening a workout selected by the progress report protects the unsaved workout and program drafts", async () => {
+  const { summarizeProgress } = load("src/lib/training/progress.ts");
+  const m = setup(async () => response({}));
+  const original = plan.program.sessions[0];
+  const archived = {
+    ...original, name: "Archived session",
+    exercises: [{ ...original.exercises[0], repMin: 5, repMax: 6 }],
+  };
+  const saved = {
+    id: "saved-workout", client_id: "synthetic-client", plan_id: "archived-plan",
+    session_id: archived.id, performedAt: "2026-11-06", status: "completed",
+    prescription: archived, notes: "Original result", rpe: null,
+    sets: [{ exerciseId: archived.exercises[0].id, setNumber: 1, completed: true, reps: 5, load: 0, loadUnit: "kg" }],
+  };
+  m.editDraft({ ...validDraft(), title: "Unsaved program edits" });
+  m.startWorkout(plan, original, "2026-11-08");
+  m.editWorkout({ ...m.getSnapshot().workout, notes: "Unsaved workout edits" });
+  const { groups } = summarizeProgress([saved], { from: null, to: null });
+  const row = groups[0].rows[0];
+  assert.equal(row.workoutId, saved.id);
+  assert.equal(row.planned.repMin, 5);
+  assert.equal(m.openWorkout(saved), false);
+  assert.equal(m.getSnapshot().workout.notes, "Unsaved workout edits");
+  assert.equal(m.openWorkout(saved, true), true);
+  assert.equal(m.getSnapshot().workout.id, row.workoutId);
+  assert.equal(m.getSnapshot().prescription.name, "Archived session");
+  assert.equal(m.getSnapshot().draft.title, "Unsaved program edits");
+  assert.equal(m.getSnapshot().dirty, true);
+});

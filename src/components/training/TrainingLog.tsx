@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useState, type FormEvent } from "react";
+import { fetchTrainingLogHistory } from "@/lib/training/log-history";
 import { HYPERTROPHY_EXERCISES } from "@/lib/clinical/muscle-hypertrophy-atlas";
 import { trainingAtlasHref, trainingExerciseName, type TrainingLoadUnit, type TrainingRecord } from "@/lib/training-log";
 
@@ -18,12 +19,6 @@ async function readResponse(response: Response) {
   return data;
 }
 
-async function fetchHistory(clientId: string, signal?: AbortSignal): Promise<TrainingRecord[]> {
-  const response = await fetch(`/api/training-log?client_id=${encodeURIComponent(clientId)}`, { signal, cache: "no-store" });
-  const data = await readResponse(response);
-  if (!Array.isArray(data.records)) throw new Error("Máy chủ trả về lịch sử không hợp lệ.");
-  return data.records;
-}
 
 /** Keyed workspace prevents history and in-flight form state from crossing client boundaries. */
 export function TrainingLog({ clientId, initialExerciseId }: TrainingLogProps) {
@@ -56,7 +51,7 @@ function TrainingLogWorkspace({ clientId, initialExerciseId }: TrainingLogProps)
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchHistory(clientId, controller.signal)
+    fetchTrainingLogHistory(clientId, controller.signal)
       .then((history) => { if (!controller.signal.aborted) setRecords(history); })
       .catch((reason: unknown) => {
         if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "Không tải được nhật ký.");
@@ -68,7 +63,7 @@ function TrainingLogWorkspace({ clientId, initialExerciseId }: TrainingLogProps)
   async function reload() {
     setLoading(true);
     setError("");
-    try { setRecords(await fetchHistory(clientId)); }
+    try { setRecords(await fetchTrainingLogHistory(clientId)); }
     catch (reason) { setError(reason instanceof Error ? reason.message : "Không tải được nhật ký."); }
     finally { setLoading(false); }
   }

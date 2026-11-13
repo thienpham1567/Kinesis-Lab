@@ -153,6 +153,7 @@ export function WorkoutEntry({
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule pb-4">
         <div className="min-w-0">
           <h2
+            data-workout-entry-heading
             tabIndex={-1}
             className="wrap-break-word text-lg font-bold text-ink"
           >

@@ -7,6 +7,7 @@ import {
   ClientTrainingOverview,
   type TrainingDestination,
 } from "./ClientTrainingOverview";
+import { ClientProgressReport } from "./ClientProgressReport";
 import { ProgramEditor } from "./ProgramEditor";
 import { WorkoutRunner } from "./WorkoutRunner";
 
@@ -15,19 +16,28 @@ export function ClientTrainingWorkspace({
   clientGoal,
   destination,
   onNavigate,
+  onOpenLegacy,
 }: {
   clientId: string;
   clientGoal: string | null;
   destination: TrainingDestination | null;
   onNavigate: (destination: TrainingDestination) => void;
+  onOpenLegacy: () => void;
 }) {
   const [pendingStart, setPendingStart] = useState<{
     plan: TrainingPlan;
     sessionId: string;
     date: string;
   } | null>(null);
+  const [pendingWorkoutId, setPendingWorkoutId] = useState<string | null>(null);
+  const [showReportReturn, setShowReportReturn] = useState(false);
+  const [reportVisited, setReportVisited] = useState(
+    destination === "progress",
+  );
+  if (destination === "progress" && !reportVisited) setReportVisited(true);
+  const pendingDecision = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
-  const moveFocus = useRef(false);
+  const moveFocus = useRef<"destination" | "workout" | null>(null);
   const [model] = useState(() => new TrainingWorkspaceModel(clientId));
   const state = useSyncExternalStore(
     model.subscribe,
@@ -41,17 +51,54 @@ export function ClientTrainingWorkspace({
   }, [model]);
   useEffect(() => {
     if (moveFocus.current && destination && state.loaded) {
-      content.current
-        ?.querySelector<HTMLElement>(
-          `[data-training-destination="${destination}"]`,
-        )
-        ?.focus({ preventScroll: true });
-      moveFocus.current = false;
+      const section = content.current?.querySelector<HTMLElement>(
+        `[data-training-destination="${destination}"]`,
+      );
+      const workoutHeading =
+        moveFocus.current === "workout"
+          ? section?.querySelector<HTMLElement>("[data-workout-entry-heading]")
+          : null;
+      const target =
+        destination === "progress"
+          ? (section?.querySelector<HTMLElement>("#progress-heading") ??
+            section)
+          : (workoutHeading ?? section);
+      if (workoutHeading || destination === "progress") {
+        target?.scrollIntoView({ block: "center" });
+      }
+      target?.focus({ preventScroll: true });
+      moveFocus.current = null;
     }
   }, [destination, state.loaded]);
-  function navigate(next: TrainingDestination) {
-    moveFocus.current = true;
+  useEffect(() => {
+    if (pendingWorkoutId && destination === "progress")
+      pendingDecision.current?.focus();
+  }, [pendingWorkoutId, destination]);
+
+  function navigate(
+    next: TrainingDestination,
+    focus: "destination" | "workout" = "destination",
+  ) {
+    moveFocus.current = focus;
     onNavigate(next);
+  }
+
+  function openReportWorkout(id: string, replace = false) {
+    const workout = state.workouts.find((item) => item.id === id);
+    if (!workout || state.busy) return;
+    if (!model.openWorkout(workout, replace)) {
+      setPendingWorkoutId(id);
+      return;
+    }
+    setPendingWorkoutId(null);
+    setShowReportReturn(true);
+    navigate("workouts", "workout");
+  }
+
+  function keepReportDraft() {
+    setPendingWorkoutId(null);
+    setShowReportReturn(true);
+    navigate("workouts", "workout");
   }
   function start(plan: TrainingPlan, sessionId: string, date: string) {
     const session = plan.program.sessions.find((s) => s.id === sessionId);
@@ -181,7 +228,64 @@ export function ClientTrainingWorkspace({
             hidden={destination !== "workouts"}
             inert={destination !== "workouts"}
           >
+            {showReportReturn && (
+              <button
+                type="button"
+                className="button-secondary mb-4"
+                onClick={() => navigate("progress")}
+              >
+                Quay lại tiến triển
+              </button>
+            )}
             <WorkoutRunner model={model} state={state} />
+          </div>
+          <div
+            data-training-destination="progress"
+            tabIndex={-1}
+            hidden={destination !== "progress"}
+            inert={destination !== "progress"}
+            className="space-y-4"
+          >
+            {pendingWorkoutId && (
+              <div
+                ref={pendingDecision}
+                tabIndex={-1}
+                className="rounded-xl border border-caution/30 bg-caution-soft p-4 text-sm text-ink"
+                role="alert"
+              >
+                <p>
+                  Buổi đang ghi có thay đổi chưa lưu. Bạn có thể mở lại buổi đó
+                  để lưu tiến độ hoặc bỏ thay đổi để mở buổi đã chọn.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="button-secondary"
+                    onClick={keepReportDraft}
+                  >
+                    Giữ và mở buổi đang ghi
+                  </button>
+                  <button
+                    type="button"
+                    className="button-secondary"
+                    disabled={!!state.busy}
+                    onClick={() => openReportWorkout(pendingWorkoutId, true)}
+                  >
+                    Bỏ thay đổi và mở buổi đã chọn
+                  </button>
+                </div>
+              </div>
+            )}
+            {reportVisited && (
+              <ClientProgressReport
+                clientId={clientId}
+                workouts={state.workouts}
+                busy={!!state.busy}
+                active={destination === "progress"}
+                onOpenWorkout={openReportWorkout}
+                onOpenLegacy={onOpenLegacy}
+              />
+            )}
           </div>
         </>
       )}

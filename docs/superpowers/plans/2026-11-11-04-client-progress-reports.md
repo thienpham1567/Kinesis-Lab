@@ -73,7 +73,7 @@ export type ProgressSummary = {
 
 ## Task 1 — Tổng hợp có thể đối chiếu
 
-- [ ] Tạo kiểm tra thất bại cho `summarizeProgress(workouts, range)`, `exerciseComparisonKey(exercise, unit)` và `externalLoadRepetitions(sets)`.
+- [x] Tạo kiểm tra thất bại cho `summarizeProgress(workouts, range)`, `exerciseComparisonKey(exercise, unit)` và `externalLoadRepetitions(sets)`.
 
 ```js
 import assert from "node:assert/strict";
@@ -92,27 +92,27 @@ test("external load excludes assisted, unconfirmed and missing loads", () => {
 });
 ```
 
-- [ ] Chạy `node --test scripts/check-training-progress.mjs` trước khi thêm module; xác nhận thiếu hành vi rồi triển khai ba hàm cùng contract ở trên.
-- [ ] Thêm fixture có buổi đang ghi, hoàn thành, số 0, null, sửa tên bài, đổi đơn vị và hai giáo án có snapshot khác nhau.
-- [ ] Kiểm tra mốc ngày đầu/cuối, khoảng rỗng, thứ tự ngày không hợp lệ và ngày tương lai. Ngày ngoài khoảng bị loại, không tự hiệu chỉnh đầu vào sai.
-- [ ] Mỗi dòng tổng hợp giữ `workoutId` và ID dòng bài để mở được bản ghi gốc; không chỉ trả một con số mất nguồn.
+- [x] Chạy `node --test scripts/check-training-progress.mjs` trước khi thêm module; xác nhận thiếu hành vi rồi triển khai ba hàm cùng contract ở trên.
+- [x] Thêm fixture có buổi đang ghi, hoàn thành, số 0, null, sửa tên bài, đổi đơn vị và hai giáo án có snapshot khác nhau.
+- [x] Kiểm tra mốc ngày đầu/cuối, khoảng rỗng, thứ tự ngày không hợp lệ và ngày tương lai. Ngày ngoài khoảng bị loại, không tự hiệu chỉnh đầu vào sai.
+- [x] Mỗi dòng tổng hợp giữ `workoutId` và ID dòng bài để mở được bản ghi gốc; không chỉ trả một con số mất nguồn.
 
 ## Task 2 — Bảng báo cáo và biểu đồ
 
-- [ ] Tạo `ClientProgressReport` nhận `workouts`, `onOpenWorkout` và trạng thái tải từ workspace hiện có. Không fetch thêm hồ sơ lâm sàng hoặc gửi dữ liệu sang AI.
-- [ ] Đặt khoảng ngày và bộ chọn bài trước bảng dữ liệu. Hiển thị rõ ngày báo cáo, số bản ghi và phạm vi từng chỉ số.
-- [ ] Bảng theo bài có ngày, tên/đơn vị, số hiệp và kết quả đã ghi. Mỗi dòng có nút mở đúng buổi trong lịch sử.
-- [ ] Biểu đồ dùng một nhóm so sánh tại một thời điểm. Tải ngoài thể hiện theo từng hiệp hoặc một thống kê được ghi rõ, không nối các thiết lập khác nhau bằng một đường.
-- [ ] SVG có tiêu đề, mô tả, tick đơn vị và bảng tương đương; màu không là cách phân biệt duy nhất. Không vẽ giá trị giả khi chỉ có một điểm.
-- [ ] Empty state phân biệt chưa có buổi, có buổi nhưng chưa có hiệp phù hợp và bộ lọc không có dữ liệu. Lỗi tải có retry dùng model hiện tại.
-- [ ] Giữ ghi chú của PT dưới dạng dữ liệu gốc, không tự suy diễn cảm nhận thành chỉ số tiến triển. Không thêm dữ liệu InBody/xét nghiệm vào báo cáo này.
+- [x] Tạo `ClientProgressReport` nhận `workouts`, `onOpenWorkout` và trạng thái tải từ workspace hiện có. Không fetch thêm hồ sơ lâm sàng hoặc gửi dữ liệu sang AI.
+- [x] Đặt khoảng ngày và bộ chọn bài trước bảng dữ liệu. Hiển thị rõ ngày báo cáo, số bản ghi và phạm vi từng chỉ số.
+- [x] Bảng theo bài có ngày, tên/đơn vị, số hiệp và kết quả đã ghi. Mỗi dòng có nút mở đúng buổi trong lịch sử.
+- [x] Biểu đồ dùng một nhóm so sánh tại một thời điểm. Tải ngoài thể hiện theo từng hiệp hoặc một thống kê được ghi rõ, không nối các thiết lập khác nhau bằng một đường.
+- [x] SVG có tiêu đề, mô tả, tick đơn vị và bảng tương đương; màu không là cách phân biệt duy nhất. Không vẽ giá trị giả khi chỉ có một điểm.
+- [x] Empty state phân biệt chưa có buổi, có buổi nhưng chưa có hiệp phù hợp và bộ lọc không có dữ liệu. Lỗi tải có retry dùng model hiện tại.
+- [x] Giữ ghi chú của PT dưới dạng dữ liệu gốc, không tự suy diễn cảm nhận thành chỉ số tiến triển. Không thêm dữ liệu InBody/xét nghiệm vào báo cáo này.
 
 ## Task 3 — Điều hướng và tính liên tục
 
-- [ ] Thêm `progress` vào `TrainingDestination` và allowlist tab hồ sơ. Dùng URL `/clients/<id>?tab=progress` và nút “Xem tiến triển” từ tổng quan.
-- [ ] Khi mở buổi từ báo cáo, gọi `model.openWorkout`. Nếu đang có thay đổi chưa lưu, dùng cùng quyết định giữ/bỏ bản đang ghi như `WorkoutRunner`.
-- [ ] Quay lại báo cáo giữ bộ lọc trong cùng phiên hồ sơ. Đổi học viên reset bộ lọc/bài đã chọn và không để request cũ ghi sang hồ sơ mới.
-- [ ] Kiểm tra học viên đã xóa, plan bị lưu trữ, bài custom và snapshot cũ vẫn truy được đúng dữ liệu đã lưu.
+- [x] Thêm `progress` vào `TrainingDestination` và allowlist tab hồ sơ. Dùng URL `/clients/<id>?tab=progress` và nút “Xem tiến triển” từ tổng quan.
+- [x] Khi mở buổi từ báo cáo, gọi `model.openWorkout`. Nếu đang có thay đổi chưa lưu, dùng cùng quyết định giữ/bỏ bản đang ghi như `WorkoutRunner`.
+- [x] Quay lại báo cáo giữ bộ lọc trong cùng phiên hồ sơ. Đổi học viên reset bộ lọc/bài đã chọn và không để request cũ ghi sang hồ sơ mới.
+- [x] Kiểm tra học viên đã xóa, plan bị lưu trữ, bài custom và snapshot cũ vẫn truy được đúng dữ liệu đã lưu.
 
 ## Kiểm tra và nghiệm thu
 
@@ -126,13 +126,22 @@ npx -y react-doctor@latest . --verbose --scope changed
 npm run design:check
 ```
 
-- [ ] Chạy app ở port 3051. Trong Chrome fixture, chặn `/api/clients/synthetic-client`, `/api/training-plans` và `/api/training-workouts` bằng Playwright, trả sáu tuần dữ liệu tổng hợp. Mở `/clients/synthetic-client?tab=progress` ở 390/768/1440px và zoom 200%.
-- [ ] Mở Chrome fixture với `--remote-debugging-port=9222`, đặt viewport 390×844 và quét `npm run design:check:page -- --cdp 9222 --target /clients/` để giữ đúng dữ liệu mock và tab báo cáo.
-- [ ] Đối chiếu bằng tay ít nhất hai dòng bảng với JSON fixture và bản chụp giáo án gốc; ghi công thức tính vào giao diện tại chỗ xem chi tiết chỉ số.
-- [ ] Kiểm tra keyboard mở buổi từ bảng, quay lại, thay bộ lọc và không mất bản đang soạn.
-- [ ] Ghi rõ cảnh báo detector và phạm vi dữ liệu chưa có. Commit riêng sau các kiểm tra liên quan đạt.
+- [x] Chạy app ở port 3051. Trong Chrome fixture, chặn `/api/clients/synthetic-client`, `/api/training-plans` và `/api/training-workouts` bằng Playwright, trả sáu tuần dữ liệu tổng hợp. Mở `/clients/synthetic-client?tab=progress` ở 390/768/1440px và zoom 200%.
+- [x] Mở Chrome fixture với `--remote-debugging-port=9222`, đặt viewport 390×844 và quét `npm run design:check:page -- --cdp 9222 --target /clients/` để giữ đúng dữ liệu mock và tab báo cáo.
+- [x] Đối chiếu bằng tay ít nhất hai dòng bảng với JSON fixture và bản chụp giáo án gốc; ghi công thức tính vào giao diện tại chỗ xem chi tiết chỉ số.
+- [x] Kiểm tra keyboard mở buổi từ bảng, quay lại, thay bộ lọc và không mất bản đang soạn.
+- [x] Ghi rõ cảnh báo detector và phạm vi dữ liệu chưa có. Commit riêng sau các kiểm tra liên quan đạt.
 
 **Hoàn thành khi** PT đọc được số liệu đúng phạm vi, truy về buổi gốc và giữ nguyên dữ liệu thiếu/khác đơn vị; không có kết quả dự kiến bị tính thành kết quả thực tế.
+
+## Kết quả triển khai — 2026-11-13
+
+- Tab **Tiến triển** dùng buổi tập đã tải trong hồ sơ. Bảng đặt kết quả từng hiệp cạnh bản chụp giáo án của buổi đó. Nhật ký tập độc lập có phần xem riêng và tải theo yêu cầu.
+- Đối chiếu hai dòng với dữ liệu mẫu. Buổi mới có tải dự kiến 40 kg và hai hiệp thực tế 40 × 8 + 42 × 8 = 656 kg × lần. Buổi thuộc giáo án cũ giữ tải dự kiến 30 kg và kết quả 30 × 10 + 32 × 9 = 588 kg × lần.
+- `npm run check:programs` qua 36/36 và `npm run check:ui` qua 44/44. TypeScript và ESLint phần thay đổi đều qua.
+- Playwright dùng dữ liệu giả lập sáu tuần qua ở 390, 768 và 1440 px với Linen và Slate. Đã kiểm tra phóng nội dung 200% bằng CSS zoom, lọc ngày, lỗi tải và thử lại, mở buổi bằng bàn phím, giữ/bỏ buổi đang ghi, giữ bản đang soạn và bộ lọc, đổi học viên và hồ sơ trả 404.
+- Port 3051 đang được sử dụng nên chạy app thử nghiệm ở 3052. Quét Impeccable trên Chrome qua CDP 9223 ở 390 px còn cảnh báo thẻ lồng trong khối thông tin hồ sơ có sẵn. Quét source còn hai cảnh báo viền CSS chung. React Doctor còn một cảnh báo độ phức tạp của component báo cáo.
+- Biểu đồ tải ngoài dùng tổng theo dòng bài từ các buổi đã hoàn thành. Biểu đồ trọng lượng cơ thể dùng tổng số lần. Nhóm có trợ lực hiện mức trợ lực và số lần trong bảng. Báo cáo chưa có dữ liệu cấu hình thiết bị hoặc tỷ lệ chuyên cần.
 
 ## Phụ thuộc và bàn giao
 

@@ -8,7 +8,11 @@ import {
 import { nextScheduledSession } from "@/lib/training/schedule";
 import type { TrainingWorkspaceState } from "@/lib/training/workspace";
 
-export type TrainingDestination = "overview" | "program" | "workouts";
+export type TrainingDestination =
+  | "overview"
+  | "program"
+  | "workouts"
+  | "progress";
 export function ClientTrainingOverview({
   state,
   clientGoal,
@@ -78,6 +82,13 @@ export function ClientTrainingOverview({
           onClick={() => onNavigate("workouts")}
         >
           Xem buổi tập và lịch sử
+        </button>
+        <button
+          type="button"
+          className="button-secondary"
+          onClick={() => onNavigate("progress")}
+        >
+          Xem tiến triển
         </button>
       </div>
       {active && (
