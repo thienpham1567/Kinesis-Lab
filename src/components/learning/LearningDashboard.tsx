@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PT_CASES } from "@/lib/learning/pt-cases";
 import { NCSF_DOMAINS } from "@/lib/ncsf-quiz";
 import { SHORT_SESSION_MAX_ITEMS } from "@/lib/learning/schedule";
 import type { DomainLearningSummary, LearningDraft } from "@/lib/learning/types";
@@ -47,6 +48,7 @@ function formatLocalDateTime(iso: string): string {
 export function LearningDashboard({
   progress,
   readingBookmark,
+  onOpenCases,
   onResumeDraft,
   onStartDueReview,
   onStartDomainStudy,
@@ -54,6 +56,7 @@ export function LearningDashboard({
 }: {
   progress: UseLearningProgressResult;
   readingBookmark: ReadingBookmark;
+  onOpenCases: () => void;
   onResumeDraft: (draft: LearningDraft) => void;
   onStartDueReview: () => void;
   onStartDomainStudy: (domain: string) => void;
@@ -77,6 +80,8 @@ export function LearningDashboard({
   );
   const [confirmClear, setConfirmClear] = useState(false);
 
+  const caseHistory = submissions.filter((sub) => sub.source === "pt-case");
+  const ncsfHistory = submissions.filter((sub) => sub.source !== "pt-case");
   const primaryDraft = drafts[0] ?? null;
   const dueCount = summary.dueItems.length;
 
@@ -92,10 +97,9 @@ export function LearningDashboard({
               Tiến độ trên trình duyệt này
             </h2>
             <p className="max-w-3xl text-sm leading-6 text-slate">
-              Lịch sử làm bài và phiên học đang dở được lưu cục bộ bằng mã định
-              danh trên trình duyệt này (không lưu nội dung câu hỏi hay đáp án
-              riêng tư). Đăng xuất chỉ đóng quyền xem tài liệu, không tự xóa dữ
-              liệu tiến độ.
+              Lịch sử làm bài, kết quả tình huống và bản nháp NCSF được lưu
+              bằng mã định danh trên trình duyệt này. Lý do tự ghi chỉ có
+              trong phiên luyện đang mở. Đăng xuất không xóa tiến độ đã lưu.
             </p>
           </div>
           {!confirmClear ? (
@@ -452,16 +456,44 @@ export function LearningDashboard({
         )}
       </section>
 
-      {submissions.length > 0 && (
+      <section className="panel learning-card space-y-3 p-4 sm:p-5" aria-label="Tiến độ luyện tình huống">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-base font-semibold text-ink">Luyện tình huống ({caseHistory.length} lần)</h3>
+          <button type="button" className="button-secondary" onClick={onOpenCases}>Mở mục luyện</button>
+        </div>
+        {caseHistory.length === 0 ? (
+          <p className="text-sm text-slate">Kết quả tình huống đã lưu sẽ hiện ở đây.</p>
+        ) : (
+          <ul className="divide-y divide-rule text-sm">
+            {caseHistory.slice(0, 10).map((sub) => {
+              const scenario = PT_CASES.find(({ id }) => id === sub.caseId);
+              return (
+                <li key={sub.id} className="space-y-1 py-2.5 first:pt-0 last:pb-0">
+                  <p className="font-semibold text-ink">{scenario?.title ?? sub.caseId}</p>
+                  <p className="text-slate">
+                    Phiên bản {sub.caseVersion} · {formatLocalDateTime(sub.submittedAt)}
+                    {scenario && scenario.version > sub.caseVersion && " · Có phiên bản mới"}
+                  </p>
+                  <p className="text-ink">
+                    Đã xử lý {sub.evaluation.addressedCriterionIds.length} · Cần xem lại {sub.evaluation.revisitCriterionIds.length} · Chưa thực hành {sub.evaluation.unpracticedCriterionIds.length}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {ncsfHistory.length > 0 && (
         <section
           className="panel learning-card space-y-3 p-4 sm:p-5"
           aria-label="Lịch sử các lần nộp"
         >
           <h3 className="text-base font-semibold text-ink">
-            Lịch sử lần nộp gần đây ({submissions.length})
+            Lịch sử lần nộp gần đây ({ncsfHistory.length})
           </h3>
           <ul className="divide-y divide-rule text-sm">
-            {submissions.slice(0, 10).map((sub) => {
+            {ncsfHistory.slice(0, 10).map((sub) => {
               const correctCount = sub.items.filter((i) => i.correct).length;
               return (
                 <li

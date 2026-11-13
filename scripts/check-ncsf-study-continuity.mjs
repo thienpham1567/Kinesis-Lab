@@ -17,6 +17,7 @@ function fixture({ quizResponses = [], sessionResponses = [] } = {}) {
   const reviewRequests = [];
   const element = (type, props, key = null) => ({ type, props: props ?? {}, key });
   const stub = () => null;
+  const caseLibrary = () => null;
   const hooks = {
     useState(initial) {
       const owner = active;
@@ -41,6 +42,7 @@ function fixture({ quizResponses = [], sessionResponses = [] } = {}) {
     react: hooks,
     "react/jsx-runtime": { jsx: element, jsxs: element, Fragment: "fragment" },
     "next/dynamic": { default: () => stub, __esModule: true },
+    "@/components/learning/CasePracticeLibrary": { CasePracticeLibrary: caseLibrary },
     "@/components/NcsfMockExams": { NcsfMockExams: stub },
     "@/components/NcsfCorrections": { NcsfPageCorrections: stub },
     "./NcsfCorrections": { NcsfSourceLinks: stub },
@@ -92,7 +94,7 @@ function fixture({ quizResponses = [], sessionResponses = [] } = {}) {
     };
   }
   return { page: load("src/app/knowledge/page.tsx"), quiz: load("src/components/NcsfQuiz.tsx").NcsfQuiz,
-    mount, requests, reviewRequests, setRandom: value => { random = () => value; } };
+    caseLibrary, mount, requests, reviewRequests, setRandom: value => { random = () => value; } };
 }
 const bank = () => ({ chapters: Array.from({ length: 8 }, (_, i) => ({ ch: i + 1,
   questions: [16, 18, 22].map((page, n) => ({ q: `Synthetic ${i + 1}.${n}`, options: ["One", "Two", "Three", "Four"],
@@ -363,3 +365,26 @@ test("learning progress integration saves drafts, submits once, restores option 
   assert.equal(quizNode(pTree, f.quiz).node.key, mountedQuiz.node.key);
 });
 
+
+test("changing study modes hides the case library without remounting it", () => {
+  const f = fixture();
+  const parent = f.mount(f.page.NcsfContent, { heading: null });
+  const container = (tree) =>
+    nodes(tree, node => node.type === "div" && node.props.children?.type === f.caseLibrary)[0];
+  let tree = parent.render();
+  assert.equal(container(tree), undefined);
+  button(tree, "Luyện tình huống").props.onClick();
+  tree = parent.render();
+  const opened = container(tree);
+  assert.equal(opened.node.props.hidden, false);
+  for (const mode of ["Tiến độ học", "Đọc giáo trình", "Đề cương ôn tập"]) {
+    button(tree, mode).props.onClick();
+    tree = parent.render();
+    assert.equal(container(tree).route, opened.route);
+    assert.equal(container(tree).node.props.hidden, true);
+  }
+  button(tree, "Luyện tình huống").props.onClick();
+  tree = parent.render();
+  assert.equal(container(tree).route, opened.route);
+  assert.equal(container(tree).node.props.hidden, false);
+});

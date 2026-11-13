@@ -3,7 +3,7 @@ import type {
   LearningDraft,
   LearningDraftItem,
   LearningItemResult,
-  LearningSource,
+  NcsfSource,
   LearningSubmission,
 } from "./types";
 
@@ -45,7 +45,7 @@ export class LearningStoreError extends Error {
 const nativeEncoder =
   typeof TextEncoder !== "undefined" ? new TextEncoder() : null;
 const ID_PATTERN = /^[A-Za-z0-9:_-]{1,128}$/;
-const ALLOWED_SOURCES: readonly LearningSource[] = ["ncsf-quiz", "ncsf-mock"];
+const ALLOWED_SOURCES: readonly NcsfSource[] = ["ncsf-quiz", "ncsf-mock"];
 
 function utf8ByteLength(str: string): number {
   if (nativeEncoder) return nativeEncoder.encode(str).byteLength;
@@ -129,7 +129,7 @@ export function validateLearningDraft(value: unknown): value is LearningDraft {
     return false;
   }
   if (!isValidId(value.id)) return false;
-  if (!ALLOWED_SOURCES.includes(value.source as LearningSource)) return false;
+  if (!ALLOWED_SOURCES.includes(value.source as NcsfSource)) return false;
   if (
     typeof value.revision !== "number" ||
     !Number.isInteger(value.revision) ||
@@ -170,16 +170,38 @@ export function validateLearningItemResult(
   return true;
 }
 
+function isUniqueIdList(value: unknown, limit: number): value is string[] {
+  return Array.isArray(value) && value.length <= limit &&
+    value.every(isValidId) && new Set(value).size === value.length;
+}
+
+function validateCaseSubmission(value: Record<string, unknown>): boolean {
+  const outcome = value.evaluation;
+  if (!hasExactKeys(value, ["id", "source", "submittedAt", "caseId", "caseVersion", "choiceIds", "evaluation"]) ||
+      !isValidId(value.caseId) ||
+      typeof value.caseVersion !== "number" ||
+      !Number.isSafeInteger(value.caseVersion) || value.caseVersion < 1 ||
+      !isUniqueIdList(value.choiceIds, 5) || value.choiceIds.length === 0 ||
+      !isPlainRecord(outcome) ||
+      !hasExactKeys(outcome, ["addressedCriterionIds", "revisitCriterionIds", "unpracticedCriterionIds", "nextCheckpointId"]) ||
+      outcome.nextCheckpointId !== null ||
+      !isUniqueIdList(outcome.addressedCriterionIds, 25) ||
+      !isUniqueIdList(outcome.revisitCriterionIds, 25) ||
+      !isUniqueIdList(outcome.unpracticedCriterionIds, 25)) return false;
+  const criteria = [...outcome.addressedCriterionIds, ...outcome.revisitCriterionIds, ...outcome.unpracticedCriterionIds];
+  return criteria.length > 0 && new Set(criteria).size === criteria.length;
+}
+
 export function validateLearningSubmission(
   value: unknown,
 ): value is LearningSubmission {
   if (!isPlainRecord(value)) return false;
+  if (!isValidId(value.id) || !isValidIsoTimestamp(value.submittedAt)) return false;
+  if (value.source === "pt-case") return validateCaseSubmission(value);
   if (!hasExactKeys(value, ["id", "source", "submittedAt", "items"])) {
     return false;
   }
-  if (!isValidId(value.id)) return false;
-  if (!ALLOWED_SOURCES.includes(value.source as LearningSource)) return false;
-  if (!isValidIsoTimestamp(value.submittedAt)) return false;
+  if (!ALLOWED_SOURCES.includes(value.source as NcsfSource)) return false;
   if (
     !Array.isArray(value.items) ||
     value.items.length === 0 ||
@@ -205,13 +227,18 @@ function sameSubmissionPayload(
   a: LearningSubmission,
   b: LearningSubmission,
 ): boolean {
-  if (
-    a.id !== b.id ||
-    a.source !== b.source ||
-    a.items.length !== b.items.length
-  ) {
-    return false;
+  if (a.id !== b.id || a.source !== b.source) return false;
+  if (a.source === "pt-case" && b.source === "pt-case") {
+    const sameIds = (left: string[], right: string[]) =>
+      left.length === right.length && left.every((id, index) => id === right[index]);
+    return a.caseId === b.caseId &&
+      a.caseVersion === b.caseVersion &&
+      sameIds(a.choiceIds, b.choiceIds) &&
+      sameIds(a.evaluation.addressedCriterionIds, b.evaluation.addressedCriterionIds) &&
+      sameIds(a.evaluation.revisitCriterionIds, b.evaluation.revisitCriterionIds) &&
+      sameIds(a.evaluation.unpracticedCriterionIds, b.evaluation.unpracticedCriterionIds);
   }
+  if (a.source === "pt-case" || b.source === "pt-case" || a.items.length !== b.items.length) return false;
   for (let i = 0; i < a.items.length; i++) {
     const left = a.items[i]!;
     const right = b.items[i]!;
@@ -510,6 +537,7 @@ export function createProgressStore(options?: {
     }> {
       checkByteSizeLimit(submission);
       if (
+        submission?.source !== "pt-case" &&
         Array.isArray(submission?.items) &&
         submission.items.length > LEARNING_LIMITS.maxDraftItems
       ) {
@@ -549,7 +577,7 @@ export function createProgressStore(options?: {
             );
           }
           const targetDraftId = draftId ?? submission.id;
-          await requestToPromise(draftsStore.delete(targetDraftId));
+          if (submission.source !== "pt-case") await requestToPromise(draftsStore.delete(targetDraftId));
           await txPromise;
           notifyChange();
           return { status: "idempotent", submission: existing };
@@ -564,7 +592,7 @@ export function createProgressStore(options?: {
           );
         }
 
-        const cleanSubmission: LearningSubmission = {
+        const cleanSubmission: LearningSubmission = submission.source === "pt-case" ? submission : {
           id: submission.id,
           source: submission.source,
           submittedAt: submission.submittedAt,
@@ -578,9 +606,9 @@ export function createProgressStore(options?: {
 
         try {
           await requestToPromise(submissionsStore.put(cleanSubmission));
-          await requestToPromise(
-            draftsStore.delete(draftId ?? cleanSubmission.id),
-          );
+          if (cleanSubmission.source !== "pt-case") {
+            await requestToPromise(draftsStore.delete(draftId ?? cleanSubmission.id));
+          }
           await txPromise;
         } catch (err) {
           if (err instanceof LearningStoreError) throw err;

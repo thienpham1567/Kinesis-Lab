@@ -1,4 +1,6 @@
-export type LearningSource = "ncsf-quiz" | "ncsf-mock";
+import type { CaseSubmission } from "./case-types";
+
+export type NcsfSource = "ncsf-quiz" | "ncsf-mock";
 
 export type LearningItemResult = {
   itemId: string;
@@ -7,12 +9,14 @@ export type LearningItemResult = {
   domain: string | null;
 };
 
-export type LearningSubmission = {
+export type NcsfSubmission = {
   id: string;
-  source: LearningSource;
+  source: NcsfSource;
   submittedAt: string;
   items: LearningItemResult[];
 };
+
+export type LearningSubmission = NcsfSubmission | CaseSubmission;
 
 export type LearningDraftItem = {
   itemId: string;
@@ -22,7 +26,7 @@ export type LearningDraftItem = {
 
 export type LearningDraft = {
   id: string;
-  source: LearningSource;
+  source: NcsfSource;
   revision: number;
   updatedAt: string;
   items: LearningDraftItem[];
@@ -73,7 +77,7 @@ export type IdentifiedMockQuestion = {
 
 export type IdentifiedItemRecord = {
   itemId: string;
-  source: LearningSource;
+  source: NcsfSource;
   domain: string | null;
   optionIds: string[];
   correctOptionId: string;
@@ -82,7 +86,7 @@ export type IdentifiedItemRecord = {
 
 export type ItemReviewSchedule = {
   itemId: string;
-  source: LearningSource;
+  source: NcsfSource;
   domain: string | null;
   attempts: number;
   firstCorrect: boolean;
