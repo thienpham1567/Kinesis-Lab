@@ -2,6 +2,8 @@ import type {
   ExerciseInstruction,
   InstructionText,
 } from "@/lib/clinical/exercise-instruction-types";
+import { TeachingLaunchButton } from "../teaching/TeachingLaunchButton";
+import { createExerciseTeachingView } from "@/lib/training/teaching-view";
 import { ExerciseInstructionMedia } from "./ExerciseInstructionMedia";
 
 type Source = Extract<InstructionText, { kind: "sourced" }>["sources"][number];
@@ -87,6 +89,10 @@ export function ExerciseInstructionCard({
         )}
         <p className="mt-1 text-xs leading-5 text-slate">{card.variantNote}</p>
       </div>
+
+      <TeachingLaunchButton getView={() => createExerciseTeachingView(card.exerciseId)}>
+        Giải thích cho học viên
+      </TeachingLaunchButton>
 
       {showMedia && (
         <div className="max-w-xl">

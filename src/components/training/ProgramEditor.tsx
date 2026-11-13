@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { TeachingLaunchButton } from "../teaching/TeachingLaunchButton";
+import { createSessionTeachingView } from "@/lib/training/teaching-view";
 import { ProgramPreview } from "./ProgramPreview";
 import { ProgramSessionEditor } from "./ProgramSessionEditor";
 import {
@@ -10,12 +12,38 @@ import {
   type ProgramDraft,
   type ProgramSession,
   type TrainingGoal,
+  type TrainingPlan,
 } from "@/lib/training/program";
 import type {
   TrainingWorkspaceModel,
   TrainingWorkspaceState,
 } from "@/lib/training/workspace";
 import { NumberField, ProgramField, ProgramSources } from "./ProgramFields";
+
+function SavedSessionTeaching({ plan, dirty, disabled }: {
+  plan: TrainingPlan;
+  dirty: boolean;
+  disabled: boolean;
+}) {
+  const [selected, setSelected] = useState(plan.program.sessions[0]?.id ?? "");
+  const session = plan.program.sessions.find(({ id }) => id === selected);
+  return (
+    <div className="mb-5 grid items-end gap-3 border-b border-rule pb-5 sm:grid-cols-[minmax(0,1fr)_auto]">
+      <ProgramField label={`Buổi để trình bày · phiên bản ${plan.revision}`}>
+        <select value={selected} onChange={(event) => setSelected(event.target.value)} disabled={disabled}>
+          {plan.program.sessions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </select>
+      </ProgramField>
+      <TeachingLaunchButton disabled={disabled || !session}
+        getView={() => session ? createSessionTeachingView({
+          kind: "plan", planId: plan.id, revision: plan.revision, sessionId: session.id,
+        }, session) : null}>
+        Trình bày buổi đã lưu
+      </TeachingLaunchButton>
+      {dirty && <p className="text-sm text-slate sm:col-span-2">Trình bày lấy phiên bản {plan.revision} đã lưu. Lưu bản đang soạn nếu muốn dùng nội dung mới.</p>}
+    </div>
+  );
+}
 
 export function ProgramEditor({
   model,
@@ -119,6 +147,11 @@ export function ProgramEditor({
             </button>
           </div>
         </div>
+      )}
+      {selected ? (
+        <SavedSessionTeaching key={selected.id} plan={selected} dirty={state.dirty} disabled={!!state.busy} />
+      ) : (
+        <p className="mb-5 border-b border-rule pb-4 text-sm text-slate">Chọn hoặc lưu phiên bản giáo án để trình bày một buổi.</p>
       )}
       <form
         onSubmit={(e) => {
