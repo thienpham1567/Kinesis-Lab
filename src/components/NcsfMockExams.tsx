@@ -34,10 +34,6 @@ import type {
 } from "@/lib/learning/types";
 import type { UseLearningProgressResult } from "./learning/useLearningProgress";
 import {
-  NcsfAnswerReviewPanel,
-  useNcsfAnswerReviews,
-} from "./NcsfAnswerReview";
-import {
   countNcsfAnswerOutcomes,
   ncsfAnswerOutcome,
   NcsfAttemptBar,
@@ -126,7 +122,6 @@ export function NcsfMockExams({
   onDraftConsumed,
   onBackToProgress,
   onSessionExpired,
-  onOpenPage,
 }: {
   apiRef?: Ref<NcsfMockExamsHandle>;
   progress?: UseLearningProgressResult;
@@ -134,7 +129,6 @@ export function NcsfMockExams({
   onDraftConsumed?: () => void;
   onBackToProgress?: () => void;
   onSessionExpired?: () => void;
-  onOpenPage?: (slug: string, page: number) => void;
 }) {
   const [bank, setBank] = useState<MockPracticeBank | null>(null);
   const [identifiedBank, setIdentifiedBank] =
@@ -151,11 +145,6 @@ export function NcsfMockExams({
   const [reviewFilter, setReviewFilter] = useState<NcsfReviewFilter>("all");
   const attemptSectionRef = useRef<HTMLDivElement>(null);
   const [resumedNotice, setResumedNotice] = useState<string | null>(null);
-  const answerReviews = useNcsfAnswerReviews(
-    "mock",
-    [active],
-    !!finished[active],
-  );
 
   const attemptIdsRef = useRef<Record<number, string>>({
     1: nextMockAttemptId(1),
@@ -643,14 +632,6 @@ export function NcsfMockExams({
               return null;
             }
             const q = exam.questions[sourceIndex];
-            const identity = identifiedBank?.byExam.get(active)?.[sourceIndex];
-            const optionOrder = order.options[sourceIndex];
-            const reviewOption = (optionIndex: number) => ({
-              label: String.fromCharCode(65 + optionOrder.indexOf(optionIndex)),
-              text: mockOptionText(q.options[optionIndex]),
-              optionId: identity?.optionIds[optionIndex] ?? "",
-            });
-            const selected = selections[sourceIndex];
             return (
               <fieldset
                 key={`${active}-${q.position}`}
@@ -759,26 +740,6 @@ export function NcsfMockExams({
                         )}
                       </div>
                     )}
-                    <NcsfAnswerReviewPanel
-                      review={
-                        identity
-                          ? answerReviews.reviews.get(identity.itemId)
-                          : undefined
-                      }
-                      status={answerReviews.status}
-                      onRetry={answerReviews.retry}
-                      model={answerReviews.model}
-                      generatedAt={answerReviews.generatedAt}
-                      outcome={outcome}
-                      correct={reviewOption(q.answer)}
-                      picked={
-                        selected === undefined ? undefined : reviewOption(selected)
-                      }
-                      others={optionOrder
-                        .filter((j) => j !== q.answer && j !== selected)
-                        .map(reviewOption)}
-                      onOpenPage={onOpenPage}
-                    />
                     <details className="text-slate">
                       <summary className="cursor-pointer font-semibold text-cobalt">
                         Nguồn đối chiếu ({q.sources.length})

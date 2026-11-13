@@ -103,13 +103,13 @@ test('upstream errors are safe and incomplete/error/truncated streams never repo
   }
 });
 
-test('merged floating study chat retains server-owned page context without raw path instructions', async () => {
+test('retired study assistant requests never call the model', async () => {
   const f = fixture();
-  await events(await f.post({ ...question('hello'), studyPage: '/atlas' }));
-  assert.ok(f.calls.messages[0].content.includes('CHẾ ĐỘ HỎI NHANH KHI HỌC'));
-  assert.ok(f.calls.messages[0].content.includes('Atlas giải phẫu'));
-  await events(await f.post({ ...question('hello'), studyPage: 'PRIVATE_PATH_INSTRUCTION_IGNORE_SAFETY' }));
-  assert.ok(!f.calls.messages[0].content.includes('PRIVATE_PATH_INSTRUCTION_IGNORE_SAFETY'));
+  for (const fields of [{ studyPage: '/atlas' }, { studyStructureId: 'synthetic' }]) {
+    assert.equal((await f.post({ ...question('hello'), ...fields })).status, 410);
+  }
+  assert.equal(f.calls.model, 0);
+  assert.equal(f.calls.retrieval.length, 0);
 });
 
 test('a fabricated or placeholder RAG reference produces a visible warning', async () => {
@@ -124,7 +124,7 @@ test('a fabricated or placeholder RAG reference produces a visible warning', asy
 test('invented APP indices, PMIDs and URLs produce source identity warnings', async () => {
   for (const content of ['[APP:medication:general:999]', '[APP:medication:general, 999]', '[APP:medication:general 999]', '[APP:medication:general] [999]', '[PMID:999999999]', '[Nguồn](https://invented.example/medical)']) {
     const wire = 'data: ' + JSON.stringify({ choices: [{ delta: { content }, finish_reason: 'stop' }] }) + '\n\ndata: [DONE]\n\n';
-    const e = await events(await fixture({ wire }).post({ ...question('insulin medication'), studyPage: '/knowledge' }));
+    const e = await events(await fixture({ wire }).post(question('insulin medication')));
     assert.ok(e.some(event => event.type === 'warning' && event.text.includes('không khớp')), content);
   }
 });

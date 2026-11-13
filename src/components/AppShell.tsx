@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { StudyChatWidget } from "./StudyChatWidget";
+import { useEffect, useRef } from "react";
 import { ThemePicker } from "./ThemePicker";
 import { Icon, type IconName } from "./WorkspaceUI";
 
@@ -42,12 +41,9 @@ const NAV: {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const assistantLauncher = useRef<HTMLButtonElement>(null);
-  const [studyOpen, setStudyOpen] = useState(false);
   const isActive = (href: string) =>
     path === href || path.startsWith(href + "/");
   const current = NAV.find((item) => isActive(item.href)) ?? NAV[0];
-  const drawerOpen = studyOpen;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -133,26 +129,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </p>
 
             <div className="ml-auto flex shrink-0 items-center gap-2">
-              <button
-                ref={assistantLauncher}
-                type="button"
-                aria-controls="study-assistant-drawer"
-                aria-expanded={drawerOpen}
-                aria-label={
-                  drawerOpen ? "Đóng trợ lý học tập" : "Mở trợ lý học tập"
-                }
-                title="Trợ lý học tập"
-                onClick={() => setStudyOpen((value) => !value)}
-                className="study-assistant-toggle"
-              >
-                <Icon name="message" className="size-4" />
-                <span className="hidden sm:inline">Trợ lý</span>
-              </button>
               <ThemePicker />
             </div>
           </div>
         </header>
-        <div className="workspace-body" data-study-open={drawerOpen}>
+        <div className="flex min-h-0 flex-1 overflow-hidden">
           <div
             ref={scrollRef}
             data-workspace-scroll
@@ -175,13 +156,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </footer>
           </div>
-          <StudyChatWidget
-            pathname={path}
-            pageLabel={current.label}
-            open={drawerOpen}
-            onOpenChange={setStudyOpen}
-            launcherRef={assistantLauncher}
-          />
         </div>
       </div>
       <nav className="workspace-mobile-nav" aria-label="Điều hướng di động">

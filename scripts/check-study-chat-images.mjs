@@ -3,22 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { createAppLoader } from "./lib/load-app-module.mjs";
 
-const widget = readFileSync(new URL("../src/components/StudyChatWidget.tsx", import.meta.url), "utf8");
 const markdown = readFileSync(new URL("../src/components/MarkdownAnswer.tsx", import.meta.url), "utf8");
-
-test("study assistant posts text only and does not offer image generation", () => {
-  assert.match(widget, /fetch\("\/api\/chat"/);
-  assert.match(widget, /toChatMessages/);
-  assert.equal(widget.includes("Minh họa nội dung này"), false);
-  assert.equal(widget.includes("StudyChatImageComposer"), false);
-  assert.equal(widget.includes("/api/chat/illustrations"), false);
-  assert.equal(widget.includes("Đoạn tài liệu tham chiếu"), false);
-  assert.equal(widget.includes("RAG:"), false);
-  assert.match(widget, /Gemini 3\.8 Flash/);
-  assert.match(widget, /Gemini 2\.5 Flash/);
-  // Drawer controls and shared answer rendering have their own behavior tests.
-  // The retired floating menu/inline citation implementation is not a requirement.
-});
 
 test("markdown still strips model-controlled image URLs", () => {
   assert.match(markdown, /img: \(\{ alt \}\) => <span>\{alt\}<\/span>/);

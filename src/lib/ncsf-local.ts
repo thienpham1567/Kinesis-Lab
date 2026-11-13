@@ -20,10 +20,3 @@ export async function readLocalNcsfFigure(key: string) {
   const bytes = await readFile(path.join(process.cwd(), ".data/ncsf", key));
   return new Blob([new Uint8Array(bytes)], { type: "image/png" });
 }
-
-// Reads review files built by scripts/ncsf-answer-review.mjs into .data/ncsf-review/out/.
-export async function readLocalNcsfReview(key: string) {
-  if (!/^review\/(?:quiz-ch[1-8]|mock-[12])\.json$/.test(key)) throw new Error("Invalid review key");
-  const bytes = await readFile(path.join(process.cwd(), ".data/ncsf-review/out", key));
-  return new Blob([new Uint8Array(bytes)], { type: "application/json" });
-}

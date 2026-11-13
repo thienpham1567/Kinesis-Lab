@@ -3,7 +3,6 @@ import {
   CLINICAL_PT_SYSTEM,
   clientContextBlock,
   evidenceBlock,
-  studyContextBlock,
 } from "@/lib/ai/prompts/clinical-pt-system";
 import { formatClient, safetyNotes } from "@/lib/clinical/safety";
 import { selectCuratedEvidence, formatCuratedEvidence, normalizeEvidenceQuery } from "@/lib/clinical/evidence-registry";
@@ -14,8 +13,6 @@ import { hasSupabase, supabase } from "@/lib/supabase/server";
 import { formatPubMed, searchPubMed } from "@/lib/tools/pubmed";
 import { formatRag, retrieveKnowledge } from "@/lib/tools/rag-search";
 import { readSseData } from "@/lib/ai/stream-events";
-import { filterStudyPubMed, questionStudyContext, resolveStudyContext, selectedStudyContextBlock, selectStudyEvidence, studyAnswerMeta, studyPublicLiteratureQuery, studySourceGuidance, studyQuestionContext, studyRetrievalQuery } from "@/lib/chat/study-context-server";
-import { filterStudyKnowledge, filterStudyTopicPapers, studyLiteratureTopic } from "@/lib/chat/study-retrieval";
 import { auditAnswerCitations } from "@/lib/chat/citation-audit";
 import type {
   BiomarkerRecord,
@@ -63,7 +60,7 @@ export async function POST(req: Request) {
   if (!process.env.OPENROUTER_API_KEY) {
     return Response.json({ error: "Chưa cấu hình OPENROUTER_API_KEY" }, { status: 503 });
   }
-  let body: { messages: ChatMessage[]; clientId?: string; studyPage?: string; studyStructureId?: string; model?: string };
+  let body: { messages: ChatMessage[]; clientId?: string; model?: string };
   try {
     const input = await req.json();
     if (!input || typeof input !== "object" || !Array.isArray(input.messages) ||
@@ -78,9 +75,11 @@ export async function POST(req: Request) {
         input.messages.at(-1)?.role !== "user") {
       return Response.json({ error: "Nội dung hội thoại không hợp lệ hoặc quá dài." }, { status: 400 });
     }
+    if (input.studyPage != null || input.studyStructureId != null) {
+      return Response.json({ error: "Trợ lý học tập đã ngừng hoạt động." }, { status: 410 });
+    }
     body = { messages: input.messages.map((m: ChatMessage) => ({ role: m.role, content: m.content })),
-      clientId: input.clientId || undefined, studyPage: input.studyPage || undefined,
-      studyStructureId: typeof input.studyStructureId === "string" ? input.studyStructureId : undefined,
+      clientId: input.clientId || undefined,
       model: typeof input.model === "string" ? input.model : undefined };
   } catch {
     return Response.json({ error: "Không đọc được nội dung câu hỏi." }, { status: 400 });
@@ -131,33 +130,18 @@ export async function POST(req: Request) {
   // Preserve a short topic history for follow-ups; public search still receives
   // fixed vocabulary derived from the current question only, never that history.
   const prior = messages.filter(m => m.role === "user").slice(-3, -1).map(m => m.content.slice(-800));
-  const isStudy = typeof body.studyPage === "string";
-  // The Atlas selection anchors only questions without their own explicit subject.
-  const studyContext = isStudy ? questionStudyContext(resolveStudyContext(body.studyStructureId), last) : null;
-  const historyQuery = [...prior, last.slice(-4000)].join("\n");
-  const retrievalQuery = isStudy ? studyRetrievalQuery(studyContext, last, historyQuery) : historyQuery;
-  const curated = isStudy ? selectStudyEvidence(studyContext, last, retrievalQuery) : selectCuratedEvidence(retrievalQuery);
-  const searchContext = studyContext ?? (isStudy ? studyQuestionContext(last) : null);
-  const publicQuery = searchContext ? studyPublicLiteratureQuery(searchContext, last)
-    : isStudy ? studyLiteratureTopic(last)?.query ?? "" : publicLiteratureQuery(last);
-  const publicSearch = { query: publicQuery || null, scope: searchContext ? "server-catalog-vocabulary" : "fixed-topic-vocabulary", skipped: !publicQuery };
-  const [knowledge, literature] = await Promise.all([
+  const retrievalQuery = [...prior, last.slice(-4000)].join("\n");
+  const curated = selectCuratedEvidence(retrievalQuery);
+  const publicQuery = publicLiteratureQuery(last);
+  const publicSearch = { query: publicQuery || null, scope: "fixed-topic-vocabulary", skipped: !publicQuery };
+  const [{ hits: rag, retrieval }, literature] = await Promise.all([
     retrieveKnowledge(retrievalQuery),
     publicQuery
-      ? searchPubMed(publicQuery, 5, isStudy ? { queryMode: "trusted" } : undefined).then(found => {
-          const papers = searchContext ? filterStudyPubMed(searchContext, found) : isStudy ? filterStudyTopicPapers(last, found) : found;
-          return { papers, status: papers.length ? "ready" : "no_matches" };
-        })
+      ? searchPubMed(publicQuery, 5).then((papers) => ({ papers, status: papers.length ? "ready" : "no_matches" }))
         .catch(() => ({ papers: [] as PubMedPaper[], status: "error" }))
       : Promise.resolve({ papers: [] as PubMedPaper[], status: "skipped" }),
   ]);
-  const rag = isStudy ? filterStudyKnowledge(retrievalQuery, knowledge.hits) : knowledge.hits;
-  const retrieval = isStudy && knowledge.retrieval.status === "ready" && !rag.length
-    ? { ...knowledge.retrieval, status: "no_matches" as const, message: "Kho toàn văn hiện chưa có bài trong phạm vi trực tiếp của câu hỏi." }
-    : knowledge.retrieval;
   const pubmed = literature.papers;
-  const studyMeta = isStudy ? studyAnswerMeta(studyContext, curated, pubmed, literature.status, last, rag) : null;
-  if (studyMeta) studyMeta.sourceNotice = [retrieval.status === "ready" ? "" : retrieval.message, studyMeta.sourceNotice].filter(Boolean).join(" ") || undefined;
   const sourceStatus = { rag: retrieval, pubmed: { status: literature.status,
     message: literature.status === "error" ? "Chưa tra cứu được PubMed trong lượt này." :
       literature.status === "no_matches" ? "PubMed chưa trả về bài phù hợp với chủ đề tra cứu." :
@@ -174,12 +158,9 @@ export async function POST(req: Request) {
           safetyNotes(client),
         )
       : "",
-    isStudy ? studyContextBlock(body.studyPage) : "",
-    isStudy ? selectedStudyContextBlock(studyContext) : "",
     formatCuratedEvidence(curated),
     evidenceBlock(formatRag(rag), formatPubMed(pubmed)),
     `TRẠNG THÁI NGUỒN CỦA LƯỢT NÀY\nKho toàn văn: ${retrieval.status}. ${retrieval.message}\nPubMed: ${sourceStatus.pubmed.status}. ${sourceStatus.pubmed.message}`,
-    isStudy ? studySourceGuidance(studyContext, curated) : "",
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -208,7 +189,6 @@ export async function POST(req: Request) {
       controller.enqueue(
         encoder.encode(JSON.stringify({ type: "meta", model, rag, pubmed, curated, publicSearch, sourceStatus }) + "\n"),
       );
-      if (studyMeta) controller.enqueue(encoder.encode(JSON.stringify({ type: "study-meta", ...studyMeta }) + "\n"));
       try {
         let complete = false;
         for await (const data of readSseData(upstream)) {

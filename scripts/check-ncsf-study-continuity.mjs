@@ -150,7 +150,7 @@ test("checking a citation preserves scored answers, chapter, lesson and order; e
   button(tree, "Xem trang 18").props.onClick(); tree = quiz.render();
   assert.deepEqual(citations, [["02-giai-phau-chuc-nang", 18]]);
   assert.deepEqual(snapshot(tree), before); assert.equal(f.requests.length, 1);
-  assert.deepEqual(f.reviewRequests, ["/api/ncsf/review?bank=quiz&part=2"], "graded answers load chapter feedback once");
+  assert.deepEqual(f.reviewRequests, [], "graded answers use their existing explanations without requesting generated reviews");
   f.setRandom(0.95); button(tree, "Làm lại tất cả").props.onClick(); tree = quiz.render();
   assert.notDeepEqual(nodes(tree, node => node.type === "legend").map(({ node }) => text(node)), originalOrder);
   assert.notDeepEqual(nodes(tree, node => node.type === "label" && nodes(node, child => child.type === "input").length).map(({ node }) => text(node)), originalOptions);
